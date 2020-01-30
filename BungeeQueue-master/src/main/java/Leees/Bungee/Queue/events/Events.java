@@ -52,7 +52,7 @@ public class Events implements Listener {
             final String originalTarget = e.getTarget().getName();
             // Send the player to the limbo and send a message.
             e.setTarget(limbo);
-            player.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
+            player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
                     Lang.SEND_TO_LIMBO.replace("<global_slots>", Lang.GLOBAL_SLOTS + ""))));
             // Store the data concerning the player's destination
             QueuePlugin.final_destination.put(player.getUniqueId(), originalTarget);
@@ -81,7 +81,7 @@ public class Events implements Listener {
         Entry<UUID, String> entry = QueuePlugin.final_destination.entrySet().iterator().next();
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(entry.getKey());
         player.connect(ProxyServer.getInstance().getServerInfo(entry.getValue()));
-        player.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
+        player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
                 Lang.LEFT_LIMBO_JOIN_SERVER.replace("<server>", entry.getValue()))));
         QueuePlugin.final_destination.remove(entry.getKey());
 

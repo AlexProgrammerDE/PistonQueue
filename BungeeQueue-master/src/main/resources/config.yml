@@ -1,4 +1,4 @@
-#LeeesBungeeQueue Configuration V1.0.2
+#LeeesBungeeQueue Configuration V1.0.4
 #make sure the queue server is called queue in the bungee config
 #and then make the main server the default one you login to
 #and then it should work if it doesnt add me on discord for help
@@ -18,8 +18,8 @@ LEFT_LIMBO_JOIN_SERVER: "&6Connecting to <server>"
 #Max players allowed onto main server
 GLOBAL_SLOTS: 100
 
-#Max priority Users online doesnt work yet
-SUPER_SLOTS: 200
+#Max users allowed to be connected to the queue server at once
+SUPER_SLOTS: 9000
 
 #bypass the queue permission
 QUEUE_OVERRIDE_PERMISSION: "queue.override"
