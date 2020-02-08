@@ -94,7 +94,7 @@ public class QueuePlugin extends Plugin {
             }
             Events.moveQueue();
 
-        }, 1, 1, TimeUnit.MILLISECONDS);
+        }, 700, 700, TimeUnit.MILLISECONDS);
     }
 
 
