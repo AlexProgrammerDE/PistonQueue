@@ -14,7 +14,6 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import Leees.Bungee.Queue.events.Lang;
-import Leees.Bungee.Queue.events.commands.SlotsCommand;
 import Leees.Bungee.Queue.events.Events;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
@@ -71,8 +70,6 @@ public class QueuePlugin extends Plugin {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-        getProxy().getPluginManager().registerCommand(this, new SlotsCommand());
         getProxy().getPluginManager().registerListener(this, new Events());
         getProxy().getScheduler().schedule(this, () -> {
             int i = 0;
@@ -81,17 +78,17 @@ public class QueuePlugin extends Plugin {
                 try {
                     i++;
 
-                    ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
-                    if(player == null){
-                        final_destination.remove(entry.getKey());
-                        continue;
-                    }
-                    player.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Lang.CURRENT_LIMBO_POSITION.replace("<position>", i + "").replace("<total>", final_destination.size() + "").replace("<server>", entry.getValue()))));
-                } catch (Exception e) {
-                    final_destination.remove(entry.getKey());
-                    //TODO: handle exception
-                }
+            ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
+            if(player == null){
+                final_destination.remove(entry.getKey());
+                continue;
             }
+            player.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Lang.CURRENT_LIMBO_POSITION.replace("<position>", i + "").replace("<total>", final_destination.size() + "").replace("<server>", entry.getValue()))));
+        } catch (Exception e) {
+            final_destination.remove(entry.getKey());
+            //TODO: handle exception
+        }
+    }
             Events.moveQueue();
 
         }, 700, 700, TimeUnit.MILLISECONDS);
