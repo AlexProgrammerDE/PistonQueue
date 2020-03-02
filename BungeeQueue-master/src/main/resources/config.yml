@@ -1,4 +1,4 @@
-#LeeesBungeeQueue Configuration V1.0.6
+#LeeesBungeeQueue Configuration V1.0.7
 #make sure the queue server is called queue in the bungee config
 #and then make the main server the default one you login to
 #and then it should work if it doesnt add me on discord for help
@@ -12,7 +12,8 @@ CURRENT_LIMBO_POSITION: "&6Position in queue: &l<position>"
 #Server is full message when player joins the queue
 SEND_TO_LIMBO: "&66b6t is full"
 
-#Connecting to server message
+#Connecting to server message <server> will turn into
+#the name of the main server in the bungee config.yml
 LEFT_LIMBO_JOIN_SERVER: "&6Connecting to <server>"
 
 #Max players allowed onto main server
@@ -23,6 +24,3 @@ SUPER_SLOTS: 9000
 
 #bypass the queue permission
 QUEUE_OVERRIDE_PERMISSION: "queue.override"
-
-#set the allowed players on the main server with /globalslots perm
-GLOBAL_SLOTS_PERMISSION: "queue.globalslots"

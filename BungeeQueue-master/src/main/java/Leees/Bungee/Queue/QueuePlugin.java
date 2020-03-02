@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import Leees.Bungee.Queue.events.Lang;
 import Leees.Bungee.Queue.events.Events;
@@ -52,9 +53,8 @@ public class QueuePlugin extends Plugin {
     }
     @Override
     public void onEnable() {
-
+        AtomicInteger queuepos = new AtomicInteger();
         processConfig();
-
         Arrays.asList(Lang.class.getDeclaredFields()).forEach(it -> {
             try {
                 it.setAccessible(true);
@@ -78,19 +78,20 @@ public class QueuePlugin extends Plugin {
                 try {
                     i++;
 
-            ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
-            if(player == null){
-                final_destination.remove(entry.getKey());
-                continue;
+                    ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
+                    if (player == null) {
+                        final_destination.remove(entry.getKey());
+                        continue;
+                    }
+                    player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Lang.CURRENT_LIMBO_POSITION.replace("<position>", i + "").replace("<total>", final_destination.size() + "").replace("<server>", entry.getValue()))));
+                } catch (Exception e) {
+                    final_destination.remove(entry.getKey());
+                    //TODO: handle exception
+                }
             }
-            player.sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Lang.CURRENT_LIMBO_POSITION.replace("<position>", i + "").replace("<total>", final_destination.size() + "").replace("<server>", entry.getValue()))));
-        } catch (Exception e) {
-            final_destination.remove(entry.getKey());
-            //TODO: handle exception
-        }
-    }
+        }, 10000, 10000, TimeUnit.MILLISECONDS);
+        getProxy().getScheduler().schedule(this, () -> {
             Events.moveQueue();
-
         }, 700, 700, TimeUnit.MILLISECONDS);
     }
 
