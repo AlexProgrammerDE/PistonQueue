@@ -6,3 +6,5 @@ Premade Queue Server Download: https://www.6b6t.org/queue.zip
 Ask me for help when im on join my discord: https://discord.gg/KgrrEQr
 
 If you find anybugs or ways to improve the plugin add me on discord: Leee#4701
+
+If you like the plugin please leave a review on the spigotmc page thanks :): https://www.spigotmc.org/resources/leeesbungeequeue.74615/
