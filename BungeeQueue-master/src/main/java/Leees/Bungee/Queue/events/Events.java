@@ -9,6 +9,7 @@ import Leees.Bungee.Queue.QueuePlugin;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -24,9 +25,7 @@ import net.md_5.bungee.event.EventHandler;
 public class Events implements Listener {
 
     List<UUID> list = new ArrayList<>();
-    ServerInfo limbo = ProxyServer.getInstance().getServerInfo("limbo") == null
-                    ? ProxyServer.getInstance().getServers().entrySet().iterator().next().getValue()
-            : ProxyServer.getInstance().getServerInfo("limbo");
+    ServerInfo queue = ProxyServer.getInstance().getServerInfo(Lang.QUEUESERVER);
 
     @EventHandler
     public void on(PostLoginEvent event) {
@@ -51,9 +50,16 @@ public class Events implements Listener {
             // Keep a copy of the player's original target.
             final String originalTarget = e.getTarget().getName();
             // Send the player to the limbo and send a message.
-            e.setTarget(limbo);
-            player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
-                    Lang.SEND_TO_LIMBO.replace("<global_slots>", Lang.GLOBAL_SLOTS + ""))));
+            e.setTarget(queue);
+            player.setTabHeader(
+                    new ComponentBuilder("\n" + Lang.TABNAME + "\n\n§6" + Lang.MESSAGE1 + "\n§6" +
+                            Lang.CURRENT_LIMBO_POSITION.replace("<position>",
+                                    "§lN/A" + "\n")).create(),
+                    new ComponentBuilder("\n§6" + Lang.MESSAGE2 + "\n\n§7Contact: " +
+                            Lang.CONTACT + "\n§7Discussion: " + Lang.DISCUSSION + "\n§7Website: " +
+                            Lang.WEBSITE + "\n§7" + Lang.OFFICIAL + "\n").create()
+            );
+            player.sendMessage(ChatColor.GOLD + Lang.SEND_TO_LIMBO);
             // Store the data concerning the player's destination
             QueuePlugin.final_destination.put(player.getUniqueId(), originalTarget);
             return;
@@ -64,7 +70,7 @@ public class Events implements Listener {
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent e) {
         list.remove(e.getPlayer().getUniqueId());
-        if (e.getPlayer().getServer().getInfo().getName().equalsIgnoreCase(limbo.getName())) {
+        if (e.getPlayer().getServer().getInfo().getName().equalsIgnoreCase(queue.getName())) {
             e.getPlayer().setReconnectServer(ProxyServer.getInstance()
                     .getServerInfo(QueuePlugin.final_destination.get(e.getPlayer().getUniqueId())));
         }
@@ -81,8 +87,7 @@ public class Events implements Listener {
         Entry<UUID, String> entry = QueuePlugin.final_destination.entrySet().iterator().next();
         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(entry.getKey());
         player.connect(ProxyServer.getInstance().getServerInfo(entry.getValue()));
-        player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&',
-                Lang.LEFT_LIMBO_JOIN_SERVER.replace("<server>", entry.getValue()))));
+        player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText("§6" + Lang.LEFT_LIMBO_JOIN_SERVER.replace("<server>", entry.getValue())));
         QueuePlugin.final_destination.remove(entry.getKey());
 
     }

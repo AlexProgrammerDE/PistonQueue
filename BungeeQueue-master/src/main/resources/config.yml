@@ -1,4 +1,4 @@
-#LeeesBungeeQueue Configuration V1.0.7
+#LeeesBungeeQueue Configuration V2.0.1
 #make sure the queue server is called queue in the bungee config
 #and then make the main server the default one you login to
 #and then it should work if it doesnt add me on discord for help
@@ -6,15 +6,20 @@
 #i havent fully gotten the priority to work for now it has no priority stuff enabled
 #but the error for super slots is nothing to worry about i works fine
 
-#Position in queue message shows above the hotbar
-CURRENT_LIMBO_POSITION: "&6Position in queue: &l<position>"
 
-#Server is full message when player joins the queue
-SEND_TO_LIMBO: "&66b6t is full"
+#server is full message
+SEND_TO_LIMBO: "6b6t is full"
 
-#Connecting to server message <server> will turn into
-#the name of the main server in the bungee config.yml
-LEFT_LIMBO_JOIN_SERVER: "&6Connecting to <server>"
+#Position in queue message by default it only sends in chat every 10 seconds
+#you can have it on the hotbar by setting it to true
+POSITIONMESSAGEHOTBAR: "false"
+CURRENT_LIMBO_POSITION: "Position in queue: <position>"
+
+#Queue server name in the bungee config.yml
+QUEUESERVER: "queue"
+
+#Connecting to server message
+LEFT_LIMBO_JOIN_SERVER: "Connecting to <server>"
 
 #Max players allowed onto main server
 GLOBAL_SLOTS: 100
@@ -24,3 +29,22 @@ SUPER_SLOTS: 9000
 
 #bypass the queue permission
 QUEUE_OVERRIDE_PERMISSION: "queue.override"
+
+#queue server tablist configuration message1 is what says 2b2t is full
+#message2 is where how to get priority queue is on 2b2t for now there is
+#no priority only queue bypass in the future ill probably figure out how
+#to add priority queue but for now its just bypass or waiting
+
+TABNAME: "§b6builders§36tools"
+
+MESSAGE1: "6b6t is full"
+
+MESSAGE2: "6b6t has a queue when there is over 100 players please wait to play"
+
+CONTACT: "nate@xera.ca"
+
+DISCUSSION: "http://discord.6b6t.org"
+
+WEBSITE: "https://www.6b6t.org"
+
+OFFICIAL: "These are the only official 6b6t websites and contacts"
