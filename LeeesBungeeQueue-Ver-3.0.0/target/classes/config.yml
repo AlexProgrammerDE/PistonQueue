@@ -1,0 +1,68 @@
+#LeeesBungeeQueue Configuration V3.0.0
+#Make the main server the default one you login to
+#and then it should work if it doesnt add me on discord for help
+#my discord is Leee#4701 add to ask any questions
+#READ ME: all colours are orange by default just add & and colour
+#to change the colours to your liking
+
+
+#Server is full message
+SERVERISFULLMESSAGE: "&66b6t is full"
+
+
+#Position in queue message by default only sends in chat every 10 seconds
+#you can have it on the hotbar by setting POSITIONMESSAGEHOTBAR: "false" to true
+POSITIONMESSAGEHOTBAR: "false"
+QUEUEPOSITION: "&6Position in queue: &l<position>"
+
+
+#Set the queue servers name that is in the bungee config.yml
+#Note that the main server is always the one you login to first
+#The main server server is the one that has a queue to protect it
+#make sure you set the default server in bungee config.yml correctly
+QUEUESERVER: "queue"
+
+
+#Connecting to server message use <server> if you want it
+#to just use the name of the default server
+JOININGMAINSERVER: "&6Connecting to 6b6t"
+
+
+#Max players allowed onto main server
+MAINSERVERSLOTS: 100
+
+
+#Total people allowed to be connected to the queue network
+#Make sure you set the bungeecord slots higher then the amount
+#of people you get regularly i set mine to 9000 and 9000 on the queue server
+QUEUESERVERSLOTS: 9000
+
+
+#enter the odds someone with priority would get in out of 10
+#5 would be a 50 50 chance they would get in vs a non priority user
+ODDS: 6
+
+
+#Queue move delay is miliseconds default is 700ms
+QUEUEMOVEDELAY: 700
+
+
+#Permissions
+QUEUEBYPASSPERMISSION: "queue.override"
+QUEUEPRIORITYPERMISSION: "queue.priority"
+
+
+#Queue server tablist configuration use <position> to show the current position of the player
+#and use <wait> to show the estimated wait time of the player(not very accurate yet)
+#this only shows when your in the queue waiting to join use a separate plugin for your main server
+HEADER: "\n&b6builders&36tools\n\n&66b6t is full\nPosition in queue: &l<position>\n&6Estimated time: &l<wait>\n"
+
+FOOTER: "\n   &6You can now donate to receive priority queue status, please visit donate.6b6t.org   \n\n&7Contact: nate@xera.ca\n
+Discussion: http://discord.6b6t.org\nWebsite: https://www.6b6t.org\nThese are the only official 6b6t websites and contacts\n"
+
+
+#configs for priority queue tablist
+HEADERPRIORITY: "\n&b6builders&36tools\n\n&66b6t is full\nPosition in queue: &l<position>\n&6Estimated time: &l<wait>\n"
+
+FOOTERPRIORITY: "\n   &6You have priority queue status please wait for an available slot on the server   \n\n&7Contact: nate@xera.ca\n
+Discussion: http://discord.6b6t.org\nWebsite: https://www.6b6t.org\nThese are the only official 6b6t websites and contacts\n"
