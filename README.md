@@ -4,7 +4,11 @@ LeeesBungeeQueue is a 2b2t like queue plugin for Bungeecord to limit the amount 
 Companion plugin:
 https://github.com/Leeeunderscore/LeeesBungeeQueueBukkit
 
-Premade Queue Server Download: https://www.6b6t.org/queue.zip
+Premade Proxy Server Download:
+https://www.6b6t.org/proxy.zip
+
+Premade Queue Server Download:
+https://www.6b6t.org/queue.zip
 
 Ask me for help when im on join my discord: https://discord.gg/KgrrEQr
 
