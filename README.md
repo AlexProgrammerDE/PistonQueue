@@ -15,4 +15,5 @@ https://www.spigotmc.org/resources/leeesbungeequeue.74615/
 
 https://www.spigotmc.org/resources/leeesbungeequeuebukkit.76393/
 
-This plugin is based off of this source code credit to this guy for making this plugin possible https://github.com/noobstersmc/BungeeQueue/ i plan on changing and improving from the original to make it more anarchy
+This plugin is based off of this source code credit to this guy for making this plugin possible https://github.com/noobstersmc/BungeeQueue/ i plan on changing and improving from the original 
+to make it more anarchy server oriented
