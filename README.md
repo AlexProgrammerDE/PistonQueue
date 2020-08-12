@@ -14,7 +14,5 @@ If you find anybugs or ways to improve the plugin add me on discord: Leee#7926
 If you like the plugin please leave a review on the spigotmc page thanks :)
 https://www.spigotmc.org/resources/leeesbungeequeue.74615/
 
-https://www.spigotmc.org/resources/leeesbungeequeuebukkit.76393/
-
 This plugin is based off of this source code credit to this guy for making this plugin possible https://github.com/noobstersmc/BungeeQueue/ i plan on changing and improving from the original 
 to make it more anarchy server oriented
