@@ -1,5 +1,6 @@
 # LeeesBungeeQueue
 [![discord](https://discord.com/api/guilds/683053832694923319/embed.png)](https://discord.gg/WWm35Tc)
+
 LeeesBungeeQueue is a 2b2t like queue plugin for Bungeecord to limit the amount of players on the main server because of lag or because its too many and people who try to join will wait in a separate queue server in a line to join the main one the queue should be a server where they are stuck in one place so that no one can move and load chunks so that the queue isnt laggy at all
 
 Premade Proxy Server Download:
