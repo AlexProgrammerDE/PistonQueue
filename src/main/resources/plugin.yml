@@ -1,7 +1,7 @@
 name: LeeesBungeeQueue
-main: Leees.Bungee.Queue.QueuePlugin
-version: 3.1.6
-author: Nate, Legault
-commands:
-  lbq:
-    description: to reload the config
+version: 4.0.0
+api-version: 1.16
+main: Leees.Bungee.Queue.Bukkit.Main
+authors: [Nate, Legault]
+description: Bukkit companion plugin for LeeesBungeeQueue
+website: https://www.6b6t.org

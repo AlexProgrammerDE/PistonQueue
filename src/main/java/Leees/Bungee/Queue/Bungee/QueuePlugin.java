@@ -1,4 +1,4 @@
-package Leees.Bungee.Queue;
+package Leees.Bungee.Queue.Bungee;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class QueuePlugin extends Plugin {
     public void onEnable() {
         processConfig();
         instance = this;
-        getProxy().getPluginManager().registerCommand(this, new ReloadCommand());
+        getProxy().getPluginManager().registerCommand(this, new ReloadCommand(this));
         getProxy().getPluginManager().registerListener(this, new Events());
         getProxy().getPluginManager().registerListener(this, new PingEvent());
 
@@ -248,13 +248,13 @@ public class QueuePlugin extends Plugin {
             }
         }, Lang.QUEUEMOVEDELAY, Lang.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-        //moves the queue when someone logs off the main server on an interval set in the config.yml
+        //moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
         try {
         getProxy().getScheduler().schedule(this, Events::moveQueue, Lang.QUEUEMOVEDELAY, Lang.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
         }
         catch(NoSuchElementException error) {
         }
-        //moves the queue when someone logs off the main server on an interval set in the config.yml
+        //moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
         try {
             getProxy().getScheduler().schedule(this, Events::CheckIfMainServerIsOnline,500, 500, TimeUnit.MILLISECONDS);
         }
@@ -281,7 +281,7 @@ public class QueuePlugin extends Plugin {
                 getDataFolder().mkdir();
             File file = new File(getDataFolder(), "config.yml");
             if (!file.exists()) {
-                try (InputStream in = getResourceAsStream("config.yml")) {
+                try (InputStream in = getResourceAsStream("bungeeconfig.yml")) {
                     Files.copy(in, file.toPath());
                     loadConfig();
                 } catch (IOException ie) {

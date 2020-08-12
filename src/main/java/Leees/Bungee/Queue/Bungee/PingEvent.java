@@ -1,21 +1,9 @@
-package Leees.Bungee.Queue;
+package Leees.Bungee.Queue.Bungee;
 
-import jdk.tools.jaotc.Main;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.event.EventHandler;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.List;
 
 public class PingEvent implements Listener {
     ServerPing.Protocol protocol;

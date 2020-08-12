@@ -1,13 +1,16 @@
-package Leees.Bungee.Queue;
+package Leees.Bungee.Queue.Bungee;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.Plugin;
 
 public class ReloadCommand extends Command {
+    Plugin plugin;
 
-    public ReloadCommand() {
+    public ReloadCommand(Plugin plugin) {
         super("lbq");
+        this.plugin = plugin;
     }
 
     @Override
@@ -25,7 +28,7 @@ public class ReloadCommand extends Command {
         if (args[0].equalsIgnoreCase("version")) {
             sender.sendMessage(ChatColor.DARK_BLUE + "----------------");
             sender.sendMessage(ChatColor.GOLD + "LeeesBungeeQueue");
-            sender.sendMessage(ChatColor.GOLD + "Version 3.1.6 by");
+            sender.sendMessage(ChatColor.GOLD + "Version " + plugin.getDescription().getVersion() + " by");
             sender.sendMessage(ChatColor.GOLD + "Nate Legault");
             sender.sendMessage(ChatColor.DARK_BLUE + "----------------");
             return;

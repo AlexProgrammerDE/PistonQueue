@@ -1,4 +1,4 @@
-package Leees.Bungee.Queue;
+package Leees.Bungee.Queue.Bungee;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -6,7 +6,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.UUID;
 import net.md_5.bungee.api.*;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -38,7 +37,7 @@ public class Events implements Listener {
     }
     public static void CheckIfMainServerIsOnline() {
         try {
-            Socket s = new Socket(ProxyServer.getInstance().getConfig().getServerInfo(Lang.MAINSERVER).getAddress().getAddress(), ProxyServer.getInstance().getConfig().getServerInfo(Lang.MAINSERVER).getAddress().getPort());
+            Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Lang.MAINSERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Lang.MAINSERVER).getAddress().getPort());
             // ONLINE
             s.close();
             mainonline = true;
@@ -50,7 +49,7 @@ public class Events implements Listener {
     }
     public static void CheckIfQueueServerIsOnline() {
         try {
-            Socket s = new Socket(ProxyServer.getInstance().getConfig().getServerInfo(Lang.QUEUESERVER).getAddress().getAddress(), ProxyServer.getInstance().getConfig().getServerInfo(Lang.QUEUESERVER).getAddress().getPort());
+            Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Lang.QUEUESERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Lang.QUEUESERVER).getAddress().getPort());
             // ONLINE
             s.close();
             queueonline = true;
@@ -64,7 +63,7 @@ public class Events implements Listener {
     public static void CheckIfAuthServerIsOnline() {
         if (Lang.ENABLEAUTHSERVER.contains("true")) {
             try {
-                Socket s = new Socket(ProxyServer.getInstance().getConfig().getServerInfo(Lang.AUTHSERVER).getAddress().getAddress(), ProxyServer.getInstance().getConfig().getServerInfo(Lang.AUTHSERVER).getAddress().getPort());
+                Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Lang.AUTHSERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Lang.AUTHSERVER).getAddress().getPort());
                 // ONLINE
                 s.close();
                 authonline = true;
@@ -198,7 +197,7 @@ public class Events implements Listener {
         //if it has people in it then it gives a chance for either a priority or non
         //priority user to get in when someone logs off the main server
         //gets a random number then if the number is less then or equal to the odds set in
-        //this config.yml it will add a priority player if its anything above the odds then
+        //this bungeeconfig.yml it will add a priority player if its anything above the odds then
         //a non priority player gets added to the main server
         //Random rn = new Random();
         //for (int i = 0; i < 100; i++) {

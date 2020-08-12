@@ -1,4 +1,4 @@
-package Leees.Bungee.Queue;
+package Leees.Bungee.Queue.Bungee;
 
 import java.util.List;
 

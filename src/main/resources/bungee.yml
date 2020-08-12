@@ -1,0 +1,7 @@
+name: LeeesBungeeQueue
+main: Leees.Bungee.Queue.Bungee.QueuePlugin
+version: 4.0.0
+authors: [Nate, Legault]
+commands:
+  lbq:
+    description: to reload the config
