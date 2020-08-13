@@ -13,7 +13,7 @@ public class PingEvent implements Listener {
             if (!Lang.CUSTOMPROTOCOL.contains("false")) {
                 ServerPing.Protocol provided = event.getResponse().getVersion();
 
-                QueuePlugin.getInstance().getLogger().info(String.valueOf(provided.getProtocol()));
+                LeeesBungeeQueue.getInstance().getLogger().info(String.valueOf(provided.getProtocol()));
 
                 provided.setName(Lang.CUSTOMPROTOCOL.replaceAll("&", "§"));
 
@@ -25,11 +25,11 @@ public class PingEvent implements Listener {
             int i = 0;
 
             for (String str : Lang.SERVERPINGINFO) {
-                info = addInfo(info, new ServerPing.PlayerInfo(str.replaceAll("&", "§").replaceAll("%priority%", "" + QueuePlugin.priorityqueue.size()).replaceAll("%regular%", "" + QueuePlugin.regularqueue.size()), String.valueOf(i)));
+                info = addInfo(info, new ServerPing.PlayerInfo(str.replaceAll("&", "§").replaceAll("%priority%", "" + LeeesBungeeQueue.priorityqueue.size()).replaceAll("%regular%", "" + LeeesBungeeQueue.regularqueue.size()), String.valueOf(i)));
                 i++;
             }
 
-            ServerPing.Players players = new ServerPing.Players(Lang.QUEUESERVERSLOTS, QueuePlugin.getInstance().getProxy().getOnlineCount(), info);
+            ServerPing.Players players = new ServerPing.Players(Lang.QUEUESERVERSLOTS, LeeesBungeeQueue.getInstance().getProxy().getOnlineCount(), info);
 
             ServerPing ping = new ServerPing(protocol, players, event.getResponse().getDescriptionComponent(), event.getResponse().getFaviconObject());
             event.setResponse(ping);

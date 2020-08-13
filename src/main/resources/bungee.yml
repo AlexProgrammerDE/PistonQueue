@@ -1,6 +1,6 @@
 name: LeeesBungeeQueue
-main: Leees.Bungee.Queue.Bungee.QueuePlugin
-version: 4.0.0
+main: Leees.Bungee.Queue.Bungee.LeeesBungeeQueue
+version: 4.0.1
 authors: [Nate, Legault]
 commands:
   lbq:

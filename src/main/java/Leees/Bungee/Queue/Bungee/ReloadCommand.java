@@ -36,14 +36,14 @@ public class ReloadCommand extends Command {
         if (args[0].equalsIgnoreCase("stats")) {
             sender.sendMessage(ChatColor.DARK_BLUE + "----------------");
             sender.sendMessage(ChatColor.GOLD + "Queue stats");
-            sender.sendMessage(ChatColor.GOLD + "Priority: " + ChatColor.BOLD + QueuePlugin.priorityqueue.size());
-            sender.sendMessage(ChatColor.GOLD + "Regular: " + ChatColor.BOLD + QueuePlugin.regularqueue.size());
+            sender.sendMessage(ChatColor.GOLD + "Priority: " + ChatColor.BOLD + LeeesBungeeQueue.priorityqueue.size());
+            sender.sendMessage(ChatColor.GOLD + "Regular: " + ChatColor.BOLD + LeeesBungeeQueue.regularqueue.size());
             sender.sendMessage(ChatColor.DARK_BLUE + "----------------");
             return;
         }
         if (sender.hasPermission(Lang.ADMINPERMISSION)) {
             if (args[0].equalsIgnoreCase("reload")) {
-                QueuePlugin.getInstance().processConfig();
+                LeeesBungeeQueue.getInstance().processConfig();
                 sender.sendMessage(ChatColor.DARK_BLUE + "----------------");
                 sender.sendMessage(ChatColor.GOLD + "LeeesBungeeQueue");
                 sender.sendMessage(ChatColor.GREEN + "Config reloaded");

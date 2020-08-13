@@ -153,7 +153,7 @@ public class Events implements Listener {
                     new ComponentBuilder(Lang.FOOTERPRIORITY.replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).create());
             player.sendMessage(ChatColor.GOLD + Lang.SERVERISFULLMESSAGE.replace("&", "§"));
             // Store the data concerning the player's destination
-            QueuePlugin.priorityqueue.put(player.getUniqueId(), originalTarget);
+            LeeesBungeeQueue.priorityqueue.put(player.getUniqueId(), originalTarget);
             return;
         } else if (!e.getPlayer().hasPermission(Lang.QUEUEBYPASSPERMISSION) && !e.getPlayer().hasPermission(Lang.QUEUEPRIORITYPERMISSION)) {
             if (!regular.contains(player.getUniqueId()))
@@ -167,7 +167,7 @@ public class Events implements Listener {
                     new ComponentBuilder(Lang.FOOTER.replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).create());
             player.sendMessage(ChatColor.GOLD + Lang.SERVERISFULLMESSAGE.replace("&", "§"));
             // Store the data concerning the player's destination
-            QueuePlugin.regularqueue.put(player.getUniqueId(), originalTarget);
+            LeeesBungeeQueue.regularqueue.put(player.getUniqueId(), originalTarget);
             return;
         }
     }
@@ -179,12 +179,12 @@ public class Events implements Listener {
             try {
                 if (e.getPlayer().getServer().getInfo().getName().equalsIgnoreCase(Lang.QUEUESERVER)) {
                     e.getPlayer().setReconnectServer(ProxyServer.getInstance()
-                            .getServerInfo(QueuePlugin.priorityqueue.get(e.getPlayer().getUniqueId())));
+                            .getServerInfo(LeeesBungeeQueue.priorityqueue.get(e.getPlayer().getUniqueId())));
                     e.getPlayer().setReconnectServer(ProxyServer.getInstance()
-                            .getServerInfo(QueuePlugin.regularqueue.get(e.getPlayer().getUniqueId())));
+                            .getServerInfo(LeeesBungeeQueue.regularqueue.get(e.getPlayer().getUniqueId())));
                 }
-                QueuePlugin.priorityqueue.remove(e.getPlayer().getUniqueId());
-                QueuePlugin.regularqueue.remove(e.getPlayer().getUniqueId());
+                LeeesBungeeQueue.priorityqueue.remove(e.getPlayer().getUniqueId());
+                LeeesBungeeQueue.regularqueue.remove(e.getPlayer().getUniqueId());
                 priority.remove(e.getPlayer().getUniqueId());
                 regular.remove(e.getPlayer().getUniqueId());
             }
@@ -202,26 +202,26 @@ public class Events implements Listener {
         //Random rn = new Random();
         //for (int i = 0; i < 100; i++) {
             //int answer = rn.nextInt(10) + 1;
-                if (!QueuePlugin.priorityqueue.isEmpty()) {
-                    if (Lang.MAINSERVERSLOTS <= ProxyServer.getInstance().getOnlineCount() - QueuePlugin.regularqueue.size() - QueuePlugin.priorityqueue.size())
+                if (!LeeesBungeeQueue.priorityqueue.isEmpty()) {
+                    if (Lang.MAINSERVERSLOTS <= ProxyServer.getInstance().getOnlineCount() - LeeesBungeeQueue.regularqueue.size() - LeeesBungeeQueue.priorityqueue.size())
                         return;
-                    if (QueuePlugin.priorityqueue.isEmpty())
+                    if (LeeesBungeeQueue.priorityqueue.isEmpty())
                         return;
-                        Entry<UUID, String> entry2 = QueuePlugin.priorityqueue.entrySet().iterator().next();
+                        Entry<UUID, String> entry2 = LeeesBungeeQueue.priorityqueue.entrySet().iterator().next();
                         ProxiedPlayer player2 = ProxyServer.getInstance().getPlayer(entry2.getKey());
                         player2.connect(ProxyServer.getInstance().getServerInfo(entry2.getValue()));
                         player2.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(Lang.JOININGMAINSERVER.replace("&", "§").replace("<server>", entry2.getValue())));
-                        QueuePlugin.priorityqueue.remove(entry2.getKey());
+                        LeeesBungeeQueue.priorityqueue.remove(entry2.getKey());
                 } else {
-                    if (Lang.MAINSERVERSLOTS <= ProxyServer.getInstance().getOnlineCount() - QueuePlugin.regularqueue.size() - QueuePlugin.priorityqueue.size())
+                    if (Lang.MAINSERVERSLOTS <= ProxyServer.getInstance().getOnlineCount() - LeeesBungeeQueue.regularqueue.size() - LeeesBungeeQueue.priorityqueue.size())
                         return;
-                    if (QueuePlugin.regularqueue.isEmpty())
+                    if (LeeesBungeeQueue.regularqueue.isEmpty())
                         return;
-                        Entry<UUID, String> entry = QueuePlugin.regularqueue.entrySet().iterator().next();
+                        Entry<UUID, String> entry = LeeesBungeeQueue.regularqueue.entrySet().iterator().next();
                         ProxiedPlayer player = ProxyServer.getInstance().getPlayer(entry.getKey());
                         player.connect(ProxyServer.getInstance().getServerInfo(entry.getValue()));
                         player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(Lang.JOININGMAINSERVER.replace("&", "§").replace("<server>", entry.getValue())));
-                        QueuePlugin.regularqueue.remove(entry.getKey());
+                        LeeesBungeeQueue.regularqueue.remove(entry.getKey());
                 }
         }
     //}

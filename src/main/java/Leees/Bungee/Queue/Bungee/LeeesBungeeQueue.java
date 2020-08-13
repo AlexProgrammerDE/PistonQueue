@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.ChatMessageType;
@@ -18,25 +19,47 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
 /**
- * QueuePlugin
+ * LeeesBungeeQueue
  */
-public class QueuePlugin extends Plugin {
+public class LeeesBungeeQueue extends Plugin {
     public static LinkedHashMap<UUID, String> regularqueue = new LinkedHashMap<>();
     public static LinkedHashMap<UUID, String> priorityqueue = new LinkedHashMap<>();
     public Configuration config;
-    private static QueuePlugin instance;
-    public static QueuePlugin getInstance() {
+    private static LeeesBungeeQueue instance;
+    public static LeeesBungeeQueue getInstance() {
         return instance;
     }
 
     @Override
     public void onEnable() {
-        processConfig();
         instance = this;
+        Logger logger = getLogger();
+
+        logger.info("§9Loading config");
+        processConfig();
+
+        logger.info("§9Registering commands");
         getProxy().getPluginManager().registerCommand(this, new ReloadCommand(this));
+
+        logger.info("§9Registering listeners");
         getProxy().getPluginManager().registerListener(this, new Events());
         getProxy().getPluginManager().registerListener(this, new PingEvent());
 
+        logger.info("§9Loading Metrics");
+        Metrics metrics = new Metrics(this, 8519);
+
+        logger.info("§9Checking for update");
+        new UpdateChecker(this, 74615).getVersion(version -> {
+            if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
+                logger.info("§9Your up to date!");
+            } else {
+                logger.info("§cThere is a update available.");
+                logger.info("§cCurrent version: " + this.getDescription().getVersion() + " New version: " + version);
+                logger.info("§cDownload it at: https://www.spigotmc.org/resources/74615");
+            }
+        });
+
+        logger.info("§9Scheduling tasks");
         //sends the position message and updates tab on an interval for non priority players and priority players in chat
         getProxy().getScheduler().schedule(this, () -> {
             if (!Lang.POSITIONMESSAGEHOTBAR.equals("true")) {
@@ -154,7 +177,7 @@ public class QueuePlugin extends Plugin {
             }
         }, Lang.QUEUEMOVEDELAY, Lang.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-    //updates the tablists for priority and regular queues
+        //updates the tablists for priority and regular queues
         getProxy().getScheduler().schedule(this, () -> {
 
             int i = 0;
@@ -293,8 +316,7 @@ public class QueuePlugin extends Plugin {
     }
 
     void loadConfig() throws IOException {
-        config = ConfigurationProvider.getProvider(YamlConfiguration.class)
-            .load(new File(getDataFolder(), "config.yml"));
+        config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
         Arrays.asList(Lang.class.getDeclaredFields()).forEach(it -> {
             try {
                 it.setAccessible(true);

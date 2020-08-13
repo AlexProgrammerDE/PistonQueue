@@ -1,4 +1,4 @@
-# LeeesBungeeQueue V4.0.0
+# LeeesBungeeQueue V4.0.1
 # Note - Operators and users with the permission "queue.admin" will be excluded from restrictions. ##
 
 forceLocation: true # Force the user to remain in a certain location.
