@@ -46,7 +46,7 @@ public class LeeesBungeeQueue extends Plugin {
         getProxy().getPluginManager().registerListener(this, new PingEvent());
 
         logger.info("§9Loading Metrics");
-        Metrics metrics = new Metrics(this, 8519);
+        new Metrics(this, 8519);
 
         logger.info("§9Checking for update");
         new UpdateChecker(this, 74615).getVersion(version -> {
@@ -275,23 +275,23 @@ public class LeeesBungeeQueue extends Plugin {
         try {
         getProxy().getScheduler().schedule(this, Events::moveQueue, Lang.QUEUEMOVEDELAY, Lang.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
         }
-        catch(NoSuchElementException error) {
+        catch(NoSuchElementException ignored) {
         }
         //moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
         try {
             getProxy().getScheduler().schedule(this, Events::CheckIfMainServerIsOnline,500, 500, TimeUnit.MILLISECONDS);
         }
-        catch(NoSuchElementException error) {
+        catch(NoSuchElementException ignored) {
         }
         try {
             getProxy().getScheduler().schedule(this, Events::CheckIfQueueServerIsOnline, 500, 500, TimeUnit.MILLISECONDS);
         }
-        catch(NoSuchElementException error) {
+        catch(NoSuchElementException ignored) {
         }
         try {
             getProxy().getScheduler().schedule(this, Events::CheckIfAuthServerIsOnline, 500, 500, TimeUnit.MILLISECONDS);
         }
-        catch(NoSuchElementException error) {
+        catch(NoSuchElementException ignored) {
         }
     }
 
@@ -300,8 +300,10 @@ public class LeeesBungeeQueue extends Plugin {
         try {
             loadConfig();
         } catch (IOException e) {
-            if (!getDataFolder().exists())
+            if (!getDataFolder().exists()) {
                 getDataFolder().mkdir();
+            }
+
             File file = new File(getDataFolder(), "config.yml");
             if (!file.exists()) {
                 try (InputStream in = getResourceAsStream("bungeeconfig.yml")) {

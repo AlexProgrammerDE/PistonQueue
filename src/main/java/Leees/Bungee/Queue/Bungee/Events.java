@@ -2,7 +2,6 @@ package Leees.Bungee.Queue.Bungee;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -31,7 +30,7 @@ public class Events implements Listener {
     @EventHandler
     public void onPreLogin(PreLoginEvent ple) {
         if (!ple.getConnection().getName().matches(Lang.REGEX)) {
-            ple.setCancelReason(ChatColor.GOLD + "[LBQ] Invalid username please use: " + Lang.REGEX);
+            ple.setCancelReason(new TextComponent(ChatColor.GOLD + "[LBQ] Invalid username please use: " + Lang.REGEX));
             ple.setCancelled(true);
         }
     }
@@ -41,8 +40,6 @@ public class Events implements Listener {
             // ONLINE
             s.close();
             mainonline = true;
-        } catch (UnknownHostException e) {
-            mainonline = false;
         } catch (IOException e) {
             mainonline = false;
         }
@@ -53,8 +50,6 @@ public class Events implements Listener {
             // ONLINE
             s.close();
             queueonline = true;
-        } catch (UnknownHostException e) {
-            queueonline = false;
         } catch (IOException e) {
             queueonline = false;
         }
@@ -67,8 +62,6 @@ public class Events implements Listener {
                 // ONLINE
                 s.close();
                 authonline = true;
-            } catch (UnknownHostException e) {
-                authonline = false;
             } catch (IOException e) {
                 authonline = false;
             }
@@ -80,7 +73,7 @@ public class Events implements Listener {
     @EventHandler
     public void on(PostLoginEvent event) {
         if (!Lang.ENABLEAUTHSERVER.contains("true")) {
-            if (!mainonline == false && !queueonline == false) {
+            if (mainonline && queueonline) {
                 if (!Lang.ALWAYSQUEUE.contains("true")) {
                     if (ProxyServer.getInstance().getOnlineCount() <= Lang.MAINSERVERSLOTS)
                         return;
@@ -108,7 +101,7 @@ public class Events implements Listener {
                 event.getPlayer().disconnect(Lang.SERVERDOWNKICKMESSAGE.replace("&", "§"));
             }
         } else {
-            if (!mainonline == false && !queueonline == false && !authonline == false) {
+            if (mainonline && queueonline && authonline) {
                 if (!Lang.ALWAYSQUEUE.contains("true")) {
                     if (ProxyServer.getInstance().getOnlineCount() <= Lang.MAINSERVERSLOTS)
                         return;
