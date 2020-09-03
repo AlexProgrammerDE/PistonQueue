@@ -9,7 +9,7 @@ public class ReloadCommand extends Command {
     XeraBungeeQueue plugin;
 
     public ReloadCommand(XeraBungeeQueue plugin) {
-        super("lbq");
+        super("xbq");
         this.plugin = plugin;
     }
 
@@ -26,7 +26,7 @@ public class ReloadCommand extends Command {
 
             if (args[0].equalsIgnoreCase("version")) {
                 sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
-                sender.sendMessage(new ComponentBuilder("XeraBungeeQueueBukkit").color(ChatColor.GOLD).create());
+                sender.sendMessage(new ComponentBuilder("XeraBungeeQueue").color(ChatColor.GOLD).create());
                 sender.sendMessage(new ComponentBuilder("Version " + plugin.getDescription().getVersion() + " by").color(ChatColor.GOLD).create());
                 sender.sendMessage(new ComponentBuilder(plugin.getDescription().getAuthor()).color(ChatColor.GOLD).create());
                 sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
@@ -45,12 +45,12 @@ public class ReloadCommand extends Command {
                     plugin.processConfig();
 
                     sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
-                    sender.sendMessage(new ComponentBuilder("XeraBungeeQueueBukkit").color(ChatColor.GOLD).create());
+                    sender.sendMessage(new ComponentBuilder("XeraBungeeQueue").color(ChatColor.GOLD).create());
                     sender.sendMessage(new ComponentBuilder("Config reloaded").color(ChatColor.GREEN).create());
                     sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
                 } else {
                     sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
-                    sender.sendMessage(new ComponentBuilder("XeraBungeeQueueBukkit").color(ChatColor.GOLD).create());
+                    sender.sendMessage(new ComponentBuilder("XeraBungeeQueue").color(ChatColor.GOLD).create());
                     sender.sendMessage(new ComponentBuilder("You do not").color(ChatColor.RED).create());
                     sender.sendMessage(new ComponentBuilder("have permission").color(ChatColor.RED).create());
                     sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
@@ -61,11 +61,11 @@ public class ReloadCommand extends Command {
 
     void help(CommandSender sender) {
         sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
-        sender.sendMessage(new ComponentBuilder("XeraBungeeQueueBukkit").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("/lbq help").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("/lbq reload").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("/lbq version").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("/lbq stats").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("XeraBungeeQueue").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/xbq help").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/xbq reload").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/xbq version").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/xbq stats").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
     }
 }

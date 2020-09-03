@@ -30,7 +30,7 @@ public class BungeeEvents implements Listener {
     @EventHandler
     public void onPreLogin(PreLoginEvent ple) {
         if (!ple.getConnection().getName().matches(Config.REGEX)) {
-            ple.setCancelReason(new TextComponent(ChatColor.GOLD + "[LBQ] Invalid username please use: " + Config.REGEX));
+            ple.setCancelReason(new TextComponent(ChatColor.GOLD + "[XBG] Invalid username please use: " + Config.REGEX));
             ple.setCancelled(true);
         }
     }
@@ -136,7 +136,7 @@ public class BungeeEvents implements Listener {
                     }
                 }
             } else {
-                event.getPlayer().disconnect(Config.SERVERDOWNKICKMESSAGE.replace("&", "§"));
+                event.getPlayer().disconnect(new ComponentBuilder(Config.SERVERDOWNKICKMESSAGE.replace("&", "§")).create());
             }
         }
     }
@@ -158,7 +158,7 @@ public class BungeeEvents implements Listener {
             player.setTabHeader(
                     new ComponentBuilder(Config.HEADERPRIORITY.replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).create(),
                     new ComponentBuilder(Config.FOOTERPRIORITY.replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).create());
-            player.sendMessage(ChatColor.GOLD + Config.SERVERISFULLMESSAGE.replace("&", "§"));
+            player.sendMessage(new ComponentBuilder(Config.SERVERISFULLMESSAGE.replace("&", "§")).color(ChatColor.GOLD).create());
 
             // Store the data concerning the player's destination
             XeraBungeeQueue.priorityqueue.put(player.getUniqueId(), originalTarget);
@@ -176,7 +176,7 @@ public class BungeeEvents implements Listener {
             player.setTabHeader(
                     new ComponentBuilder(Config.HEADER.replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).create(),
                     new ComponentBuilder(Config.FOOTER.replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).create());
-            player.sendMessage(ChatColor.GOLD + Config.SERVERISFULLMESSAGE.replace("&", "§"));
+            player.sendMessage(new ComponentBuilder(Config.SERVERISFULLMESSAGE.replace("&", "§")).color(ChatColor.GOLD).create());
 
             // Store the data concerning the player's destination
             XeraBungeeQueue.regularqueue.put(player.getUniqueId(), originalTarget);
