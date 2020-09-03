@@ -7,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
 
+import java.util.Objects;
 import java.util.logging.Level;
 
 public class BukkitEvents implements Listener {
@@ -23,7 +24,7 @@ public class BukkitEvents implements Listener {
             return;
         }
         if (!plugin.forceLocation) return;
-        e.getPlayer().teleport(generateForcedLocation());
+        e.getPlayer().teleport(Objects.requireNonNull(generateForcedLocation()));
     }
 
     @EventHandler
@@ -42,8 +43,6 @@ public class BukkitEvents implements Listener {
         e.setQuitMessage("");
     }
 
-
-
     @EventHandler
     public void onPlayerJoin$1(PlayerJoinEvent e) {
         if (!plugin.forceGamemode) return;
@@ -55,7 +54,7 @@ public class BukkitEvents implements Listener {
     public void onPlayerSpawn(PlayerRespawnEvent e) {
         if (!plugin.forceLocation) return;
         if (isExcluded(e.getPlayer())) return;
-        e.setRespawnLocation(generateForcedLocation());
+        e.setRespawnLocation(Objects.requireNonNull(generateForcedLocation()));
     }
 
     @EventHandler

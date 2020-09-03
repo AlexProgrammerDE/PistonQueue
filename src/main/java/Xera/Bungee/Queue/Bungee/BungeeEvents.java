@@ -58,7 +58,7 @@ public class BungeeEvents implements Listener {
     }
 
     public static void CheckIfAuthServerIsOnline() {
-        if (Lang.ENABLEAUTHSERVER.contains("true")) {
+        if (Lang.ENABLEAUTHSERVER) {
             try {
                 Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Lang.AUTHSERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Lang.AUTHSERVER).getAddress().getPort());
                 // ONLINE
@@ -74,9 +74,9 @@ public class BungeeEvents implements Listener {
 
     @EventHandler
     public void on(PostLoginEvent event) {
-        if (!Lang.ENABLEAUTHSERVER.contains("true")) {
+        if (!Lang.ENABLEAUTHSERVER) {
             if (mainonline && queueonline) {
-                if (!Lang.ALWAYSQUEUE.contains("true")) {
+                if (!Lang.ALWAYSQUEUE) {
                     if (ProxyServer.getInstance().getOnlineCount() <= Lang.MAINSERVERSLOTS)
                         return;
                     if (event.getPlayer().hasPermission(Lang.QUEUEPRIORITYPERMISSION)) {
@@ -104,7 +104,7 @@ public class BungeeEvents implements Listener {
             }
         } else {
             if (mainonline && queueonline && authonline) {
-                if (!Lang.ALWAYSQUEUE.contains("true")) {
+                if (!Lang.ALWAYSQUEUE) {
                     if (ProxyServer.getInstance().getOnlineCount() <= Lang.MAINSERVERSLOTS)
                         return;
                     if (event.getPlayer().hasPermission(Lang.QUEUEPRIORITYPERMISSION)) {
@@ -220,7 +220,7 @@ public class BungeeEvents implements Listener {
 
     @EventHandler
     public void onkick(ServerKickEvent event) {
-        if (Lang.ENABLEKICKMESSAGE.equals("true")) {
+        if (Lang.ENABLEKICKMESSAGE) {
             event.setKickReasonComponent(new ComponentBuilder(Lang.KICKMESSAGE.replace("&", "§")).create());
         }
     }

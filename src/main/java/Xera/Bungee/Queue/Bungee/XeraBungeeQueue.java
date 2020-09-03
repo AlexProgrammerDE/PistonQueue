@@ -59,7 +59,7 @@ public class XeraBungeeQueue extends Plugin {
         logger.info("§9Scheduling tasks");
         //sends the position message and updates tab on an interval for non priority players and priority players in chat
         getProxy().getScheduler().schedule(this, () -> {
-            if (!Lang.POSITIONMESSAGEHOTBAR.equals("true")) {
+            if (!Lang.POSITIONMESSAGEHOTBAR) {
 
                 int i = 0;
 
@@ -87,7 +87,7 @@ public class XeraBungeeQueue extends Plugin {
         }, 10000, 10000, TimeUnit.MILLISECONDS);
 
         getProxy().getScheduler().schedule(this, () -> {
-            if (!Lang.POSITIONMESSAGEHOTBAR.equals("true")) {
+            if (!Lang.POSITIONMESSAGEHOTBAR) {
 
                 int i = 0;
 
@@ -117,7 +117,7 @@ public class XeraBungeeQueue extends Plugin {
 
         //sends the position message and updates tab on an interval for non priority players and priority players on hotbar
         getProxy().getScheduler().schedule(this, () -> {
-            if (Lang.POSITIONMESSAGEHOTBAR.equals("true")) {
+            if (Lang.POSITIONMESSAGEHOTBAR) {
 
                 int i = 0;
 
@@ -146,7 +146,7 @@ public class XeraBungeeQueue extends Plugin {
         }, Lang.QUEUEMOVEDELAY, Lang.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         getProxy().getScheduler().schedule(this, () -> {
-            if (Lang.POSITIONMESSAGEHOTBAR.equals("true")) {
+            if (Lang.POSITIONMESSAGEHOTBAR) {
 
                 int i = 0;
 

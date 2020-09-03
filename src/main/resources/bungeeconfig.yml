@@ -14,14 +14,14 @@ SERVERISFULLMESSAGE: "&66b6t is full"
 
 # Position in queue message by default only sends in chat every 10 seconds
 # you can have it on the hotbar by setting POSITIONMESSAGEHOTBAR: "false" to true
-POSITIONMESSAGEHOTBAR: "false"
+POSITIONMESSAGEHOTBAR: false
 QUEUEPOSITION: "&6Position in queue: &l<position>"
-ENABLEKICKMESSAGE: "true"
+ENABLEKICKMESSAGE: true
 KICKMESSAGE: "&6You have lost connection to the server"
 SERVERDOWNKICKMESSAGE: "&b6b&36t &6is down please try again later :("
 
 # this shows the queue size when you hover over the ping on the server list
-SERVERPINGINFOENABLE: "true"
+SERVERPINGINFOENABLE: true
 SERVERPINGINFO:
   - "&b6b&36t &6Queue Size"
   - "&6Priority: &l%priority%"
@@ -35,7 +35,7 @@ CUSTOMPROTOCOL: "&b6b&36t &61.8.x to 1.16.x"
 QUEUESERVER: "queue"
 MAINSERVER: "6b6t"
 # set this to false if your a premium server
-ENABLEAUTHSERVER: "true"
+ENABLEAUTHSERVER: true
 AUTHSERVER: "auth"
 
 
@@ -59,7 +59,7 @@ QUEUEMOVEDELAY: 2000
 
 
 # Always add players to queue to prevent server crashing from to many joins
-ALWAYSQUEUE: "true"
+ALWAYSQUEUE: true
 
 
 # Permissions
