@@ -26,6 +26,7 @@ SERVERPINGINFO:
   - "&b6b&36t &6Queue Size"
   - "&6Priority: &l%priority%"
   - "&6Regular: &l%regular%"
+CUSTOMPROTOCOLENABLE: true
 CUSTOMPROTOCOL: "&b6b&36t &61.8.x to 1.16.x"
 
 # Set the queue servers name that is in the bungee config.yml

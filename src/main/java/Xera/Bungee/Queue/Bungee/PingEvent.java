@@ -15,8 +15,8 @@ public class PingEvent implements Listener {
 
     @EventHandler
     public void onPing(ProxyPingEvent event) {
-        if (Lang.SERVERPINGINFOENABLE.equals("true")) {
-            if (!Lang.CUSTOMPROTOCOL.contains("false")) {
+        if (Lang.SERVERPINGINFOENABLE) {
+            if (Lang.CUSTOMPROTOCOLENABLE) {
                 ServerPing.Protocol provided = event.getResponse().getVersion();
 
                 plugin.getLogger().info(String.valueOf(provided.getProtocol()));
@@ -27,6 +27,7 @@ public class PingEvent implements Listener {
             } else {
                 protocol = event.getResponse().getVersion();
             }
+
             ServerPing.PlayerInfo[] info = {};
             int i = 0;
 
