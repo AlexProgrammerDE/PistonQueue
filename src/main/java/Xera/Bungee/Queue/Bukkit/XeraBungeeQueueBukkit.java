@@ -25,6 +25,7 @@ public final class XeraBungeeQueueBukkit extends JavaPlugin {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+
         forceLocation = getConfig().getBoolean("forceLocation");
         forcedWorldName = getConfig().getString("forcedWorldName");
         forcedX = getConfig().getInt("forcedX");
@@ -39,7 +40,7 @@ public final class XeraBungeeQueueBukkit extends JavaPlugin {
         
         setGameRule();
         
-        this.getServer().getPluginManager().registerEvents(new BukkitEvents(this), this);
+        getServer().getPluginManager().registerEvents(new BukkitEvents(this), this);
     }
     
     @Override

@@ -1,5 +1,5 @@
-name: XeraBungeeQueueBukkit
-main: Xera.Bungee.Queue.Bungee.XeraBungeeQueueBukkit
-version: 4.0.2
+name: XeraBungeeQueue
+main: Xera.Bungee.Queue.Bungee.XeraBungeeQueue
+version: 1.0.0
 author: XeraPlugins
-authors: [Nate, Legault, Pistonmaster]
+authors: [Nate Legault, Pistonmaster]

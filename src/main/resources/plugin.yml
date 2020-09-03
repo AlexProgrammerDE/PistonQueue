@@ -1,8 +1,8 @@
 name: XeraBungeeQueueBukkit
-version: 4.0.2
+version: 1.0.0
 api-version: 1.16
 main: Xera.Bungee.Queue.Bukkit.XeraBungeeQueueBukkit
 author: XeraPlugins
 authors: [Nate, Legault]
-description: Bukkit companion plugin for XeraBungeeQueueBukkit
-website: https://www.6b6t.org
+description: Bukkit companion for XeraBungeeQueueBukkit
+website: http://www.xera.ca/

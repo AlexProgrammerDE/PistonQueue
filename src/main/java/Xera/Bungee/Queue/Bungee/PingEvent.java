@@ -15,13 +15,13 @@ public class PingEvent implements Listener {
 
     @EventHandler
     public void onPing(ProxyPingEvent event) {
-        if (Lang.SERVERPINGINFOENABLE) {
-            if (Lang.CUSTOMPROTOCOLENABLE) {
+        if (Config.SERVERPINGINFOENABLE) {
+            if (Config.CUSTOMPROTOCOLENABLE) {
                 ServerPing.Protocol provided = event.getResponse().getVersion();
 
                 plugin.getLogger().info(String.valueOf(provided.getProtocol()));
 
-                provided.setName(Lang.CUSTOMPROTOCOL.replaceAll("&", "§"));
+                provided.setName(Config.CUSTOMPROTOCOL.replaceAll("&", "§"));
 
                 protocol = provided;
             } else {
@@ -31,12 +31,12 @@ public class PingEvent implements Listener {
             ServerPing.PlayerInfo[] info = {};
             int i = 0;
 
-            for (String str : Lang.SERVERPINGINFO) {
+            for (String str : Config.SERVERPINGINFO) {
                 info = addInfo(info, new ServerPing.PlayerInfo(str.replaceAll("&", "§").replaceAll("%priority%", "" + XeraBungeeQueue.priorityqueue.size()).replaceAll("%regular%", "" + XeraBungeeQueue.regularqueue.size()), String.valueOf(i)));
                 i++;
             }
 
-            ServerPing.Players players = new ServerPing.Players(Lang.QUEUESERVERSLOTS, plugin.getProxy().getOnlineCount(), info);
+            ServerPing.Players players = new ServerPing.Players(Config.QUEUESERVERSLOTS, plugin.getProxy().getOnlineCount(), info);
 
             ServerPing ping = new ServerPing(protocol, players, event.getResponse().getDescriptionComponent(), event.getResponse().getFaviconObject());
             event.setResponse(ping);

@@ -28,7 +28,7 @@ public class ReloadCommand extends Command {
                 sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
                 sender.sendMessage(new ComponentBuilder("XeraBungeeQueueBukkit").color(ChatColor.GOLD).create());
                 sender.sendMessage(new ComponentBuilder("Version " + plugin.getDescription().getVersion() + " by").color(ChatColor.GOLD).create());
-                sender.sendMessage(new ComponentBuilder("Pistonmaster").color(ChatColor.GOLD).create());
+                sender.sendMessage(new ComponentBuilder(plugin.getDescription().getAuthor()).color(ChatColor.GOLD).create());
                 sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
             }
 
@@ -41,7 +41,7 @@ public class ReloadCommand extends Command {
             }
 
             if (args[0].equalsIgnoreCase("reload")) {
-                if (sender.hasPermission(Lang.ADMINPERMISSION)) {
+                if (sender.hasPermission(Config.ADMINPERMISSION)) {
                     plugin.processConfig();
 
                     sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
