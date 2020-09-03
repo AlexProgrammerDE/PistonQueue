@@ -1,4 +1,4 @@
-package Leees.Bungee.Queue.Bungee;
+package Xera.Bungee.Queue.Bungee;
 
 import net.md_5.bungee.api.plugin.Plugin;
 

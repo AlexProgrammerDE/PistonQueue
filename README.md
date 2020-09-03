@@ -1,20 +1,10 @@
-# LeeesBungeeQueue
-[![discord](https://discord.com/api/guilds/683053832694923319/embed.png)](https://discord.gg/WWm35Tc)
+# XeraBungeeQueue
+[![discord](https://discord.com/api/guilds/683053832694923319/embed.png)](https://discord.gg/WWm35Tc) [![](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://github.com/XeraPlugins/XeraBungeeQueue)
 
-LeeesBungeeQueue is a 2b2t like queue plugin for Bungeecord to limit the amount of players on the main server because of lag or because its too many and people who try to join will wait in a separate queue server in a line to join the main one the queue should be a server where they are stuck in one place so that no one can move and load chunks so that the queue isnt laggy at all
-
-Premade Proxy Server Download:
-https://www.6b6t.org/proxy.zip
-
-Premade Queue Server Download:
-https://www.6b6t.org/queue.zip
+XeraBungeeQueue is a 2b2t like queue plugin for Bungeecord to limit the amount of players on the main server because of lag or because its too many and people who try to join will wait in a separate queue server in a line to join the main one the queue should be a server where they are stuck in one place so that no one can move and load chunks so that the queue isnt laggy at all
 
 Ask me for help when im on join my discord: https://discord.gg/WWm35Tc
 
-If you find anybugs or ways to improve the plugin add me on discord: Leee#7926
+If you find any bugs or ways to improve the plugin open a issue on github.
 
-If you like the plugin please leave a review on the spigotmc page thanks :)
-https://www.spigotmc.org/resources/74615/
-
-This plugin is based off of this source code credit to this guy for making this plugin possible https://github.com/noobstersmc/BungeeQueue/ i plan on changing and improving from the original 
-to make it more anarchy server oriented
+This plugin is based of [LeeesBungeeQueue](https://github.com/XeraPlugins/LeeesBungeeQueue) made by [@Leee](https://github.com/Leeeunderscore)

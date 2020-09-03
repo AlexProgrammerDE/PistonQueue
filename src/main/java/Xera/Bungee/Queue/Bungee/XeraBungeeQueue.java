@@ -1,4 +1,4 @@
-package Leees.Bungee.Queue.Bungee;
+package Xera.Bungee.Queue.Bungee;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,36 +14,33 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
 /**
- * LeeesBungeeQueue
+ * XeraBungeeQueue
  */
-public class LeeesBungeeQueue extends Plugin {
+public class XeraBungeeQueue extends Plugin {
     public static LinkedHashMap<UUID, String> regularqueue = new LinkedHashMap<>();
     public static LinkedHashMap<UUID, String> priorityqueue = new LinkedHashMap<>();
     public Configuration config;
-    private static LeeesBungeeQueue instance;
-    public static LeeesBungeeQueue getInstance() {
-        return instance;
-    }
 
     @Override
     public void onEnable() {
-        instance = this;
         Logger logger = getLogger();
+        PluginManager manager = getProxy().getPluginManager();
 
         logger.info("§9Loading config");
         processConfig();
 
         logger.info("§9Registering commands");
-        getProxy().getPluginManager().registerCommand(this, new ReloadCommand(this));
+        manager.registerCommand(this, new ReloadCommand(this));
 
         logger.info("§9Registering listeners");
-        getProxy().getPluginManager().registerListener(this, new Events());
-        getProxy().getPluginManager().registerListener(this, new PingEvent());
+        manager.registerListener(this, new BungeeEvents());
+        manager.registerListener(this, new PingEvent(this));
 
         logger.info("§9Loading Metrics");
         new Metrics(this, 8519);
@@ -122,18 +119,18 @@ public class LeeesBungeeQueue extends Plugin {
         getProxy().getScheduler().schedule(this, () -> {
             if (Lang.POSITIONMESSAGEHOTBAR.equals("true")) {
 
-            int i = 0;
+                int i = 0;
 
-            Map<UUID, String> the_map = new LinkedHashMap<>(regularqueue);
-            for (Entry<UUID, String> entry : the_map.entrySet()) {
-                try {
-                    i++;
+                Map<UUID, String> the_map = new LinkedHashMap<>(regularqueue);
+                for (Entry<UUID, String> entry : the_map.entrySet()) {
+                    try {
+                        i++;
 
-                    ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
-                    if (player == null) {
-                        regularqueue.remove(entry.getKey());
-                        continue;
-                    }
+                        ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
+                        if (player == null) {
+                            regularqueue.remove(entry.getKey());
+                            continue;
+                        }
                         player.sendMessage(ChatMessageType.ACTION_BAR,
                                 TextComponent.fromLegacyText(Lang.QUEUEPOSITION.replace("&", "§")
                                         .replace("<position>",
@@ -224,9 +221,8 @@ public class LeeesBungeeQueue extends Plugin {
                 }
             }
         }, Lang.QUEUEMOVEDELAY, Lang.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
-        
-        getProxy().getScheduler().schedule(this, () -> {
 
+        getProxy().getScheduler().schedule(this, () -> {
             int i = 0;
             long waitTime;
             long waitTimeHour;
@@ -273,28 +269,26 @@ public class LeeesBungeeQueue extends Plugin {
 
         //moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
         try {
-        getProxy().getScheduler().schedule(this, Events::moveQueue, Lang.QUEUEMOVEDELAY, Lang.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+            getProxy().getScheduler().schedule(this, BungeeEvents::moveQueue, Lang.QUEUEMOVEDELAY, Lang.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        } catch (NoSuchElementException ignored) {
         }
-        catch(NoSuchElementException ignored) {
-        }
+
         //moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
         try {
-            getProxy().getScheduler().schedule(this, Events::CheckIfMainServerIsOnline,500, 500, TimeUnit.MILLISECONDS);
+            getProxy().getScheduler().schedule(this, BungeeEvents::CheckIfMainServerIsOnline,500, 500, TimeUnit.MILLISECONDS);
+        } catch (NoSuchElementException ignored) {
         }
-        catch(NoSuchElementException ignored) {
-        }
+
         try {
-            getProxy().getScheduler().schedule(this, Events::CheckIfQueueServerIsOnline, 500, 500, TimeUnit.MILLISECONDS);
+            getProxy().getScheduler().schedule(this, BungeeEvents::CheckIfQueueServerIsOnline, 500, 500, TimeUnit.MILLISECONDS);
+        } catch (NoSuchElementException ignored) {
         }
-        catch(NoSuchElementException ignored) {
-        }
+
         try {
-            getProxy().getScheduler().schedule(this, Events::CheckIfAuthServerIsOnline, 500, 500, TimeUnit.MILLISECONDS);
-        }
-        catch(NoSuchElementException ignored) {
+            getProxy().getScheduler().schedule(this, BungeeEvents::CheckIfAuthServerIsOnline, 500, 500, TimeUnit.MILLISECONDS);
+        } catch (NoSuchElementException ignored) {
         }
     }
-
 
     void processConfig() {
         try {

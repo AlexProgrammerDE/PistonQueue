@@ -1,4 +1,4 @@
-package Leees.Bungee.Queue.Bungee;
+package Xera.Bungee.Queue.Bungee;
 
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.ProxyPingEvent;
@@ -7,13 +7,19 @@ import net.md_5.bungee.event.EventHandler;
 
 public class PingEvent implements Listener {
     ServerPing.Protocol protocol;
+    XeraBungeeQueue plugin;
+
+    public PingEvent(XeraBungeeQueue plugin) {
+        this.plugin = plugin;
+    }
+
     @EventHandler
     public void onPing(ProxyPingEvent event) {
         if (Lang.SERVERPINGINFOENABLE.equals("true")) {
             if (!Lang.CUSTOMPROTOCOL.contains("false")) {
                 ServerPing.Protocol provided = event.getResponse().getVersion();
 
-                LeeesBungeeQueue.getInstance().getLogger().info(String.valueOf(provided.getProtocol()));
+                plugin.getLogger().info(String.valueOf(provided.getProtocol()));
 
                 provided.setName(Lang.CUSTOMPROTOCOL.replaceAll("&", "§"));
 
@@ -25,11 +31,11 @@ public class PingEvent implements Listener {
             int i = 0;
 
             for (String str : Lang.SERVERPINGINFO) {
-                info = addInfo(info, new ServerPing.PlayerInfo(str.replaceAll("&", "§").replaceAll("%priority%", "" + LeeesBungeeQueue.priorityqueue.size()).replaceAll("%regular%", "" + LeeesBungeeQueue.regularqueue.size()), String.valueOf(i)));
+                info = addInfo(info, new ServerPing.PlayerInfo(str.replaceAll("&", "§").replaceAll("%priority%", "" + XeraBungeeQueue.priorityqueue.size()).replaceAll("%regular%", "" + XeraBungeeQueue.regularqueue.size()), String.valueOf(i)));
                 i++;
             }
 
-            ServerPing.Players players = new ServerPing.Players(Lang.QUEUESERVERSLOTS, LeeesBungeeQueue.getInstance().getProxy().getOnlineCount(), info);
+            ServerPing.Players players = new ServerPing.Players(Lang.QUEUESERVERSLOTS, plugin.getProxy().getOnlineCount(), info);
 
             ServerPing ping = new ServerPing(protocol, players, event.getResponse().getDescriptionComponent(), event.getResponse().getFaviconObject());
             event.setResponse(ping);

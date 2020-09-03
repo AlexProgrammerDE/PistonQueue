@@ -1,8 +1,8 @@
-name: LeeesBungeeQueue
+name: XeraBungeeQueueBukkit
 version: 4.0.2
 api-version: 1.16
-main: Leees.Bungee.Queue.Bukkit.Main
+main: Xera.Bungee.Queue.Bukkit.XeraBungeeQueueBukkit
 author: XeraPlugins
 authors: [Nate, Legault]
-description: Bukkit companion plugin for LeeesBungeeQueue
+description: Bukkit companion plugin for XeraBungeeQueueBukkit
 website: https://www.6b6t.org

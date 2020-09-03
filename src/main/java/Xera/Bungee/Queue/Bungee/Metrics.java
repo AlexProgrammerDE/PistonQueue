@@ -1,4 +1,4 @@
-package Leees.Bungee.Queue.Bungee;
+package Xera.Bungee.Queue.Bungee;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
