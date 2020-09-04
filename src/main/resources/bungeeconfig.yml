@@ -2,12 +2,13 @@
 # Make the main server the default one you login to
 # READ ME: all colours are orange by default just add & and colour
 # to change the colours to your liking
+# Its recommended to replace every "YOURSERVER" with your servers name
 
 # Username regex
 REGEX: "[a-zA-Z0-9_]*"
 
 # Server is full message
-SERVERISFULLMESSAGE: "&66b6t is full"
+SERVERISFULLMESSAGE: "&6YOURSERVER is full"
 
 # Position in queue message by default only sends in chat every 10 seconds
 # you can have it on the hotbar by setting POSITIONMESSAGEHOTBAR: "false" to true
@@ -15,31 +16,32 @@ POSITIONMESSAGEHOTBAR: false
 QUEUEPOSITION: "&6Position in queue: &l<position>"
 ENABLEKICKMESSAGE: true
 KICKMESSAGE: "&6You have lost connection to the server"
-SERVERDOWNKICKMESSAGE: "&b6b&36t &6is down please try again later :("
+SERVERDOWNKICKMESSAGE: "&bYOURSERVER &6is down please try again later :("
 
 # this shows the queue size when you hover over the ping on the server list
 SERVERPINGINFOENABLE: true
 SERVERPINGINFO:
-  - "&b6b&36t &6Queue Size"
+  - "&bYOURSERVER &6Queue Size"
   - "&6Priority: &l%priority%"
   - "&6Regular: &l%regular%"
 
 CUSTOMPROTOCOLENABLE: true
-CUSTOMPROTOCOL: "&b6b&36t &61.8.x to 1.16.x"
+CUSTOMPROTOCOL: "&bYOURSERVER &61.8.x to 1.16.x"
 
 # Set the queue servers name that is in the bungee config.yml
 # Note that the main server is always the one you login to first
 # The main server server is the one that has a queue to protect it
 # make sure you set the default server in bungee config.yml correctly
 QUEUESERVER: "queue"
-MAINSERVER: "6b6t"
+MAINSERVER: "main"
+
 # set this to false if your a premium server
-ENABLEAUTHSERVER: true
+ENABLEAUTHSERVER: false
 AUTHSERVER: "auth"
 
 # Connecting to server message use <server> if you want it
 # to just use the name of the default server
-JOININGMAINSERVER: "&6Connecting to 6b6t"
+JOININGMAINSERVER: "&6Connecting to YOURSERVER"
 
 # Max players allowed onto main server
 MAINSERVERSLOTS: 100
@@ -66,9 +68,9 @@ ADMINPERMISSION: "queue.admin"
 # this only shows when your in the queue waiting to join use a separate plugin for your main server
 HEADER:
   - ""
-  - "&b6builders&36tools"
+  - "&bYOURSERVER"
   - ""
-  - "&66b6t is full"
+  - "&bYOURSERVER is full"
   - "Position in queue: &l<position>"
   - "&6Estimated time: &l<wait>"
 
@@ -76,17 +78,17 @@ FOOTER:
   - ""
   - "&6You can now donate to receive priority queue status, please visit donate.6b6t.org   "
   - ""
-  - "&7contact: nate@xera.ca"
-  - "discussion: http://discord.6b6t.org"
-  - "website: https://www.6b6t.org"
-  - "These are the only official 6b6t websites and contacts"
+  - "&7contact: someone@example.com"
+  - "discussion: http://discord.example.com"
+  - "website: https://www.example.com"
+  - "These are the only official YOURSERVER websites and contacts"
 
 # configs for priority queue tablist
 HEADERPRIORITY:
   - ""
-  - "&b6builders&36tools"
+  - "&bYOURSERVER"
   - ""
-  - "&66b6t is full"
+  - "&bYOURSERVER is full"
   - "Position in queue: &l<position>"
   - "&6Estimated time: &l<wait>"
 
@@ -94,7 +96,7 @@ FOOTERPRIORITY:
   - ""
   - "&6You have priority queue status please wait for an available slot on the server   "
   - ""
-  - "&7contact: nate@xera.ca"
-  - "discussion: http://discord.6b6t.org"
-  - "website: https://www.6b6t.org"
-  - "These are the only official 6b6t websites and contacts"
+  - "&7contact: someone@example.com"
+  - "discussion: http://discord.example.com"
+  - "website: https://www.example.com"
+  - "These are the only official YOURSERVER websites and contacts"

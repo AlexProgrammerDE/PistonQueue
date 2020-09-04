@@ -5,10 +5,10 @@ import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.plugin.Command;
 
-public class ReloadCommand extends Command {
+public class MainCommand extends net.md_5.bungee.api.plugin.Command {
     XeraBungeeQueue plugin;
 
-    public ReloadCommand(XeraBungeeQueue plugin) {
+    public MainCommand(XeraBungeeQueue plugin) {
         super("xbq");
         this.plugin = plugin;
     }

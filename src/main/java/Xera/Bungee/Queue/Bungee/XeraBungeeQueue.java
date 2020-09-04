@@ -36,7 +36,7 @@ public class XeraBungeeQueue extends Plugin {
         processConfig();
 
         logger.info("§9Registering commands");
-        manager.registerCommand(this, new ReloadCommand(this));
+        manager.registerCommand(this, new MainCommand(this));
 
         logger.info("§9Registering listeners");
         manager.registerListener(this, new BungeeEvents());
