@@ -41,7 +41,6 @@ AUTHSERVER: "auth"
 # to just use the name of the default server
 JOININGMAINSERVER: "&6Connecting to 6b6t"
 
-
 # Max players allowed onto main server
 MAINSERVERSLOTS: 100
 
@@ -69,52 +68,33 @@ HEADER:
   - ""
   - "&b6builders&36tools"
   - ""
-  - ""
   - "&66b6t is full"
-  - ""
   - "Position in queue: &l<position>"
-  - ""
   - "&6Estimated time: &l<wait>"
-  - ""
 
 FOOTER:
   - ""
   - "&6You can now donate to receive priority queue status, please visit donate.6b6t.org   "
   - ""
-  - ""
   - "&7contact: nate@xera.ca"
-  - ""
   - "discussion: http://discord.6b6t.org"
-  - ""
   - "website: https://www.6b6t.org"
-  - ""
   - "These are the only official 6b6t websites and contacts"
-  - ""
-
 
 # configs for priority queue tablist
 HEADERPRIORITY:
   - ""
   - "&b6builders&36tools"
   - ""
-  - ""
   - "&66b6t is full"
-  - ""
   - "Position in queue: &l<position>"
-  - ""
   - "&6Estimated time: &l<wait>"
-  - ""
 
 FOOTERPRIORITY:
   - ""
   - "&6You have priority queue status please wait for an available slot on the server   "
   - ""
-  - ""
   - "&7contact: nate@xera.ca"
-  - ""
   - "discussion: http://discord.6b6t.org"
-  - ""
   - "website: https://www.6b6t.org"
-  - ""
   - "These are the only official 6b6t websites and contacts"
-  - ""

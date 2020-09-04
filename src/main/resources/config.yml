@@ -13,4 +13,4 @@ restrictMovement: true # Prevent players from moving.
 forceGamemode: true # Force players to remain in a single gamemode
 forcedGamemode: "spectator" # The gamemode to force players to remain in.
 disableChat: true # Don't allow players to chat
-disableCmd: true # Dont allow commands
+disableCmd: true # Don't allow commands

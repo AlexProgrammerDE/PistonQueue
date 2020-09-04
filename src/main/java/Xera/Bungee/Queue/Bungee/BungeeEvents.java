@@ -73,7 +73,7 @@ public class BungeeEvents implements Listener {
     }
 
     @EventHandler
-    public void on(PostLoginEvent event) {
+    public void onPostLogin(PostLoginEvent event) {
         if (!Config.ENABLEAUTHSERVER) {
             if (mainonline && queueonline) {
                 if (!Config.ALWAYSQUEUE) {
@@ -136,6 +136,7 @@ public class BungeeEvents implements Listener {
     @EventHandler
     public void onSend(ServerConnectEvent e) {
         ProxiedPlayer player = e.getPlayer();
+
         if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
             if (!priority.contains(player.getUniqueId())) {
                 return;
@@ -219,8 +220,8 @@ public class BungeeEvents implements Listener {
 
     @EventHandler
     public void onDisconnect(PlayerDisconnectEvent e) {
-        //if a play in queue logs off it removes them and their position so when they relog
-        //they get sent to the back of the line and have to wait through the queue again yeah
+        // if a play in queue logs off it removes them and their position so when they relog
+        // they get sent to the back of the line and have to wait through the queue again yeah
         try {
             if (e.getPlayer().getServer().getInfo().getName().equalsIgnoreCase(Config.QUEUESERVER)) {
                 e.getPlayer().setReconnectServer(ProxyServer.getInstance().getServerInfo(XeraBungeeQueue.priorityqueue.get(e.getPlayer().getUniqueId())));
@@ -238,15 +239,15 @@ public class BungeeEvents implements Listener {
     }
 
     public static void moveQueue() {
-        //checks if priority queue is empty if it is a non priority user always gets in
-        //if it has people in it then it gives a chance for either a priority or non
-        //priority user to get in when someone logs off the main server
-        //gets a random number then if the number is less then or equal to the odds set in
-        //this bungeeconfig.yml it will add a priority player if its anything above the odds then
-        //a non priority player gets added to the main server
-        //Random rn = new Random();
-        //for (int i = 0; i < 100; i++) {
-        //int answer = rn.nextInt(10) + 1;
+        // checks if priority queue is empty if it is a non priority user always gets in
+        // if it has people in it then it gives a chance for either a priority or non
+        // priority user to get in when someone logs off the main server
+        // gets a random number then if the number is less then or equal to the odds set in
+        // this bungeeconfig.yml it will add a priority player if its anything above the odds then
+        // a non priority player gets added to the main server
+        // Random rn = new Random();
+        // for (int i = 0; i < 100; i++) {
+        // int answer = rn.nextInt(10) + 1;
         if (!XeraBungeeQueue.priorityqueue.isEmpty()) {
             if (Config.MAINSERVERSLOTS <= ProxyServer.getInstance().getOnlineCount() - XeraBungeeQueue.regularqueue.size() - XeraBungeeQueue.priorityqueue.size()) {
                 return;
@@ -261,6 +262,8 @@ public class BungeeEvents implements Listener {
 
             player2.connect(ProxyServer.getInstance().getServerInfo(entry2.getValue()));
             player2.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(Config.JOININGMAINSERVER.replace("&", "§").replace("<server>", entry2.getValue())));
+
+            player2.resetTabHeader();
 
             XeraBungeeQueue.priorityqueue.remove(entry2.getKey());
         } else {
@@ -277,6 +280,8 @@ public class BungeeEvents implements Listener {
 
             player.connect(ProxyServer.getInstance().getServerInfo(entry.getValue()));
             player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(Config.JOININGMAINSERVER.replace("&", "§").replace("<server>", entry.getValue())));
+
+            player.resetTabHeader();
 
             XeraBungeeQueue.regularqueue.remove(entry.getKey());
         }
