@@ -43,10 +43,10 @@ public class XeraBungeeQueue extends Plugin {
         manager.registerListener(this, new PingEvent(this));
 
         logger.info("§9Loading Metrics");
-        new Metrics(this, 8519);
+        new Metrics(this, 8755);
 
         logger.info("§9Checking for update");
-        new UpdateChecker(this, 74615).getVersion(version -> {
+        new UpdateChecker(this, 83541).getVersion(version -> {
             if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
                 logger.info("§9Your up to date!");
             } else {
