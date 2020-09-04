@@ -177,7 +177,7 @@ public class XeraBungeeQueue extends Plugin {
         //updates the tablists for priority and regular queues
         getProxy().getScheduler().schedule(this, () -> {
 
-            int i = 0;
+            int w = 0;
             long waitTime;
             long waitTimeHour;
             long waitTimeMinute;
@@ -185,7 +185,7 @@ public class XeraBungeeQueue extends Plugin {
             Map<UUID, String> the_map = new LinkedHashMap<>(regularqueue);
             for (Entry<UUID, String> entry : the_map.entrySet()) {
                 try {
-                    i++;
+                    w++;
 
                     ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
                     if (player == null) {
@@ -193,26 +193,70 @@ public class XeraBungeeQueue extends Plugin {
                         continue;
                     }
 
-                    waitTime = i;
+                    waitTime = w;
 
                     waitTimeHour = waitTime / 60;
                     waitTimeMinute = waitTime % 60;
+
+                    StringBuilder header = new StringBuilder();
+                    StringBuilder footer = new StringBuilder();
+
                     if (waitTimeHour == 0) {
+                        for (int i = 0; i < Config.HEADER.size(); i++) {
+                            if (i == (Config.HEADER.size() - 1)) {
+                                header.append(Config.HEADER.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute)));
+                            } else {
+                                header.append(Config.HEADER.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                            }
+                        }
+
+                        for (int i = 0; i < Config.FOOTER.size(); i++) {
+                            if (i == (Config.FOOTER.size() - 1)) {
+                                footer.append(Config.FOOTER.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute)));
+                            } else {
+                                footer.append(Config.FOOTER.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                            }
+                        }
+
                         player.setTabHeader(
-                                new ComponentBuilder(Config.HEADER.replace("&", "§")
-                                        .replace("<position>", i + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute) + "")).create(),
-                                new ComponentBuilder(Config.FOOTER.replace("&", "§")
-                                        .replace("<position>", i + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute)) + "").create());
+                                new ComponentBuilder(header.toString()).create(),
+                                new ComponentBuilder(footer.toString()).create());
                     } else {
+                        for (int i = 0; i < Config.HEADER.size(); i++) {
+                            if (i == (Config.HEADER.size() - 1)) {
+                                header.append(Config.HEADER.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                            } else {
+                                header.append(Config.HEADER.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
+                            }
+                        }
+
+                        for (int i = 0; i < Config.FOOTER.size(); i++) {
+                            if (i == (Config.FOOTER.size() - 1)) {
+                                footer.append(Config.FOOTER.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                            } else {
+                                footer.append(Config.FOOTER.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                            }
+                        }
+
                         player.setTabHeader(
-                                new ComponentBuilder(Config.HEADER.replace("&", "§")
-                                        .replace("<position>", i + "")
-                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute) + "")).create(),
-                                new ComponentBuilder(Config.FOOTER.replace("&", "§")
-                                        .replace("<position>", i + "")
-                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)) + "").create());
+                                new ComponentBuilder(header.toString()).create(),
+                                new ComponentBuilder(footer.toString()).create());
                     }
 
                 } catch (Exception e) {
@@ -223,7 +267,7 @@ public class XeraBungeeQueue extends Plugin {
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         getProxy().getScheduler().schedule(this, () -> {
-            int i = 0;
+            int w = 0;
             long waitTime;
             long waitTimeHour;
             long waitTimeMinute;
@@ -231,7 +275,7 @@ public class XeraBungeeQueue extends Plugin {
             Map<UUID, String> the_map = new LinkedHashMap<>(priorityqueue);
             for (Entry<UUID, String> entry2 : the_map.entrySet()) {
                 try {
-                    i++;
+                    w++;
 
                     ProxiedPlayer player = getProxy().getPlayer(entry2.getKey());
                     if (player == null) {
@@ -239,26 +283,70 @@ public class XeraBungeeQueue extends Plugin {
                         continue;
                     }
 
-                    waitTime = i;
+                    waitTime = w;
 
                     waitTimeHour = waitTime / 60;
                     waitTimeMinute = waitTime % 60;
+
+                    StringBuilder headerprio = new StringBuilder();
+                    StringBuilder footerprio = new StringBuilder();
+
                     if (waitTimeHour == 0) {
+                        for (int i = 0; i < Config.HEADERPRIORITY.size(); i++) {
+                            if (i == (Config.HEADERPRIORITY.size() - 1)) {
+                                headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute)));
+                            } else {
+                                headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                            }
+                        }
+
+                        for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
+                            if (i == (Config.FOOTERPRIORITY.size() - 1)) {
+                                footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute)));
+                            } else {
+                                footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                            }
+                        }
+
                         player.setTabHeader(
-                                new ComponentBuilder(Config.HEADERPRIORITY.replace("&", "§")
-                                        .replace("<position>", i + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute) + "")).create(),
-                                new ComponentBuilder(Config.FOOTERPRIORITY.replace("&", "§")
-                                        .replace("<position>", i + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute)) + "").create());
+                                new ComponentBuilder(headerprio.toString()).create(),
+                                new ComponentBuilder(footerprio.toString()).create());
                     } else {
+                        for (int i = 0; i < Config.HEADER.size(); i++) {
+                            if (i == (Config.HEADER.size() - 1)) {
+                                headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                            } else {
+                                headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
+                            }
+                        }
+
+                        for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
+                            if (i == (Config.FOOTERPRIORITY.size() - 1)) {
+                                footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                            } else {
+                                footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
+                                        .replace("<position>", w + "")
+                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                            }
+                        }
+
                         player.setTabHeader(
-                                new ComponentBuilder(Config.HEADERPRIORITY.replace("&", "§")
-                                        .replace("<position>", i + "")
-                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute) + "")).create(),
-                                new ComponentBuilder(Config.FOOTERPRIORITY.replace("&", "§")
-                                        .replace("<position>", i + "")
-                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)) + "").create());
+                                new ComponentBuilder(headerprio.toString()).create(),
+                                new ComponentBuilder(footerprio.toString()).create());
                     }
                 } catch (Exception e) {
                     priorityqueue.remove(entry2.getKey());
@@ -267,13 +355,13 @@ public class XeraBungeeQueue extends Plugin {
             }
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-        //moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
+        // moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
         try {
             getProxy().getScheduler().schedule(this, BungeeEvents::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
         } catch (NoSuchElementException ignored) {
         }
 
-        //moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
+        // moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
         try {
             getProxy().getScheduler().schedule(this, BungeeEvents::CheckIfMainServerIsOnline,500, 500, TimeUnit.MILLISECONDS);
         } catch (NoSuchElementException ignored) {

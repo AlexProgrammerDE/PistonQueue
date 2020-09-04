@@ -1,4 +1,4 @@
-# XeraBungeeQueueBukkit V1.0.0
+# XeraBungeeQueue V1.0.0
 # Note - Operators and users with the permission "queue.admin" will be excluded from restrictions. ##
 
 forceLocation: true # Force the user to remain in a certain location.

@@ -84,13 +84,9 @@ public class BungeeEvents implements Listener {
                     if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
                         // Send the priority player to the priority queue
                         priority.add(event.getPlayer().getUniqueId());
-                        return;
-                    }
-
-                    if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                    } else if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
                         // Send the player to the regular queue
                         regular.add(event.getPlayer().getUniqueId());
-                        return;
                     }
                 } else {
                     if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
@@ -104,7 +100,7 @@ public class BungeeEvents implements Listener {
                     }
                 }
             } else {
-                event.getPlayer().disconnect(Config.SERVERDOWNKICKMESSAGE.replace("&", "§"));
+                event.getPlayer().disconnect(new ComponentBuilder(Config.SERVERDOWNKICKMESSAGE.replace("&", "§")).create());
             }
         } else {
             if (mainonline && queueonline && authonline) {
@@ -116,13 +112,9 @@ public class BungeeEvents implements Listener {
                     if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
                         // Send the priority player to the priority queue
                         priority.add(event.getPlayer().getUniqueId());
-                        return;
-                    }
-
-                    if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                    } else if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
                         // Send the player to the regular queue
                         regular.add(event.getPlayer().getUniqueId());
-                        return;
                     }
                 } else {
                     if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
@@ -155,9 +147,30 @@ public class BungeeEvents implements Listener {
             String originalTarget = e.getTarget().getName();
 
             e.setTarget(queue);
+
+            StringBuilder headerprio = new StringBuilder();
+
+            for (int i = 0; i < Config.HEADERPRIORITY.size(); i++) {
+                if (i == (Config.HEADERPRIORITY.size() - 1)) {
+                    headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None"));
+                } else {
+                    headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).append("\n");
+                }
+            }
+
+            StringBuilder footerprio = new StringBuilder();
+
+            for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
+                if (i == (Config.FOOTERPRIORITY.size() - 1)) {
+                    footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None"));
+                } else {
+                    footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).append("\n");
+                }
+            }
+
             player.setTabHeader(
-                    new ComponentBuilder(Config.HEADERPRIORITY.replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).create(),
-                    new ComponentBuilder(Config.FOOTERPRIORITY.replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).create());
+                    new ComponentBuilder(headerprio.toString()).create(),
+                    new ComponentBuilder(footerprio.toString()).create());
             player.sendMessage(new ComponentBuilder(Config.SERVERISFULLMESSAGE.replace("&", "§")).color(ChatColor.GOLD).create());
 
             // Store the data concerning the player's destination
@@ -173,9 +186,30 @@ public class BungeeEvents implements Listener {
             String originalTarget = e.getTarget().getName();
 
             e.setTarget(queue);
+
+            StringBuilder header = new StringBuilder();
+
+            for (int i = 0; i < Config.HEADER.size(); i++) {
+                if (i == (Config.HEADER.size() - 1)) {
+                    header.append(Config.HEADER.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None"));
+                } else {
+                    header.append(Config.HEADER.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).append("\n");
+                }
+            }
+
+            StringBuilder footer = new StringBuilder();
+
+            for (int i = 0; i < Config.FOOTER.size(); i++) {
+                if (i == (Config.FOOTER.size() - 1)) {
+                    footer.append(Config.FOOTER.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None"));
+                } else {
+                    footer.append(Config.FOOTER.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).append("\n");
+                }
+            }
+
             player.setTabHeader(
-                    new ComponentBuilder(Config.HEADER.replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).create(),
-                    new ComponentBuilder(Config.FOOTER.replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).create());
+                    new ComponentBuilder(header.toString()).create(),
+                    new ComponentBuilder(footer.toString()).create());
             player.sendMessage(new ComponentBuilder(Config.SERVERISFULLMESSAGE.replace("&", "§")).color(ChatColor.GOLD).create());
 
             // Store the data concerning the player's destination
