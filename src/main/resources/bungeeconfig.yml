@@ -13,7 +13,7 @@ SERVERISFULLMESSAGE: "&6YOURSERVER is full"
 # Position in queue message by default only sends in chat every 10 seconds
 # you can have it on the hotbar by setting POSITIONMESSAGEHOTBAR: "false" to true
 POSITIONMESSAGEHOTBAR: false
-QUEUEPOSITION: "&6Position in queue: &l<position>"
+QUEUEPOSITION: "&6Position in queue: &l%position%"
 ENABLEKICKMESSAGE: true
 KICKMESSAGE: "&6You have lost connection to the server"
 SERVERDOWNKICKMESSAGE: "&bYOURSERVER &6is down please try again later :("
@@ -63,16 +63,16 @@ QUEUEBYPASSPERMISSION: "queue.override"
 QUEUEPRIORITYPERMISSION: "queue.priority"
 ADMINPERMISSION: "queue.admin"
 
-# Queue server tablist configuration use <position> to show the current position of the player
-# and use <wait> to show the estimated wait time of the player (not very accurate yet)
+# Queue server tablist configuration use %position% to show the current position of the player
+# and use %wait% to show the estimated wait time of the player (not very accurate yet)
 # this only shows when your in the queue waiting to join use a separate plugin for your main server
 HEADER:
   - ""
   - "&bYOURSERVER"
   - ""
   - "&bYOURSERVER is full"
-  - "Position in queue: &l<position>"
-  - "&6Estimated time: &l<wait>"
+  - "Position in queue: &l%position%"
+  - "&6Estimated time: &l%wait%"
 
 FOOTER:
   - ""
@@ -89,8 +89,8 @@ HEADERPRIORITY:
   - "&bYOURSERVER"
   - ""
   - "&bYOURSERVER is full"
-  - "Position in queue: &l<position>"
-  - "&6Estimated time: &l<wait>"
+  - "Position in queue: &l%position%"
+  - "&6Estimated time: &l%wait%"
 
 FOOTERPRIORITY:
   - ""

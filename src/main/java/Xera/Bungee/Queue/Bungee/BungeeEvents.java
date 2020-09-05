@@ -153,9 +153,9 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.HEADERPRIORITY.size(); i++) {
                 if (i == (Config.HEADERPRIORITY.size() - 1)) {
-                    headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None"));
+                    headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None"));
                 } else {
-                    headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).append("\n");
+                    headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None")).append("\n");
                 }
             }
 
@@ -163,9 +163,9 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
                 if (i == (Config.FOOTERPRIORITY.size() - 1)) {
-                    footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None"));
+                    footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None"));
                 } else {
-                    footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).append("\n");
+                    footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None")).append("\n");
                 }
             }
 
@@ -192,9 +192,9 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.HEADER.size(); i++) {
                 if (i == (Config.HEADER.size() - 1)) {
-                    header.append(Config.HEADER.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None"));
+                    header.append(Config.HEADER.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None"));
                 } else {
-                    header.append(Config.HEADER.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).append("\n");
+                    header.append(Config.HEADER.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None")).append("\n");
                 }
             }
 
@@ -202,9 +202,9 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.FOOTER.size(); i++) {
                 if (i == (Config.FOOTER.size() - 1)) {
-                    footer.append(Config.FOOTER.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None"));
+                    footer.append(Config.FOOTER.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None"));
                 } else {
-                    footer.append(Config.FOOTER.get(i).replace("&", "§").replace("<position>", "None").replace("<wait>", "None")).append("\n");
+                    footer.append(Config.FOOTER.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None")).append("\n");
                 }
             }
 

@@ -75,7 +75,7 @@ public class XeraBungeeQueue extends Plugin {
                         }
                         player.sendMessage(ChatMessageType.CHAT,
                                 TextComponent.fromLegacyText(Config.QUEUEPOSITION.replace("&", "§")
-                                        .replace("<position>", i + "").replace("<total>",
+                                        .replace("%position%", i + "").replace("<total>",
                                                 regularqueue.size() + "").replace("<server>",
                                                 entry.getValue())));
                     } catch (Exception e) {
@@ -103,7 +103,7 @@ public class XeraBungeeQueue extends Plugin {
                         }
                         player.sendMessage(ChatMessageType.CHAT,
                                 TextComponent.fromLegacyText(Config.QUEUEPOSITION.replace("&", "§")
-                                        .replace("<position>", i + "").replace("<total>",
+                                        .replace("%position%", i + "").replace("<total>",
                                                 regularqueue.size() + "").replace("<server>",
                                                 entry2.getValue())));
 
@@ -133,7 +133,7 @@ public class XeraBungeeQueue extends Plugin {
                         }
                         player.sendMessage(ChatMessageType.ACTION_BAR,
                                 TextComponent.fromLegacyText(Config.QUEUEPOSITION.replace("&", "§")
-                                        .replace("<position>",
+                                        .replace("%position%",
                                                 i + "").replace("<total>",
                                                 regularqueue.size() + "").replace("<server>",
                                                 entry.getValue())));
@@ -162,7 +162,7 @@ public class XeraBungeeQueue extends Plugin {
                         }
                         player.sendMessage(ChatMessageType.ACTION_BAR,
                                 TextComponent.fromLegacyText(Config.QUEUEPOSITION.replace("&", "§")
-                                        .replace("<position>",
+                                        .replace("%position%",
                                                 i + "").replace("<total>",
                                                 regularqueue.size() + "").replace("<server>",
                                                 entry2.getValue())));
@@ -205,24 +205,24 @@ public class XeraBungeeQueue extends Plugin {
                         for (int i = 0; i < Config.HEADER.size(); i++) {
                             if (i == (Config.HEADER.size() - 1)) {
                                 header.append(Config.HEADER.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute)));
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute)));
                             } else {
                                 header.append(Config.HEADER.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
                         for (int i = 0; i < Config.FOOTER.size(); i++) {
                             if (i == (Config.FOOTER.size() - 1)) {
                                 footer.append(Config.FOOTER.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute)));
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute)));
                             } else {
                                 footer.append(Config.FOOTER.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
@@ -233,24 +233,24 @@ public class XeraBungeeQueue extends Plugin {
                         for (int i = 0; i < Config.HEADER.size(); i++) {
                             if (i == (Config.HEADER.size() - 1)) {
                                 header.append(Config.HEADER.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
                             } else {
                                 header.append(Config.HEADER.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
                             }
                         }
 
                         for (int i = 0; i < Config.FOOTER.size(); i++) {
                             if (i == (Config.FOOTER.size() - 1)) {
                                 footer.append(Config.FOOTER.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
                             } else {
                                 footer.append(Config.FOOTER.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
@@ -295,24 +295,24 @@ public class XeraBungeeQueue extends Plugin {
                         for (int i = 0; i < Config.HEADERPRIORITY.size(); i++) {
                             if (i == (Config.HEADERPRIORITY.size() - 1)) {
                                 headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute)));
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute)));
                             } else {
                                 headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
                         for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
                             if (i == (Config.FOOTERPRIORITY.size() - 1)) {
                                 footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute)));
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute)));
                             } else {
                                 footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
@@ -323,24 +323,24 @@ public class XeraBungeeQueue extends Plugin {
                         for (int i = 0; i < Config.HEADER.size(); i++) {
                             if (i == (Config.HEADER.size() - 1)) {
                                 headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
                             } else {
                                 headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
                             }
                         }
 
                         for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
                             if (i == (Config.FOOTERPRIORITY.size() - 1)) {
                                 footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
                             } else {
                                 footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
-                                        .replace("<position>", w + "")
-                                        .replace("<wait>", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replace("%position%", w + "")
+                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
@@ -401,6 +401,7 @@ public class XeraBungeeQueue extends Plugin {
 
     void loadConfig() throws IOException {
         config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
+
         Arrays.asList(Config.class.getDeclaredFields()).forEach(it -> {
             try {
                 it.setAccessible(true);
