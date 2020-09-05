@@ -1,9 +1,13 @@
 # XeraBungeeQueue
 [![discord](https://discord.com/api/guilds/683053832694923319/embed.png)](https://discord.gg/WWm35Tc) [![](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://github.com/XeraPlugins/XeraBungeeQueue)
 
-**We have a wiki which will guide you through setting the plugin up:** https://github.com/XeraPlugins/XeraBungeeQueue/wiki (wip)
+# About
+XeraBungeeQueue is a basic and easy to use queue plugin designed for anarchy and survival servers. This plugin is a fork of LeeesBungeeQueue but LeeesBungeeQueue was a designed more for the server 6b6t.org so a fork of the plugin was created that is designed for everyone and has more updates and support.
 
-XeraBungeeQueue is a Queue plugin that is based off [LeeesBungeeQueue](https://github.com/XeraPlugins/LeeesBungeeQueue) made by [@Leee](https://github.com/Leeeunderscore), but since LeeesBungeeQueue was designed more for the server 6b6t.org a separate plugin (XeraBungeeQueue) was created that was designed for everyone. XeraBungeeQueue is designed to work like the popular Minecraft server 2b2t.org and this plugin is based off that server but with more features and is not as buggy like 2b2t's actual queue system. This plugin is aimed more towards anarchy servers but you can use it for a survival server aswell. Please note that you cannot use XeraBungeeQueue for a hub server at the moment. This is designed more for survival servers or servers that have one world and cannot split up like a Minecraft Server Network. 
+# Setup 
+<a href="https://github.com/XeraPlugins/XeraBungeeQueue/wiki">Wiki</a>
+Check out the wiki for a tutorial on how to setup XeraBungeeQueue.
+
 
 [![Xera Discord](https://github.com/AlexProgrammerDE/AlexProgrammerDE.github.io/raw/master/discord.png)](https://discord.gg/KgrrEQr)
 
