@@ -21,7 +21,7 @@ Instead of showing an error saying the server is down you can customize this mes
 Auth server support for cracked (offline mode: false) servers. (This is causes some security issues for example: The queue goes first then auth and main.).
 
 ## Setup 
-[Wiki](https://github.com/XeraPlugins/XeraBungeeQueue/wiki]
+[Wiki](https://github.com/XeraPlugins/XeraBungeeQueue/wiki)
 Check out the wiki for a tutorial on how to setup XeraBungeeQueue.
 
 [![Xera Discord](https://github.com/AlexProgrammerDE/AlexProgrammerDE.github.io/raw/master/discord.png)](https://discord.gg/KgrrEQr)
