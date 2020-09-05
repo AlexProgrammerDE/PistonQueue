@@ -3,10 +3,8 @@
 
 **We have a wiki which will guide you through setting the plugin up:** https://github.com/XeraPlugins/XeraBungeeQueue/wiki (wip)
 
-XeraBungeeQueue is a 2b2t like queue plugin for Bungeecord to limit the amount of players on the main server because of lag or because its too many and people who try to join will wait in a separate queue server in a line to join the main one the queue should be a server where they are stuck in one place so that no one can move and load chunks so that the queue isnt laggy at all
+XeraBungeeQueue is a Queue plugin that is based off [LeeesBungeeQueue](https://github.com/XeraPlugins/LeeesBungeeQueue) made by [@Leee](https://github.com/Leeeunderscore), but since LeeesBungeeQueue was designed more for the server 6b6t.org a separate plugin (XeraBungeeQueue) was created that was designed for everyone. XeraBungeeQueue is designed to work like the popular Minecraft server 2b2t.org and this plugin is based off that server but with more features and is not as buggy like 2b2t's actual queue system. This plugin is aimed more towards anarchy servers but you can use it for a survival server aswell. Please note that you cannot use XeraBungeeQueue for a hub server at the moment. This is designed more for survival servers or servers that have one world and cannot split up like a Minecraft Server Network. 
 
-Ask me for help when im on join my discord: https://discord.gg/WWm35Tc
+[![Xera Discord](https://github.com/AlexProgrammerDE/AlexProgrammerDE.github.io/raw/master/discord.png)](https://discord.gg/KgrrEQr)
 
 If you find any bugs or ways to improve the plugin open a issue on github.
-
-This plugin is based of [LeeesBungeeQueue](https://github.com/XeraPlugins/LeeesBungeeQueue) made by [@Leee](https://github.com/Leeeunderscore)
