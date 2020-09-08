@@ -1,4 +1,4 @@
-# XeraBungeeQueue V1.0.0
+# XeraBungeeQueue V1.1.0
 # Make the main server the default one you login to
 # READ ME: all colours are orange by default just add & and colour
 # to change the colours to your liking
@@ -7,6 +7,9 @@
 # Username regex
 REGEX: "[a-zA-Z0-9_]*"
 
+# Tab auto completion
+REGISTERTAB: true
+
 # Server is full message
 SERVERISFULLMESSAGE: "&6YOURSERVER is full"
 
@@ -14,6 +17,7 @@ SERVERISFULLMESSAGE: "&6YOURSERVER is full"
 # you can have it on the hotbar by setting POSITIONMESSAGEHOTBAR: "false" to true
 POSITIONMESSAGEHOTBAR: false
 QUEUEPOSITION: "&6Position in queue: &l%position%"
+
 ENABLEKICKMESSAGE: true
 KICKMESSAGE: "&6You have lost connection to the server"
 SERVERDOWNKICKMESSAGE: "&bYOURSERVER &6is down please try again later :("
@@ -39,7 +43,7 @@ MAINSERVER: "main"
 ENABLEAUTHSERVER: false
 AUTHSERVER: "auth"
 
-# Connecting to server message use <server> if you want it
+# Connecting to server message use %server% if you want it
 # to just use the name of the default server
 JOININGMAINSERVER: "&6Connecting to YOURSERVER"
 

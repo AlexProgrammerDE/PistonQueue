@@ -4,9 +4,15 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.TabExecutor;
 
-public class MainCommand extends Command {
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class MainCommand extends Command implements TabExecutor {
     XeraBungeeQueue plugin;
+    private static final String[] COMMANDS = { "help", "version", "stats", "reload" };
 
     public MainCommand(XeraBungeeQueue plugin) {
         super("xbq");
@@ -67,5 +73,23 @@ public class MainCommand extends Command {
         sender.sendMessage(new ComponentBuilder("/xbq version").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/xbq stats").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+    }
+
+    @Override
+    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+        if (Config.REGISTERTAB) {
+            final List<String> completions = new ArrayList<>();
+
+            if (args.length == 1) {
+                for (String string : COMMANDS)
+                    if (string.toLowerCase().startsWith(args[0].toLowerCase())) completions.add(string);
+            }
+
+            Collections.sort(completions);
+
+            return completions;
+        } else {
+            return null;
+        }
     }
 }

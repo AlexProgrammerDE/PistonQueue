@@ -36,37 +36,22 @@ public class BungeeEvents implements Listener {
     }
 
     public static void CheckIfMainServerIsOnline() {
-        try {
-            Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).getAddress().getPort());
-            // ONLINE
-            s.close();
-            mainonline = true;
-        } catch (IOException e) {
-            mainonline = false;
-        }
+        ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).ping((result, error) -> {
+            mainonline = error == null;
+        });
     }
 
     public static void CheckIfQueueServerIsOnline() {
-        try {
-            Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
-            // ONLINE
-            s.close();
-            queueonline = true;
-        } catch (IOException e) {
-            queueonline = false;
-        }
+        ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).ping((result, error) -> {
+            queueonline = error == null;
+        });
     }
 
     public static void CheckIfAuthServerIsOnline() {
         if (Config.ENABLEAUTHSERVER) {
-            try {
-                Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
-                // ONLINE
-                s.close();
-                authonline = true;
-            } catch (IOException e) {
-                authonline = false;
-            }
+            ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).ping((result, error) -> {
+                authonline = error == null;
+            });
         } else {
             authonline = true;
         }
@@ -74,58 +59,34 @@ public class BungeeEvents implements Listener {
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
-        if (!Config.ENABLEAUTHSERVER) {
-            if (mainonline && queueonline) {
-                if (!Config.ALWAYSQUEUE) {
-                    if (ProxyServer.getInstance().getOnlineCount() <= Config.MAINSERVERSLOTS) {
-                        return;
-                    }
+        if (Config.ENABLEAUTHSERVER) {
+            if (mainonline && queueonline && authonline) {
+                if (!Config.ALWAYSQUEUE && ProxyServer.getInstance().getOnlineCount() <= Config.MAINSERVERSLOTS) {
+                    return;
+                }
 
-                    if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                        // Send the priority player to the priority queue
-                        priority.add(event.getPlayer().getUniqueId());
-                    } else if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                        // Send the player to the regular queue
-                        regular.add(event.getPlayer().getUniqueId());
-                    }
-                } else {
-                    if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                        // Send the priority player to the priority queue
-                        priority.add(event.getPlayer().getUniqueId());
-                    }
-
-                    if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                        // Send the player to the regular queue
-                        regular.add(event.getPlayer().getUniqueId());
-                    }
+                if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                    // Send the priority player to the priority queue
+                    priority.add(event.getPlayer().getUniqueId());
+                } else if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                    // Send the player to the regular queue
+                    regular.add(event.getPlayer().getUniqueId());
                 }
             } else {
                 event.getPlayer().disconnect(new ComponentBuilder(Config.SERVERDOWNKICKMESSAGE.replace("&", "§")).create());
             }
         } else {
-            if (mainonline && queueonline && authonline) {
-                if (!Config.ALWAYSQUEUE) {
-                    if (ProxyServer.getInstance().getOnlineCount() <= Config.MAINSERVERSLOTS) {
-                        return;
-                    }
+            if (mainonline && queueonline) {
+                if (!Config.ALWAYSQUEUE && ProxyServer.getInstance().getOnlineCount() <= Config.MAINSERVERSLOTS) {
+                    return;
+                }
 
-                    if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                        // Send the priority player to the priority queue
-                        priority.add(event.getPlayer().getUniqueId());
-                    } else if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                        // Send the player to the regular queue
-                        regular.add(event.getPlayer().getUniqueId());
-                    }
-                } else {
-                    if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                        // Send the priority player to the priority queue
-                        priority.add(event.getPlayer().getUniqueId());
-                    }
-
-                    if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                        // Send the player to the regular queue
-                        regular.add(event.getPlayer().getUniqueId());
-                    }
+                if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                    // Send the priority player to the priority queue
+                    priority.add(event.getPlayer().getUniqueId());
+                } else if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                    // Send the player to the regular queue
+                    regular.add(event.getPlayer().getUniqueId());
                 }
             } else {
                 event.getPlayer().disconnect(new ComponentBuilder(Config.SERVERDOWNKICKMESSAGE.replace("&", "§")).create());

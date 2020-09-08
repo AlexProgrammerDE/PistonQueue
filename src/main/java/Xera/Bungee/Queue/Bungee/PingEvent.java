@@ -1,5 +1,6 @@
 package Xera.Bungee.Queue.Bungee;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -21,7 +22,7 @@ public class PingEvent implements Listener {
 
                 plugin.getLogger().info(String.valueOf(provided.getProtocol()));
 
-                provided.setName(Config.CUSTOMPROTOCOL.replaceAll("&", "§"));
+                provided.setName(ChatColor.translateAlternateColorCodes('&', Config.CUSTOMPROTOCOL));
 
                 protocol = provided;
             } else {
@@ -32,7 +33,10 @@ public class PingEvent implements Listener {
             int i = 0;
 
             for (String str : Config.SERVERPINGINFO) {
-                info = addInfo(info, new ServerPing.PlayerInfo(str.replaceAll("&", "§").replaceAll("%priority%", "" + XeraBungeeQueue.priorityqueue.size()).replaceAll("%regular%", "" + XeraBungeeQueue.regularqueue.size()), String.valueOf(i)));
+                info = addInfo(info, new ServerPing.PlayerInfo(ChatColor.translateAlternateColorCodes('&', str)
+                        .replaceAll("%priority%", "" + XeraBungeeQueue.priorityqueue.size())
+                        .replaceAll("%regular%", "" + XeraBungeeQueue.regularqueue.size()), String.valueOf(i)));
+
                 i++;
             }
 

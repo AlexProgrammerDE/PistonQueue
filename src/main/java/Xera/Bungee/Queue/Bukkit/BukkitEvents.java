@@ -21,18 +21,23 @@ public class BukkitEvents implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         if (isExcluded(e.getPlayer())) {
             e.getPlayer().sendMessage("\2476Due to your permissions, you've been excluded from the queue movement and gamemode restrictions.");
+
             return;
         }
+
         if (!plugin.forceLocation) return;
+
         e.getPlayer().teleport(Objects.requireNonNull(generateForcedLocation()));
     }
 
     @EventHandler
     public void onPlayerJoin$0(PlayerJoinEvent e) {
         if (!plugin.hidePlayers) return;
+
         for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
             e.getPlayer().hidePlayer(plugin, onlinePlayer);
             onlinePlayer.hidePlayer(plugin, e.getPlayer());
+
             e.setJoinMessage("");
         }
     }
@@ -40,6 +45,7 @@ public class BukkitEvents implements Listener {
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         if (!plugin.hidePlayers) return;
+
         e.setQuitMessage("");
     }
 
@@ -47,6 +53,7 @@ public class BukkitEvents implements Listener {
     public void onPlayerJoin$1(PlayerJoinEvent e) {
         if (!plugin.forceGamemode) return;
         if (isExcluded(e.getPlayer())) return;
+
         e.getPlayer().setGameMode(GameMode.valueOf(plugin.forcedGamemode.toUpperCase()));
     }
 
@@ -54,6 +61,7 @@ public class BukkitEvents implements Listener {
     public void onPlayerSpawn(PlayerRespawnEvent e) {
         if (!plugin.forceLocation) return;
         if (isExcluded(e.getPlayer())) return;
+
         e.setRespawnLocation(Objects.requireNonNull(generateForcedLocation()));
     }
 
@@ -71,6 +79,7 @@ public class BukkitEvents implements Listener {
     public void onMove(PlayerMoveEvent e) {
         if (!plugin.restrictMovement) return;
         if (isExcluded(e.getPlayer())) return;
+
         e.setCancelled(true);
     }
 
@@ -81,8 +90,10 @@ public class BukkitEvents implements Listener {
     private Location generateForcedLocation() {
         if (plugin.getServer().getWorld(plugin.forcedWorldName) == null) {
             plugin.getLogger().log(Level.SEVERE, "Invalid forcedWorldName!! Check the configuration.");
+
             return null;
         }
+
         return new Location(plugin.getServer().getWorld(plugin.forcedWorldName), plugin.forcedX, plugin.forcedY, plugin.forcedZ);
     }
 }

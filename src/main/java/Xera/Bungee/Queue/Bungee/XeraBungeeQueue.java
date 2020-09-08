@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -57,7 +58,8 @@ public class XeraBungeeQueue extends Plugin {
         });
 
         logger.info("§9Scheduling tasks");
-        //sends the position message and updates tab on an interval for non priority players and priority players in chat
+
+        // sends the position message and updates tab on an interval for non priority players and priority players in chat
         getProxy().getScheduler().schedule(this, () -> {
             if (!Config.POSITIONMESSAGEHOTBAR) {
 
@@ -74,13 +76,13 @@ public class XeraBungeeQueue extends Plugin {
                             continue;
                         }
                         player.sendMessage(ChatMessageType.CHAT,
-                                TextComponent.fromLegacyText(Config.QUEUEPOSITION.replace("&", "§")
-                                        .replace("%position%", i + "").replace("<total>",
-                                                regularqueue.size() + "").replace("<server>",
-                                                entry.getValue())));
+                                TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Config.QUEUEPOSITION)
+                                        .replaceAll("%position%", i + "")
+                                        .replaceAll("%total%", regularqueue.size() + "")
+                                        .replaceAll("%server%", entry.getValue())));
                     } catch (Exception e) {
                         regularqueue.remove(entry.getKey());
-                        //TODO: handle exception
+                        // TODO: handle exception
                     }
                 }
             }
@@ -102,20 +104,20 @@ public class XeraBungeeQueue extends Plugin {
                             continue;
                         }
                         player.sendMessage(ChatMessageType.CHAT,
-                                TextComponent.fromLegacyText(Config.QUEUEPOSITION.replace("&", "§")
-                                        .replace("%position%", i + "").replace("<total>",
-                                                regularqueue.size() + "").replace("<server>",
-                                                entry2.getValue())));
+                                TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Config.QUEUEPOSITION)
+                                        .replaceAll("%position%", i + "")
+                                        .replaceAll("%total%", regularqueue.size() + "")
+                                        .replaceAll("%server%", entry2.getValue())));
 
                     } catch (Exception e) {
                         priorityqueue.remove(entry2.getKey());
-                        //TODO: handle exception
+                        // TODO: handle exception
                     }
                 }
             }
         }, 10000, 10000, TimeUnit.MILLISECONDS);
 
-        //sends the position message and updates tab on an interval for non priority players and priority players on hotbar
+        // sends the position message and updates tab on an interval for non priority players and priority players on hotbar
         getProxy().getScheduler().schedule(this, () -> {
             if (Config.POSITIONMESSAGEHOTBAR) {
 
@@ -132,14 +134,13 @@ public class XeraBungeeQueue extends Plugin {
                             continue;
                         }
                         player.sendMessage(ChatMessageType.ACTION_BAR,
-                                TextComponent.fromLegacyText(Config.QUEUEPOSITION.replace("&", "§")
-                                        .replace("%position%",
-                                                i + "").replace("<total>",
-                                                regularqueue.size() + "").replace("<server>",
-                                                entry.getValue())));
+                                TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Config.QUEUEPOSITION)
+                                        .replaceAll("%position%", i + "")
+                                        .replaceAll("%total%", regularqueue.size() + "")
+                                        .replaceAll("%server%", entry.getValue())));
                     } catch(Exception e){
                         regularqueue.remove(entry.getKey());
-                        //TODO: handle exception
+                        // TODO: handle exception
                     }
                 }
             }
@@ -161,20 +162,19 @@ public class XeraBungeeQueue extends Plugin {
                             continue;
                         }
                         player.sendMessage(ChatMessageType.ACTION_BAR,
-                                TextComponent.fromLegacyText(Config.QUEUEPOSITION.replace("&", "§")
-                                        .replace("%position%",
-                                                i + "").replace("<total>",
-                                                regularqueue.size() + "").replace("<server>",
-                                                entry2.getValue())));
+                                TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Config.QUEUEPOSITION)
+                                        .replaceAll("%position%", i + "")
+                                        .replaceAll("%total%", regularqueue.size() + "")
+                                        .replaceAll("%server%", entry2.getValue())));
                     } catch (Exception e) {
                         priorityqueue.remove(entry2.getKey());
-                        //TODO: handle exception
+                        // TODO: handle exception
                     }
                 }
             }
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-        //updates the tablists for priority and regular queues
+        // updates the tablists for priority and regular queues
         getProxy().getScheduler().schedule(this, () -> {
 
             int w = 0;
@@ -204,25 +204,25 @@ public class XeraBungeeQueue extends Plugin {
                     if (waitTimeHour == 0) {
                         for (int i = 0; i < Config.HEADER.size(); i++) {
                             if (i == (Config.HEADER.size() - 1)) {
-                                header.append(Config.HEADER.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute)));
+                                header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)));
                             } else {
-                                header.append(Config.HEADER.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
                         for (int i = 0; i < Config.FOOTER.size(); i++) {
                             if (i == (Config.FOOTER.size() - 1)) {
-                                footer.append(Config.FOOTER.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute)));
+                                footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)));
                             } else {
-                                footer.append(Config.FOOTER.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
@@ -232,25 +232,25 @@ public class XeraBungeeQueue extends Plugin {
                     } else {
                         for (int i = 0; i < Config.HEADER.size(); i++) {
                             if (i == (Config.HEADER.size() - 1)) {
-                                header.append(Config.HEADER.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                                header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
                             } else {
-                                header.append(Config.HEADER.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
+                                header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
                             }
                         }
 
                         for (int i = 0; i < Config.FOOTER.size(); i++) {
                             if (i == (Config.FOOTER.size() - 1)) {
-                                footer.append(Config.FOOTER.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                                footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
                             } else {
-                                footer.append(Config.FOOTER.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
@@ -261,7 +261,7 @@ public class XeraBungeeQueue extends Plugin {
 
                 } catch (Exception e) {
                     regularqueue.remove(entry.getKey());
-                    //TODO: handle exception
+                    // TODO: handle exception
                 }
             }
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
@@ -294,25 +294,25 @@ public class XeraBungeeQueue extends Plugin {
                     if (waitTimeHour == 0) {
                         for (int i = 0; i < Config.HEADERPRIORITY.size(); i++) {
                             if (i == (Config.HEADERPRIORITY.size() - 1)) {
-                                headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute)));
+                                headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)));
                             } else {
-                                headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
                         for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
                             if (i == (Config.FOOTERPRIORITY.size() - 1)) {
-                                footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute)));
+                                footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)));
                             } else {
-                                footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
@@ -322,25 +322,25 @@ public class XeraBungeeQueue extends Plugin {
                     } else {
                         for (int i = 0; i < Config.HEADER.size(); i++) {
                             if (i == (Config.HEADER.size() - 1)) {
-                                headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                                headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
                             } else {
-                                headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
+                                headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
                             }
                         }
 
                         for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
                             if (i == (Config.FOOTERPRIORITY.size() - 1)) {
-                                footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+                                footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
                             } else {
-                                footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§")
-                                        .replace("%position%", w + "")
-                                        .replace("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
                             }
                         }
 
@@ -350,7 +350,7 @@ public class XeraBungeeQueue extends Plugin {
                     }
                 } catch (Exception e) {
                     priorityqueue.remove(entry2.getKey());
-                    //TODO: handle exception
+                    // TODO: handle exception
                 }
             }
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
