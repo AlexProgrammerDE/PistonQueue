@@ -1,12 +1,8 @@
 package Xera.Bungee.Queue.Bungee;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.UUID;
-import net.md_5.bungee.api.*;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -14,6 +10,11 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.UUID;
 
 /**
  * BungeeEvents
@@ -38,38 +39,21 @@ public class BungeeEvents implements Listener {
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
-        if (Config.ENABLEAUTHSERVER) {
-            if (mainonline && queueonline && authonline) {
-                if (!Config.ALWAYSQUEUE && ProxyServer.getInstance().getOnlineCount() <= Config.MAINSERVERSLOTS) {
-                    return;
-                }
 
-                if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                    // Send the priority player to the priority queue
-                    priority.add(event.getPlayer().getUniqueId());
-                } else if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                    // Send the player to the regular queue
-                    regular.add(event.getPlayer().getUniqueId());
-                }
-            } else {
-                event.getPlayer().disconnect(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERDOWNKICKMESSAGE)).create());
+        if (mainonline && queueonline && authonline) { // Authonline is always true if enableauth is deactivated
+            if (!Config.ALWAYSQUEUE && ProxyServer.getInstance().getOnlineCount() <= Config.MAINSERVERSLOTS) {
+                return;
+            }
+
+            if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                // Send the priority player to the priority queue
+                priority.add(event.getPlayer().getUniqueId());
+            } else if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                // Send the player to the regular queue
+                regular.add(event.getPlayer().getUniqueId());
             }
         } else {
-            if (mainonline && queueonline) {
-                if (!Config.ALWAYSQUEUE && ProxyServer.getInstance().getOnlineCount() <= Config.MAINSERVERSLOTS) {
-                    return;
-                }
-
-                if (event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                    // Send the priority player to the priority queue
-                    priority.add(event.getPlayer().getUniqueId());
-                } else if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !event.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                    // Send the player to the regular queue
-                    regular.add(event.getPlayer().getUniqueId());
-                }
-            } else {
-                event.getPlayer().disconnect(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERDOWNKICKMESSAGE)).create());
-            }
+            event.getPlayer().disconnect(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERDOWNKICKMESSAGE)).create());
         }
     }
 
@@ -112,6 +96,7 @@ public class BungeeEvents implements Listener {
             player.setTabHeader(
                     new ComponentBuilder(headerprio.toString()).create(),
                     new ComponentBuilder(footerprio.toString()).create());
+
             player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERISFULLMESSAGE)).color(ChatColor.GOLD).create());
 
             // Store the data concerning the player's destination

@@ -1,18 +1,9 @@
 package Xera.Bungee.Queue.Bungee;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
-
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -20,6 +11,18 @@ import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 /**
  * XeraBungeeQueue
@@ -211,7 +214,8 @@ public class XeraBungeeQueue extends Plugin {
                             } else {
                                 header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
                                         .replaceAll("%position%", w + "")
-                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)))
+                                        .append("\n");
                             }
                         }
 
@@ -223,7 +227,8 @@ public class XeraBungeeQueue extends Plugin {
                             } else {
                                 footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
                                         .replaceAll("%position%", w + "")
-                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)))
+                                        .append("\n");
                             }
                         }
 
@@ -236,7 +241,8 @@ public class XeraBungeeQueue extends Plugin {
                             } else {
                                 header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
                                         .replaceAll("%position%", w + "")
-                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
+                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)))
+                                        .append("\n");
                             }
                         }
 
@@ -248,7 +254,8 @@ public class XeraBungeeQueue extends Plugin {
                             } else {
                                 footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
                                         .replaceAll("%position%", w + "")
-                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)))
+                                        .append("\n");
                             }
                         }
 
@@ -299,7 +306,8 @@ public class XeraBungeeQueue extends Plugin {
                             } else {
                                 headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
                                         .replaceAll("%position%", w + "")
-                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)))
+                                        .append("\n");
                             }
                         }
 
@@ -311,7 +319,8 @@ public class XeraBungeeQueue extends Plugin {
                             } else {
                                 footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
                                         .replaceAll("%position%", w + "")
-                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)))
+                                        .append("\n");
                             }
                         }
 
@@ -324,7 +333,8 @@ public class XeraBungeeQueue extends Plugin {
                             } else {
                                 headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
                                         .replaceAll("%position%", w + "")
-                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))).append("\n");
+                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)))
+                                        .append("\n");
                             }
                         }
 
@@ -336,7 +346,8 @@ public class XeraBungeeQueue extends Plugin {
                             } else {
                                 footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
                                         .replaceAll("%position%", w + "")
-                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))).append("\n");
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)))
+                                        .append("\n");
                             }
                         }
 
