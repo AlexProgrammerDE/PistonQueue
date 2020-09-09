@@ -26,34 +26,13 @@ public class BungeeEvents implements Listener {
     public static boolean mainonline = false;
     public static boolean queueonline = false;
     public static boolean authonline = false;
+    public static XeraBungeeQueue plugin;
 
     @EventHandler
     public void onPreLogin(PreLoginEvent ple) {
         if (!ple.getConnection().getName().matches(Config.REGEX)) {
             ple.setCancelReason(new TextComponent(ChatColor.GOLD + "[XBG] Invalid username please use: " + Config.REGEX));
             ple.setCancelled(true);
-        }
-    }
-
-    public static void CheckIfMainServerIsOnline() {
-        ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).ping((result, error) -> {
-            mainonline = error == null;
-        });
-    }
-
-    public static void CheckIfQueueServerIsOnline() {
-        ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).ping((result, error) -> {
-            queueonline = error == null;
-        });
-    }
-
-    public static void CheckIfAuthServerIsOnline() {
-        if (Config.ENABLEAUTHSERVER) {
-            ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).ping((result, error) -> {
-                authonline = error == null;
-            });
-        } else {
-            authonline = true;
         }
     }
 
@@ -73,7 +52,7 @@ public class BungeeEvents implements Listener {
                     regular.add(event.getPlayer().getUniqueId());
                 }
             } else {
-                event.getPlayer().disconnect(new ComponentBuilder(Config.SERVERDOWNKICKMESSAGE.replace("&", "§")).create());
+                event.getPlayer().disconnect(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERDOWNKICKMESSAGE)).create());
             }
         } else {
             if (mainonline && queueonline) {
@@ -89,7 +68,7 @@ public class BungeeEvents implements Listener {
                     regular.add(event.getPlayer().getUniqueId());
                 }
             } else {
-                event.getPlayer().disconnect(new ComponentBuilder(Config.SERVERDOWNKICKMESSAGE.replace("&", "§")).create());
+                event.getPlayer().disconnect(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERDOWNKICKMESSAGE)).create());
             }
         }
     }
@@ -114,9 +93,9 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.HEADERPRIORITY.size(); i++) {
                 if (i == (Config.HEADERPRIORITY.size() - 1)) {
-                    headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None"));
+                    headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i)).replace("%position%", "None").replace("%wait%", "None"));
                 } else {
-                    headerprio.append(Config.HEADERPRIORITY.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None")).append("\n");
+                    headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i)).replace("%position%", "None").replace("%wait%", "None")).append("\n");
                 }
             }
 
@@ -124,16 +103,16 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
                 if (i == (Config.FOOTERPRIORITY.size() - 1)) {
-                    footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None"));
+                    footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i)).replace("%position%", "None").replace("%wait%", "None"));
                 } else {
-                    footerprio.append(Config.FOOTERPRIORITY.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None")).append("\n");
+                    footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i)).replace("%position%", "None").replace("%wait%", "None")).append("\n");
                 }
             }
 
             player.setTabHeader(
                     new ComponentBuilder(headerprio.toString()).create(),
                     new ComponentBuilder(footerprio.toString()).create());
-            player.sendMessage(new ComponentBuilder(Config.SERVERISFULLMESSAGE.replace("&", "§")).color(ChatColor.GOLD).create());
+            player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERISFULLMESSAGE)).color(ChatColor.GOLD).create());
 
             // Store the data concerning the player's destination
             XeraBungeeQueue.priorityqueue.put(player.getUniqueId(), originalTarget);
@@ -153,9 +132,9 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.HEADER.size(); i++) {
                 if (i == (Config.HEADER.size() - 1)) {
-                    header.append(Config.HEADER.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None"));
+                    header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i)).replace("%position%", "None").replace("%wait%", "None"));
                 } else {
-                    header.append(Config.HEADER.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None")).append("\n");
+                    header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i)).replace("%position%", "None").replace("%wait%", "None")).append("\n");
                 }
             }
 
@@ -163,16 +142,16 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.FOOTER.size(); i++) {
                 if (i == (Config.FOOTER.size() - 1)) {
-                    footer.append(Config.FOOTER.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None"));
+                    footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i)).replace("%position%", "None").replace("%wait%", "None"));
                 } else {
-                    footer.append(Config.FOOTER.get(i).replace("&", "§").replace("%position%", "None").replace("%wait%", "None")).append("\n");
+                    footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i)).replace("%position%", "None").replace("%wait%", "None")).append("\n");
                 }
             }
 
             player.setTabHeader(
                     new ComponentBuilder(header.toString()).create(),
                     new ComponentBuilder(footer.toString()).create());
-            player.sendMessage(new ComponentBuilder(Config.SERVERISFULLMESSAGE.replace("&", "§")).color(ChatColor.GOLD).create());
+            player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERISFULLMESSAGE)).color(ChatColor.GOLD).create());
 
             // Store the data concerning the player's destination
             XeraBungeeQueue.regularqueue.put(player.getUniqueId(), originalTarget);
@@ -222,7 +201,7 @@ public class BungeeEvents implements Listener {
             ProxiedPlayer player2 = ProxyServer.getInstance().getPlayer(entry2.getKey());
 
             player2.connect(ProxyServer.getInstance().getServerInfo(entry2.getValue()));
-            player2.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(Config.JOININGMAINSERVER.replace("&", "§").replace("<server>", entry2.getValue())));
+            player2.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Config.JOININGMAINSERVER).replace("<server>", entry2.getValue())));
 
             player2.resetTabHeader();
 
@@ -240,7 +219,7 @@ public class BungeeEvents implements Listener {
             ProxiedPlayer player = ProxyServer.getInstance().getPlayer(entry.getKey());
 
             player.connect(ProxyServer.getInstance().getServerInfo(entry.getValue()));
-            player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(Config.JOININGMAINSERVER.replace("&", "§").replace("<server>", entry.getValue())));
+            player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Config.JOININGMAINSERVER).replace("<server>", entry.getValue())));
 
             player.resetTabHeader();
 
@@ -251,7 +230,7 @@ public class BungeeEvents implements Listener {
     @EventHandler
     public void onKick(ServerKickEvent event) {
         if (Config.ENABLEKICKMESSAGE) {
-            event.setKickReasonComponent(new ComponentBuilder(Config.KICKMESSAGE.replace("&", "§")).create());
+            event.setKickReasonComponent(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.KICKMESSAGE)).create());
         }
     }
 }

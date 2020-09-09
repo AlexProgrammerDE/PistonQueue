@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -174,7 +175,7 @@ public class XeraBungeeQueue extends Plugin {
             }
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-        // updates the tablists for priority and regular queues
+        // updates the playerlist for priority and regular queues
         getProxy().getScheduler().schedule(this, () -> {
 
             int w = 0;
@@ -226,9 +227,6 @@ public class XeraBungeeQueue extends Plugin {
                             }
                         }
 
-                        player.setTabHeader(
-                                new ComponentBuilder(header.toString()).create(),
-                                new ComponentBuilder(footer.toString()).create());
                     } else {
                         for (int i = 0; i < Config.HEADER.size(); i++) {
                             if (i == (Config.HEADER.size() - 1)) {
@@ -254,10 +252,11 @@ public class XeraBungeeQueue extends Plugin {
                             }
                         }
 
-                        player.setTabHeader(
-                                new ComponentBuilder(header.toString()).create(),
-                                new ComponentBuilder(footer.toString()).create());
                     }
+
+                    player.setTabHeader(
+                            new ComponentBuilder(header.toString()).create(),
+                            new ComponentBuilder(footer.toString()).create());
 
                 } catch (Exception e) {
                     regularqueue.remove(entry.getKey());
@@ -316,9 +315,6 @@ public class XeraBungeeQueue extends Plugin {
                             }
                         }
 
-                        player.setTabHeader(
-                                new ComponentBuilder(headerprio.toString()).create(),
-                                new ComponentBuilder(footerprio.toString()).create());
                     } else {
                         for (int i = 0; i < Config.HEADER.size(); i++) {
                             if (i == (Config.HEADER.size() - 1)) {
@@ -344,10 +340,11 @@ public class XeraBungeeQueue extends Plugin {
                             }
                         }
 
-                        player.setTabHeader(
-                                new ComponentBuilder(headerprio.toString()).create(),
-                                new ComponentBuilder(footerprio.toString()).create());
                     }
+
+                    player.setTabHeader(
+                            new ComponentBuilder(headerprio.toString()).create(),
+                            new ComponentBuilder(footerprio.toString()).create());
                 } catch (Exception e) {
                     priorityqueue.remove(entry2.getKey());
                     // TODO: handle exception
@@ -356,26 +353,38 @@ public class XeraBungeeQueue extends Plugin {
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
-        try {
-            getProxy().getScheduler().schedule(this, BungeeEvents::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
-        } catch (NoSuchElementException ignored) {
-        }
+        getProxy().getScheduler().schedule(this, BungeeEvents::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
-        try {
-            getProxy().getScheduler().schedule(this, BungeeEvents::CheckIfMainServerIsOnline,500, 500, TimeUnit.MILLISECONDS);
-        } catch (NoSuchElementException ignored) {
-        }
+        getProxy().getScheduler().schedule(this, () -> ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).ping((result, error) -> {
+            if (error != null) {
+                getLogger().warning("Main Server is down!!!");
+            }
 
-        try {
-            getProxy().getScheduler().schedule(this, BungeeEvents::CheckIfQueueServerIsOnline, 500, 500, TimeUnit.MILLISECONDS);
-        } catch (NoSuchElementException ignored) {
-        }
+            BungeeEvents.mainonline = error == null;
+        }), 500, 500, TimeUnit.MILLISECONDS);
 
-        try {
-            getProxy().getScheduler().schedule(this, BungeeEvents::CheckIfAuthServerIsOnline, 500, 500, TimeUnit.MILLISECONDS);
-        } catch (NoSuchElementException ignored) {
-        }
+        getProxy().getScheduler().schedule(this, () -> ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).ping((result, error) -> {
+            if (error != null) {
+                getLogger().warning("Queue Server is down!!!");
+            }
+
+            BungeeEvents.queueonline = error == null;
+        }), 500, 500, TimeUnit.MILLISECONDS);
+
+        getProxy().getScheduler().schedule(this, () -> {
+            if (Config.ENABLEAUTHSERVER) {
+                ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).ping((result, error) -> {
+                    if (error != null) {
+                        getLogger().warning("Auth Server is down!!!");
+                    }
+
+                    BungeeEvents.authonline = error == null;
+                });
+            } else {
+                BungeeEvents.authonline = true;
+            }
+        }, 500, 500, TimeUnit.MILLISECONDS);
     }
 
     void processConfig() {
@@ -387,6 +396,7 @@ public class XeraBungeeQueue extends Plugin {
             }
 
             File file = new File(getDataFolder(), "config.yml");
+            
             if (!file.exists()) {
                 try (InputStream in = getResourceAsStream("bungeeconfig.yml")) {
                     Files.copy(in, file.toPath());
@@ -396,7 +406,6 @@ public class XeraBungeeQueue extends Plugin {
                 }
             }
         }
-
     }
 
     void loadConfig() throws IOException {
