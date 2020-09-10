@@ -39,10 +39,13 @@ CUSTOMPROTOCOL: "&bYOURSERVER &61.8.x to 1.16.x"
 QUEUESERVER: "queue"
 MAINSERVER: "main"
 
-# set this to false if your a premium server
+# Set this to true if you're a cracked/offline mode server.
+# It is recommended to have the AuthServer first option enabled otherwise people will go into the queue first
+# then Auth and main.
 ENABLEAUTHSERVER: false
 AUTHSERVER: "auth"
-
+# Have the authserver go first instead of the default settings which are Queue -> Auth -> and main
+# This option will let you have the authserver go first then queue and the mainserver.
 # You need to additionally setup your auth server
 AUTHFIRST: false
 
