@@ -43,6 +43,9 @@ MAINSERVER: "main"
 ENABLEAUTHSERVER: false
 AUTHSERVER: "auth"
 
+# You need to additionally setup your auth server
+AUTHFIRST: false
+
 # Connecting to server message use %server% if you want it
 # to just use the name of the default server
 JOININGMAINSERVER: "&6Connecting to YOURSERVER"
@@ -59,7 +62,7 @@ QUEUESERVERSLOTS: 9000
 # please note this only guaranteed to not have issues 2000ms and higher
 QUEUEMOVEDELAY: 2000
 
-# Always add players to queue to prevent server crashing from to many joins
+# Always add players to queue to prevent server crashing from too many joins
 ALWAYSQUEUE: true
 
 # Permissions

@@ -20,8 +20,6 @@ public class PingEvent implements Listener {
             if (Config.CUSTOMPROTOCOLENABLE) {
                 ServerPing.Protocol provided = event.getResponse().getVersion();
 
-                plugin.getLogger().info(String.valueOf(provided.getProtocol()));
-
                 provided.setName(ChatColor.translateAlternateColorCodes('&', Config.CUSTOMPROTOCOL));
 
                 protocol = provided;

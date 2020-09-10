@@ -36,6 +36,7 @@ public class XeraBungeeQueue extends Plugin {
     public void onEnable() {
         Logger logger = getLogger();
         PluginManager manager = getProxy().getPluginManager();
+        BungeeEvents.plugin = this;
 
         logger.info("§9Loading config");
         processConfig();
@@ -373,7 +374,7 @@ public class XeraBungeeQueue extends Plugin {
             }
 
             BungeeEvents.mainonline = error == null;
-        }), 500, 500, TimeUnit.MILLISECONDS);
+        }), 500, 1000, TimeUnit.MILLISECONDS);
 
         getProxy().getScheduler().schedule(this, () -> ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).ping((result, error) -> {
             if (error != null) {
@@ -381,7 +382,7 @@ public class XeraBungeeQueue extends Plugin {
             }
 
             BungeeEvents.queueonline = error == null;
-        }), 500, 500, TimeUnit.MILLISECONDS);
+        }), 500, 1000, TimeUnit.MILLISECONDS);
 
         getProxy().getScheduler().schedule(this, () -> {
             if (Config.ENABLEAUTHSERVER) {
@@ -395,7 +396,7 @@ public class XeraBungeeQueue extends Plugin {
             } else {
                 BungeeEvents.authonline = true;
             }
-        }, 500, 500, TimeUnit.MILLISECONDS);
+        }, 500, 1000, TimeUnit.MILLISECONDS);
     }
 
     void processConfig() {
