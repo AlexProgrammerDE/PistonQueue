@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
@@ -67,7 +68,6 @@ public class XeraBungeeQueue extends Plugin {
         // sends the position message and updates tab on an interval for non priority players and priority players in chat
         getProxy().getScheduler().schedule(this, () -> {
             if (!Config.POSITIONMESSAGEHOTBAR) {
-
                 int i = 0;
 
                 Map<UUID, String> the_map = new LinkedHashMap<>(regularqueue);
@@ -80,6 +80,7 @@ public class XeraBungeeQueue extends Plugin {
                             regularqueue.remove(entry.getKey());
                             continue;
                         }
+
                         player.sendMessage(ChatMessageType.CHAT,
                                 TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Config.QUEUEPOSITION)
                                         .replaceAll("%position%", i + "")
@@ -108,6 +109,7 @@ public class XeraBungeeQueue extends Plugin {
                             priorityqueue.remove(entry2.getKey());
                             continue;
                         }
+
                         player.sendMessage(ChatMessageType.CHAT,
                                 TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Config.QUEUEPOSITION)
                                         .replaceAll("%position%", i + "")
@@ -138,6 +140,7 @@ public class XeraBungeeQueue extends Plugin {
                             regularqueue.remove(entry.getKey());
                             continue;
                         }
+
                         player.sendMessage(ChatMessageType.ACTION_BAR,
                                 TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Config.QUEUEPOSITION)
                                         .replaceAll("%position%", i + "")
@@ -408,7 +411,7 @@ public class XeraBungeeQueue extends Plugin {
             }
 
             File file = new File(getDataFolder(), "config.yml");
-            
+
             if (!file.exists()) {
                 try (InputStream in = getResourceAsStream("bungeeconfig.yml")) {
                     Files.copy(in, file.toPath());

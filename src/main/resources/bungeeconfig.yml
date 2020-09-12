@@ -17,7 +17,7 @@ SERVERISFULLMESSAGE: "&6YOURSERVER is full"
 SERVERONLINECHECKDELAY: 2000
 
 # Position in queue message by default only sends in chat every 10 seconds
-# you can have it on the hotbar by setting POSITIONMESSAGEHOTBAR: "false" to true
+# you can have it on the hotbar by setting POSITIONMESSAGEHOTBAR from false to true
 POSITIONMESSAGEHOTBAR: false
 QUEUEPOSITION: "&6Position in queue: &l%position%"
 
