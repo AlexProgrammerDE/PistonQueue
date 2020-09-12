@@ -39,7 +39,7 @@ public class BungeeEvents implements Listener {
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
-        if (mainonline && queueonline && authonline) { // Authonline is always true if enableauth is deactivated
+        if (mainonline && queueonline && authonline) { // Authonline is always true if enableauth is false
             if (!Config.AUTHFIRST) {
                 if (!Config.ALWAYSQUEUE && ProxyServer.getInstance().getOnlineCount() <= Config.MAINSERVERSLOTS) {
                     return;
@@ -94,7 +94,8 @@ public class BungeeEvents implements Listener {
                     } else {
                         headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None")).append("\n");
+                                .replace("%wait%", "None"))
+                                .append("\n");
                     }
                 }
 
@@ -108,7 +109,8 @@ public class BungeeEvents implements Listener {
                     } else {
                         footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None")).append("\n");
+                                .replace("%wait%", "None"))
+                                .append("\n");
                     }
                 }
 
@@ -142,7 +144,8 @@ public class BungeeEvents implements Listener {
                     } else {
                         header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None")).append("\n");
+                                .replace("%wait%", "None"))
+                                .append("\n");
                     }
                 }
 
@@ -156,7 +159,8 @@ public class BungeeEvents implements Listener {
                     } else {
                         footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None")).append("\n");
+                                .replace("%wait%", "None"))
+                                .append("\n");
                     }
                 }
 
@@ -214,7 +218,9 @@ public class BungeeEvents implements Listener {
             ProxiedPlayer player = ProxyServer.getInstance().getPlayer(entry.getKey());
 
             player.connect(ProxyServer.getInstance().getServerInfo(entry.getValue()));
-            player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Config.JOININGMAINSERVER).replace("<server>", entry.getValue())));
+            player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(
+                    ChatColor.translateAlternateColorCodes('&', Config.JOININGMAINSERVER)
+                            .replace("%server%", entry.getValue())));
 
             player.resetTabHeader();
 
@@ -232,7 +238,9 @@ public class BungeeEvents implements Listener {
             ProxiedPlayer player2 = ProxyServer.getInstance().getPlayer(entry2.getKey());
 
             player2.connect(ProxyServer.getInstance().getServerInfo(entry2.getValue()));
-            player2.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', Config.JOININGMAINSERVER).replace("<server>", entry2.getValue())));
+            player2.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(
+                    ChatColor.translateAlternateColorCodes('&', Config.JOININGMAINSERVER)
+                            .replace("%server%", entry2.getValue())));
 
             player2.resetTabHeader();
 
@@ -274,7 +282,8 @@ public class BungeeEvents implements Listener {
                 } else {
                     headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None")).append("\n");
+                            .replace("%wait%", "None"))
+                            .append("\n");
                 }
             }
 
@@ -288,7 +297,8 @@ public class BungeeEvents implements Listener {
                 } else {
                     footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None")).append("\n");
+                            .replace("%wait%", "None"))
+                            .append("\n");
                 }
             }
 
@@ -318,7 +328,8 @@ public class BungeeEvents implements Listener {
                 } else {
                     header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None")).append("\n");
+                            .replace("%wait%", "None"))
+                            .append("\n");
                 }
             }
 
@@ -332,7 +343,8 @@ public class BungeeEvents implements Listener {
                 } else {
                     footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None")).append("\n");
+                            .replace("%wait%", "None"))
+                            .append("\n");
                 }
             }
 

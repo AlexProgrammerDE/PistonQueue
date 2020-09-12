@@ -44,9 +44,13 @@ MAINSERVER: "main"
 # then Auth and main.
 ENABLEAUTHSERVER: false
 AUTHSERVER: "auth"
+
 # Have the authserver go first instead of the default settings which are Queue -> Auth -> and main
 # This option will let you have the authserver go first then queue and the mainserver.
-# You need to additionally setup your auth server
+# You need to additionally setup your auth server to send you to the queue server after login
+# DISCLAIMER: This feature is experimental and may cause some issues!
+# It might also cause more issues because then the players aren't queued to join the auth server. It might overload.
+# We will not provide support for this feature!!!
 AUTHFIRST: false
 
 # Connecting to server message use %server% if you want it
