@@ -13,6 +13,9 @@ REGISTERTAB: true
 # Server is full message
 SERVERISFULLMESSAGE: "&6YOURSERVER is full"
 
+# It is not recommended to decrease this number (milliseconds)
+SERVERONLINECHECKDELAY: 2000
+
 # Position in queue message by default only sends in chat every 10 seconds
 # you can have it on the hotbar by setting POSITIONMESSAGEHOTBAR: "false" to true
 POSITIONMESSAGEHOTBAR: false
