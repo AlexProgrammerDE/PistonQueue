@@ -59,7 +59,7 @@ public class XeraBungeeQueue extends Plugin {
             } else {
                 logger.info("§cThere is a update available.");
                 logger.info("§cCurrent version: " + this.getDescription().getVersion() + " New version: " + version);
-                logger.info("§cDownload it at: https://www.spigotmc.org/resources/74615");
+                logger.info("§cDownload it at: https://www.spigotmc.org/resources/83541");
             }
         });
 
