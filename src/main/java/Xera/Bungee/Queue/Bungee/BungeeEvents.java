@@ -59,9 +59,7 @@ public class BungeeEvents implements Listener {
                 return;
             }
 
-            plugin.getLogger().info("a");
             if (event.getFrom().equals(ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER)) && event.getPlayer().getServer().getInfo().equals(ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER))) {
-                plugin.getLogger().info("b");
                 queuePlayer(event.getPlayer());
             }
         }
