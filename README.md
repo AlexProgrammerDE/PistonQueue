@@ -18,7 +18,10 @@ For example the "You have lost connection to the server" message you see on the 
 Instead of showing an error saying the server is down you can customize this message to whatever message you want.
 
 ### Auth server support
-Auth server support for cracked (offline mode: false) servers. (This is causes some security issues for example: The queue goes first then auth and main.).
+Auth server support for cracked (offline mode: false) servers. ~~(This is causes some security issues for example: The queue goes first then auth and main.).~~ You can now have the authserver go first and then the queue!
+
+# Updates
+We make sometimes a small update on what we added in the last commits: https://github.com/XeraPlugins/XeraBungeeQueue/blob/master/Updates.md
 
 ## Setup 
 [Wiki](https://github.com/XeraPlugins/XeraBungeeQueue/wiki)
