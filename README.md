@@ -19,11 +19,9 @@ Instead of showing an error saying the server is down you can customize this mes
 
 ### Auth server support
 Auth server support for cracked (offline mode: false) servers. ~~(This is causes some security issues for example: The queue goes first then auth and main.).~~ You can now have the authserver go first and then the queue!
-<a href="https://github.com/XeraPlugins/XeraBungeeQueue/Updates.md/">Click here to view the update log.</a>
-# Updates
-### September 10, 2020
-You can now make the authserver go first and then the queue.
 
+# Updates
+We make sometimes a small update on what we added in the last commits: https://github.com/XeraPlugins/XeraBungeeQueue/blob/master/Updates.md
 
 ## Setup 
 [Wiki](https://github.com/XeraPlugins/XeraBungeeQueue/wiki)
