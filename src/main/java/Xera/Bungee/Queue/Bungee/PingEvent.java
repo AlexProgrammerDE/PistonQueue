@@ -7,7 +7,6 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 public class PingEvent implements Listener {
-    ServerPing.Protocol protocol;
     XeraBungeeQueue plugin;
 
     public PingEvent(XeraBungeeQueue plugin) {
@@ -16,17 +15,20 @@ public class PingEvent implements Listener {
 
     @EventHandler
     public void onPing(ProxyPingEvent event) {
+        ServerPing.Protocol protocol;
+        ServerPing.Players players;
+
+        if (Config.CUSTOMPROTOCOLENABLE) {
+            ServerPing.Protocol provided = event.getResponse().getVersion();
+
+            provided.setName(ChatColor.translateAlternateColorCodes('&', Config.CUSTOMPROTOCOL));
+
+            protocol = provided;
+        } else {
+            protocol = event.getResponse().getVersion();
+        }
+
         if (Config.SERVERPINGINFOENABLE) {
-            if (Config.CUSTOMPROTOCOLENABLE) {
-                ServerPing.Protocol provided = event.getResponse().getVersion();
-
-                provided.setName(ChatColor.translateAlternateColorCodes('&', Config.CUSTOMPROTOCOL));
-
-                protocol = provided;
-            } else {
-                protocol = event.getResponse().getVersion();
-            }
-
             ServerPing.PlayerInfo[] info = {};
             int i = 0;
 
@@ -38,11 +40,13 @@ public class PingEvent implements Listener {
                 i++;
             }
 
-            ServerPing.Players players = new ServerPing.Players(Config.QUEUESERVERSLOTS, plugin.getProxy().getOnlineCount(), info);
-
-            ServerPing ping = new ServerPing(protocol, players, event.getResponse().getDescriptionComponent(), event.getResponse().getFaviconObject());
-            event.setResponse(ping);
+            players = new ServerPing.Players(Config.QUEUESERVERSLOTS, plugin.getProxy().getOnlineCount(), info);
+        } else {
+            players = event.getResponse().getPlayers();
         }
+
+        ServerPing ping = new ServerPing(protocol, players, event.getResponse().getDescriptionComponent(), event.getResponse().getFaviconObject());
+        event.setResponse(ping);
     }
 
     public static ServerPing.PlayerInfo[] addInfo(ServerPing.PlayerInfo[] arr, ServerPing.PlayerInfo info) {

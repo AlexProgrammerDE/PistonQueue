@@ -402,7 +402,7 @@ public class XeraBungeeQueue extends Plugin {
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
     }
 
-    void processConfig() {
+    public void processConfig() {
         try {
             loadConfig();
         } catch (IOException e) {
@@ -423,7 +423,7 @@ public class XeraBungeeQueue extends Plugin {
         }
     }
 
-    void loadConfig() throws IOException {
+    private void loadConfig() throws IOException {
         config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
 
         Arrays.asList(Config.class.getDeclaredFields()).forEach(it -> {

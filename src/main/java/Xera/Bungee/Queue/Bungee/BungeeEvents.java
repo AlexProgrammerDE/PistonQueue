@@ -253,7 +253,7 @@ public class BungeeEvents implements Listener {
         }
     }
 
-    void queuePlayer(ProxiedPlayer player) {
+    private void queuePlayer(ProxiedPlayer player) {
         if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
             // Send the priority player to the priority queue
             priority.add(player.getUniqueId());
