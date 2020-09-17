@@ -32,7 +32,7 @@ public class BungeeEvents implements Listener {
     @EventHandler
     public void onPreLogin(PreLoginEvent ple) {
         if (!ple.getConnection().getName().matches(Config.REGEX)) {
-            ple.setCancelReason(new TextComponent(ChatColor.GOLD + "[XBG] Invalid username please use: " + Config.REGEX));
+            ple.setCancelReason(new TextComponent(ChatColor.GOLD + "[XBQ] Invalid username please use: " + Config.REGEX));
             ple.setCancelled(true);
         }
     }
@@ -120,7 +120,7 @@ public class BungeeEvents implements Listener {
 
                 // Store the data concerning the player's destination
                 XeraBungeeQueue.priorityqueue.put(player.getUniqueId(), originalTarget);
-            } else if (!e.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION) && !e.getPlayer().hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+            } else if (!e.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION)) {
                 if (!regular.contains(player.getUniqueId())) {
                     return;
                 }
@@ -257,102 +257,104 @@ public class BungeeEvents implements Listener {
         if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
             // Send the priority player to the priority queue
             priority.add(player.getUniqueId());
-        } else if (!player.hasPermission(Config.QUEUEBYPASSPERMISSION) && !player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+        } else if (!player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
             // Send the player to the regular queue
             regular.add(player.getUniqueId());
         }
 
-        if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-            if (!priority.contains(player.getUniqueId())) {
-                return;
-            }
-
-            priority.remove(player.getUniqueId());
-
-            // Send a message.
-            StringBuilder headerprio = new StringBuilder();
-
-            for (int i = 0; i < Config.HEADERPRIORITY.size(); i++) {
-                if (i == (Config.HEADERPRIORITY.size() - 1)) {
-                    headerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERPRIORITY.get(i))
-                            .replace("%position%", "None")
-                            .replace("%wait%", "None")));
-                } else {
-                    headerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERPRIORITY.get(i))
-                            .replace("%position%", "None")
-                            .replace("%wait%", "None")))
-                            .append("\n");
+        if (Config.AUTHFIRST) {
+            if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                if (!priority.contains(player.getUniqueId())) {
+                    return;
                 }
-            }
 
-            StringBuilder footerprio = new StringBuilder();
+                priority.remove(player.getUniqueId());
 
-            for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
-                if (i == (Config.FOOTERPRIORITY.size() - 1)) {
-                    footerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERPRIORITY.get(i))
-                            .replace("%position%", "None")
-                            .replace("%wait%", "None")));
-                } else {
-                    footerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERPRIORITY.get(i))
-                            .replace("%position%", "None")
-                            .replace("%wait%", "None")))
-                            .append("\n");
+                // Send a message.
+                StringBuilder headerprio = new StringBuilder();
+
+                for (int i = 0; i < Config.HEADERPRIORITY.size(); i++) {
+                    if (i == (Config.HEADERPRIORITY.size() - 1)) {
+                        headerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERPRIORITY.get(i))
+                                .replace("%position%", "None")
+                                .replace("%wait%", "None")));
+                    } else {
+                        headerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERPRIORITY.get(i))
+                                .replace("%position%", "None")
+                                .replace("%wait%", "None")))
+                                .append("\n");
+                    }
                 }
-            }
 
-            player.setTabHeader(
-                    new ComponentBuilder(headerprio.toString()).create(),
-                    new ComponentBuilder(footerprio.toString()).create());
+                StringBuilder footerprio = new StringBuilder();
 
-            player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).color(ChatColor.GOLD).create());
-
-            // Store the data concerning the player's destination
-            XeraBungeeQueue.priorityqueue.put(player.getUniqueId(), Config.MAINSERVER);
-        } else if (!player.hasPermission(Config.QUEUEBYPASSPERMISSION) && !player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-            if (!regular.contains(player.getUniqueId())) {
-                return;
-            }
-
-            regular.remove(player.getUniqueId());
-
-            // Send a message.
-            StringBuilder header = new StringBuilder();
-
-            for (int i = 0; i < Config.HEADER.size(); i++) {
-                if (i == (Config.HEADER.size() - 1)) {
-                    header.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADER.get(i))
-                            .replace("%position%", "None")
-                            .replace("%wait%", "None")));
-                } else {
-                    header.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADER.get(i))
-                            .replace("%position%", "None")
-                            .replace("%wait%", "None")))
-                            .append("\n");
+                for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
+                    if (i == (Config.FOOTERPRIORITY.size() - 1)) {
+                        footerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERPRIORITY.get(i))
+                                .replace("%position%", "None")
+                                .replace("%wait%", "None")));
+                    } else {
+                        footerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERPRIORITY.get(i))
+                                .replace("%position%", "None")
+                                .replace("%wait%", "None")))
+                                .append("\n");
+                    }
                 }
-            }
 
-            StringBuilder footer = new StringBuilder();
+                player.setTabHeader(
+                        new ComponentBuilder(headerprio.toString()).create(),
+                        new ComponentBuilder(footerprio.toString()).create());
 
-            for (int i = 0; i < Config.FOOTER.size(); i++) {
-                if (i == (Config.FOOTER.size() - 1)) {
-                    footer.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTER.get(i))
-                            .replace("%position%", "None")
-                            .replace("%wait%", "None")));
-                } else {
-                    footer.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTER.get(i))
-                            .replace("%position%", "None")
-                            .replace("%wait%", "None")))
-                            .append("\n");
+                player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).color(ChatColor.GOLD).create());
+
+                // Store the data concerning the player's destination
+                XeraBungeeQueue.priorityqueue.put(player.getUniqueId(), Config.MAINSERVER);
+            } else if (!player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
+                if (!regular.contains(player.getUniqueId())) {
+                    return;
                 }
+
+                regular.remove(player.getUniqueId());
+
+                // Send a message.
+                StringBuilder header = new StringBuilder();
+
+                for (int i = 0; i < Config.HEADER.size(); i++) {
+                    if (i == (Config.HEADER.size() - 1)) {
+                        header.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADER.get(i))
+                                .replace("%position%", "None")
+                                .replace("%wait%", "None")));
+                    } else {
+                        header.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADER.get(i))
+                                .replace("%position%", "None")
+                                .replace("%wait%", "None")))
+                                .append("\n");
+                    }
+                }
+
+                StringBuilder footer = new StringBuilder();
+
+                for (int i = 0; i < Config.FOOTER.size(); i++) {
+                    if (i == (Config.FOOTER.size() - 1)) {
+                        footer.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTER.get(i))
+                                .replace("%position%", "None")
+                                .replace("%wait%", "None")));
+                    } else {
+                        footer.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTER.get(i))
+                                .replace("%position%", "None")
+                                .replace("%wait%", "None")))
+                                .append("\n");
+                    }
+                }
+
+                player.setTabHeader(
+                        new ComponentBuilder(header.toString()).create(),
+                        new ComponentBuilder(footer.toString()).create());
+                player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).color(ChatColor.GOLD).create());
+
+                // Store the data concerning the player's destination
+                XeraBungeeQueue.regularqueue.put(player.getUniqueId(), Config.MAINSERVER);
             }
-
-            player.setTabHeader(
-                    new ComponentBuilder(header.toString()).create(),
-                    new ComponentBuilder(footer.toString()).create());
-            player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).color(ChatColor.GOLD).create());
-
-            // Store the data concerning the player's destination
-            XeraBungeeQueue.regularqueue.put(player.getUniqueId(), Config.MAINSERVER);
         }
     }
 }
