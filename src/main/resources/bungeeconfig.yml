@@ -2,7 +2,7 @@
 # Make the main server the default one you login to
 # READ ME: all colours are orange by default just add & and colour
 # to change the colours to your liking
-# Its recommended to replace every "YOURSERVER" with your servers name
+# Please don't forget to set SERVERNAME below
 
 # Will set the %servername% variable
 SERVERNAME: "&4your&cserver&r"
