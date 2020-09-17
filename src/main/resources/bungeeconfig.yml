@@ -1,8 +1,11 @@
-# XeraBungeeQueue V1.1.0
+# XeraBungeeQueue V1.2.0
 # Make the main server the default one you login to
 # READ ME: all colours are orange by default just add & and colour
 # to change the colours to your liking
 # Its recommended to replace every "YOURSERVER" with your servers name
+
+# Will set the %servername% variable
+SERVERNAME: "&4your&cserver&r"
 
 # Username regex
 REGEX: "[a-zA-Z0-9_]*"
@@ -23,17 +26,17 @@ QUEUEPOSITION: "&6Position in queue: &l%position%"
 
 ENABLEKICKMESSAGE: true
 KICKMESSAGE: "&6You have lost connection to the server"
-SERVERDOWNKICKMESSAGE: "&bYOURSERVER &6is down please try again later :("
+SERVERDOWNKICKMESSAGE: "%servername% &6is down please try again later :("
 
 # this shows the queue size when you hover over the ping on the server list
 SERVERPINGINFOENABLE: true
 SERVERPINGINFO:
-  - "&bYOURSERVER &6Queue Size"
+  - "%servername% &6Queue Size"
   - "&6Priority: &l%priority%"
   - "&6Regular: &l%regular%"
 
 CUSTOMPROTOCOLENABLE: true
-CUSTOMPROTOCOL: "&bYOURSERVER &61.8.x to 1.16.x"
+CUSTOMPROTOCOL: "%servername% &61.8.x to 1.16.x"
 
 # Set the queue servers name that is in the bungee config.yml
 # Note that the main server is always the one you login to first
@@ -58,7 +61,7 @@ AUTHFIRST: false
 
 # Connecting to server message use %server% if you want it
 # to just use the name of the default server
-JOININGMAINSERVER: "&6Connecting to YOURSERVER"
+JOININGMAINSERVER: "&6Connecting to %servername%"
 
 # Max players allowed onto main server
 MAINSERVERSLOTS: 100
@@ -85,9 +88,9 @@ ADMINPERMISSION: "queue.admin"
 # this only shows when your in the queue waiting to join use a separate plugin for your main server
 HEADER:
   - ""
-  - "&bYOURSERVER"
+  - "%servername%"
   - ""
-  - "&bYOURSERVER is full"
+  - "%servername% &bis full"
   - "Position in queue: &l%position%"
   - "&6Estimated time: &l%wait%"
 
@@ -103,9 +106,9 @@ FOOTER:
 # configs for priority queue tablist
 HEADERPRIORITY:
   - ""
-  - "&bYOURSERVER"
+  - "%servername%"
   - ""
-  - "&bYOURSERVER is full"
+  - "%servername% &bis full"
   - "Position in queue: &l%position%"
   - "&6Estimated time: &l%wait%"
 
@@ -116,4 +119,4 @@ FOOTERPRIORITY:
   - "&7contact: someone@example.com"
   - "discussion: http://discord.example.com"
   - "website: https://www.example.com"
-  - "These are the only official YOURSERVER websites and contacts"
+  - "These are the only official %servername% websites and contacts"

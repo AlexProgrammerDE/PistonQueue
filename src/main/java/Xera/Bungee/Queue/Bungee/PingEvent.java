@@ -21,7 +21,7 @@ public class PingEvent implements Listener {
         if (Config.CUSTOMPROTOCOLENABLE) {
             ServerPing.Protocol provided = event.getResponse().getVersion();
 
-            provided.setName(ChatColor.translateAlternateColorCodes('&', Config.CUSTOMPROTOCOL));
+            provided.setName(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.CUSTOMPROTOCOL)));
 
             protocol = provided;
         } else {
@@ -33,7 +33,7 @@ public class PingEvent implements Listener {
             int i = 0;
 
             for (String str : Config.SERVERPINGINFO) {
-                info = addInfo(info, new ServerPing.PlayerInfo(ChatColor.translateAlternateColorCodes('&', str)
+                info = addInfo(info, new ServerPing.PlayerInfo(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(str))
                         .replaceAll("%priority%", "" + XeraBungeeQueue.priorityqueue.size())
                         .replaceAll("%regular%", "" + XeraBungeeQueue.regularqueue.size()), String.valueOf(i)));
 

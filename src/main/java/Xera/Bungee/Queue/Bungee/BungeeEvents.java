@@ -48,7 +48,7 @@ public class BungeeEvents implements Listener {
                 queuePlayer(event.getPlayer());
             }
         } else {
-            event.getPlayer().disconnect(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERDOWNKICKMESSAGE)).create());
+            event.getPlayer().disconnect(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERDOWNKICKMESSAGE))).create());
         }
     }
 
@@ -86,13 +86,13 @@ public class BungeeEvents implements Listener {
 
                 for (int i = 0; i < Config.HEADERPRIORITY.size(); i++) {
                     if (i == (Config.HEADERPRIORITY.size() - 1)) {
-                        headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
+                        headerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERPRIORITY.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None"));
+                                .replace("%wait%", "None")));
                     } else {
-                        headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
+                        headerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERPRIORITY.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None"))
+                                .replace("%wait%", "None")))
                                 .append("\n");
                     }
                 }
@@ -101,13 +101,13 @@ public class BungeeEvents implements Listener {
 
                 for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
                     if (i == (Config.FOOTERPRIORITY.size() - 1)) {
-                        footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
+                        footerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERPRIORITY.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None"));
+                                .replace("%wait%", "None")));
                     } else {
-                        footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
+                        footerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERPRIORITY.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None"))
+                                .replace("%wait%", "None")))
                                 .append("\n");
                     }
                 }
@@ -116,7 +116,7 @@ public class BungeeEvents implements Listener {
                         new ComponentBuilder(headerprio.toString()).create(),
                         new ComponentBuilder(footerprio.toString()).create());
 
-                player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERISFULLMESSAGE)).color(ChatColor.GOLD).create());
+                player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).color(ChatColor.GOLD).create());
 
                 // Store the data concerning the player's destination
                 XeraBungeeQueue.priorityqueue.put(player.getUniqueId(), originalTarget);
@@ -136,13 +136,13 @@ public class BungeeEvents implements Listener {
 
                 for (int i = 0; i < Config.HEADER.size(); i++) {
                     if (i == (Config.HEADER.size() - 1)) {
-                        header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
+                        header.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADER.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None"));
+                                .replace("%wait%", "None")));
                     } else {
-                        header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
+                        header.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADER.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None"))
+                                .replace("%wait%", "None")))
                                 .append("\n");
                     }
                 }
@@ -151,13 +151,13 @@ public class BungeeEvents implements Listener {
 
                 for (int i = 0; i < Config.FOOTER.size(); i++) {
                     if (i == (Config.FOOTER.size() - 1)) {
-                        footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
+                        footer.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTER.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None"));
+                                .replace("%wait%", "None")));
                     } else {
-                        footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
+                        footer.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTER.get(i))
                                 .replace("%position%", "None")
-                                .replace("%wait%", "None"))
+                                .replace("%wait%", "None")))
                                 .append("\n");
                     }
                 }
@@ -165,7 +165,7 @@ public class BungeeEvents implements Listener {
                 player.setTabHeader(
                         new ComponentBuilder(header.toString()).create(),
                         new ComponentBuilder(footer.toString()).create());
-                player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERISFULLMESSAGE)).color(ChatColor.GOLD).create());
+                player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).color(ChatColor.GOLD).create());
 
                 // Store the data concerning the player's destination
                 XeraBungeeQueue.regularqueue.put(player.getUniqueId(), originalTarget);
@@ -217,8 +217,8 @@ public class BungeeEvents implements Listener {
 
             player.connect(ProxyServer.getInstance().getServerInfo(entry.getValue()));
             player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(
-                    ChatColor.translateAlternateColorCodes('&', Config.JOININGMAINSERVER)
-                            .replace("%server%", entry.getValue())));
+                    ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.JOININGMAINSERVER)
+                            .replace("%server%", entry.getValue()))));
 
             player.resetTabHeader();
 
@@ -237,8 +237,8 @@ public class BungeeEvents implements Listener {
 
             player2.connect(ProxyServer.getInstance().getServerInfo(entry2.getValue()));
             player2.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(
-                    ChatColor.translateAlternateColorCodes('&', Config.JOININGMAINSERVER)
-                            .replace("%server%", entry2.getValue())));
+                    ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.JOININGMAINSERVER)
+                            .replace("%server%", entry2.getValue()))));
 
             player2.resetTabHeader();
 
@@ -249,7 +249,7 @@ public class BungeeEvents implements Listener {
     @EventHandler
     public void onKick(ServerKickEvent event) {
         if (Config.ENABLEKICKMESSAGE) {
-            event.setKickReasonComponent(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.KICKMESSAGE)).create());
+            event.setKickReasonComponent(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.KICKMESSAGE))).create());
         }
     }
 
@@ -274,13 +274,13 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.HEADERPRIORITY.size(); i++) {
                 if (i == (Config.HEADERPRIORITY.size() - 1)) {
-                    headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
+                    headerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERPRIORITY.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None"));
+                            .replace("%wait%", "None")));
                 } else {
-                    headerprio.append(ChatColor.translateAlternateColorCodes('&', Config.HEADERPRIORITY.get(i))
+                    headerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERPRIORITY.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None"))
+                            .replace("%wait%", "None")))
                             .append("\n");
                 }
             }
@@ -289,13 +289,13 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.FOOTERPRIORITY.size(); i++) {
                 if (i == (Config.FOOTERPRIORITY.size() - 1)) {
-                    footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
+                    footerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERPRIORITY.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None"));
+                            .replace("%wait%", "None")));
                 } else {
-                    footerprio.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTERPRIORITY.get(i))
+                    footerprio.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERPRIORITY.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None"))
+                            .replace("%wait%", "None")))
                             .append("\n");
                 }
             }
@@ -304,7 +304,7 @@ public class BungeeEvents implements Listener {
                     new ComponentBuilder(headerprio.toString()).create(),
                     new ComponentBuilder(footerprio.toString()).create());
 
-            player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERISFULLMESSAGE)).color(ChatColor.GOLD).create());
+            player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).color(ChatColor.GOLD).create());
 
             // Store the data concerning the player's destination
             XeraBungeeQueue.priorityqueue.put(player.getUniqueId(), Config.MAINSERVER);
@@ -320,13 +320,13 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.HEADER.size(); i++) {
                 if (i == (Config.HEADER.size() - 1)) {
-                    header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
+                    header.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADER.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None"));
+                            .replace("%wait%", "None")));
                 } else {
-                    header.append(ChatColor.translateAlternateColorCodes('&', Config.HEADER.get(i))
+                    header.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADER.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None"))
+                            .replace("%wait%", "None")))
                             .append("\n");
                 }
             }
@@ -335,13 +335,13 @@ public class BungeeEvents implements Listener {
 
             for (int i = 0; i < Config.FOOTER.size(); i++) {
                 if (i == (Config.FOOTER.size() - 1)) {
-                    footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
+                    footer.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTER.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None"));
+                            .replace("%wait%", "None")));
                 } else {
-                    footer.append(ChatColor.translateAlternateColorCodes('&', Config.FOOTER.get(i))
+                    footer.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTER.get(i))
                             .replace("%position%", "None")
-                            .replace("%wait%", "None"))
+                            .replace("%wait%", "None")))
                             .append("\n");
                 }
             }
@@ -349,7 +349,7 @@ public class BungeeEvents implements Listener {
             player.setTabHeader(
                     new ComponentBuilder(header.toString()).create(),
                     new ComponentBuilder(footer.toString()).create());
-            player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', Config.SERVERISFULLMESSAGE)).color(ChatColor.GOLD).create());
+            player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).color(ChatColor.GOLD).create());
 
             // Store the data concerning the player's destination
             XeraBungeeQueue.regularqueue.put(player.getUniqueId(), Config.MAINSERVER);
