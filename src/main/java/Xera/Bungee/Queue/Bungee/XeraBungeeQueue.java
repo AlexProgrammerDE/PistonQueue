@@ -15,6 +15,7 @@ import net.md_5.bungee.config.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -370,31 +371,41 @@ public class XeraBungeeQueue extends Plugin {
         getProxy().getScheduler().schedule(this, BungeeEvents::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
-        getProxy().getScheduler().schedule(this, () -> ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).ping((result, error) -> {
-            if (error != null) {
+        getProxy().getScheduler().schedule(this, () -> {
+            try {
+                Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).getAddress().getPort());
+                // ONLINE
+                s.close();
+                BungeeEvents.mainonline = true;
+            } catch (IOException e) {
                 getLogger().warning("Main Server is down!!!");
+                BungeeEvents.mainonline = false;
             }
+        }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
-            BungeeEvents.mainonline = error == null;
-        }), 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
-
-        getProxy().getScheduler().schedule(this, () -> ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).ping((result, error) -> {
-            if (error != null) {
+        getProxy().getScheduler().schedule(this, () -> {
+            try {
+                Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
+                // ONLINE
+                s.close();
+                BungeeEvents.queueonline = true;
+            } catch (IOException e) {
                 getLogger().warning("Queue Server is down!!!");
+                BungeeEvents.queueonline = false;
             }
-
-            BungeeEvents.queueonline = error == null;
-        }), 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
+        }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
         getProxy().getScheduler().schedule(this, () -> {
             if (Config.ENABLEAUTHSERVER) {
-                ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).ping((result, error) -> {
-                    if (error != null) {
-                        getLogger().warning("Auth Server is down!!!");
-                    }
-
-                    BungeeEvents.authonline = error == null;
-                });
+                try {
+                    Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
+                    // ONLINE
+                    s.close();
+                    BungeeEvents.authonline = true;
+                } catch (IOException e) {
+                    getLogger().warning("Auth Server is down!!!");
+                    BungeeEvents.authonline = false;
+                }
             } else {
                 BungeeEvents.authonline = true;
             }
