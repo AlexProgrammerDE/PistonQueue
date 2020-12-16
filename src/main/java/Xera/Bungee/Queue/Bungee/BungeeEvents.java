@@ -12,6 +12,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -54,141 +55,85 @@ public class BungeeEvents implements Listener {
 
     @EventHandler
     public void onQueueSend(ServerSwitchEvent event) {
-        if (Config.AUTHFIRST) {
-            if (event.getFrom() == null) {
-                return;
-            }
-
-            if (event.getFrom().equals(ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER)) && event.getPlayer().getServer().getInfo().equals(queue)) {
-                queuePlayer(event.getPlayer());
-            }
+        if (Config.AUTHFIRST &&
+                event.getFrom() != null &&
+                    event.getFrom().equals(ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER)) && event.getPlayer().getServer().getInfo().equals(queue)) {
+            queuePlayer(event.getPlayer());
         }
     }
 
     @EventHandler
-    public void onSend(ServerConnectEvent e) {
-        ProxiedPlayer player = e.getPlayer();
+    public void onSend(ServerConnectEvent event) {
+        if (Config.AUTHFIRST)
+            return;
 
-        if (!Config.AUTHFIRST) {
-            if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                if (!priority.contains(player.getUniqueId())) {
-                    return;
-                }
+        ProxiedPlayer player = event.getPlayer();
 
-                priority.remove(player.getUniqueId());
+        if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+            checkAndRemove(priority, player);
 
-                // Send the player to the queue and send a message.
-                String originalTarget = e.getTarget().getName();
+            // Send the player to the queue and send a message.
+            String originalTarget = event.getTarget().getName();
 
-                e.setTarget(queue);
+            event.setTarget(queue);
 
-                player.setTabHeader(
-                        new ComponentBuilder(getNoneString(Config.HEADERPRIORITY)).create(),
-                        new ComponentBuilder(getNoneString(Config.FOOTERPRIORITY)).create());
+            player.setTabHeader(
+                    new ComponentBuilder(getNoneString(Config.HEADERPRIORITY)).create(),
+                    new ComponentBuilder(getNoneString(Config.FOOTERPRIORITY)).create());
 
-                player.sendMessage(
-                        new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).create());
+            sendServerFull(player);
 
-                // Store the data concerning the player's destination
-                XeraBungeeQueue.priorityQueue.put(player.getUniqueId(), originalTarget);
-            } else if (!e.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                if (!regular.contains(player.getUniqueId())) {
-                    return;
-                }
+            // Store the data concerning the player's destination
+            XeraBungeeQueue.priorityQueue.put(player.getUniqueId(), originalTarget);
+        } else if (!event.getPlayer().hasPermission(Config.QUEUEBYPASSPERMISSION)) {
+            checkAndRemove(regular, player);
 
-                regular.remove(player.getUniqueId());
+            // Send the player to the queue and send a message.
+            String originalTarget = event.getTarget().getName();
 
-                // Send the player to the queue and send a message.
-                String originalTarget = e.getTarget().getName();
+            event.setTarget(queue);
 
-                e.setTarget(queue);
+            player.setTabHeader(
+                    new ComponentBuilder(getNoneString(Config.HEADER)).create(),
+                    new ComponentBuilder(getNoneString(Config.FOOTER)).create());
+            sendServerFull(player);
 
-                player.setTabHeader(
-                        new ComponentBuilder(getNoneString(Config.HEADER)).create(),
-                        new ComponentBuilder(getNoneString(Config.FOOTER)).create());
-                player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).create());
-
-                // Store the data concerning the player's destination
-                XeraBungeeQueue.regularQueue.put(player.getUniqueId(), originalTarget);
-            }
+            // Store the data concerning the player's destination
+            XeraBungeeQueue.regularQueue.put(player.getUniqueId(), originalTarget);
         }
     }
 
     @EventHandler
-    public void onDisconnect(PlayerDisconnectEvent e) {
-        // If a play in queue logs off it removes them and their position so when they log in again
-        // they get sent to the back of the line and have to wait through the queue again yeah
-        try {
-            if (e.getPlayer().getServer().getInfo().getName().equalsIgnoreCase(Config.QUEUESERVER)) {
-                e.getPlayer().setReconnectServer(ProxyServer.getInstance().getServerInfo(XeraBungeeQueue.priorityQueue.get(e.getPlayer().getUniqueId())));
-                e.getPlayer().setReconnectServer(ProxyServer.getInstance().getServerInfo(XeraBungeeQueue.regularQueue.get(e.getPlayer().getUniqueId())));
-            }
+    public void onDisconnect(PlayerDisconnectEvent event) {
+        XeraBungeeQueue.priorityQueue.remove(event.getPlayer().getUniqueId());
+        XeraBungeeQueue.regularQueue.remove(event.getPlayer().getUniqueId());
 
-            XeraBungeeQueue.priorityQueue.remove(e.getPlayer().getUniqueId());
-            XeraBungeeQueue.regularQueue.remove(e.getPlayer().getUniqueId());
-
-            priority.remove(e.getPlayer().getUniqueId());
-            regular.remove(e.getPlayer().getUniqueId());
-        } catch (NullPointerException ignored) {}
+        priority.remove(event.getPlayer().getUniqueId());
+        regular.remove(event.getPlayer().getUniqueId());
     }
 
     public static void moveQueue() {
-        // checks if priority queue is empty if it is a non priority user always gets in
-        // if it has people in it then it gives a chance for either a priority or non
-        // priority user to get in when someone logs off the main server
-        // gets a random number then if the number is less then or equal to the odds set in
-        // this bungeeconfig.yml it will add a priority player if its anything above the odds then
-        // a non priority player gets added to the main server
-        // Random rn = new Random();
-        // for (int i = 0; i < 100; i++) {
-        // int answer = rn.nextInt(10) + 1;
-        if (XeraBungeeQueue.priorityQueue.isEmpty()) {
-            if (Config.MAINSERVERSLOTS <= ProxyServer.getInstance().getOnlineCount() - XeraBungeeQueue.regularQueue.size() - XeraBungeeQueue.priorityQueue.size()) {
-                return;
-            }
+        // Checks if priority queue is empty if it is a non priority user always gets in.
+        if (Config.MAINSERVERSLOTS <= ProxyServer.getInstance().getOnlineCount() - XeraBungeeQueue.regularQueue.size() - XeraBungeeQueue.priorityQueue.size()) {
+            return;
+        }
 
+        if (XeraBungeeQueue.priorityQueue.isEmpty()) {
             if (XeraBungeeQueue.regularQueue.isEmpty()) {
                 return;
             }
 
-            Entry<UUID, String> entry = XeraBungeeQueue.regularQueue.entrySet().iterator().next();
-            ProxiedPlayer player = ProxyServer.getInstance().getPlayer(entry.getKey());
-
-            player.connect(ProxyServer.getInstance().getServerInfo(entry.getValue()));
-            player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(
-                    ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.JOININGMAINSERVER)
-                            .replace("%server%", entry.getValue()))));
-
-            player.resetTabHeader();
-
-            XeraBungeeQueue.regularQueue.remove(entry.getKey());
+            connectPlayer(XeraBungeeQueue.regularQueue);
         } else {
-            if (Config.MAINSERVERSLOTS <= ProxyServer.getInstance().getOnlineCount() - XeraBungeeQueue.regularQueue.size() - XeraBungeeQueue.priorityQueue.size()) {
-                return;
-            }
-
-            if (XeraBungeeQueue.priorityQueue.isEmpty()) {
-                return;
-            }
-
-            Entry<UUID, String> entry2 = XeraBungeeQueue.priorityQueue.entrySet().iterator().next();
-            ProxiedPlayer player2 = ProxyServer.getInstance().getPlayer(entry2.getKey());
-
-            player2.connect(ProxyServer.getInstance().getServerInfo(entry2.getValue()));
-            player2.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(
-                    ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.JOININGMAINSERVER)
-                            .replace("%server%", entry2.getValue()))));
-
-            player2.resetTabHeader();
-
-            XeraBungeeQueue.priorityQueue.remove(entry2.getKey());
+            connectPlayer(XeraBungeeQueue.priorityQueue);
         }
     }
 
     @EventHandler
     public void onKick(ServerKickEvent event) {
         if (Config.ENABLEKICKMESSAGE) {
-            event.setKickReasonComponent(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.KICKMESSAGE))).create());
+            event.setKickReasonComponent(
+                    new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.KICKMESSAGE))).create());
         }
     }
 
@@ -203,31 +148,24 @@ public class BungeeEvents implements Listener {
 
         if (Config.AUTHFIRST) {
             if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                if (!priority.contains(player.getUniqueId())) {
-                    return;
-                }
-
-                priority.remove(player.getUniqueId());
+                checkAndRemove(priority, player);
 
                 player.setTabHeader(
                         new ComponentBuilder(getNoneString(Config.HEADERPRIORITY)).create(),
                         new ComponentBuilder(getNoneString(Config.FOOTERPRIORITY)).create());
 
-                player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).create());
+                sendServerFull(player);
 
                 // Store the data concerning the player's destination
                 XeraBungeeQueue.priorityQueue.put(player.getUniqueId(), Config.MAINSERVER);
             } else if (!player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                if (!regular.contains(player.getUniqueId())) {
-                    return;
-                }
-
-                regular.remove(player.getUniqueId());
+                checkAndRemove(regular, player);
 
                 player.setTabHeader(
                         new ComponentBuilder(getNoneString(Config.HEADER)).create(),
                         new ComponentBuilder(getNoneString(Config.FOOTER)).create());
-                player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).create());
+
+                sendServerFull(player);
 
                 // Store the data concerning the player's destination
                 XeraBungeeQueue.regularQueue.put(player.getUniqueId(), Config.MAINSERVER);
@@ -252,5 +190,31 @@ public class BungeeEvents implements Listener {
         }
 
         return builder.toString();
+    }
+
+    private void checkAndRemove(List<UUID> list, ProxiedPlayer player) {
+        if (!list.contains(player.getUniqueId())) {
+            return;
+        }
+
+        list.remove(player.getUniqueId());
+    }
+
+    private void sendServerFull(ProxiedPlayer player) {
+        player.sendMessage(new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.SERVERISFULLMESSAGE))).create());
+    }
+
+    private static void connectPlayer(LinkedHashMap<UUID, String> map) {
+        Entry<UUID, String> entry = map.entrySet().iterator().next();
+        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(entry.getKey());
+
+        player.connect(ProxyServer.getInstance().getServerInfo(entry.getValue()));
+        player.sendMessage(ChatMessageType.CHAT, TextComponent.fromLegacyText(
+                ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.JOININGMAINSERVER)
+                        .replace("%server%", entry.getValue()))));
+
+        player.resetTabHeader();
+
+        map.remove(entry.getKey());
     }
 }
