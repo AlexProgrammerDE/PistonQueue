@@ -17,7 +17,7 @@ REGISTERTAB: true
 SERVERISFULLMESSAGE: "&6YOURSERVER is full"
 
 # It is not recommended to decrease this number (milliseconds)
-SERVERONLINECHECKDELAY: 500ding skills out and make a velocity pro
+SERVERONLINECHECKDELAY: 500
 
 # Position in queue message by default only sends in chat every 10 seconds
 # you can have it on the hotbar by setting POSITIONMESSAGEHOTBAR from false to true
