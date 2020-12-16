@@ -28,9 +28,11 @@ import java.util.logging.Logger;
 /**
  * XeraBungeeQueue
  */
+@SuppressWarnings({"deprecation"})
 public class XeraBungeeQueue extends Plugin {
-    public static LinkedHashMap<UUID, String> regularqueue = new LinkedHashMap<>();
-    public static LinkedHashMap<UUID, String> priorityqueue = new LinkedHashMap<>();
+    public static LinkedHashMap<UUID, String> regularQueue = new LinkedHashMap<>();
+    public static LinkedHashMap<UUID, String> priorityQueue = new LinkedHashMap<>();
+    public static LinkedHashMap<UUID, String> veteranQueue = new LinkedHashMap<>();
     public Configuration config;
 
     @Override
@@ -66,58 +68,91 @@ public class XeraBungeeQueue extends Plugin {
         logger.info("§9Scheduling tasks");
 
         // sends the position message and updates tab on an interval for non priority players and priority players in chat
+        // Regular
         getProxy().getScheduler().schedule(this, () -> {
             if (!Config.POSITIONMESSAGEHOTBAR) {
                 int i = 0;
 
-                Map<UUID, String> the_map = new LinkedHashMap<>(regularqueue);
+                Map<UUID, String> the_map = new LinkedHashMap<>(regularQueue);
                 for (Entry<UUID, String> entry : the_map.entrySet()) {
                     try {
                         i++;
 
                         ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
                         if (player == null) {
-                            regularqueue.remove(entry.getKey());
+                            regularQueue.remove(entry.getKey());
                             continue;
                         }
 
                         player.sendMessage(ChatMessageType.CHAT,
                                 TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.QUEUEPOSITION)
                                         .replaceAll("%position%", i + "")
-                                        .replaceAll("%total%", regularqueue.size() + "")
+                                        .replaceAll("%total%", regularQueue.size() + "")
                                         .replaceAll("%server%", entry.getValue()))));
                     } catch (Exception e) {
-                        regularqueue.remove(entry.getKey());
+                        regularQueue.remove(entry.getKey());
                         // TODO: handle exception
                     }
                 }
             }
         }, 10000, 10000, TimeUnit.MILLISECONDS);
 
+        // Priority
         getProxy().getScheduler().schedule(this, () -> {
             if (!Config.POSITIONMESSAGEHOTBAR) {
 
                 int i = 0;
 
-                Map<UUID, String> the_map = new LinkedHashMap<>(priorityqueue);
+                Map<UUID, String> the_map = new LinkedHashMap<>(priorityQueue);
                 for (Entry<UUID, String> entry2 : the_map.entrySet()) {
                     try {
                         i++;
 
                         ProxiedPlayer player = getProxy().getPlayer(entry2.getKey());
                         if (player == null) {
-                            priorityqueue.remove(entry2.getKey());
+                            priorityQueue.remove(entry2.getKey());
                             continue;
                         }
 
                         player.sendMessage(ChatMessageType.CHAT,
                                 TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.QUEUEPOSITION)
                                         .replaceAll("%position%", i + "")
-                                        .replaceAll("%total%", regularqueue.size() + "")
+                                        .replaceAll("%total%", priorityQueue.size() + "")
                                         .replaceAll("%server%", entry2.getValue()))));
 
                     } catch (Exception e) {
-                        priorityqueue.remove(entry2.getKey());
+                        priorityQueue.remove(entry2.getKey());
+                        // TODO: handle exception
+                    }
+                }
+            }
+        }, 10000, 10000, TimeUnit.MILLISECONDS);
+
+        // Veteran
+        getProxy().getScheduler().schedule(this, () -> {
+            if (!Config.POSITIONMESSAGEHOTBAR) {
+
+                int i = 0;
+
+                Map<UUID, String> the_map = new LinkedHashMap<>(veteranQueue);
+                for (Entry<UUID, String> entry2 : the_map.entrySet()) {
+                    try {
+                        i++;
+
+                        ProxiedPlayer player = getProxy().getPlayer(entry2.getKey());
+                        if (player == null) {
+                            veteranQueue.remove(entry2.getKey());
+                            continue;
+                        }
+
+                        player.sendMessage(ChatMessageType.CHAT,
+                                TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.QUEUEPOSITION)
+                                        .replaceAll("%position%", i + "")
+                                        .replaceAll("%total%", veteranQueue.size() + "")
+                                        .replaceAll("%server%", entry2.getValue()))));
+
+                    } catch (Exception e) {
+                        veteranQueue.remove(entry2.getKey());
                         // TODO: handle exception
                     }
                 }
@@ -125,57 +160,88 @@ public class XeraBungeeQueue extends Plugin {
         }, 10000, 10000, TimeUnit.MILLISECONDS);
 
         // sends the position message and updates tab on an interval for non priority players and priority players on hotbar
+        // Regular
         getProxy().getScheduler().schedule(this, () -> {
             if (Config.POSITIONMESSAGEHOTBAR) {
 
                 int i = 0;
 
-                Map<UUID, String> the_map = new LinkedHashMap<>(regularqueue);
+                Map<UUID, String> the_map = new LinkedHashMap<>(regularQueue);
                 for (Entry<UUID, String> entry : the_map.entrySet()) {
                     try {
                         i++;
 
                         ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
                         if (player == null) {
-                            regularqueue.remove(entry.getKey());
+                            regularQueue.remove(entry.getKey());
                             continue;
                         }
 
                         player.sendMessage(ChatMessageType.ACTION_BAR,
                                 TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.QUEUEPOSITION)
                                         .replaceAll("%position%", i + "")
-                                        .replaceAll("%total%", regularqueue.size() + "")
+                                        .replaceAll("%total%", regularQueue.size() + "")
                                         .replaceAll("%server%", entry.getValue()))));
                     } catch(Exception e){
-                        regularqueue.remove(entry.getKey());
+                        regularQueue.remove(entry.getKey());
                         // TODO: handle exception
                     }
                 }
             }
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
+        // Priority
         getProxy().getScheduler().schedule(this, () -> {
             if (Config.POSITIONMESSAGEHOTBAR) {
 
                 int i = 0;
 
-                Map<UUID, String> the_map = new LinkedHashMap<>(priorityqueue);
+                Map<UUID, String> the_map = new LinkedHashMap<>(priorityQueue);
                 for (Entry<UUID, String> entry2 : the_map.entrySet()) {
                     try {
                         i++;
 
                         ProxiedPlayer player = getProxy().getPlayer(entry2.getKey());
                         if (player == null) {
-                            priorityqueue.remove(entry2.getKey());
+                            priorityQueue.remove(entry2.getKey());
                             continue;
                         }
                         player.sendMessage(ChatMessageType.ACTION_BAR,
                                 TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.QUEUEPOSITION)
                                         .replaceAll("%position%", i + "")
-                                        .replaceAll("%total%", regularqueue.size() + "")
+                                        .replaceAll("%total%", priorityQueue.size() + "")
                                         .replaceAll("%server%", entry2.getValue()))));
                     } catch (Exception e) {
-                        priorityqueue.remove(entry2.getKey());
+                        priorityQueue.remove(entry2.getKey());
+                        // TODO: handle exception
+                    }
+                }
+            }
+        }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+
+        // Veteran
+        getProxy().getScheduler().schedule(this, () -> {
+            if (Config.POSITIONMESSAGEHOTBAR) {
+
+                int i = 0;
+
+                Map<UUID, String> the_map = new LinkedHashMap<>(veteranQueue);
+                for (Entry<UUID, String> entry2 : the_map.entrySet()) {
+                    try {
+                        i++;
+
+                        ProxiedPlayer player = getProxy().getPlayer(entry2.getKey());
+                        if (player == null) {
+                            veteranQueue.remove(entry2.getKey());
+                            continue;
+                        }
+                        player.sendMessage(ChatMessageType.ACTION_BAR,
+                                TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.QUEUEPOSITION)
+                                        .replaceAll("%position%", i + "")
+                                        .replaceAll("%total%", veteranQueue.size() + "")
+                                        .replaceAll("%server%", entry2.getValue()))));
+                    } catch (Exception e) {
+                        veteranQueue.remove(entry2.getKey());
                         // TODO: handle exception
                     }
                 }
@@ -183,6 +249,7 @@ public class XeraBungeeQueue extends Plugin {
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // updates the playerlist for priority and regular queues
+        // Regular
         getProxy().getScheduler().schedule(this, () -> {
 
             int w = 0;
@@ -190,14 +257,14 @@ public class XeraBungeeQueue extends Plugin {
             long waitTimeHour;
             long waitTimeMinute;
 
-            Map<UUID, String> the_map = new LinkedHashMap<>(regularqueue);
+            Map<UUID, String> the_map = new LinkedHashMap<>(regularQueue);
             for (Entry<UUID, String> entry : the_map.entrySet()) {
                 try {
                     w++;
 
                     ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
                     if (player == null) {
-                        regularqueue.remove(entry.getKey());
+                        regularQueue.remove(entry.getKey());
                         continue;
                     }
 
@@ -270,26 +337,27 @@ public class XeraBungeeQueue extends Plugin {
                             new ComponentBuilder(footer.toString()).create());
 
                 } catch (Exception e) {
-                    regularqueue.remove(entry.getKey());
+                    regularQueue.remove(entry.getKey());
                     // TODO: handle exception
                 }
             }
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
+        // Priority
         getProxy().getScheduler().schedule(this, () -> {
             int w = 0;
             long waitTime;
             long waitTimeHour;
             long waitTimeMinute;
 
-            Map<UUID, String> the_map = new LinkedHashMap<>(priorityqueue);
+            Map<UUID, String> the_map = new LinkedHashMap<>(priorityQueue);
             for (Entry<UUID, String> entry2 : the_map.entrySet()) {
                 try {
                     w++;
 
                     ProxiedPlayer player = getProxy().getPlayer(entry2.getKey());
                     if (player == null) {
-                        priorityqueue.remove(entry2.getKey());
+                        priorityQueue.remove(entry2.getKey());
                         continue;
                     }
 
@@ -361,7 +429,98 @@ public class XeraBungeeQueue extends Plugin {
                             new ComponentBuilder(headerprio.toString()).create(),
                             new ComponentBuilder(footerprio.toString()).create());
                 } catch (Exception e) {
-                    priorityqueue.remove(entry2.getKey());
+                    priorityQueue.remove(entry2.getKey());
+                    // TODO: handle exception
+                }
+            }
+        }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+
+        // Veteran
+        getProxy().getScheduler().schedule(this, () -> {
+            int w = 0;
+            long waitTime;
+            long waitTimeHour;
+            long waitTimeMinute;
+
+            Map<UUID, String> the_map = new LinkedHashMap<>(veteranQueue);
+            for (Entry<UUID, String> entry2 : the_map.entrySet()) {
+                try {
+                    w++;
+
+                    ProxiedPlayer player = getProxy().getPlayer(entry2.getKey());
+                    if (player == null) {
+                        veteranQueue.remove(entry2.getKey());
+                        continue;
+                    }
+
+                    waitTime = w;
+
+                    waitTimeHour = waitTime / 60;
+                    waitTimeMinute = waitTime % 60;
+
+                    StringBuilder headervet = new StringBuilder();
+                    StringBuilder footervet = new StringBuilder();
+
+                    if (waitTimeHour == 0) {
+                        for (int i = 0; i < Config.HEADERVETERAN.size(); i++) {
+                            if (i == (Config.HEADERVETERAN.size() - 1)) {
+                                headervet.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERVETERAN.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))));
+                            } else {
+                                headervet.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERVETERAN.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))))
+                                        .append("\n");
+                            }
+                        }
+
+                        for (int i = 0; i < Config.FOOTERVETERAN.size(); i++) {
+                            if (i == (Config.FOOTERVETERAN.size() - 1)) {
+                                footervet.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERVETERAN.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))));
+                            } else {
+                                footervet.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERVETERAN.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))))
+                                        .append("\n");
+                            }
+                        }
+
+                    } else {
+                        for (int i = 0; i < Config.HEADER.size(); i++) {
+                            if (i == (Config.HEADER.size() - 1)) {
+                                headervet.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERVETERAN.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))));
+                            } else {
+                                headervet.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.HEADERVETERAN.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))))
+                                        .append("\n");
+                            }
+                        }
+
+                        for (int i = 0; i < Config.FOOTERVETERAN.size(); i++) {
+                            if (i == (Config.FOOTERVETERAN.size() - 1)) {
+                                footervet.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERVETERAN.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))));
+                            } else {
+                                footervet.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.FOOTERVETERAN.get(i))
+                                        .replaceAll("%position%", w + "")
+                                        .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))))
+                                        .append("\n");
+                            }
+                        }
+                    }
+
+                    player.setTabHeader(
+                            new ComponentBuilder(headervet.toString()).create(),
+                            new ComponentBuilder(footervet.toString()).create());
+                } catch (Exception e) {
+                    veteranQueue.remove(entry2.getKey());
                     // TODO: handle exception
                 }
             }
@@ -376,10 +535,10 @@ public class XeraBungeeQueue extends Plugin {
                 Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).getAddress().getPort());
                 // ONLINE
                 s.close();
-                BungeeEvents.mainonline = true;
+                BungeeEvents.mainOnline = true;
             } catch (IOException e) {
                 getLogger().warning("Main Server is down!!!");
-                BungeeEvents.mainonline = false;
+                BungeeEvents.mainOnline = false;
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
@@ -388,10 +547,10 @@ public class XeraBungeeQueue extends Plugin {
                 Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
                 // ONLINE
                 s.close();
-                BungeeEvents.queueonline = true;
+                BungeeEvents.queueOnline = true;
             } catch (IOException e) {
                 getLogger().warning("Queue Server is down!!!");
-                BungeeEvents.queueonline = false;
+                BungeeEvents.queueOnline = false;
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
@@ -401,13 +560,13 @@ public class XeraBungeeQueue extends Plugin {
                     Socket s = new Socket(ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).getAddress().getAddress(), ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
                     // ONLINE
                     s.close();
-                    BungeeEvents.authonline = true;
+                    BungeeEvents.authOnline = true;
                 } catch (IOException e) {
                     getLogger().warning("Auth Server is down!!!");
-                    BungeeEvents.authonline = false;
+                    BungeeEvents.authOnline = false;
                 }
             } else {
-                BungeeEvents.authonline = true;
+                BungeeEvents.authOnline = true;
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
     }
@@ -447,7 +606,13 @@ public class XeraBungeeQueue extends Plugin {
     }
 
     public static String parseText(String text) {
+        String returnedText = text;
 
-        return text.replaceAll("%servername%", Config.SERVERNAME);
+        returnedText = returnedText.replaceAll("%servername%", Config.SERVERNAME);
+        returnedText = returnedText.replaceAll("%regular%", String.valueOf(API.getRegularSize()));
+        returnedText = returnedText.replaceAll("%priority%", String.valueOf(API.getPrioritySize()));
+        returnedText = returnedText.replaceAll("%veteran%", String.valueOf(API.getVeteranSize()));
+
+        return returnedText;
     }
 }

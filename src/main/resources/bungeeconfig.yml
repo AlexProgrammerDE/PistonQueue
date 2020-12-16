@@ -81,6 +81,7 @@ ALWAYSQUEUE: true
 # Permissions
 QUEUEBYPASSPERMISSION: "queue.override"
 QUEUEPRIORITYPERMISSION: "queue.priority"
+QUEUEVETERANPERMISSION: "queue.veteran"
 ADMINPERMISSION: "queue.admin"
 
 # Queue server tablist configuration use %position% to show the current position of the player
@@ -115,6 +116,24 @@ HEADERPRIORITY:
 FOOTERPRIORITY:
   - ""
   - "&6You have priority queue status please wait for an available slot on the server   "
+  - ""
+  - "&7contact: someone@example.com"
+  - "discussion: http://discord.example.com"
+  - "website: https://www.example.com"
+  - "These are the only official %servername% websites and contacts"
+
+# configs for veteran queue tablist
+HEADERVETERAN:
+  - ""
+  - "%servername%"
+  - ""
+  - "%servername% &bis full"
+  - "Position in queue: &l%position%"
+  - "&6Estimated time: &l%wait%"
+
+FOOTERVETERAN:
+  - ""
+  - "&6You have veteran queue status please wait for an available slot on the server   "
   - ""
   - "&7contact: someone@example.com"
   - "discussion: http://discord.example.com"

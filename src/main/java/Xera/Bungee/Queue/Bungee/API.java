@@ -1,12 +1,16 @@
 package Xera.Bungee.Queue.Bungee;
 
 @SuppressWarnings({"unused"})
-public class API {
+public final class API {
     public static int getRegularSize() {
-        return XeraBungeeQueue.regularqueue.size();
+        return XeraBungeeQueue.regularQueue.size();
     }
 
     public static int getPrioritySize() {
-        return XeraBungeeQueue.priorityqueue.size();
+        return XeraBungeeQueue.priorityQueue.size();
+    }
+
+    public static int getVeteranSize() {
+        return XeraBungeeQueue.veteranQueue.size();
     }
 }

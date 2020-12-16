@@ -33,9 +33,7 @@ public class PingEvent implements Listener {
             int i = 0;
 
             for (String str : Config.SERVERPINGINFO) {
-                info = addInfo(info, new ServerPing.PlayerInfo(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(str))
-                        .replaceAll("%priority%", "" + XeraBungeeQueue.priorityqueue.size())
-                        .replaceAll("%regular%", "" + XeraBungeeQueue.regularqueue.size()), String.valueOf(i)));
+                info = addInfo(info, new ServerPing.PlayerInfo(XeraBungeeQueue.parseText(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(str))), String.valueOf(i)));
 
                 i++;
             }
