@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  * XeraBungeeQueue
  */
 @SuppressWarnings({"deprecation"})
-public class XeraBungeeQueue extends Plugin {
+public final class XeraBungeeQueue extends Plugin {
     public static LinkedHashMap<UUID, String> regularQueue = new LinkedHashMap<>();
     public static LinkedHashMap<UUID, String> priorityQueue = new LinkedHashMap<>();
     public static LinkedHashMap<UUID, String> veteranQueue = new LinkedHashMap<>();
@@ -36,7 +36,7 @@ public class XeraBungeeQueue extends Plugin {
     public void onEnable() {
         Logger logger = getLogger();
         PluginManager manager = getProxy().getPluginManager();
-        BungeeEvents.plugin = this;
+        BungeeEvents events = new BungeeEvents();
 
         logger.info("§9Loading config");
         processConfig();
@@ -45,7 +45,7 @@ public class XeraBungeeQueue extends Plugin {
         manager.registerCommand(this, new MainCommand(this));
 
         logger.info("§9Registering listeners");
-        manager.registerListener(this, new BungeeEvents());
+        manager.registerListener(this, events);
         manager.registerListener(this, new PingEvent(this));
 
         logger.info("§9Loading Metrics");
@@ -65,46 +65,30 @@ public class XeraBungeeQueue extends Plugin {
         logger.info("§9Scheduling tasks");
 
         // Sends the position message and updates tab on an interval in chat
-        // Regular
-        getProxy().getScheduler().schedule(this, () ->
-                sendMessage(regularQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT), 10000, 10000, TimeUnit.MILLISECONDS);
-
-        // Priority
-        getProxy().getScheduler().schedule(this, () ->
-                sendMessage(priorityQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT), 10000, 10000, TimeUnit.MILLISECONDS);
-
-        // Veteran
-        getProxy().getScheduler().schedule(this, () ->
-                sendMessage(veteranQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT), 10000, 10000, TimeUnit.MILLISECONDS);
+        getProxy().getScheduler().schedule(this, () -> {
+            sendMessage(regularQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
+            sendMessage(priorityQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
+            sendMessage(veteranQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
+        }, 10000, 10000, TimeUnit.MILLISECONDS);
 
         // Sends the position message and updates tab on an interval on hotbar
-        // Regular
-        getProxy().getScheduler().schedule(this, () ->
-                sendMessage(regularQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR), Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
-
-        // Priority
-        getProxy().getScheduler().schedule(this, () ->
-                sendMessage(priorityQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR), Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
-
-        // Veteran
-        getProxy().getScheduler().schedule(this, () ->
-                sendMessage(veteranQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR), Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        getProxy().getScheduler().schedule(this, () -> {
+            sendMessage(regularQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
+            sendMessage(priorityQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
+            sendMessage(veteranQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
+        }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Updates the tab
         // Regular
-        getProxy().getScheduler().schedule(this, () ->
-                updateTab(regularQueue, Config.HEADER, Config.FOOTER), Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
-
-        // Priority
-        getProxy().getScheduler().schedule(this, () ->
-                updateTab(priorityQueue, Config.HEADERPRIORITY, Config.FOOTERPRIORITY), Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
-
-        // Veteran
-        getProxy().getScheduler().schedule(this, () ->
-                updateTab(veteranQueue, Config.HEADERVETERAN, Config.FOOTERVETERAN), Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        getProxy().getScheduler().schedule(this, () -> {
+            updateTab(regularQueue, Config.HEADER, Config.FOOTER);
+            updateTab(priorityQueue, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
+            updateTab(veteranQueue, Config.HEADERVETERAN, Config.FOOTERVETERAN);
+        }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
-        getProxy().getScheduler().schedule(this, BungeeEvents::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        getProxy().getScheduler().schedule(this, events::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+
 
         // moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
         getProxy().getScheduler().schedule(this, () -> {
@@ -114,10 +98,10 @@ public class XeraBungeeQueue extends Plugin {
                         ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).getAddress().getPort());
 
                 s.close();
-                BungeeEvents.mainOnline = true;
+                events.mainOnline = true;
             } catch (IOException e) {
                 getLogger().warning("Main Server is down!!!");
-                BungeeEvents.mainOnline = false;
+                events.mainOnline = false;
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
@@ -128,10 +112,10 @@ public class XeraBungeeQueue extends Plugin {
                         ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
 
                 s.close();
-                BungeeEvents.queueOnline = true;
+                events.queueOnline = true;
             } catch (IOException e) {
                 getLogger().warning("Queue Server is down!!!");
-                BungeeEvents.queueOnline = false;
+                events.queueOnline = false;
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
@@ -143,13 +127,13 @@ public class XeraBungeeQueue extends Plugin {
                             ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
 
                     s.close();
-                    BungeeEvents.authOnline = true;
+                    events.authOnline = true;
                 } catch (IOException e) {
                     getLogger().warning("Auth Server is down!!!");
-                    BungeeEvents.authOnline = false;
+                    events.authOnline = false;
                 }
             } else {
-                BungeeEvents.authOnline = true;
+                events.authOnline = true;
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
     }
@@ -221,7 +205,6 @@ public class XeraBungeeQueue extends Plugin {
                                     .replaceAll("%server%", entry.getValue()))));
                 } catch (Exception e) {
                     queue.remove(entry.getKey());
-                    // TODO: handle exception
                 }
             }
         }
@@ -313,7 +296,6 @@ public class XeraBungeeQueue extends Plugin {
 
             } catch (Exception e) {
                 queue.remove(entry.getKey());
-                // TODO: handle exception
             }
         }
     }

@@ -20,14 +20,15 @@ import java.util.UUID;
 /**
  * BungeeEvents
  */
-public class BungeeEvents implements Listener {
-    List<UUID> regular = new ArrayList<>();
-    List<UUID> priority = new ArrayList<>();
-    ServerInfo queue = ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER);
-    public static boolean mainOnline = false;
-    public static boolean queueOnline = false;
-    public static boolean authOnline = false;
-    public static XeraBungeeQueue plugin;
+public final class BungeeEvents implements Listener {
+    private final List<UUID> regular = new ArrayList<>();
+    private final List<UUID> priority = new ArrayList<>();
+
+    private final ServerInfo queue = ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER);
+
+    protected boolean mainOnline = false;
+    protected boolean queueOnline = false;
+    protected boolean authOnline = false;
 
     @EventHandler
     public void onPreLogin(PreLoginEvent ple) {
@@ -83,7 +84,7 @@ public class BungeeEvents implements Listener {
         regular.remove(event.getPlayer().getUniqueId());
     }
 
-    public static void moveQueue() {
+    protected void moveQueue() {
         // Checks if priority queue is empty if it is a non priority user always gets in.
         if (Config.MAINSERVERSLOTS <= ProxyServer.getInstance().getOnlineCount() - XeraBungeeQueue.regularQueue.size() - XeraBungeeQueue.priorityQueue.size())
             return;
