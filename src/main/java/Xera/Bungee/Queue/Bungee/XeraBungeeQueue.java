@@ -27,10 +27,9 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings({"deprecation"})
 public final class XeraBungeeQueue extends Plugin {
-    public static LinkedHashMap<UUID, String> regularQueue = new LinkedHashMap<>();
-    public static LinkedHashMap<UUID, String> priorityQueue = new LinkedHashMap<>();
-    public static LinkedHashMap<UUID, String> veteranQueue = new LinkedHashMap<>();
-    public Configuration config;
+    protected static final LinkedHashMap<UUID, String> regularQueue = new LinkedHashMap<>();
+    protected static final LinkedHashMap<UUID, String> priorityQueue = new LinkedHashMap<>();
+    protected static final LinkedHashMap<UUID, String> veteranQueue = new LinkedHashMap<>();
 
     @Override
     public void onEnable() {
@@ -160,7 +159,7 @@ public final class XeraBungeeQueue extends Plugin {
     }
 
     private void loadConfig() throws IOException {
-        config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
+        Configuration config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
 
         Arrays.asList(Config.class.getDeclaredFields()).forEach(it -> {
             try {

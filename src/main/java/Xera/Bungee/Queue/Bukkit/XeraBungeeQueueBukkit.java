@@ -7,19 +7,19 @@ import java.util.logging.Level;
 
 public final class XeraBungeeQueueBukkit extends JavaPlugin {
 
-    public boolean forceLocation = true;
+    protected boolean forceLocation = true;
 
-    public String forcedWorldName = "world_the_end";
-    public int forcedX = 0;
-    public int forcedY = 200;
-    public int forcedZ = 0;
+    protected String forcedWorldName = "world_the_end";
+    protected int forcedX = 0;
+    protected int forcedY = 200;
+    protected int forcedZ = 0;
 
-    public boolean hidePlayers = true;
-    public boolean disableChat = true;
-    public boolean disableCmd = true;
-    public boolean restrictMovement = true;
-    public boolean forceGamemode = true;
-    public String forcedGamemode = "spectator"; // spectator
+    protected boolean hidePlayers = true;
+    protected boolean disableChat = true;
+    protected boolean disableCmd = true;
+    protected boolean restrictMovement = true;
+    protected boolean forceGamemode = true;
+    protected String forcedGamemode = "spectator"; // spectator
 
     @Override
     public void onEnable() {
@@ -43,11 +43,9 @@ public final class XeraBungeeQueueBukkit extends JavaPlugin {
     }
     
     @Override
-    public void onDisable() {
+    public void onDisable() {}
 
-    }
-    
-    public void setGameRule() {
+    protected void setGameRule() {
         if (hidePlayers) {
             for (World world : getServer().getWorlds()) {
                 world.setGameRuleValue("announceAdvancements", "false");

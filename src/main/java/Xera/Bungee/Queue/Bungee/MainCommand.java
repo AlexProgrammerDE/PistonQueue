@@ -3,7 +3,6 @@ package Xera.Bungee.Queue.Bungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
@@ -11,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MainCommand extends Command implements TabExecutor {
+public final class MainCommand extends Command implements TabExecutor {
     XeraBungeeQueue plugin;
     private static final String[] COMMANDS = { "help", "version", "stats", "reload" };
 

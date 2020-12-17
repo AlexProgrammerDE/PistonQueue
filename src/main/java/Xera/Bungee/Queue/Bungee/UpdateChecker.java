@@ -8,7 +8,7 @@ import java.net.URL;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
-public class UpdateChecker {
+public final class UpdateChecker {
 
     private final Plugin plugin;
     private final int resourceId;
