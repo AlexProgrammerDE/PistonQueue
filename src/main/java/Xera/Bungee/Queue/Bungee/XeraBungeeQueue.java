@@ -35,7 +35,7 @@ public final class XeraBungeeQueue extends Plugin {
     public void onEnable() {
         Logger logger = getLogger();
         PluginManager manager = getProxy().getPluginManager();
-        BungeeEvents events = new BungeeEvents();
+        ProxyListener events = new ProxyListener();
 
         logger.info("§9Loading config");
         processConfig();

@@ -10,10 +10,10 @@ import org.bukkit.event.player.*;
 import java.util.Objects;
 import java.util.logging.Level;
 
-public final class BukkitEvents implements Listener {
+public final class ServerListener implements Listener {
     private final XeraBungeeQueueBukkit plugin;
 
-    public BukkitEvents(XeraBungeeQueueBukkit plugin) {
+    public ServerListener(XeraBungeeQueueBukkit plugin) {
         this.plugin = plugin;
     }
 

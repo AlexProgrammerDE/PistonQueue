@@ -39,7 +39,7 @@ public final class XeraBungeeQueueBukkit extends JavaPlugin {
         
         setGameRule();
         
-        getServer().getPluginManager().registerEvents(new BukkitEvents(this), this);
+        getServer().getPluginManager().registerEvents(new ServerListener(this), this);
     }
     
     @Override

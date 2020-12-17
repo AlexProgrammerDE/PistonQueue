@@ -18,9 +18,9 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 /**
- * BungeeEvents
+ * ProxyListener
  */
-public final class BungeeEvents implements Listener {
+public final class ProxyListener implements Listener {
     private final List<UUID> regular = new ArrayList<>();
     private final List<UUID> priority = new ArrayList<>();
     private final List<UUID> veteran = new ArrayList<>();
