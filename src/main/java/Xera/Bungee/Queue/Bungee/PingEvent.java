@@ -50,13 +50,13 @@ public class PingEvent implements Listener {
     public static ServerPing.PlayerInfo[] addInfo(ServerPing.PlayerInfo[] arr, ServerPing.PlayerInfo info) {
         int i;
 
-        ServerPing.PlayerInfo[] newarr = new ServerPing.PlayerInfo[arr.length + 1];
+        ServerPing.PlayerInfo[] newArray = new ServerPing.PlayerInfo[arr.length + 1];
 
         for (i = 0; i < arr.length; i++)
-            newarr[i] = arr[i];
+            newArray[i] = arr[i];
 
-        newarr[arr.length] = info;
+        newArray[arr.length] = info;
 
-        return newarr;
+        return newArray;
     }
 }

@@ -142,8 +142,8 @@ public final class XeraBungeeQueue extends Plugin {
         try {
             loadConfig();
         } catch (IOException e) {
-            if (!getDataFolder().exists()) {
-                getDataFolder().mkdir();
+            if (!getDataFolder().exists() && !getDataFolder().mkdir()) {
+                return;
             }
 
             File file = new File(getDataFolder(), "config.yml");

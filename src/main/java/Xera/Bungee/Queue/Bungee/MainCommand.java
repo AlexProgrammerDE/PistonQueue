@@ -3,6 +3,7 @@ package Xera.Bungee.Queue.Bungee;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 
@@ -56,17 +57,21 @@ public class MainCommand extends Command implements TabExecutor {
                     sender.sendMessage(new ComponentBuilder("Config reloaded").color(ChatColor.GREEN).create());
                     sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
                 } else {
-                    sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
-                    sender.sendMessage(new ComponentBuilder("XeraBungeeQueue").color(ChatColor.GOLD).create());
-                    sender.sendMessage(new ComponentBuilder("You do not").color(ChatColor.RED).create());
-                    sender.sendMessage(new ComponentBuilder("have permission").color(ChatColor.RED).create());
-                    sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                    noPermission(sender);
                 }
             }
         }
     }
 
-    void help(CommandSender sender) {
+    private void noPermission(CommandSender sender) {
+        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+        sender.sendMessage(new ComponentBuilder("XeraBungeeQueue").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("You do not").color(ChatColor.RED).create());
+        sender.sendMessage(new ComponentBuilder("have permission").color(ChatColor.RED).create());
+        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+    }
+
+    private void help(CommandSender sender) {
         sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
         sender.sendMessage(new ComponentBuilder("XeraBungeeQueue").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/xbq help").color(ChatColor.GOLD).create());
