@@ -41,9 +41,9 @@ public class MainCommand extends Command implements TabExecutor {
             if (args[0].equalsIgnoreCase("stats")) {
                 sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
                 sender.sendMessage(new ComponentBuilder("Queue stats").color(ChatColor.GOLD).create());
-                sender.sendMessage(new ComponentBuilder("Regular: ").color(ChatColor.GOLD).append(String.valueOf(API.getRegularSize())).color(ChatColor.GOLD).bold(true).create());
-                sender.sendMessage(new ComponentBuilder("Priority: ").color(ChatColor.GOLD).append(String.valueOf(API.getPrioritySize())).color(ChatColor.GOLD).bold(true).create());
-                sender.sendMessage(new ComponentBuilder("Veteran: ").color(ChatColor.GOLD).append(String.valueOf(API.getVeteranSize())).color(ChatColor.GOLD).bold(true).create());
+                sender.sendMessage(new ComponentBuilder("Regular: ").color(ChatColor.GOLD).append(String.valueOf(QueueAPI.getRegularSize())).color(ChatColor.GOLD).bold(true).create());
+                sender.sendMessage(new ComponentBuilder("Priority: ").color(ChatColor.GOLD).append(String.valueOf(QueueAPI.getPrioritySize())).color(ChatColor.GOLD).bold(true).create());
+                sender.sendMessage(new ComponentBuilder("Veteran: ").color(ChatColor.GOLD).append(String.valueOf(QueueAPI.getVeteranSize())).color(ChatColor.GOLD).bold(true).create());
                 sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
             }
 

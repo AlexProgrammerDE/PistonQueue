@@ -45,7 +45,7 @@ public final class XeraBungeeQueueBukkit extends JavaPlugin {
     
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+
     }
     
     public void setGameRule() {

@@ -4,5 +4,5 @@ api-version: 1.16
 main: Xera.Bungee.Queue.Bukkit.XeraBungeeQueueBukkit
 author: XeraPlugins
 authors: [Nate Legault, Pistonmaster]
-description: Bukkit companion for XeraBungeeQueueBukkit
+description: Bukkit companion for XeraBungeeQueue
 website: http://www.xera.ca/

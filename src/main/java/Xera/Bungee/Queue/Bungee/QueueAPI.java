@@ -1,7 +1,7 @@
 package Xera.Bungee.Queue.Bungee;
 
 @SuppressWarnings({"unused"})
-public final class API {
+public final class QueueAPI {
     public static int getRegularSize() {
         return XeraBungeeQueue.regularQueue.size();
     }

@@ -38,7 +38,7 @@ public class BukkitEvents implements Listener {
             e.getPlayer().hidePlayer(plugin, onlinePlayer);
             onlinePlayer.hidePlayer(plugin, e.getPlayer());
 
-            e.setJoinMessage("");
+            e.setJoinMessage(null);
         }
     }
 
@@ -46,7 +46,7 @@ public class BukkitEvents implements Listener {
     public void onPlayerQuit(PlayerQuitEvent e) {
         if (!plugin.hidePlayers) return;
 
-        e.setQuitMessage("");
+        e.setQuitMessage(null);
     }
 
     @EventHandler
@@ -77,8 +77,7 @@ public class BukkitEvents implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
-        if (!plugin.restrictMovement) return;
-        if (isExcluded(e.getPlayer())) return;
+        if (!plugin.restrictMovement || isExcluded(e.getPlayer())) return;
 
         e.setCancelled(true);
     }
