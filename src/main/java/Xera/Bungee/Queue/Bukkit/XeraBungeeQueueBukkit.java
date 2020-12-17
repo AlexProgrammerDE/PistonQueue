@@ -1,6 +1,5 @@
 package Xera.Bungee.Queue.Bukkit;
 
-import org.bukkit.GameRule;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -51,7 +50,7 @@ public final class XeraBungeeQueueBukkit extends JavaPlugin {
     public void setGameRule() {
         if (hidePlayers) {
             for (World world : getServer().getWorlds()) {
-                world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+                world.setGameRuleValue("announceAdvancements", "false");
             }
 
             getLogger().log(Level.INFO, "Gamerule announceAdvancements was set to false because hidePlayers was true.");
