@@ -1,10 +1,8 @@
 package Xera.Bungee.Queue.Bungee;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
@@ -35,7 +33,7 @@ public final class XeraBungeeQueue extends Plugin {
     public void onEnable() {
         Logger logger = getLogger();
         PluginManager manager = getProxy().getPluginManager();
-        ProxyListener events = new ProxyListener();
+        QueueListener events = new QueueListener(this);
 
         logger.info("§9Loading config");
         processConfig();
@@ -45,7 +43,7 @@ public final class XeraBungeeQueue extends Plugin {
 
         logger.info("§9Registering listeners");
         manager.registerListener(this, events);
-        manager.registerListener(this, new PingEvent(this));
+        manager.registerListener(this, new XeraListener(this));
 
         logger.info("§9Loading Metrics");
         new Metrics(this, 8755);
@@ -68,7 +66,7 @@ public final class XeraBungeeQueue extends Plugin {
             sendMessage(regularQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
             sendMessage(priorityQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
             sendMessage(veteranQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
-        }, 10000, 10000, TimeUnit.MILLISECONDS);
+        }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Sends the position message and updates tab on an interval on hotbar
         getProxy().getScheduler().schedule(this, () -> {
@@ -85,11 +83,10 @@ public final class XeraBungeeQueue extends Plugin {
             updateTab(veteranQueue, Config.HEADERVETERAN, Config.FOOTERVETERAN);
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-        // moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
+        // moves the queue when someone logs off the main server on an interval set in the config.yml
         getProxy().getScheduler().schedule(this, events::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-
-        // moves the queue when someone logs off the main server on an interval set in the bungeeconfig.yml
+        // moves the queue when someone logs off the main server on an interval set in the config.yml
         getProxy().getScheduler().schedule(this, () -> {
             try {
                 Socket s = new Socket(
@@ -192,16 +189,17 @@ public final class XeraBungeeQueue extends Plugin {
                     i++;
 
                     ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
+
                     if (player == null) {
                         queue.remove(entry.getKey());
                         continue;
                     }
 
                     player.sendMessage(type,
-                            TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.QUEUEPOSITION)
+                            ChatUtils.parseToComponent(Config.QUEUEPOSITION
                                     .replaceAll("%position%", i + "")
                                     .replaceAll("%total%", queue.size() + "")
-                                    .replaceAll("%server%", entry.getValue()))));
+                                    .replaceAll("%server%", entry.getValue())));
                 } catch (Exception e) {
                     queue.remove(entry.getKey());
                 }
@@ -236,55 +234,42 @@ public final class XeraBungeeQueue extends Plugin {
 
                 if (waitTimeHour == 0) {
                     for (int i = 0; i < header.size(); i++) {
-                        if (i == (header.size() - 1)) {
-                            headerBuilder.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(header.get(i))
-                                    .replaceAll("%position%", w + "")
-                                    .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))));
-                        } else {
-                            headerBuilder.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(header.get(i))
-                                    .replaceAll("%position%", w + "")
-                                    .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))))
-                                    .append("\n");
+                        headerBuilder.append(ChatUtils.parseToString(header.get(i))
+                                .replaceAll("%position%", w + "")
+                                .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)));
+
+                        if (i != (header.size() - 1)) {
+                            headerBuilder.append("\n");
                         }
                     }
 
                     for (int i = 0; i < footer.size(); i++) {
-                        if (i == (footer.size() - 1)) {
-                            footerBuilder.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(footer.get(i))
-                                    .replaceAll("%position%", w + "")
-                                    .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))));
-                        } else {
-                            footerBuilder.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(footer.get(i))
-                                    .replaceAll("%position%", w + "")
-                                    .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))))
-                                    .append("\n");
+                        footerBuilder.append(ChatUtils.parseToString(footer.get(i))
+                                .replaceAll("%position%", w + "")
+                                .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)));
+
+                        if (i != (footer.size() - 1)) {
+                            footerBuilder.append("\n");
                         }
                     }
-
                 } else {
                     for (int i = 0; i < header.size(); i++) {
-                        if (i == (header.size() - 1)) {
-                            headerBuilder.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(header.get(i))
-                                    .replaceAll("%position%", w + "")
-                                    .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))));
-                        } else {
-                            headerBuilder.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(header.get(i))
-                                    .replaceAll("%position%", w + "")
-                                    .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))))
-                                    .append("\n");
+                        headerBuilder.append(ChatUtils.parseToString(header.get(i))
+                                .replaceAll("%position%", w + "")
+                                .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+
+                        if (i != (header.size() - 1)) {
+                            headerBuilder.append("\n");
                         }
                     }
 
                     for (int i = 0; i < footer.size(); i++) {
-                        if (i == (footer.size() - 1)) {
-                            footerBuilder.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(footer.get(i))
-                                    .replaceAll("%position%", w + "")
-                                    .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute))));
-                        } else {
-                            footerBuilder.append(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(footer.get(i))
-                                    .replaceAll("%position%", w + "")
-                                    .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute))))
-                                    .append("\n");
+                        footerBuilder.append(ChatUtils.parseToString(footer.get(i))
+                                .replaceAll("%position%", w + "")
+                                .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
+
+                        if (i != (footer.size() - 1)) {
+                            footerBuilder.append("\n");
                         }
                     }
                 }
@@ -292,7 +277,6 @@ public final class XeraBungeeQueue extends Plugin {
                 player.setTabHeader(
                         new ComponentBuilder(headerBuilder.toString()).create(),
                         new ComponentBuilder(footerBuilder.toString()).create());
-
             } catch (Exception e) {
                 queue.remove(entry.getKey());
             }

@@ -9,6 +9,7 @@ SERVERNAME: "&4your&cserver&r"
 
 # Username regex
 REGEX: "[a-zA-Z0-9_]*"
+REGEXMESSAGE: "&6[XBQ] Invalid username please use: %regex%"
 
 # Tab auto completion
 REGISTERTAB: true
@@ -25,8 +26,15 @@ POSITIONMESSAGECHAT: true
 POSITIONMESSAGEHOTBAR: false
 QUEUEPOSITION: "&6Position in queue: &l%position%"
 
+# Failure protection for the queue
+PAUSEQUEUEIFMAINDOWN: true
+PAUSEQUEUEIFMAINDOWNMESSAGE: "&6Sorry, but the main server is down. :( Please wait for it to restart!"
+
 ENABLEKICKMESSAGE: true
 KICKMESSAGE: "&6You have lost connection to the server"
+
+# When the main server is down should you kick the player from the queue?
+KICKWHENDOWN: true
 SERVERDOWNKICKMESSAGE: "%servername% &6is down please try again later :("
 
 # this shows the queue size when you hover over the ping on the server list
