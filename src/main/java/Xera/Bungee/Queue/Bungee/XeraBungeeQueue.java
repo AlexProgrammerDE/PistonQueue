@@ -1,7 +1,7 @@
 package Xera.Bungee.Queue.Bungee;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -35,23 +35,23 @@ public final class XeraBungeeQueue extends Plugin {
         PluginManager manager = getProxy().getPluginManager();
         QueueListener events = new QueueListener(this);
 
-        logger.info("§9Loading config");
+        logger.info(ChatColor.BLUE + "Loading config");
         processConfig();
 
-        logger.info("§9Registering commands");
+        logger.info(ChatColor.BLUE + "Registering commands");
         manager.registerCommand(this, new MainCommand(this));
 
-        logger.info("§9Registering listeners");
+        logger.info(ChatColor.BLUE + "Registering listeners");
         manager.registerListener(this, events);
         manager.registerListener(this, new XeraListener(this));
 
-        logger.info("§9Loading Metrics");
+        logger.info(ChatColor.BLUE + "Loading Metrics");
         new Metrics(this, 8755);
 
-        logger.info("§9Checking for update");
+        logger.info(ChatColor.BLUE + "Checking for update");
         new UpdateChecker(this, 83541).getVersion(version -> {
             if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
-                logger.info("§9Your up to date!");
+                logger.info(ChatColor.BLUE + "Your up to date!");
             } else {
                 logger.info("§cThere is a update available.");
                 logger.info("§cCurrent version: " + this.getDescription().getVersion() + " New version: " + version);
@@ -59,7 +59,7 @@ public final class XeraBungeeQueue extends Plugin {
             }
         });
 
-        logger.info("§9Scheduling tasks");
+        logger.info(ChatColor.BLUE + "Scheduling tasks");
 
         // Sends the position message and updates tab on an interval in chat
         getProxy().getScheduler().schedule(this, () -> {
@@ -171,7 +171,6 @@ public final class XeraBungeeQueue extends Plugin {
     protected static String parseText(String text) {
         String returnedText = text;
 
-        returnedText = returnedText.replaceAll("%servername%", Config.SERVERNAME);
         returnedText = returnedText.replaceAll("%regular%", String.valueOf(QueueAPI.getRegularSize()));
         returnedText = returnedText.replaceAll("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
         returnedText = returnedText.replaceAll("%veteran%", String.valueOf(QueueAPI.getVeteranSize()));

@@ -2,10 +2,7 @@
 # Make the main server the default one you login to
 # READ ME: all colours are orange by default just add & and colour
 # to change the colours to your liking
-# Please don't forget to set SERVERNAME below
-
-# Will set the %servername% variable
-SERVERNAME: "&4your&cserver&r"
+# Please don't forget to replace SERVERNAME
 
 # Username regex
 REGEX: "[a-zA-Z0-9_]*"
@@ -15,7 +12,7 @@ REGEXMESSAGE: "&6[XBQ] Invalid username please use: %regex%"
 REGISTERTAB: true
 
 # Server is full message
-SERVERISFULLMESSAGE: "&6YOURSERVER is full"
+SERVERISFULLMESSAGE: "YOURSERVER &6is full"
 
 # It is not recommended to decrease this number (milliseconds)
 SERVERONLINECHECKDELAY: 500
@@ -28,7 +25,7 @@ QUEUEPOSITION: "&6Position in queue: &l%position%"
 
 # Failure protection for the queue
 PAUSEQUEUEIFMAINDOWN: true
-PAUSEQUEUEIFMAINDOWNMESSAGE: "&6The main server is down. Please wait, we are reconnecting you to the queue..."
+PAUSEQUEUEIFMAINDOWNMESSAGE: "&6The main server is down. We will be back soon!"
 
 # You are getting kicked if the main, queue or is down
 ENABLEKICKMESSAGE: true
@@ -36,17 +33,17 @@ KICKMESSAGE: "&6You have lost connection to the server"
 
 # When the main server is down should you kick the player from the queue?
 KICKWHENDOWN: true
-SERVERDOWNKICKMESSAGE: "%servername% &6is down please try again later :("
+SERVERDOWNKICKMESSAGE: "SERVERNAME &6is down please try again later :("
 
 # This shows the queue size when you hover over the ping on the server list
 SERVERPINGINFOENABLE: true
 SERVERPINGINFO:
-  - "%servername% &6Queue Size"
+  - "SERVERNAME &6Queue Size"
   - "&6Priority: &l%priority%"
   - "&6Regular: &l%regular%"
 
 CUSTOMPROTOCOLENABLE: true
-CUSTOMPROTOCOL: "%servername% &61.8.x to 1.16.x"
+CUSTOMPROTOCOL: "SERVERNAME &61.8.x to 1.16.x"
 
 # Set the queue servers name that is in the bungee config.yml
 # Note that the main server is always the one you login to first
@@ -71,7 +68,7 @@ AUTHFIRST: false
 
 # Connecting to server message use %server% if you want it
 # to just use the name of the default server
-JOININGMAINSERVER: "&6Connecting to %servername%"
+JOININGMAINSERVER: "&6Connecting to SERVERNAME"
 
 # Max players allowed onto main server
 MAINSERVERSLOTS: 100
@@ -99,9 +96,9 @@ ADMINPERMISSION: "queue.admin"
 # this only shows when your in the queue waiting to join use a separate plugin for your main server
 HEADER:
   - ""
-  - "%servername%"
+  - "SERVERNAME"
   - ""
-  - "%servername% &bis full"
+  - "SERVERNAME &bis full"
   - "Position in queue: &l%position%"
   - "&6Estimated time: &l%wait%"
 
@@ -112,14 +109,14 @@ FOOTER:
   - "&7contact: someone@example.com"
   - "discussion: http://discord.example.com"
   - "website: https://www.example.com"
-  - "These are the only official YOURSERVER websites and contacts"
+  - "These are the only official SERVERNAME websites and contacts"
 
 # Configs for priority queue tablist
 HEADERPRIORITY:
   - ""
-  - "%servername%"
+  - "SERVERNAME"
   - ""
-  - "%servername% &bis full"
+  - "SERVERNAME &bis full"
   - "Position in queue: &l%position%"
   - "&6Estimated time: &l%wait%"
 
@@ -130,14 +127,14 @@ FOOTERPRIORITY:
   - "&7contact: someone@example.com"
   - "discussion: http://discord.example.com"
   - "website: https://www.example.com"
-  - "These are the only official %servername% websites and contacts"
+  - "These are the only official SERVERNAME websites and contacts"
 
 # Configs for veteran queue tablist
 HEADERVETERAN:
   - ""
-  - "%servername%"
+  - "SERVERNAME"
   - ""
-  - "%servername% &bis full"
+  - "SERVERNAME &bis full"
   - "Position in queue: &l%position%"
   - "&6Estimated time: &l%wait%"
 
@@ -148,4 +145,4 @@ FOOTERVETERAN:
   - "&7contact: someone@example.com"
   - "discussion: http://discord.example.com"
   - "website: https://www.example.com"
-  - "These are the only official %servername% websites and contacts"
+  - "These are the only official SERVERNAME websites and contacts"
