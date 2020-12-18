@@ -4,9 +4,9 @@
 forceLocation: true # Force the user to remain in a certain location.
 
 forcedWorldName: "world_the_end" # the name of the world to force the user to remain in
-forcedX: 400 # the coordinates that the user must remain at.
+forcedX: 500 # the coordinates that the user must remain at.
 forcedY: 256
-forcedZ: 400
+forcedZ: 500
 
 hidePlayers: true # Hide players from each other so that it looks like every user is alone in the world. This will also disable join/leave messages.
 restrictMovement: true # Prevent players from moving.
