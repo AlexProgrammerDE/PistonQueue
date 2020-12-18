@@ -178,7 +178,6 @@ public final class QueueListener implements Listener {
         // Send the player to the queue and send a message.
         String originalTarget = event.getTarget().getName();
 
-        player.sendMessage("a");
         event.setTarget(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
 
         // Store the data concerning the player's destination
