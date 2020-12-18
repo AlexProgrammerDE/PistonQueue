@@ -1,4 +1,4 @@
-# XeraBungeeQueue V1.2.0
+# XeraBungeeQueue V1.3.0
 # Make the main server the default one you login to
 # READ ME: all colours are orange by default just add & and colour
 # to change the colours to your liking
@@ -28,8 +28,9 @@ QUEUEPOSITION: "&6Position in queue: &l%position%"
 
 # Failure protection for the queue
 PAUSEQUEUEIFMAINDOWN: true
-PAUSEQUEUEIFMAINDOWNMESSAGE: "&6Sorry, but the main server is down. :( Please wait for it to restart!"
+PAUSEQUEUEIFMAINDOWNMESSAGE: "&6The main server is down. Please wait, we are reconnecting you to the queue..."
 
+# You are getting kicked if the main, queue or is down
 ENABLEKICKMESSAGE: true
 KICKMESSAGE: "&6You have lost connection to the server"
 
@@ -37,7 +38,7 @@ KICKMESSAGE: "&6You have lost connection to the server"
 KICKWHENDOWN: true
 SERVERDOWNKICKMESSAGE: "%servername% &6is down please try again later :("
 
-# this shows the queue size when you hover over the ping on the server list
+# This shows the queue size when you hover over the ping on the server list
 SERVERPINGINFOENABLE: true
 SERVERPINGINFO:
   - "%servername% &6Queue Size"
@@ -113,7 +114,7 @@ FOOTER:
   - "website: https://www.example.com"
   - "These are the only official YOURSERVER websites and contacts"
 
-# configs for priority queue tablist
+# Configs for priority queue tablist
 HEADERPRIORITY:
   - ""
   - "%servername%"
@@ -131,7 +132,7 @@ FOOTERPRIORITY:
   - "website: https://www.example.com"
   - "These are the only official %servername% websites and contacts"
 
-# configs for veteran queue tablist
+# Configs for veteran queue tablist
 HEADERVETERAN:
   - ""
   - "%servername%"

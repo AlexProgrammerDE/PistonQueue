@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class XeraListener implements Listener {
-    XeraBungeeQueue plugin;
+    private final XeraBungeeQueue plugin;
 
     public XeraListener(XeraBungeeQueue plugin) {
         this.plugin = plugin;
@@ -23,8 +23,7 @@ public final class XeraListener implements Listener {
     @EventHandler
     public void onPreLogin(PreLoginEvent ple) {
         if (!ple.getConnection().getName().matches(Config.REGEX)) {
-            ple.setCancelReason(
-                    new TextComponent(ChatColor.translateAlternateColorCodes('&', Config.REGEXMESSAGE.replaceAll("%regex%", Config.REGEX))));
+            ple.setCancelReason(ChatUtils.parseToComponent(Config.REGEXMESSAGE.replaceAll("%regex%", Config.REGEX)));
             ple.setCancelled(true);
         }
     }
@@ -32,8 +31,7 @@ public final class XeraListener implements Listener {
     @EventHandler
     public void onKick(ServerKickEvent event) {
         if (Config.ENABLEKICKMESSAGE) {
-            event.setKickReasonComponent(
-                    new ComponentBuilder(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.KICKMESSAGE))).create());
+            event.setKickReasonComponent(ChatUtils.parseToComponent(Config.KICKMESSAGE));
         }
     }
 
@@ -45,7 +43,7 @@ public final class XeraListener implements Listener {
         if (Config.CUSTOMPROTOCOLENABLE) {
             ServerPing.Protocol provided = event.getResponse().getVersion();
 
-            provided.setName(ChatColor.translateAlternateColorCodes('&', XeraBungeeQueue.parseText(Config.CUSTOMPROTOCOL)));
+            provided.setName(ChatUtils.parseToString(Config.CUSTOMPROTOCOL));
 
             protocol = provided;
         } else {
@@ -55,14 +53,9 @@ public final class XeraListener implements Listener {
         if (Config.SERVERPINGINFOENABLE) {
             List<ServerPing.PlayerInfo> info = new ArrayList<>();
 
-            Config.SERVERPINGINFO.forEach(str -> {
-                info.add(
-                        new ServerPing.PlayerInfo(
-                                XeraBungeeQueue.parseText(
-                                        ChatColor.translateAlternateColorCodes('&',
-                                                XeraBungeeQueue.parseText(str))),
-                                String.valueOf(Config.SERVERPINGINFO.indexOf(str) -1)));
-            });
+            Config.SERVERPINGINFO.forEach(str -> info.add(
+                    new ServerPing.PlayerInfo(ChatUtils.parseToString(str),
+                            String.valueOf(Config.SERVERPINGINFO.indexOf(str) -1))));
 
             players = new ServerPing.Players(Config.QUEUESERVERSLOTS, plugin.getProxy().getOnlineCount(), info.toArray(new ServerPing.PlayerInfo[0]));
         } else {

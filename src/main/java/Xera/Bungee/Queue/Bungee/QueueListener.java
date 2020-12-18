@@ -3,7 +3,6 @@ package Xera.Bungee.Queue.Bungee;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -21,8 +20,6 @@ import java.util.UUID;
  * ProxyListener
  */
 public final class QueueListener implements Listener {
-    private final ServerInfo queue = ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER);
-
     protected boolean mainOnline = false;
     protected boolean queueOnline = false;
     protected boolean authOnline = false;
@@ -35,9 +32,17 @@ public final class QueueListener implements Listener {
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
+        ProxiedPlayer player = event.getPlayer();
+
         if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if enableauth is false
             if (!Config.AUTHFIRST && (Config.ALWAYSQUEUE || plugin.getProxy().getOnlineCount() > Config.MAINSERVERSLOTS)) {
-                queuePlayer(event.getPlayer());
+                if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
+                    XeraBungeeQueue.veteranQueue.put(player.getUniqueId(), null);
+                } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                    XeraBungeeQueue.priorityQueue.put(player.getUniqueId(), null);
+                } else {
+                    XeraBungeeQueue.regularQueue.put(player.getUniqueId(), null);
+                }
             }
         } else {
             event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
@@ -49,7 +54,7 @@ public final class QueueListener implements Listener {
         if (Config.AUTHFIRST &&
                 event.getFrom() != null &&
                 event.getFrom().equals(ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER)) &&
-                event.getPlayer().getServer().getInfo().equals(queue))
+                event.getPlayer().getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER)))
             queuePlayer(event.getPlayer());
     }
 
@@ -141,17 +146,19 @@ public final class QueueListener implements Listener {
 
     private void connectPlayer(LinkedHashMap<UUID, String> queueList) {
         Entry<UUID, String> entry = queueList.entrySet().iterator().next();
-        ProxiedPlayer player = ProxyServer.getInstance().getPlayer(entry.getKey());
-
-        player.connect(ProxyServer.getInstance().getServerInfo(entry.getValue()));
-        player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.JOININGMAINSERVER
-                        .replaceAll("%server%", entry.getValue())));
-        player.resetTabHeader();
+        ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
 
         queueList.remove(entry.getKey());
+
+        player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.JOININGMAINSERVER.replaceAll("%server%", entry.getValue())));
+        player.connect(ProxyServer.getInstance().getServerInfo(entry.getValue()));
+        player.resetTabHeader();
     }
 
     private void putQueueAuthFirst(ProxiedPlayer player, List<String> header, List<String> footer, LinkedHashMap<UUID, String> queueList) {
+        if (!queueList.containsKey(player.getUniqueId()))
+            return;
+
         preQueueAdding(player, header, footer);
 
         // Store the data concerning the player's destination
@@ -159,12 +166,15 @@ public final class QueueListener implements Listener {
     }
 
     private void putQueue(ProxiedPlayer player, List<String> header, List<String> footer, LinkedHashMap<UUID, String> queueList, ServerConnectEvent event) {
+        if (!queueList.containsKey(player.getUniqueId()))
+            return;
+
         preQueueAdding(player, header, footer);
 
         // Send the player to the queue and send a message.
         String originalTarget = event.getTarget().getName();
 
-        event.setTarget(queue);
+        event.setTarget(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
 
         // Store the data concerning the player's destination
         queueList.put(player.getUniqueId(), originalTarget);
@@ -183,8 +193,8 @@ public final class QueueListener implements Listener {
 
         for (int i = 0; i < tab.size(); i++) {
             builder.append(ChatUtils.parseToString(tab.get(i))
-                    .replace("%position%", "None")
-                    .replace("%wait%", "None"));
+                    .replaceAll("%position%", "None")
+                    .replaceAll("%wait%", "None"));
 
             if (i != (tab.size() - 1)) {
                 builder.append("\n");

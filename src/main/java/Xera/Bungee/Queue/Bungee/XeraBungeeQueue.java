@@ -83,15 +83,15 @@ public final class XeraBungeeQueue extends Plugin {
             updateTab(veteranQueue, Config.HEADERVETERAN, Config.FOOTERVETERAN);
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-        // moves the queue when someone logs off the main server on an interval set in the config.yml
+        // Moves the queue when someone logs off the main server on an interval set in the config.yml
         getProxy().getScheduler().schedule(this, events::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-        // moves the queue when someone logs off the main server on an interval set in the config.yml
+        // Moves the queue when someone logs off the main server on an interval set in the config.yml
         getProxy().getScheduler().schedule(this, () -> {
             try {
                 Socket s = new Socket(
-                        ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).getAddress().getAddress(),
-                        ProxyServer.getInstance().getServerInfo(Config.MAINSERVER).getAddress().getPort());
+                        getProxy().getServerInfo(Config.MAINSERVER).getAddress().getAddress(),
+                        getProxy().getServerInfo(Config.MAINSERVER).getAddress().getPort());
 
                 s.close();
                 events.mainOnline = true;
@@ -104,8 +104,8 @@ public final class XeraBungeeQueue extends Plugin {
         getProxy().getScheduler().schedule(this, () -> {
             try {
                 Socket s = new Socket(
-                        ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).getAddress().getAddress(),
-                        ProxyServer.getInstance().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
+                        getProxy().getServerInfo(Config.QUEUESERVER).getAddress().getAddress(),
+                        getProxy().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
 
                 s.close();
                 events.queueOnline = true;
@@ -119,8 +119,8 @@ public final class XeraBungeeQueue extends Plugin {
             if (Config.ENABLEAUTHSERVER) {
                 try {
                     Socket s = new Socket(
-                            ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).getAddress().getAddress(),
-                            ProxyServer.getInstance().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
+                            getProxy().getServerInfo(Config.AUTHSERVER).getAddress().getAddress(),
+                            getProxy().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
 
                     s.close();
                     events.authOnline = true;
