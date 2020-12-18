@@ -88,45 +88,57 @@ public final class XeraBungeeQueue extends Plugin {
 
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
         getProxy().getScheduler().schedule(this, () -> {
-            try {
-                Socket s = new Socket(
-                        getProxy().getServerInfo(Config.MAINSERVER).getAddress().getAddress(),
-                        getProxy().getServerInfo(Config.MAINSERVER).getAddress().getPort());
+            if (getProxy().getServers().containsKey(Config.MAINSERVER)) {
+                try {
+                    Socket s = new Socket(
+                            getProxy().getServerInfo(Config.MAINSERVER).getAddress().getAddress(),
+                            getProxy().getServerInfo(Config.MAINSERVER).getAddress().getPort());
 
-                s.close();
-                events.mainOnline = true;
-            } catch (IOException e) {
-                getLogger().warning("Main Server is down!!!");
-                events.mainOnline = false;
+                    s.close();
+                    events.mainOnline = true;
+                } catch (IOException e) {
+                    getLogger().warning("Main Server is down!!!");
+                    events.mainOnline = false;
+                }
+            } else {
+                getLogger().warning("Main Server \"" + Config.MAINSERVER +  "\" not set up!!!");
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
         getProxy().getScheduler().schedule(this, () -> {
-            try {
-                Socket s = new Socket(
-                        getProxy().getServerInfo(Config.QUEUESERVER).getAddress().getAddress(),
-                        getProxy().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
+            if (getProxy().getServers().containsKey(Config.QUEUESERVER)) {
+                try {
+                    Socket s = new Socket(
+                            getProxy().getServerInfo(Config.QUEUESERVER).getAddress().getAddress(),
+                            getProxy().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
 
-                s.close();
-                events.queueOnline = true;
-            } catch (IOException e) {
-                getLogger().warning("Queue Server is down!!!");
-                events.queueOnline = false;
+                    s.close();
+                    events.queueOnline = true;
+                } catch (IOException e) {
+                    getLogger().warning("Queue Server is down!!!");
+                    events.queueOnline = false;
+                }
+            } else {
+                getLogger().warning("Queue Server \"" + Config.QUEUESERVER +  "\" not set up!!!");
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
         getProxy().getScheduler().schedule(this, () -> {
             if (Config.ENABLEAUTHSERVER) {
-                try {
-                    Socket s = new Socket(
-                            getProxy().getServerInfo(Config.AUTHSERVER).getAddress().getAddress(),
-                            getProxy().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
+                if (getProxy().getServers().containsKey(Config.AUTHSERVER)) {
+                    try {
+                        Socket s = new Socket(
+                                getProxy().getServerInfo(Config.AUTHSERVER).getAddress().getAddress(),
+                                getProxy().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
 
-                    s.close();
-                    events.authOnline = true;
-                } catch (IOException e) {
-                    getLogger().warning("Auth Server is down!!!");
-                    events.authOnline = false;
+                        s.close();
+                        events.authOnline = true;
+                    } catch (IOException e) {
+                        getLogger().warning("Auth Server is down!!!");
+                        events.authOnline = false;
+                    }
+                } else {
+                    getLogger().warning("Auth Server \"" + Config.AUTHSERVER +  "\" not set up!!!");
                 }
             } else {
                 events.authOnline = true;
