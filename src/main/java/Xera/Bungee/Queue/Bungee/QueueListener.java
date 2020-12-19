@@ -154,8 +154,15 @@ public final class QueueListener implements Listener {
         queueMap.remove(entry.getKey());
 
         player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.JOININGMAINSERVER.replaceAll("%server%", entry.getValue())));
-        player.connect(plugin.getProxy().getServerInfo(entry.getValue()));
         player.resetTabHeader();
+
+        if (player.hasPermission(Config.SHADOWBANPERMISSION)) {
+            player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
+
+            queueMap.put(entry.getKey(), entry.getValue());
+        } else {
+            player.connect(plugin.getProxy().getServerInfo(entry.getValue()));
+        }
     }
 
     private void putQueueAuthFirst(ProxiedPlayer player, List<String> header, List<String> footer, LinkedHashMap<UUID, String> queueMap) {

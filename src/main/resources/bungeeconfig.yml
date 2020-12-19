@@ -48,7 +48,7 @@ CUSTOMPROTOCOL: "SERVERNAME &61.8.x to 1.16.x"
 # Set the queue servers name that is in the bungee config.yml
 # Note that the main server is always the one you login to first
 # The main server server is the one that has a queue to protect it
-# make sure you set the default server in bungee config.yml correctly
+# Make sure you set the default server in bungee config.yml correctly
 QUEUESERVER: "queue"
 MAINSERVER: "main"
 
@@ -82,14 +82,19 @@ QUEUESERVERSLOTS: 9000
 # please note this only guaranteed to not have issues 2000ms and higher
 QUEUEMOVEDELAY: 2000
 
-# Always add players to queue to prevent server crashing from too many joins
+# Should the queue be always active or only when the main server is full?
+# When activated you will always be sent into the queue server and then the main server.
 ALWAYSQUEUE: true
+
+# When your shadow banned you will be put in queue, but before joining it "fails" and you start all over again.
+SHADOWBANMESSAGE: "&6You have lost connection to the server"
 
 # Permissions
 QUEUEBYPASSPERMISSION: "queue.override"
 QUEUEPRIORITYPERMISSION: "queue.priority"
 QUEUEVETERANPERMISSION: "queue.veteran"
 ADMINPERMISSION: "queue.admin"
+SHADOWBANPERMISSION: "queue.shadowban"
 
 # Queue server tablist configuration use %position% to show the current position of the player
 # and use %wait% to show the estimated wait time of the player (not very accurate yet)
