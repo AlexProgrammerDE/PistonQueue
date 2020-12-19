@@ -57,26 +57,19 @@ public final class QueueListener implements Listener {
     public void onQueueSend(ServerSwitchEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        if (player.hasPermission(Config.QUEUEBYPASSPERMISSION))
+        if (!Config.AUTHFIRST || player.hasPermission(Config.QUEUEBYPASSPERMISSION))
             return;
 
-        if (Config.AUTHFIRST &&
-                event.getFrom() != null &&
+        if (event.getFrom() != null &&
                 event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) &&
                 player.getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER))) {
 
             if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                veteran.add(player.getUniqueId());
-
-                putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue, veteran);
+                putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue);
             } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                priority.add(player.getUniqueId());
-
-                putQueueAuthFirst(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.priorityQueue, priority);
+                putQueueAuthFirst(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.priorityQueue);
             } else {
-                regular.add(player.getUniqueId());
-
-                putQueueAuthFirst(player, Config.HEADER, Config.FOOTER, XeraBungeeQueue.regularQueue, regular);
+                putQueueAuthFirst(player, Config.HEADER, Config.FOOTER, XeraBungeeQueue.regularQueue);
             }
         }
     }
@@ -89,7 +82,7 @@ public final class QueueListener implements Listener {
             return;
 
         if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-            putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue,veteran,  event);
+            putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue, veteran,  event);
         } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
             putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.priorityQueue, priority, event);
         } else {
@@ -154,23 +147,18 @@ public final class QueueListener implements Listener {
         }
     }
 
-    private void connectPlayer(LinkedHashMap<UUID, String> queueList) {
-        Entry<UUID, String> entry = queueList.entrySet().iterator().next();
+    private void connectPlayer(LinkedHashMap<UUID, String> queueMap) {
+        Entry<UUID, String> entry = queueMap.entrySet().iterator().next();
         ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
 
-        queueList.remove(entry.getKey());
+        queueMap.remove(entry.getKey());
 
         player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.JOININGMAINSERVER.replaceAll("%server%", entry.getValue())));
         player.connect(plugin.getProxy().getServerInfo(entry.getValue()));
         player.resetTabHeader();
     }
 
-    private void putQueueAuthFirst(ProxiedPlayer player, List<String> header, List<String> footer, LinkedHashMap<UUID, String> queueMap, List<UUID> queueList) {
-        if (!queueList.contains(player.getUniqueId()))
-            return;
-
-        queueList.remove(player.getUniqueId());
-
+    private void putQueueAuthFirst(ProxiedPlayer player, List<String> header, List<String> footer, LinkedHashMap<UUID, String> queueMap) {
         preQueueAdding(player, header, footer);
 
         // Store the data concerning the player's original destination
