@@ -1,5 +1,5 @@
 name: XeraBungeeQueueBukkit
-version: 1.2.0
+version: 1.3.0
 api-version: 1.16
 main: Xera.Bungee.Queue.Bukkit.XeraBungeeQueueBukkit
 author: XeraPlugins
