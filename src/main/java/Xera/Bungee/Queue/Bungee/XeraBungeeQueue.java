@@ -76,7 +76,6 @@ public final class XeraBungeeQueue extends Plugin {
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Updates the tab
-        // Regular
         getProxy().getScheduler().schedule(this, () -> {
             updateTab(regularQueue, Config.HEADER, Config.FOOTER);
             updateTab(priorityQueue, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
@@ -86,7 +85,7 @@ public final class XeraBungeeQueue extends Plugin {
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
         getProxy().getScheduler().schedule(this, events::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-        // Moves the queue when someone logs off the main server on an interval set in the config.yml
+        // Checks the status of all the servers
         getProxy().getScheduler().schedule(this, () -> {
             if (getProxy().getServers().containsKey(Config.MAINSERVER)) {
                 try {
@@ -243,45 +242,19 @@ public final class XeraBungeeQueue extends Plugin {
                 StringBuilder headerBuilder = new StringBuilder();
                 StringBuilder footerBuilder = new StringBuilder();
 
-                if (waitTimeHour == 0) {
-                    for (int i = 0; i < header.size(); i++) {
-                        headerBuilder.append(ChatUtils.parseToString(header.get(i))
-                                .replaceAll("%position%", w + "")
-                                .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)));
+                for (int i = 0; i < header.size(); i++) {
+                    headerBuilder.append(ChatUtils.parseToString(replacePosition(header.get(i), waitTimeHour, waitTimeMinute, w)));
 
-                        if (i != (header.size() - 1)) {
-                            headerBuilder.append("\n");
-                        }
+                    if (i != (header.size() - 1)) {
+                        headerBuilder.append("\n");
                     }
+                }
 
-                    for (int i = 0; i < footer.size(); i++) {
-                        footerBuilder.append(ChatUtils.parseToString(footer.get(i))
-                                .replaceAll("%position%", w + "")
-                                .replaceAll("%wait%", "" + String.format("%dm", waitTimeMinute)));
+                for (int i = 0; i < footer.size(); i++) {
+                    footerBuilder.append(ChatUtils.parseToString(replacePosition(footer.get(i), waitTimeHour, waitTimeMinute, w)));
 
-                        if (i != (footer.size() - 1)) {
-                            footerBuilder.append("\n");
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < header.size(); i++) {
-                        headerBuilder.append(ChatUtils.parseToString(header.get(i))
-                                .replaceAll("%position%", w + "")
-                                .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
-
-                        if (i != (header.size() - 1)) {
-                            headerBuilder.append("\n");
-                        }
-                    }
-
-                    for (int i = 0; i < footer.size(); i++) {
-                        footerBuilder.append(ChatUtils.parseToString(footer.get(i))
-                                .replaceAll("%position%", w + "")
-                                .replaceAll("%wait%", "" + String.format("%dh %dm", waitTimeHour, waitTimeMinute)));
-
-                        if (i != (footer.size() - 1)) {
-                            footerBuilder.append("\n");
-                        }
+                    if (i != (footer.size() - 1)) {
+                        footerBuilder.append("\n");
                     }
                 }
 
@@ -292,5 +265,14 @@ public final class XeraBungeeQueue extends Plugin {
                 queue.remove(entry.getKey());
             }
         }
+    }
+
+    private String replacePosition(String text, long waitTimeHour, long waitTimeMinute, int w) {
+        String format = String.format("%dh %dm", waitTimeHour, waitTimeMinute);
+
+        if (waitTimeHour == 0)
+            format = String.format("%dm", waitTimeMinute);
+
+        return text.replaceAll("%position%", w + "").replaceAll("%wait%", format);
     }
 }

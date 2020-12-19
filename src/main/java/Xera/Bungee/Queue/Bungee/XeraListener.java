@@ -27,9 +27,8 @@ public final class XeraListener implements Listener {
 
     @EventHandler
     public void onKick(ServerKickEvent event) {
-        if (Config.ENABLEKICKMESSAGE) {
+        if (Config.ENABLEKICKMESSAGE)
             event.setKickReasonComponent(ChatUtils.parseToComponent(Config.KICKMESSAGE));
-        }
     }
 
     @EventHandler

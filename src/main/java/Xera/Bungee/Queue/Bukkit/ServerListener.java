@@ -1,5 +1,6 @@
 package Xera.Bungee.Queue.Bukkit;
 
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -18,51 +19,40 @@ public final class ServerListener implements Listener {
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        if (isExcluded(e.getPlayer())) {
-            e.getPlayer().sendMessage("\2476Due to your permissions, you've been excluded from the queue movement and gamemode restrictions.");
+    public void onPlayerJoin1(PlayerJoinEvent e) {
+        Player player = e.getPlayer();
+
+        if (isExcluded(player)) {
+            player.sendMessage(ChatColor.GOLD + "Due to your permissions, you've been excluded from the queue movement and gamemode restrictions.");
 
             return;
         }
 
-        if (!plugin.forceLocation) return;
+        if (plugin.forceGamemode)
+            player.setGameMode(GameMode.valueOf(plugin.forcedGamemode.toUpperCase()));
 
-        e.getPlayer().teleport(Objects.requireNonNull(generateForcedLocation()));
-    }
+        if (plugin.forceLocation)
+            player.teleport(Objects.requireNonNull(generateForcedLocation()));
 
-    @EventHandler
-    public void onPlayerJoin$0(PlayerJoinEvent e) {
-        if (!plugin.hidePlayers) return;
+        if (plugin.hidePlayers)
+            plugin.getServer().getOnlinePlayers().forEach(onlinePlayer -> {
+                player.hidePlayer(plugin, onlinePlayer);
+                onlinePlayer.hidePlayer(plugin, e.getPlayer());
 
-        for (Player onlinePlayer : plugin.getServer().getOnlinePlayers()) {
-            e.getPlayer().hidePlayer(plugin, onlinePlayer);
-            onlinePlayer.hidePlayer(plugin, e.getPlayer());
-
-            e.setJoinMessage(null);
-        }
+                e.setJoinMessage(null);
+            });
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
-        if (!plugin.hidePlayers) return;
-
-        e.setQuitMessage(null);
-    }
-
-    @EventHandler
-    public void onPlayerJoin$1(PlayerJoinEvent e) {
-        if (!plugin.forceGamemode) return;
-        if (isExcluded(e.getPlayer())) return;
-
-        e.getPlayer().setGameMode(GameMode.valueOf(plugin.forcedGamemode.toUpperCase()));
+        if (plugin.hidePlayers)
+            e.setQuitMessage(null);
     }
 
     @EventHandler
     public void onPlayerSpawn(PlayerRespawnEvent e) {
-        if (!plugin.forceLocation) return;
-        if (isExcluded(e.getPlayer())) return;
-
-        e.setRespawnLocation(Objects.requireNonNull(generateForcedLocation()));
+        if (plugin.forceLocation && !isExcluded(e.getPlayer()))
+            e.setRespawnLocation(Objects.requireNonNull(generateForcedLocation()));
     }
 
     @EventHandler
@@ -77,9 +67,8 @@ public final class ServerListener implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
-        if (!plugin.restrictMovement || isExcluded(e.getPlayer())) return;
-
-        e.setCancelled(true);
+        if (plugin.restrictMovement && !isExcluded(e.getPlayer()))
+            e.setCancelled(true);
     }
 
     private boolean isExcluded(Player player) {
