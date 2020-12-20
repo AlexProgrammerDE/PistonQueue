@@ -83,6 +83,10 @@ public final class MainCommand extends Command implements TabExecutor {
                                         int m = Integer.parseInt(args[2].toLowerCase().replaceAll("m", ""));
 
                                         calendar.add(Calendar.MINUTE, m);
+                                    } else if (args[2].toLowerCase().endsWith("s")) {
+                                        int s = Integer.parseInt(args[2].toLowerCase().replaceAll("s", ""));
+
+                                        calendar.add(Calendar.SECOND, s);
                                     } else {
                                         sendBanHelp(sender);
                                         break;
@@ -96,7 +100,7 @@ public final class MainCommand extends Command implements TabExecutor {
                                     } else {
                                         sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
                                         sender.sendMessage(new ComponentBuilder("XeraBungeeQueue").color(ChatColor.GOLD).create());
-                                        sender.sendMessage(new ComponentBuilder(player.getName() + " is already shadow banned!").color(ChatColor.RED).create());
+                                        sender.sendMessage(new ComponentBuilder(player.getName() + " is already shadowbanned!").color(ChatColor.RED).create());
                                         sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
                                     }
                                 } else {
@@ -129,7 +133,7 @@ public final class MainCommand extends Command implements TabExecutor {
                                 } else {
                                     sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
                                     sender.sendMessage(new ComponentBuilder("XeraBungeeQueue").color(ChatColor.GOLD).create());
-                                    sender.sendMessage(new ComponentBuilder(player.getName() + " is already shadow banned!").color(ChatColor.RED).create());
+                                    sender.sendMessage(new ComponentBuilder(player.getName() + " is already shadowbanned!").color(ChatColor.RED).create());
                                     sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
                                 }
                             } else {
@@ -175,7 +179,8 @@ public final class MainCommand extends Command implements TabExecutor {
 
     private void sendBanHelp(CommandSender sender) {
         sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
-        sender.sendMessage(new ComponentBuilder("/xbq shadowban player <d|h|m>").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("XeraBungeeQueue").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/xbq shadowban player <d|h|m|s>").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("Example:").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/xbq shadowban Pistonmaster 2d").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
@@ -183,6 +188,7 @@ public final class MainCommand extends Command implements TabExecutor {
 
     private void sendUnBanHelp(CommandSender sender) {
         sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+        sender.sendMessage(new ComponentBuilder("XeraBungeeQueue").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/xbq unshadowban player").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("Example:").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/xbq unshadowban Pistonmaster").color(ChatColor.GOLD).create());
@@ -213,7 +219,13 @@ public final class MainCommand extends Command implements TabExecutor {
                     if (player.getName().toLowerCase().startsWith(args[1].toLowerCase()))
                         completions.add(player.getName());
                 }
-
+            } else if (sender.hasPermission(Config.ADMINPERMISSION) &&
+                    args.length == 2 &&
+                    args[0].equalsIgnoreCase("unshadowban")) {
+                for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
+                    if (player.getName().toLowerCase().startsWith(args[1].toLowerCase()))
+                        completions.add(player.getName());
+                }
             }
 
             Collections.sort(completions);
