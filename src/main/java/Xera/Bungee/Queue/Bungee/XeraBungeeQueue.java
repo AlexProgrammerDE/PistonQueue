@@ -1,5 +1,12 @@
 package Xera.Bungee.Queue.Bungee;
 
+import Xera.Bungee.Queue.Bungee.commands.MainCommand;
+import Xera.Bungee.Queue.Bungee.listeners.QueueListener;
+import Xera.Bungee.Queue.Bungee.listeners.XeraListener;
+import Xera.Bungee.Queue.Bungee.utils.ChatUtils;
+import Xera.Bungee.Queue.Bungee.utils.Config;
+import Xera.Bungee.Queue.Bungee.utils.Metrics;
+import Xera.Bungee.Queue.Bungee.utils.UpdateChecker;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -25,9 +32,9 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings({"deprecation"})
 public final class XeraBungeeQueue extends Plugin {
-    protected static final LinkedHashMap<UUID, String> regularQueue = new LinkedHashMap<>();
-    protected static final LinkedHashMap<UUID, String> priorityQueue = new LinkedHashMap<>();
-    protected static final LinkedHashMap<UUID, String> veteranQueue = new LinkedHashMap<>();
+    public static final LinkedHashMap<UUID, String> regularQueue = new LinkedHashMap<>();
+    public static final LinkedHashMap<UUID, String> priorityQueue = new LinkedHashMap<>();
+    public static final LinkedHashMap<UUID, String> veteranQueue = new LinkedHashMap<>();
 
     @Override
     public void onEnable() {
@@ -177,16 +184,6 @@ public final class XeraBungeeQueue extends Plugin {
                 e.printStackTrace();
             }
         });
-    }
-
-    protected static String parseText(String text) {
-        String returnedText = text;
-
-        returnedText = returnedText.replaceAll("%regular%", String.valueOf(QueueAPI.getRegularSize()));
-        returnedText = returnedText.replaceAll("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
-        returnedText = returnedText.replaceAll("%veteran%", String.valueOf(QueueAPI.getVeteranSize()));
-
-        return returnedText;
     }
 
     private void sendMessage(LinkedHashMap<UUID, String> queue, boolean bool, ChatMessageType type) {

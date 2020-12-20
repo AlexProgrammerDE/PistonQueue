@@ -1,5 +1,8 @@
-package Xera.Bungee.Queue.Bungee;
+package Xera.Bungee.Queue.Bungee.listeners;
 
+import Xera.Bungee.Queue.Bungee.utils.ChatUtils;
+import Xera.Bungee.Queue.Bungee.utils.Config;
+import Xera.Bungee.Queue.Bungee.XeraBungeeQueue;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -20,9 +23,9 @@ import java.util.UUID;
  * ProxyListener
  */
 public final class QueueListener implements Listener {
-    protected boolean mainOnline = false;
-    protected boolean queueOnline = false;
-    protected boolean authOnline = false;
+    public boolean mainOnline = false;
+    public boolean queueOnline = false;
+    public boolean authOnline = false;
 
     private final XeraBungeeQueue plugin;
 
@@ -99,7 +102,7 @@ public final class QueueListener implements Listener {
         XeraBungeeQueue.regularQueue.remove(uuid);
     }
 
-    protected void moveQueue() {
+    public void moveQueue() {
         if (Config.PAUSEQUEUEIFMAINDOWN && !mainOnline) {
             XeraBungeeQueue.veteranQueue.forEach((UUID id, String str) -> {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(id);

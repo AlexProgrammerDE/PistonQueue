@@ -1,4 +1,4 @@
-package Xera.Bungee.Queue.Bungee;
+package Xera.Bungee.Queue.Bungee.utils;
 
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -9,7 +9,6 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 
 public final class UpdateChecker {
-
     private final Plugin plugin;
     private final int resourceId;
 

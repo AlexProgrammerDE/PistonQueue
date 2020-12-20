@@ -94,7 +94,6 @@ QUEUEBYPASSPERMISSION: "queue.override"
 QUEUEPRIORITYPERMISSION: "queue.priority"
 QUEUEVETERANPERMISSION: "queue.veteran"
 ADMINPERMISSION: "queue.admin"
-SHADOWBANPERMISSION: "queue.shadowban"
 
 # Queue server tablist configuration use %position% to show the current position of the player
 # and use %wait% to show the estimated wait time of the player (not very accurate yet)

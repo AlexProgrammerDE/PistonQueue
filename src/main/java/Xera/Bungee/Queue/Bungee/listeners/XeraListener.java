@@ -1,5 +1,8 @@
-package Xera.Bungee.Queue.Bungee;
+package Xera.Bungee.Queue.Bungee.listeners;
 
+import Xera.Bungee.Queue.Bungee.utils.ChatUtils;
+import Xera.Bungee.Queue.Bungee.utils.Config;
+import Xera.Bungee.Queue.Bungee.XeraBungeeQueue;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
