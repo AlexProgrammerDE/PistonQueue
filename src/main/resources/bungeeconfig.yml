@@ -86,9 +86,9 @@ QUEUEMOVEDELAY: 2000
 # When activated you will always be sent into the queue server and then the main server.
 ALWAYSQUEUE: true
 
-# The way shadow bans should work on your server. Valid types are: LOOP, ONEPERCENT
+# The way shadow bans should work on your server. Valid types are: LOOP, TENPERCENT
 # LOOP: When reaching the end of the queue you will get put in front of it again.
-# ONEPERCENT: You have a one percent chance of getting in.
+# TENPERCENT: You have a ten percent chance of getting in.
 SHADOWBANTYPE: "LOOP"
 
 # LOOP: When your shadow banned you will be put in queue, but before joining it "fails" and you start all over again.

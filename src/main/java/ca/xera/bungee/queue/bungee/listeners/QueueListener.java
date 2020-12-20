@@ -164,8 +164,8 @@ public final class QueueListener implements Listener {
             queueMap.put(entry.getKey(), entry.getValue());
 
             return;
-        } else if (XeraBungeeQueue.banType == BanType.ONEPERCENT && StorageTool.isShadowBanned(player)) {
-            if (!(new Random().nextInt(100) < 1)) {
+        } else if (XeraBungeeQueue.banType == BanType.TENPERCENT && StorageTool.isShadowBanned(player)) {
+            if (!(new Random().nextInt(100) < 10)) {
                 player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
 
                 queueMap.put(entry.getKey(), entry.getValue());
