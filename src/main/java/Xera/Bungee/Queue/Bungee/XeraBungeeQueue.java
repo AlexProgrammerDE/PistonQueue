@@ -3,10 +3,7 @@ package Xera.Bungee.Queue.Bungee;
 import Xera.Bungee.Queue.Bungee.commands.MainCommand;
 import Xera.Bungee.Queue.Bungee.listeners.QueueListener;
 import Xera.Bungee.Queue.Bungee.listeners.XeraListener;
-import Xera.Bungee.Queue.Bungee.utils.ChatUtils;
-import Xera.Bungee.Queue.Bungee.utils.Config;
-import Xera.Bungee.Queue.Bungee.utils.Metrics;
-import Xera.Bungee.Queue.Bungee.utils.UpdateChecker;
+import Xera.Bungee.Queue.Bungee.utils.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -44,6 +41,8 @@ public final class XeraBungeeQueue extends Plugin {
 
         logger.info(ChatColor.BLUE + "Loading config");
         processConfig();
+
+        new StorageTool().setupTool(this);
 
         logger.info(ChatColor.BLUE + "Registering commands");
         manager.registerCommand(this, new MainCommand(this));

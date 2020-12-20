@@ -3,6 +3,7 @@ package Xera.Bungee.Queue.Bungee.listeners;
 import Xera.Bungee.Queue.Bungee.utils.ChatUtils;
 import Xera.Bungee.Queue.Bungee.utils.Config;
 import Xera.Bungee.Queue.Bungee.XeraBungeeQueue;
+import Xera.Bungee.Queue.Bungee.utils.StorageTool;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -159,7 +160,7 @@ public final class QueueListener implements Listener {
         player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.JOININGMAINSERVER.replaceAll("%server%", entry.getValue())));
         player.resetTabHeader();
 
-        if (player.hasPermission(Config.SHADOWBANPERMISSION)) {
+        if (StorageTool.isShadowBanned(player)) {
             player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
 
             queueMap.put(entry.getKey(), entry.getValue());
