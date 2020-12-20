@@ -1,5 +1,6 @@
 package ca.xera.bungee.queue.bungee.listeners;
 
+import ca.xera.bungee.queue.bungee.utils.BanType;
 import ca.xera.bungee.queue.bungee.utils.ChatUtils;
 import ca.xera.bungee.queue.bungee.utils.Config;
 import ca.xera.bungee.queue.bungee.XeraBungeeQueue;
@@ -14,11 +15,8 @@ import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 
 /**
  * ProxyListener
@@ -160,13 +158,23 @@ public final class QueueListener implements Listener {
         player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.JOININGMAINSERVER.replaceAll("%server%", entry.getValue())));
         player.resetTabHeader();
 
-        if (StorageTool.isShadowBanned(player)) {
+        if (XeraBungeeQueue.banType == BanType.LOOP && StorageTool.isShadowBanned(player)) {
             player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
 
             queueMap.put(entry.getKey(), entry.getValue());
-        } else {
-            player.connect(plugin.getProxy().getServerInfo(entry.getValue()));
+
+            return;
+        } else if (XeraBungeeQueue.banType == BanType.ONEPERCENT && StorageTool.isShadowBanned(player)) {
+            if (!(new Random().nextInt(100) < 1)) {
+                player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
+
+                queueMap.put(entry.getKey(), entry.getValue());
+
+                return;
+            }
         }
+
+        player.connect(plugin.getProxy().getServerInfo(entry.getValue()));
     }
 
     private void putQueueAuthFirst(ProxiedPlayer player, List<String> header, List<String> footer, LinkedHashMap<UUID, String> queueMap) {

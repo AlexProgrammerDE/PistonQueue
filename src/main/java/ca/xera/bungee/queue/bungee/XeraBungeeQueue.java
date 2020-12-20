@@ -33,6 +33,8 @@ public final class XeraBungeeQueue extends Plugin {
     public static final LinkedHashMap<UUID, String> priorityQueue = new LinkedHashMap<>();
     public static final LinkedHashMap<UUID, String> veteranQueue = new LinkedHashMap<>();
 
+    public static BanType banType;
+
     @Override
     public void onEnable() {
         Logger logger = getLogger();
@@ -183,6 +185,8 @@ public final class XeraBungeeQueue extends Plugin {
                 e.printStackTrace();
             }
         });
+
+        banType = BanType.valueOf(config.getString("SHADOWBANTYPE"));
     }
 
     private void sendMessage(LinkedHashMap<UUID, String> queue, boolean bool, ChatMessageType type) {
