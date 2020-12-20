@@ -1,9 +1,9 @@
-package Xera.Bungee.Queue.Bungee.listeners;
+package ca.xera.bungee.queue.bungee.listeners;
 
-import Xera.Bungee.Queue.Bungee.utils.ChatUtils;
-import Xera.Bungee.Queue.Bungee.utils.Config;
-import Xera.Bungee.Queue.Bungee.XeraBungeeQueue;
-import Xera.Bungee.Queue.Bungee.utils.StorageTool;
+import ca.xera.bungee.queue.bungee.utils.ChatUtils;
+import ca.xera.bungee.queue.bungee.utils.Config;
+import ca.xera.bungee.queue.bungee.XeraBungeeQueue;
+import ca.xera.bungee.queue.bungee.utils.StorageTool;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;

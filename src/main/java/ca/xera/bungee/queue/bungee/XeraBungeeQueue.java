@@ -1,9 +1,10 @@
-package Xera.Bungee.Queue.Bungee;
+package ca.xera.bungee.queue.bungee;
 
-import Xera.Bungee.Queue.Bungee.commands.MainCommand;
-import Xera.Bungee.Queue.Bungee.listeners.QueueListener;
-import Xera.Bungee.Queue.Bungee.listeners.XeraListener;
+import ca.xera.bungee.queue.bungee.commands.MainCommand;
+import ca.xera.bungee.queue.bungee.listeners.QueueListener;
+import ca.xera.bungee.queue.bungee.listeners.XeraListener;
 import Xera.Bungee.Queue.Bungee.utils.*;
+import ca.xera.bungee.queue.bungee.utils.*;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;

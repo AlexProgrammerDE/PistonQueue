@@ -1,6 +1,6 @@
-package Xera.Bungee.Queue.Bungee.utils;
+package ca.xera.bungee.queue.bungee.utils;
 
-import Xera.Bungee.Queue.Bungee.QueueAPI;
+import ca.xera.bungee.queue.bungee.QueueAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;

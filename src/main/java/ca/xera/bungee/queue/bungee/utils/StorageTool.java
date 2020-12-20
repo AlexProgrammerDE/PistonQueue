@@ -1,6 +1,6 @@
-package Xera.Bungee.Queue.Bungee.utils;
+package ca.xera.bungee.queue.bungee.utils;
 
-import Xera.Bungee.Queue.Bungee.XeraBungeeQueue;
+import ca.xera.bungee.queue.bungee.XeraBungeeQueue;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;

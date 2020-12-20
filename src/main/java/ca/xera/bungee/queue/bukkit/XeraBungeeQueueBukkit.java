@@ -1,4 +1,4 @@
-package Xera.Bungee.Queue.Bukkit;
+package ca.xera.bungee.queue.bukkit;
 
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;

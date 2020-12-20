@@ -1,5 +1,5 @@
 name: XeraBungeeQueue
-main: Xera.Bungee.Queue.Bungee.XeraBungeeQueue
+main: ca.xera.bungee.queue.bungee.XeraBungeeQueue
 description: ${project.description}
 version: ${project.version}
 author: XeraPlugins

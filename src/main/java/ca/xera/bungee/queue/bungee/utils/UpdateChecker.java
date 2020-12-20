@@ -1,4 +1,4 @@
-package Xera.Bungee.Queue.Bungee.utils;
+package ca.xera.bungee.queue.bungee.utils;
 
 import net.md_5.bungee.api.plugin.Plugin;
 
