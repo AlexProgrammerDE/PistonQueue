@@ -44,8 +44,6 @@ public class StorageTool {
      * @return true if player got unbanned and false if not was shadow banned.
      */
     public static boolean unShadowBanPlayer(ProxiedPlayer player) {
-        manageBan(player);
-
         if (dataConfig.contains(player.getUniqueId().toString())) {
             dataConfig.set(player.getUniqueId().toString(), null);
 
