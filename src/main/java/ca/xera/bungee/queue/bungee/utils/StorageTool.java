@@ -20,8 +20,9 @@ public class StorageTool {
 
     /**
      * Shadowban a player!
+     *
      * @param player The player to shadowban.
-     * @param date The date when he will be unbanned.
+     * @param date   The date when he will be unbanned.
      * @return true if player got shadow banned and if already shadow banned false.
      */
     public static boolean shadowBanPlayer(ProxiedPlayer player, Date date) {
@@ -40,6 +41,7 @@ public class StorageTool {
 
     /**
      * Unshadowban a player!
+     *
      * @param player The player to unshadowban.
      * @return true if player got unshadowbanned and false if not was shadow banned.
      */
@@ -84,7 +86,7 @@ public class StorageTool {
 
         try {
             dataConfig = ConfigurationProvider.getProvider(YamlConfiguration.class).load(dataFile);
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

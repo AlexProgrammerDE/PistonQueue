@@ -36,14 +36,15 @@ public final class XeraBungeeQueueBukkit extends JavaPlugin {
         disableChat = getConfig().getBoolean("disableChat");
         disableCmd = getConfig().getBoolean("disableCmd");
         forcedGamemode = getConfig().getString("forcedGamemode");
-        
+
         setGameRule();
-        
+
         getServer().getPluginManager().registerEvents(new ServerListener(this), this);
     }
-    
+
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+    }
 
     protected void setGameRule() {
         if (hidePlayers) {

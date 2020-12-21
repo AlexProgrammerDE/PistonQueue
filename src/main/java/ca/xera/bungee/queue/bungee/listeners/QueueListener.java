@@ -84,7 +84,7 @@ public final class QueueListener implements Listener {
             return;
 
         if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-            putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue, veteran,  event);
+            putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue, veteran, event);
         } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
             putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.priorityQueue, priority, event);
         } else {

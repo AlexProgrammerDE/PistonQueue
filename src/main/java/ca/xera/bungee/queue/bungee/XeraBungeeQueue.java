@@ -61,9 +61,9 @@ public final class XeraBungeeQueue extends Plugin {
             if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
                 logger.info(ChatColor.BLUE + "Your up to date!");
             } else {
-                logger.info("§cThere is a update available.");
-                logger.info("§cCurrent version: " + this.getDescription().getVersion() + " New version: " + version);
-                logger.info("§cDownload it at: https://www.spigotmc.org/resources/83541");
+                logger.info(ChatColor.RED + "There is a update available.");
+                logger.info(ChatColor.RED + "Current version: " + this.getDescription().getVersion() + " New version: " + version);
+                logger.info(ChatColor.RED + "Download it at: https://www.spigotmc.org/resources/83541");
             }
         });
 
@@ -71,23 +71,23 @@ public final class XeraBungeeQueue extends Plugin {
 
         // Sends the position message and updates tab on an interval in chat
         getProxy().getScheduler().schedule(this, () -> {
-            sendMessage(regularQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
-            sendMessage(priorityQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
             sendMessage(veteranQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
+            sendMessage(priorityQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
+            sendMessage(regularQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Sends the position message and updates tab on an interval on hotbar
         getProxy().getScheduler().schedule(this, () -> {
-            sendMessage(regularQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
-            sendMessage(priorityQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
             sendMessage(veteranQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
+            sendMessage(priorityQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
+            sendMessage(regularQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Updates the tab
         getProxy().getScheduler().schedule(this, () -> {
-            updateTab(regularQueue, Config.HEADER, Config.FOOTER);
-            updateTab(priorityQueue, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
             updateTab(veteranQueue, Config.HEADERVETERAN, Config.FOOTERVETERAN);
+            updateTab(priorityQueue, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
+            updateTab(regularQueue, Config.HEADER, Config.FOOTER);
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
@@ -108,7 +108,7 @@ public final class XeraBungeeQueue extends Plugin {
                     events.mainOnline = false;
                 }
             } else {
-                getLogger().warning("Main Server \"" + Config.MAINSERVER +  "\" not set up!!!");
+                getLogger().warning("Main Server \"" + Config.MAINSERVER + "\" not set up!!!");
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
@@ -126,7 +126,7 @@ public final class XeraBungeeQueue extends Plugin {
                     events.queueOnline = false;
                 }
             } else {
-                getLogger().warning("Queue Server \"" + Config.QUEUESERVER +  "\" not set up!!!");
+                getLogger().warning("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!!");
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
@@ -145,7 +145,7 @@ public final class XeraBungeeQueue extends Plugin {
                         events.authOnline = false;
                     }
                 } else {
-                    getLogger().warning("Auth Server \"" + Config.AUTHSERVER +  "\" not set up!!!");
+                    getLogger().warning("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!!");
                 }
             } else {
                 events.authOnline = true;

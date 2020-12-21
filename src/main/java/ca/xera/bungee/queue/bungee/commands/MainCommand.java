@@ -15,8 +15,8 @@ import java.util.*;
 
 public final class MainCommand extends Command implements TabExecutor {
     private final XeraBungeeQueue plugin;
-    private static final String[] commands = { "help", "version", "stats" };
-    private static final String[] adminCommands = { "reload", "shadowban", "unshadowban" };
+    private static final String[] commands = {"help", "version", "stats"};
+    private static final String[] adminCommands = {"reload", "shadowban", "unshadowban"};
 
     public MainCommand(XeraBungeeQueue plugin) {
         super("xbq");
