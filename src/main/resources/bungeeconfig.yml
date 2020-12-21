@@ -12,13 +12,12 @@ REGEXMESSAGE: "&6[XBQ] Invalid username please use: %regex%"
 REGISTERTAB: true
 
 # Server is full message
-SERVERISFULLMESSAGE: "YOURSERVER &6is full"
+SERVERISFULLMESSAGE: "SERVERNAME &6is full"
 
 # It is not recommended to decrease this number (milliseconds)
 SERVERONLINECHECKDELAY: 500
 
-# Position in queue message by default only sends in chat every 10 seconds
-# you can have it on the hotbar by setting POSITIONMESSAGEHOTBAR from false to true
+# Where to send the queue position message and what to send.
 POSITIONMESSAGECHAT: true
 POSITIONMESSAGEHOTBAR: false
 QUEUEPOSITION: "&6Position in queue: &l%position%"
@@ -58,8 +57,8 @@ MAINSERVER: "main"
 ENABLEAUTHSERVER: false
 AUTHSERVER: "auth"
 
-# Have the authserver go first instead of the default settings which are Queue -> Auth -> and main
-# This option will let you have the authserver go first then queue and the mainserver.
+# Have the auth server go first instead of the default settings which are Queue -> Auth -> and main
+# This option will let you have the auth server go first then queue and the main server.
 # You need to additionally setup your auth server to send you to the queue server after login
 # DISCLAIMER: This feature is experimental and may cause some issues!
 # It might also cause more issues because then the players aren't queued to join the auth server. It might overload.
@@ -78,7 +77,7 @@ MAINSERVERSLOTS: 100
 # of people you get regularly i set mine to 9000 and 9000 on the queue server
 QUEUESERVERSLOTS: 9000
 
-# Queue move delay in miliseconds default is 2000ms
+# Queue move delay in milliseconds default is 2000ms
 # please note this only guaranteed to not have issues 2000ms and higher
 QUEUEMOVEDELAY: 2000
 
@@ -100,58 +99,58 @@ QUEUEPRIORITYPERMISSION: "queue.priority"
 QUEUEVETERANPERMISSION: "queue.veteran"
 ADMINPERMISSION: "queue.admin"
 
-# Queue server tablist configuration use %position% to show the current position of the player
+# Queue server tab list configuration use %position% to show the current position of the player
 # and use %wait% to show the estimated wait time of the player (not very accurate yet)
 # this only shows when your in the queue waiting to join use a separate plugin for your main server
 HEADER:
   - ""
-  - "SERVERNAME"
+  - " SERVERNAME "
   - ""
-  - "SERVERNAME &bis full"
-  - "Position in queue: &l%position%"
-  - "&6Estimated time: &l%wait%"
+  - " SERVERNAME &bis full "
+  - " Position in queue: &l%position% "
+  - " &6Estimated time: &l%wait% "
 
 FOOTER:
   - ""
-  - "&6You can now donate to receive priority queue status, please visit donate.YOURSERVER.org   "
+  - " &6You can now donate to receive priority queue status, please visit donate.SERVERNAME.org "
   - ""
-  - "&7contact: someone@example.com"
-  - "discussion: http://discord.example.com"
-  - "website: https://www.example.com"
-  - "These are the only official SERVERNAME websites and contacts"
+  - " &7contact: someone@example.com "
+  - " discussion: http://discord.example.com "
+  - " website: https://www.example.com "
+  - " These are the only official SERVERNAME websites and contacts "
 
-# Configs for priority queue tablist
+# Configs for priority queue tab list
 HEADERPRIORITY:
   - ""
-  - "SERVERNAME"
+  - " SERVERNAME"
   - ""
-  - "SERVERNAME &bis full"
-  - "Position in queue: &l%position%"
-  - "&6Estimated time: &l%wait%"
+  - " SERVERNAME &bis full "
+  - " Position in queue: &l%position% "
+  - " &6Estimated time: &l%wait% "
 
 FOOTERPRIORITY:
   - ""
-  - "&6You have priority queue status please wait for an available slot on the server   "
+  - " &6You have priority queue status please wait for an available slot on the server "
   - ""
-  - "&7contact: someone@example.com"
-  - "discussion: http://discord.example.com"
-  - "website: https://www.example.com"
-  - "These are the only official SERVERNAME websites and contacts"
+  - " &7contact: someone@example.com "
+  - " discussion: http://discord.example.com "
+  - " website: https://www.example.com "
+  - " These are the only official SERVERNAME websites and contacts "
 
-# Configs for veteran queue tablist
+# Configs for veteran queue tab list
 HEADERVETERAN:
   - ""
-  - "SERVERNAME"
+  - " SERVERNAME "
   - ""
-  - "SERVERNAME &bis full"
-  - "Position in queue: &l%position%"
-  - "&6Estimated time: &l%wait%"
+  - " SERVERNAME &bis full "
+  - " Position in queue: &l%position% "
+  - " &6Estimated time: &l%wait% "
 
 FOOTERVETERAN:
   - ""
-  - "&6You have veteran queue status please wait for an available slot on the server   "
+  - " &6You have veteran queue status please wait for an available slot on the server "
   - ""
-  - "&7contact: someone@example.com"
-  - "discussion: http://discord.example.com"
-  - "website: https://www.example.com"
-  - "These are the only official SERVERNAME websites and contacts"
+  - " &7contact: someone@example.com "
+  - " discussion: http://discord.example.com "
+  - " website: https://www.example.com "
+  - " These are the only official SERVERNAME websites and contacts "

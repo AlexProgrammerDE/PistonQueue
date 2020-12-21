@@ -6,6 +6,8 @@ author: XeraPlugins
 authors: [Nate Legault, Pistonmaster]
 description: Bukkit companion for XeraBungeeQueue
 website: http://www.xera.ca/
+softdepend: ["ProtocolLib"]
+
 permissions:
   queue.admin:
     description: Lets you bypass the plugin.
