@@ -71,6 +71,13 @@ public final class ServerListener implements Listener {
             e.setCancelled(true);
     }
 
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
+        if (plugin.protocolLib && plugin.disableDebug) {
+            ProtocolLibWrapper.removeDebug(e.getPlayer());
+        }
+    }
+
     private boolean isExcluded(Player player) {
         return (player.isOp() || player.hasPermission("queue.admin"));
     }

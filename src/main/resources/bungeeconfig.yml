@@ -109,6 +109,7 @@ HEADER:
   - " SERVERNAME &bis full "
   - " Position in queue: &l%position% "
   - " &6Estimated time: &l%wait% "
+  - ""
 
 FOOTER:
   - ""
@@ -118,6 +119,7 @@ FOOTER:
   - " discussion: http://discord.example.com "
   - " website: https://www.example.com "
   - " These are the only official SERVERNAME websites and contacts "
+  - ""
 
 # Configs for priority queue tab list
 HEADERPRIORITY:
@@ -127,6 +129,7 @@ HEADERPRIORITY:
   - " SERVERNAME &bis full "
   - " Position in queue: &l%position% "
   - " &6Estimated time: &l%wait% "
+  - ""
 
 FOOTERPRIORITY:
   - ""
@@ -136,6 +139,7 @@ FOOTERPRIORITY:
   - " discussion: http://discord.example.com "
   - " website: https://www.example.com "
   - " These are the only official SERVERNAME websites and contacts "
+  - ""
 
 # Configs for veteran queue tab list
 HEADERVETERAN:
@@ -145,6 +149,7 @@ HEADERVETERAN:
   - " SERVERNAME &bis full "
   - " Position in queue: &l%position% "
   - " &6Estimated time: &l%wait% "
+  - ""
 
 FOOTERVETERAN:
   - ""
@@ -154,3 +159,4 @@ FOOTERVETERAN:
   - " discussion: http://discord.example.com "
   - " website: https://www.example.com "
   - " These are the only official SERVERNAME websites and contacts "
+  - ""

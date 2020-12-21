@@ -1,9 +1,9 @@
 package ca.xera.bungee.queue.bungee.listeners;
 
+import ca.xera.bungee.queue.bungee.XeraBungeeQueue;
 import ca.xera.bungee.queue.bungee.utils.BanType;
 import ca.xera.bungee.queue.bungee.utils.ChatUtils;
 import ca.xera.bungee.queue.bungee.utils.Config;
-import ca.xera.bungee.queue.bungee.XeraBungeeQueue;
 import ca.xera.bungee.queue.bungee.utils.StorageTool;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;

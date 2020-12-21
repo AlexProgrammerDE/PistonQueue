@@ -1,9 +1,8 @@
 package ca.xera.bungee.queue.bukkit;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.logging.Level;
 
 public final class XeraBungeeQueueBukkit extends JavaPlugin {
 
@@ -20,9 +19,14 @@ public final class XeraBungeeQueueBukkit extends JavaPlugin {
     protected boolean restrictMovement = true;
     protected boolean forceGamemode = true;
     protected String forcedGamemode = "spectator"; // spectator
+    protected boolean protocolLib = false;
+    protected boolean disableDebug = true;
 
     @Override
     public void onEnable() {
+        getLogger().info(ChatColor.BLUE + "XeraBungeeQueue V" + getDescription().getVersion());
+
+        getLogger().info(ChatColor.BLUE + "Loading config");
         saveDefaultConfig();
 
         forceLocation = getConfig().getBoolean("forceLocation");
@@ -36,23 +40,32 @@ public final class XeraBungeeQueueBukkit extends JavaPlugin {
         disableChat = getConfig().getBoolean("disableChat");
         disableCmd = getConfig().getBoolean("disableCmd");
         forcedGamemode = getConfig().getString("forcedGamemode");
+        disableDebug = getConfig().getBoolean("disableDebug");
 
-        setGameRule();
-
-        getServer().getPluginManager().registerEvents(new ServerListener(this), this);
-    }
-
-    @Override
-    public void onDisable() {
-    }
-
-    protected void setGameRule() {
+        getLogger().info(ChatColor.BLUE + "Preparing server");
         if (hidePlayers) {
             for (World world : getServer().getWorlds()) {
                 world.setGameRuleValue("announceAdvancements", "false");
             }
 
-            getLogger().log(Level.INFO, "Gamerule announceAdvancements was set to false because hidePlayers was true.");
+            getLogger().info(ChatColor.BLUE + "Gamerule announceAdvancements was set to false because hidePlayers was true.");
         }
+
+        getLogger().info(ChatColor.BLUE + "Looking for hooks");
+        if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
+            getLogger().info(ChatColor.BLUE + "Hooked into ProtocolLib");
+            protocolLib = true;
+
+            ProtocolLibWrapper.setupProtocolLib(this);
+        } else {
+            getLogger().info(ChatColor.YELLOW + "It is recommended to install Protocol");
+        }
+
+        getLogger().info(ChatColor.BLUE + "Registering listeners");
+        getServer().getPluginManager().registerEvents(new ServerListener(this), this);
+    }
+
+    @Override
+    public void onDisable() {
     }
 }
