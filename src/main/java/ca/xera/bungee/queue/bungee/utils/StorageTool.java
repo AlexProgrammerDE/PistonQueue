@@ -14,13 +14,13 @@ import java.util.Date;
 import java.util.Locale;
 
 public class StorageTool {
-    public static XeraBungeeQueue plugin;
+    private static XeraBungeeQueue plugin;
     private static Configuration dataConfig;
     private static File dataFile;
 
     /**
      * Shadowban a player!
-     * @param player The player to shadow ban.
+     * @param player The player to shadowban.
      * @param date The date when he will be unbanned.
      * @return true if player got shadow banned and if already shadow banned false.
      */
@@ -39,9 +39,9 @@ public class StorageTool {
     }
 
     /**
-     * Shadowban a player!
-     * @param player The player to shadow ban.
-     * @return true if player got unbanned and false if not was shadow banned.
+     * Unshadowban a player!
+     * @param player The player to unshadowban.
+     * @return true if player got unshadowbanned and false if not was shadow banned.
      */
     public static boolean unShadowBanPlayer(ProxiedPlayer player) {
         if (dataConfig.contains(player.getUniqueId().toString())) {

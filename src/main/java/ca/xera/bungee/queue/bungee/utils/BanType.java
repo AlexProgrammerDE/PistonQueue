@@ -1,5 +1,16 @@
 package ca.xera.bungee.queue.bungee.utils;
 
+/**
+ * How shadowbanned people should be punished.
+ */
 public enum BanType {
-    LOOP, TENPERCENT
+    /**
+     * Loop forever in queue!
+     */
+    LOOP,
+
+    /**
+     * Have a 10% chance of getting into the server!
+     */
+    TENPERCENT
 }

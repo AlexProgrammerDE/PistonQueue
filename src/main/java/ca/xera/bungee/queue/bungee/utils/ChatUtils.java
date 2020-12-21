@@ -17,9 +17,9 @@ public final class ChatUtils {
     private static String parseText(String text) {
         String returnedText = text;
 
-        returnedText = returnedText.replaceAll("%regular%", String.valueOf(QueueAPI.getRegularSize()));
-        returnedText = returnedText.replaceAll("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
         returnedText = returnedText.replaceAll("%veteran%", String.valueOf(QueueAPI.getVeteranSize()));
+        returnedText = returnedText.replaceAll("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
+        returnedText = returnedText.replaceAll("%regular%", String.valueOf(QueueAPI.getRegularSize()));
 
         return returnedText;
     }
