@@ -74,14 +74,14 @@ public final class XeraBungeeQueue extends Plugin {
             sendMessage(veteranQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
             sendMessage(priorityQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
             sendMessage(regularQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
-        }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Sends the position message and updates tab on an interval on hotbar
         getProxy().getScheduler().schedule(this, () -> {
             sendMessage(veteranQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
             sendMessage(priorityQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
             sendMessage(regularQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
-        }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Updates the tab
         getProxy().getScheduler().schedule(this, () -> {
@@ -190,7 +190,7 @@ public final class XeraBungeeQueue extends Plugin {
     }
 
     private void sendMessage(LinkedHashMap<UUID, String> queue, boolean bool, ChatMessageType type) {
-        if (!bool) {
+        if (bool) {
             int i = 0;
 
             Map<UUID, String> the_map = new LinkedHashMap<>(queue);
