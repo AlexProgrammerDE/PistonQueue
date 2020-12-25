@@ -181,8 +181,21 @@ public final class XeraBungeeQueue extends Plugin {
             try {
                 it.setAccessible(true);
                 it.set(Config.class, config.get(it.getName()));
-            } catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
+            } catch (SecurityException | IllegalAccessException e) {
                 e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                String[] text = e.getMessage().split(" ");
+                String value = "";
+
+                for (String str : text) {
+                    if (str.toLowerCase().startsWith(XeraBungeeQueue.class.getPackage().getName().toLowerCase())) {
+                        value = str;
+                    }
+                }
+
+                String[] packageSplit = value.split("\\.");
+
+                new ConfigOutdatedException(packageSplit[packageSplit.length - 1]).printStackTrace();
             }
         });
 

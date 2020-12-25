@@ -198,7 +198,11 @@ public final class QueueListener implements Listener {
         event.setTarget(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
 
         // Store the data concerning the player's original destination
-        queueMap.put(player.getUniqueId(), originalTarget);
+        if (Config.FORCEMAINSERVER) {
+            queueMap.put(player.getUniqueId(), Config.MAINSERVER);
+        } else {
+            queueMap.put(player.getUniqueId(), originalTarget);
+        }
     }
 
     private void preQueueAdding(ProxiedPlayer player, List<String> header, List<String> footer) {

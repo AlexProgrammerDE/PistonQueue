@@ -73,6 +73,9 @@ JOININGMAINSERVER: "&6Connecting to SERVERNAME"
 # Max players allowed onto main server
 MAINSERVERSLOTS: 100
 
+# Whether you want to set the main server as your target or just want have bungeecord to decide.
+FORCEMAINSERVER: true
+
 # Total people allowed to be connected to the queue network
 # Make sure you set the bungeecord slots higher then the amount
 # of people you get regularly i set mine to 9000 and 9000 on the queue server
