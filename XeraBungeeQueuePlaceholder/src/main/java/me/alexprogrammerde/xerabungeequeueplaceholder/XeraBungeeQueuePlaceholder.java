@@ -41,7 +41,7 @@ public final class XeraBungeeQueuePlaceholder extends JavaPlugin implements Plug
         ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
         String subChannel = in.readUTF();
 
-        if (subChannel.equalsIgnoreCase("MySubChannel")) {
+        if (subChannel.equalsIgnoreCase("size")) {
             regular = in.readInt();
             priority = in.readInt();
             veteran = in.readInt();
