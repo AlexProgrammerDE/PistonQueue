@@ -23,7 +23,7 @@ public final class XeraBungeeQueuePlaceholder extends JavaPlugin implements Plug
         checkIfBungee();
 
         log.info(ChatColor.BLUE + "Registering messaging channel");
-        getServer().getMessenger().registerIncomingPluginChannel( this, "my:channel", this ); // we register the incoming channel
+        getServer().getMessenger().registerIncomingPluginChannel( this, "xera:bungeequeue", this );
 
         log.info(ChatColor.BLUE + "Registering PAPI expansion");
         new PAPIExpansion(this).register();
@@ -51,14 +51,6 @@ public final class XeraBungeeQueuePlaceholder extends JavaPlugin implements Plug
     private void checkIfBungee() {
         if (!PaperLib.isSpigot()) {
             getLogger().severe(ChatColor.RED + "You probably run CraftBukkit... Please update atleast to spigot for this to work...");
-            getLogger().severe(ChatColor.RED + "Plugin disabled!");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-
-        if (!getServer().spigot().getConfig().getConfigurationSection("settings").getBoolean("settings.bungeecord")) {
-            getLogger().severe(ChatColor.RED + "This server is not BungeeCord.");
-            getLogger().severe(ChatColor.RED + "If the server is already hooked to BungeeCord, please enable it into your spigot.yml aswell.");
             getLogger().severe(ChatColor.RED + "Plugin disabled!");
             getServer().getPluginManager().disablePlugin(this);
         }
