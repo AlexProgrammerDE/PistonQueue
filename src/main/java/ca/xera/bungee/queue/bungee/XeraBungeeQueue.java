@@ -4,8 +4,11 @@ import ca.xera.bungee.queue.bungee.commands.MainCommand;
 import ca.xera.bungee.queue.bungee.listeners.QueueListener;
 import ca.xera.bungee.queue.bungee.listeners.XeraListener;
 import ca.xera.bungee.queue.bungee.utils.*;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -45,6 +48,9 @@ public final class XeraBungeeQueue extends Plugin {
         processConfig();
 
         new StorageTool().setupTool(this);
+
+        logger.info(ChatColor.BLUE + "Registering plugin messaging channel");
+        getProxy().registerChannel("xera:bungeequeue");
 
         logger.info(ChatColor.BLUE + "Registering commands");
         manager.registerCommand(this, new MainCommand(this));
@@ -89,6 +95,9 @@ public final class XeraBungeeQueue extends Plugin {
             updateTab(priorityQueue, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
             updateTab(regularQueue, Config.HEADER, Config.FOOTER);
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+
+        // Send plugin message
+        getProxy().getScheduler().schedule(this, this::sendCustomData, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
         getProxy().getScheduler().schedule(this, events::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
@@ -287,5 +296,23 @@ public final class XeraBungeeQueue extends Plugin {
             format = String.format("%dm", waitTimeMinute);
 
         return text.replaceAll("%position%", w + "").replaceAll("%wait%", format);
+    }
+
+    public void sendCustomData() {
+        Collection<ProxiedPlayer> networkPlayers = ProxyServer.getInstance().getPlayers();
+
+        if (networkPlayers == null || networkPlayers.isEmpty()) {
+            return;
+        }
+
+        @SuppressWarnings({"UnstableApiUsage"})
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+
+        out.writeUTF("size");
+        out.writeInt(regularQueue.size());
+        out.writeInt(priorityQueue.size());
+        out.writeInt(veteranQueue.size());
+
+        networkPlayers.forEach(player -> player.getServer().getInfo().sendData("xera:bungeequeue", out.toByteArray()));
     }
 }
