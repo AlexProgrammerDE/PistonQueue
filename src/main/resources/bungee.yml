@@ -3,3 +3,4 @@ main: ca.xera.bungee.queue.bungee.XeraBungeeQueue
 description: ${project.description}
 version: ${project.version}
 author: XeraPlugins
+softdepends: [PistonMOTD]

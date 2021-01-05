@@ -1,11 +1,13 @@
 package ca.xera.bungee.queue.bungee;
 
 import ca.xera.bungee.queue.bungee.commands.MainCommand;
+import ca.xera.bungee.queue.bungee.hooks.PistonMOTDPlaceholder;
 import ca.xera.bungee.queue.bungee.listeners.QueueListener;
 import ca.xera.bungee.queue.bungee.listeners.XeraListener;
 import ca.xera.bungee.queue.bungee.utils.*;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import me.alexprogrammerde.pistonmotd.api.PlaceholderUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ProxyServer;
@@ -48,6 +50,12 @@ public final class XeraBungeeQueue extends Plugin {
         processConfig();
 
         new StorageTool().setupTool(this);
+
+        logger.info(ChatColor.BLUE + "Looking for hooks");
+        if (getProxy().getPluginManager().getPlugin("PistonMOTD") != null) {
+            logger.info(ChatColor.BLUE + "Hooking into PistonMOTD");
+            PlaceholderUtil.registerParser(new PistonMOTDPlaceholder());
+        }
 
         logger.info(ChatColor.BLUE + "Registering plugin messaging channel");
         getProxy().registerChannel("xera:bungeequeue");
