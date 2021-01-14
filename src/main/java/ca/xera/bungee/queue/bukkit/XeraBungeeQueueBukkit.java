@@ -5,7 +5,6 @@ import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class XeraBungeeQueueBukkit extends JavaPlugin {
-
     protected boolean forceLocation = true;
 
     protected String forcedWorldName = "world_the_end";
@@ -63,9 +62,5 @@ public final class XeraBungeeQueueBukkit extends JavaPlugin {
 
         getLogger().info(ChatColor.BLUE + "Registering listeners");
         getServer().getPluginManager().registerEvents(new ServerListener(this), this);
-    }
-
-    @Override
-    public void onDisable() {
     }
 }

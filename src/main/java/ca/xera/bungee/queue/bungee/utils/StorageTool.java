@@ -18,6 +18,8 @@ public class StorageTool {
     private static Configuration dataConfig;
     private static File dataFile;
 
+    private StorageTool() {}
+
     /**
      * Shadowban a player!
      *
@@ -102,21 +104,20 @@ public class StorageTool {
     }
 
     private static void generateFile() {
-        if (!plugin.getDataFolder().exists()) {
-            if (!plugin.getDataFolder().mkdir())
-                return;
-        }
+        if (!plugin.getDataFolder().exists() && !plugin.getDataFolder().mkdir())
+            return;
 
         if (!dataFile.exists()) {
             try {
-                dataFile.createNewFile();
+                if (!dataFile.createNewFile())
+                    throw new IOException("Couldn't create file " + dataFile.getPath());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void setupTool(XeraBungeeQueue plugin) {
+    public static void setupTool(XeraBungeeQueue plugin) {
         StorageTool.plugin = plugin;
         StorageTool.dataFile = new File(plugin.getDataFolder(), "data.yml");
 

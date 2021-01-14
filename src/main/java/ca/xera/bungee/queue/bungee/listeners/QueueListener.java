@@ -149,42 +149,36 @@ public final class QueueListener implements Listener {
         }
     }
 
-    private void connectPlayer(LinkedHashMap<UUID, String> queueMap) {
+    private void connectPlayer(Map<UUID, String> queueMap) {
         Entry<UUID, String> entry = queueMap.entrySet().iterator().next();
         ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
 
         queueMap.remove(entry.getKey());
 
-        player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.JOININGMAINSERVER.replaceAll("%server%", entry.getValue())));
+        player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.JOININGMAINSERVER.replace("%server%", entry.getValue())));
         player.resetTabHeader();
 
-        if (XeraBungeeQueue.banType == BanType.LOOP && StorageTool.isShadowBanned(player)) {
+        if (StorageTool.isShadowBanned(player)
+                && (XeraBungeeQueue.banType == BanType.LOOP
+                || (XeraBungeeQueue.banType == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
             player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
 
             queueMap.put(entry.getKey(), entry.getValue());
 
             return;
-        } else if (XeraBungeeQueue.banType == BanType.TENPERCENT && StorageTool.isShadowBanned(player)) {
-            if (!(new Random().nextInt(100) < 10)) {
-                player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
-
-                queueMap.put(entry.getKey(), entry.getValue());
-
-                return;
-            }
         }
 
         player.connect(plugin.getProxy().getServerInfo(entry.getValue()));
     }
 
-    private void putQueueAuthFirst(ProxiedPlayer player, List<String> header, List<String> footer, LinkedHashMap<UUID, String> queueMap) {
+    private void putQueueAuthFirst(ProxiedPlayer player, List<String> header, List<String> footer, Map<UUID, String> queueMap) {
         preQueueAdding(player, header, footer);
 
         // Store the data concerning the player's original destination
         queueMap.put(player.getUniqueId(), Config.MAINSERVER);
     }
 
-    private void putQueue(ProxiedPlayer player, List<String> header, List<String> footer, LinkedHashMap<UUID, String> queueMap, List<UUID> queueList, ServerConnectEvent event) {
+    private void putQueue(ProxiedPlayer player, List<String> header, List<String> footer, Map<UUID, String> queueMap, List<UUID> queueList, ServerConnectEvent event) {
         if (!queueList.contains(player.getUniqueId()))
             return;
 
@@ -218,8 +212,8 @@ public final class QueueListener implements Listener {
 
         for (int i = 0; i < tab.size(); i++) {
             builder.append(ChatUtils.parseToString(tab.get(i))
-                    .replaceAll("%position%", "None")
-                    .replaceAll("%wait%", "None"));
+                    .replace("%position%", "None")
+                    .replace("%wait%", "None"));
 
             if (i != (tab.size() - 1)) {
                 builder.append("\n");

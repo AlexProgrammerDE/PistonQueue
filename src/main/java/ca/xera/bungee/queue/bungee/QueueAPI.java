@@ -2,6 +2,8 @@ package ca.xera.bungee.queue.bungee;
 
 @SuppressWarnings({"unused"})
 public final class QueueAPI {
+    private QueueAPI() {}
+
     public static int getVeteranSize() {
         return XeraBungeeQueue.veteranQueue.size();
     }

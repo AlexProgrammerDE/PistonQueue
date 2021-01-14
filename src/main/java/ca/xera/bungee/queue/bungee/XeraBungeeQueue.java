@@ -34,9 +34,9 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings({"deprecation"})
 public final class XeraBungeeQueue extends Plugin {
-    public static final LinkedHashMap<UUID, String> regularQueue = new LinkedHashMap<>();
-    public static final LinkedHashMap<UUID, String> priorityQueue = new LinkedHashMap<>();
-    public static final LinkedHashMap<UUID, String> veteranQueue = new LinkedHashMap<>();
+    public static final Map<UUID, String> regularQueue = new LinkedHashMap<>();
+    public static final Map<UUID, String> priorityQueue = new LinkedHashMap<>();
+    public static final Map<UUID, String> veteranQueue = new LinkedHashMap<>();
 
     public static BanType banType;
 
@@ -49,7 +49,7 @@ public final class XeraBungeeQueue extends Plugin {
         logger.info(ChatColor.BLUE + "Loading config");
         processConfig();
 
-        new StorageTool().setupTool(this);
+        StorageTool.setupTool(this);
 
         logger.info(ChatColor.BLUE + "Looking for hooks");
         if (getProxy().getPluginManager().getPlugin("PistonMOTD") != null) {
@@ -219,12 +219,11 @@ public final class XeraBungeeQueue extends Plugin {
         banType = BanType.valueOf(config.getString("SHADOWBANTYPE"));
     }
 
-    private void sendMessage(LinkedHashMap<UUID, String> queue, boolean bool, ChatMessageType type) {
+    private void sendMessage(Map<UUID, String> queue, boolean bool, ChatMessageType type) {
         if (bool) {
             int i = 0;
 
-            Map<UUID, String> the_map = new LinkedHashMap<>(queue);
-            for (Entry<UUID, String> entry : the_map.entrySet()) {
+            for (Entry<UUID, String> entry : queue.entrySet()) {
                 try {
                     i++;
 
@@ -237,9 +236,9 @@ public final class XeraBungeeQueue extends Plugin {
 
                     player.sendMessage(type,
                             ChatUtils.parseToComponent(Config.QUEUEPOSITION
-                                    .replaceAll("%position%", i + "")
-                                    .replaceAll("%total%", queue.size() + "")
-                                    .replaceAll("%server%", entry.getValue())));
+                                    .replace("%position%", i + "")
+                                    .replace("%total%", queue.size() + "")
+                                    .replace("%server%", entry.getValue())));
                 } catch (Exception e) {
                     queue.remove(entry.getKey());
                 }
@@ -247,14 +246,13 @@ public final class XeraBungeeQueue extends Plugin {
         }
     }
 
-    private void updateTab(LinkedHashMap<UUID, String> queue, List<String> header, List<String> footer) {
+    private void updateTab(Map<UUID, String> queue, List<String> header, List<String> footer) {
         int w = 0;
         long waitTime;
         long waitTimeHour;
         long waitTimeMinute;
 
-        Map<UUID, String> the_map = new LinkedHashMap<>(queue);
-        for (Entry<UUID, String> entry : the_map.entrySet()) {
+        for (Entry<UUID, String> entry : queue.entrySet()) {
             try {
                 w++;
 
@@ -303,7 +301,7 @@ public final class XeraBungeeQueue extends Plugin {
         if (waitTimeHour == 0)
             format = String.format("%dm", waitTimeMinute);
 
-        return text.replaceAll("%position%", w + "").replaceAll("%wait%", format);
+        return text.replace("%position%", w + "").replace("%wait%", format);
     }
 
     public void sendCustomData() {

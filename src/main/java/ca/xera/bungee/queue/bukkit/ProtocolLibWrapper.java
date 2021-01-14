@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.InvocationTargetException;
 
 public class ProtocolLibWrapper {
+    private ProtocolLibWrapper() {}
+
     public static void removeDebug(Player player) {
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
