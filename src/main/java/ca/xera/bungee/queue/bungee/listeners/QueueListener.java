@@ -41,7 +41,7 @@ public final class QueueListener implements Listener {
         ProxiedPlayer player = event.getPlayer();
 
         if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if enableauth is false
-            if (!Config.AUTHFIRST && (Config.ALWAYSQUEUE || plugin.getProxy().getOnlineCount() > Config.MAINSERVERSLOTS)) {
+            if (!Config.AUTHFIRST && isMainFull()) {
                 if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
                     veteran.add(player.getUniqueId());
                 } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
@@ -65,7 +65,6 @@ public final class QueueListener implements Listener {
         if (event.getFrom() != null &&
                 event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) &&
                 player.getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER))) {
-
             if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
                 putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue);
             } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
@@ -80,15 +79,20 @@ public final class QueueListener implements Listener {
     public void onSend(ServerConnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        if (Config.AUTHFIRST || player.hasPermission(Config.QUEUEBYPASSPERMISSION))
-            return;
-
-        if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-            putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue, veteran, event);
-        } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-            putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.priorityQueue, priority, event);
+        if (Config.AUTHFIRST) {
+            if (event.getTarget().getName().equals(Config.QUEUESERVER) && !isMainFull())
+                event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
         } else {
-            putQueue(player, Config.HEADER, Config.FOOTER, XeraBungeeQueue.regularQueue, regular, event);
+            if (player.hasPermission(Config.QUEUEBYPASSPERMISSION))
+                return;
+
+            if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
+                putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue, veteran, event);
+            } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.priorityQueue, priority, event);
+            } else {
+                putQueue(player, Config.HEADER, Config.FOOTER, XeraBungeeQueue.regularQueue, regular, event);
+            }
         }
     }
 
@@ -221,5 +225,9 @@ public final class QueueListener implements Listener {
         }
 
         return builder.toString();
+    }
+
+    private boolean isMainFull() {
+        return Config.ALWAYSQUEUE || plugin.getProxy().getOnlineCount() > Config.MAINSERVERSLOTS;
     }
 }

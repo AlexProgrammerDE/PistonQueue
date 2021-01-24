@@ -2,8 +2,13 @@ package ca.xera.bungee.queue.bungee.hooks;
 
 import ca.xera.bungee.queue.bungee.QueueAPI;
 import me.alexprogrammerde.pistonmotd.api.PlaceholderParser;
+import me.alexprogrammerde.pistonmotd.api.PlaceholderUtil;
 
 public class PistonMOTDPlaceholder implements PlaceholderParser {
+    public PistonMOTDPlaceholder() {
+        PlaceholderUtil.registerParser(this);
+    }
+
     @Override
     public String parseString(String s) {
         return s.replace("%xerabungeequeue_regular%", String.valueOf(QueueAPI.getRegularSize()))
