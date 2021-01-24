@@ -22,6 +22,9 @@ public final class XeraListener implements Listener {
 
     @EventHandler
     public void onPreLogin(PreLoginEvent ple) {
+        if (ple.isCancelled())
+            return;
+
         if (!ple.getConnection().getName().matches(Config.REGEX)) {
             ple.setCancelReason(ChatUtils.parseToComponent(Config.REGEXMESSAGE.replace("%regex%", Config.REGEX)));
             ple.setCancelled(true);
