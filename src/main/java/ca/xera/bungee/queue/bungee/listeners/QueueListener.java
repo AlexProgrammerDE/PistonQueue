@@ -18,9 +18,6 @@ import net.md_5.bungee.event.EventHandler;
 import java.util.*;
 import java.util.Map.Entry;
 
-/**
- * ProxyListener
- */
 public final class QueueListener implements Listener {
     public boolean mainOnline = false;
     public boolean queueOnline = false;
@@ -31,6 +28,9 @@ public final class QueueListener implements Listener {
     private final List<UUID> veteran = new ArrayList<>();
     private final List<UUID> priority = new ArrayList<>();
     private final List<UUID> regular = new ArrayList<>();
+
+    // 1 = veteran, 2 = priority, 3 = regular
+    private int line = 1;
 
     public QueueListener(XeraBungeeQueue plugin) {
         this.plugin = plugin;
@@ -103,6 +103,8 @@ public final class QueueListener implements Listener {
         XeraBungeeQueue.veteranQueue.remove(uuid);
         XeraBungeeQueue.priorityQueue.remove(uuid);
         XeraBungeeQueue.regularQueue.remove(uuid);
+
+        plugin.getProxy().getScheduler().runAsync(plugin, this::moveQueue);
     }
 
     public void moveQueue() {
@@ -134,20 +136,48 @@ public final class QueueListener implements Listener {
             return;
         }
 
-        // Checks if priority queue is empty if it is a non priority user always gets in.
-        if (Config.MAINSERVERSLOTS <= plugin.getProxy().getOnlineCount()
+        int onMainServer = plugin.getProxy().getOnlineCount()
                 - XeraBungeeQueue.regularQueue.size()
                 - XeraBungeeQueue.priorityQueue.size()
-                - XeraBungeeQueue.veteranQueue.size())
+                - XeraBungeeQueue.veteranQueue.size();
+
+        // Check if we even have to move.
+        if (onMainServer > Config.MAINSERVERSLOTS)
             return;
 
+        if (line == 1) {
+            moveVeteran(true);
+        } else if (line == 2) {
+            movePriority(true);
+        } else if (line == 3) {
+            moveRegular();
+        } else {
+            line = 1;
+        }
+
+        line++;
+    }
+
+    private void moveRegular() {
+        if (XeraBungeeQueue.regularQueue.isEmpty()) {
+            moveVeteran(false);
+        } else {
+            connectPlayer(XeraBungeeQueue.regularQueue);
+        }
+    }
+
+    private void movePriority(boolean canMoveRegular) {
+        if (XeraBungeeQueue.priorityQueue.isEmpty()) {
+            if (canMoveRegular)
+                moveRegular();
+        } else {
+            connectPlayer(XeraBungeeQueue.priorityQueue);
+        }
+    }
+
+    private void moveVeteran(boolean canMoveRegular) {
         if (XeraBungeeQueue.veteranQueue.isEmpty()) {
-            if (XeraBungeeQueue.priorityQueue.isEmpty()) {
-                if (!XeraBungeeQueue.regularQueue.isEmpty())
-                    connectPlayer(XeraBungeeQueue.regularQueue);
-            } else {
-                connectPlayer(XeraBungeeQueue.priorityQueue);
-            }
+            movePriority(canMoveRegular);
         } else {
             connectPlayer(XeraBungeeQueue.veteranQueue);
         }

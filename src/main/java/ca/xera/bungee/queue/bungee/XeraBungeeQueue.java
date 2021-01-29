@@ -17,6 +17,7 @@ import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import org.bstats.bungeecord.Metrics;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,9 +29,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-/**
- * XeraBungeeQueue
- */
 @SuppressWarnings({"deprecation"})
 public final class XeraBungeeQueue extends Plugin {
     public static final Map<UUID, String> regularQueue = new LinkedHashMap<>();

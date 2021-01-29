@@ -4,7 +4,7 @@
 
     <groupId>ca.xera</groupId>
     <artifactId>XeraBungeeQueue</artifactId>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
     <description>Best queue plugin out there!</description>
 
     <properties>
@@ -24,7 +24,42 @@
                     <target>${java.version}</target>
                 </configuration>
             </plugin>
-
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <minimizeJar>true</minimizeJar>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>ca.xera.bungee.queue.bungee.shade.bstats</shadedPattern>
+                        </relocation>
+                    </relocations>
+                    <filters>
+                        <filter>
+                            <artifact>*:*</artifact>
+                            <excludes>
+                                <exclude>module-info.class</exclude>
+                                <exclude>META-INF/*.SF</exclude>
+                                <exclude>META-INF/*.DSA</exclude>
+                                <exclude>META-INF/*.RSA</exclude>
+                                <exclude>META-INF/*.MF</exclude>
+                                <exclude>META-INF/*.txt</exclude>
+                            </excludes>
+                        </filter>
+                    </filters>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <resources>
             <resource>
@@ -73,6 +108,11 @@
             <version>1.16-R0.4-SNAPSHOT</version>
             <type>javadoc</type>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bungeecord</artifactId>
+            <version>2.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.comphenix.protocol</groupId>
