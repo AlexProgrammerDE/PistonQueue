@@ -136,13 +136,10 @@ public final class QueueListener implements Listener {
             return;
         }
 
-        int onMainServer = plugin.getProxy().getOnlineCount()
-                - XeraBungeeQueue.regularQueue.size()
-                - XeraBungeeQueue.priorityQueue.size()
-                - XeraBungeeQueue.veteranQueue.size();
+        int onMainServer = plugin.getProxy().getServerInfo(Config.MAINSERVER).getPlayers().size();
 
         // Check if we even have to move.
-        if (onMainServer > Config.MAINSERVERSLOTS)
+        if (onMainServer >= Config.MAINSERVERSLOTS)
             return;
 
         if (line == 1) {

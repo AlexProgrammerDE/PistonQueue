@@ -1,6 +1,6 @@
 name: XeraBungeeQueueBukkit
 version: ${project.version}
-api-version: 1.16
+api-version: 1.13
 main: ca.xera.bungee.queue.bukkit.XeraBungeeQueueBukkit
 author: XeraPlugins
 authors: [Nate Legault, Pistonmaster]
