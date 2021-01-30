@@ -103,8 +103,6 @@ public final class QueueListener implements Listener {
         XeraBungeeQueue.veteranQueue.remove(uuid);
         XeraBungeeQueue.priorityQueue.remove(uuid);
         XeraBungeeQueue.regularQueue.remove(uuid);
-
-        plugin.getProxy().getScheduler().runAsync(plugin, this::moveQueue);
     }
 
     public void moveQueue() {
@@ -112,25 +110,22 @@ public final class QueueListener implements Listener {
             XeraBungeeQueue.veteranQueue.forEach((UUID id, String str) -> {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(id);
 
-                if (player != null) {
+                if (player != null)
                     player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
-                }
             });
 
             XeraBungeeQueue.priorityQueue.forEach((UUID id, String str) -> {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(id);
 
-                if (player != null) {
+                if (player != null)
                     player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
-                }
             });
 
             XeraBungeeQueue.regularQueue.forEach((UUID id, String str) -> {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(id);
 
-                if (player != null) {
+                if (player != null)
                     player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
-                }
             });
 
             return;
