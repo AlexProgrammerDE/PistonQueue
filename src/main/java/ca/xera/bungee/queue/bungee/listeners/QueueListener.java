@@ -5,6 +5,7 @@ import ca.xera.bungee.queue.bungee.utils.BanType;
 import ca.xera.bungee.queue.bungee.utils.ChatUtils;
 import ca.xera.bungee.queue.bungee.utils.Config;
 import ca.xera.bungee.queue.bungee.utils.StorageTool;
+import lombok.Setter;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
@@ -23,8 +24,11 @@ public final class QueueListener implements Listener {
     private final List<UUID> veteran = new ArrayList<>();
     private final List<UUID> priority = new ArrayList<>();
     private final List<UUID> regular = new ArrayList<>();
+    @Setter
     public boolean mainOnline = false;
+    @Setter
     public boolean queueOnline = false;
+    @Setter
     public boolean authOnline = false;
     // 1 = veteran, 2 = priority, 3 = regular
     private int line = 1;
@@ -107,21 +111,21 @@ public final class QueueListener implements Listener {
             XeraBungeeQueue.veteranQueue.forEach((UUID id, String str) -> {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(id);
 
-                if (player != null)
+                if (player != null && player.isConnected())
                     player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
             });
 
             XeraBungeeQueue.priorityQueue.forEach((UUID id, String str) -> {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(id);
 
-                if (player != null)
+                if (player != null && player.isConnected())
                     player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
             });
 
             XeraBungeeQueue.regularQueue.forEach((UUID id, String str) -> {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(id);
 
-                if (player != null)
+                if (player != null && player.isConnected())
                     player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
             });
 
@@ -178,12 +182,15 @@ public final class QueueListener implements Listener {
 
         queueMap.remove(entry.getKey());
 
+        if (player == null || !player.isConnected())
+            return;
+
         player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.JOININGMAINSERVER.replace("%server%", entry.getValue())));
         player.resetTabHeader();
 
         if (StorageTool.isShadowBanned(player)
-                && (XeraBungeeQueue.banType == BanType.LOOP
-                || (XeraBungeeQueue.banType == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
+                && (plugin.getBanType() == BanType.LOOP
+                || (plugin.getBanType() == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
             player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
 
             queueMap.put(entry.getKey(), entry.getValue());

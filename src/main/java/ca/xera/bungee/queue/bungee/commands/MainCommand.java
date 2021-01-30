@@ -72,19 +72,19 @@ public final class MainCommand extends Command implements TabExecutor {
                                     calendar.setTime(new Date());
 
                                     if (args[2].toLowerCase().endsWith("d")) {
-                                        int d = Integer.parseInt(args[2].toLowerCase().replaceAll("d", ""));
+                                        int d = Integer.parseInt(args[2].toLowerCase().replace("d", ""));
 
                                         calendar.add(Calendar.DAY_OF_WEEK, d);
                                     } else if (args[2].toLowerCase().endsWith("h")) {
-                                        int h = Integer.parseInt(args[2].toLowerCase().replaceAll("h", ""));
+                                        int h = Integer.parseInt(args[2].toLowerCase().replace("h", ""));
 
                                         calendar.add(Calendar.HOUR_OF_DAY, h);
                                     } else if (args[2].toLowerCase().endsWith("m")) {
-                                        int m = Integer.parseInt(args[2].toLowerCase().replaceAll("m", ""));
+                                        int m = Integer.parseInt(args[2].toLowerCase().replace("m", ""));
 
                                         calendar.add(Calendar.MINUTE, m);
                                     } else if (args[2].toLowerCase().endsWith("s")) {
-                                        int s = Integer.parseInt(args[2].toLowerCase().replaceAll("s", ""));
+                                        int s = Integer.parseInt(args[2].toLowerCase().replace("s", ""));
 
                                         calendar.add(Calendar.SECOND, s);
                                     } else {
@@ -148,6 +148,9 @@ public final class MainCommand extends Command implements TabExecutor {
                     } else {
                         noPermission(sender);
                     }
+                    break;
+                default:
+                    help(sender);
                     break;
             }
         }

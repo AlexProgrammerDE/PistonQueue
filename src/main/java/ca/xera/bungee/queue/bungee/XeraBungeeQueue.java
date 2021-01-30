@@ -7,9 +7,9 @@ import ca.xera.bungee.queue.bungee.listeners.XeraListener;
 import ca.xera.bungee.queue.bungee.utils.*;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -35,7 +35,8 @@ public final class XeraBungeeQueue extends Plugin {
     public static final Map<UUID, String> priorityQueue = new LinkedHashMap<>();
     public static final Map<UUID, String> veteranQueue = new LinkedHashMap<>();
 
-    public static BanType banType;
+    @Getter
+    private BanType banType;
 
     @Override
     public void onEnable() {
@@ -116,10 +117,10 @@ public final class XeraBungeeQueue extends Plugin {
                             getProxy().getServerInfo(Config.MAINSERVER).getAddress().getPort());
 
                     s.close();
-                    events.mainOnline = true;
+                    events.setMainOnline(true);
                 } catch (IOException e) {
                     getLogger().warning("Main Server is down!!!");
-                    events.mainOnline = false;
+                    events.setMainOnline(false);
                 }
             } else {
                 getLogger().warning("Main Server \"" + Config.MAINSERVER + "\" not set up!!!");
@@ -134,10 +135,10 @@ public final class XeraBungeeQueue extends Plugin {
                             getProxy().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
 
                     s.close();
-                    events.queueOnline = true;
+                    events.setQueueOnline(true);
                 } catch (IOException e) {
                     getLogger().warning("Queue Server is down!!!");
-                    events.queueOnline = false;
+                    events.setQueueOnline(false);
                 }
             } else {
                 getLogger().warning("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!!");
@@ -153,16 +154,16 @@ public final class XeraBungeeQueue extends Plugin {
                                 getProxy().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
 
                         s.close();
-                        events.authOnline = true;
+                        events.setAuthOnline(true);
                     } catch (IOException e) {
                         getLogger().warning("Auth Server is down!!!");
-                        events.authOnline = false;
+                        events.setAuthOnline(false);
                     }
                 } else {
                     getLogger().warning("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!!");
                 }
             } else {
-                events.authOnline = true;
+                events.setAuthOnline(true);
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
     }
@@ -221,24 +222,20 @@ public final class XeraBungeeQueue extends Plugin {
             int i = 0;
 
             for (Entry<UUID, String> entry : queue.entrySet()) {
-                try {
-                    i++;
+                i++;
 
-                    ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
+                ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
 
-                    if (player == null) {
-                        queue.remove(entry.getKey());
-                        continue;
-                    }
-
-                    player.sendMessage(type,
-                            ChatUtils.parseToComponent(Config.QUEUEPOSITION
-                                    .replace("%position%", i + "")
-                                    .replace("%total%", queue.size() + "")
-                                    .replace("%server%", entry.getValue())));
-                } catch (Exception e) {
+                if (player == null || !player.isConnected()) {
                     queue.remove(entry.getKey());
+                    continue;
                 }
+
+                player.sendMessage(type,
+                        ChatUtils.parseToComponent(Config.QUEUEPOSITION
+                                .replace("%position%", i + "")
+                                .replace("%total%", queue.size() + "")
+                                .replace("%server%", entry.getValue())));
             }
         }
     }
@@ -250,45 +247,41 @@ public final class XeraBungeeQueue extends Plugin {
         long waitTimeMinute;
 
         for (Entry<UUID, String> entry : queue.entrySet()) {
-            try {
-                w++;
+            w++;
 
-                ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
-                if (player == null) {
-                    queue.remove(entry.getKey());
-                    continue;
-                }
-
-                waitTime = w;
-
-                waitTimeHour = waitTime / 60;
-                waitTimeMinute = waitTime % 60;
-
-                StringBuilder headerBuilder = new StringBuilder();
-                StringBuilder footerBuilder = new StringBuilder();
-
-                for (int i = 0; i < header.size(); i++) {
-                    headerBuilder.append(ChatUtils.parseToString(replacePosition(header.get(i), waitTimeHour, waitTimeMinute, w)));
-
-                    if (i != (header.size() - 1)) {
-                        headerBuilder.append("\n");
-                    }
-                }
-
-                for (int i = 0; i < footer.size(); i++) {
-                    footerBuilder.append(ChatUtils.parseToString(replacePosition(footer.get(i), waitTimeHour, waitTimeMinute, w)));
-
-                    if (i != (footer.size() - 1)) {
-                        footerBuilder.append("\n");
-                    }
-                }
-
-                player.setTabHeader(
-                        new ComponentBuilder(headerBuilder.toString()).create(),
-                        new ComponentBuilder(footerBuilder.toString()).create());
-            } catch (Exception e) {
+            ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
+            if (player == null || !player.isConnected()) {
                 queue.remove(entry.getKey());
+                continue;
             }
+
+            waitTime = w;
+
+            waitTimeHour = waitTime / 60;
+            waitTimeMinute = waitTime % 60;
+
+            StringBuilder headerBuilder = new StringBuilder();
+            StringBuilder footerBuilder = new StringBuilder();
+
+            for (int i = 0; i < header.size(); i++) {
+                headerBuilder.append(ChatUtils.parseToString(replacePosition(header.get(i), waitTimeHour, waitTimeMinute, w)));
+
+                if (i != (header.size() - 1)) {
+                    headerBuilder.append("\n");
+                }
+            }
+
+            for (int i = 0; i < footer.size(); i++) {
+                footerBuilder.append(ChatUtils.parseToString(replacePosition(footer.get(i), waitTimeHour, waitTimeMinute, w)));
+
+                if (i != (footer.size() - 1)) {
+                    footerBuilder.append("\n");
+                }
+            }
+
+            player.setTabHeader(
+                    new ComponentBuilder(headerBuilder.toString()).create(),
+                    new ComponentBuilder(footerBuilder.toString()).create());
         }
     }
 
@@ -302,7 +295,7 @@ public final class XeraBungeeQueue extends Plugin {
     }
 
     public void sendCustomData() {
-        Collection<ProxiedPlayer> networkPlayers = ProxyServer.getInstance().getPlayers();
+        Collection<ProxiedPlayer> networkPlayers = getProxy().getPlayers();
 
         if (networkPlayers == null || networkPlayers.isEmpty()) {
             return;
