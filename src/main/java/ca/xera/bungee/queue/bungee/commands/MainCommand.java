@@ -14,9 +14,9 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 import java.util.*;
 
 public final class MainCommand extends Command implements TabExecutor {
-    private final XeraBungeeQueue plugin;
     private static final String[] commands = {"help", "version", "stats"};
     private static final String[] adminCommands = {"reload", "shadowban", "unshadowban"};
+    private final XeraBungeeQueue plugin;
 
     public MainCommand(XeraBungeeQueue plugin) {
         super("xbq");

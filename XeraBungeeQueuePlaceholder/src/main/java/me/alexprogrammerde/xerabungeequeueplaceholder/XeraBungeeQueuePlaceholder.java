@@ -23,7 +23,7 @@ public final class XeraBungeeQueuePlaceholder extends JavaPlugin implements Plug
         checkIfBungee();
 
         log.info(ChatColor.BLUE + "Registering messaging channel");
-        getServer().getMessenger().registerIncomingPluginChannel( this, "xera:bungeequeue", this );
+        getServer().getMessenger().registerIncomingPluginChannel(this, "xera:bungeequeue", this);
 
         log.info(ChatColor.BLUE + "Registering PAPI expansion");
         new PAPIExpansion(this).register();

@@ -12,36 +12,37 @@ public class PAPIExpansion extends PlaceholderExpansion {
     }
 
     @Override
-    public boolean canRegister(){
+    public boolean canRegister() {
         return true;
     }
 
     @Override
-    public @NotNull String getAuthor(){
+    public @NotNull String getAuthor() {
         return "AlexProgrammerDE";
     }
 
     @Override
-    public @NotNull String getIdentifier(){
+    public @NotNull String getIdentifier() {
         return "xerabungeequeue";
     }
 
     @Override
-    public @NotNull String getVersion(){
+    public @NotNull String getVersion() {
         return plugin.getDescription().getVersion();
     }
 
     @Override
-    public String onRequest(OfflinePlayer player, String identifier){
-        if (identifier.equals("regular")){
+    public String onRequest(OfflinePlayer player, String identifier) {
+        if (identifier.equals("regular")) {
             return String.valueOf(plugin.regular);
         }
 
-        if (identifier.equals("priority")){
+        if (identifier.equals("priority")) {
             return String.valueOf(plugin.priority);
 
 
-        }if (identifier.equals("veteran")){
+        }
+        if (identifier.equals("veteran")) {
             return String.valueOf(plugin.veteran);
         }
 

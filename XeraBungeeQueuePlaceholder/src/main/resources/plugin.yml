@@ -5,4 +5,4 @@ api-version: 1.16
 authors: [ AlexProgrammerDE ]
 description: Puts queue data in papi
 website: https://pistonmaster.net/
-depend: [PlaceholderAPI]
+depend: [ PlaceholderAPI ]

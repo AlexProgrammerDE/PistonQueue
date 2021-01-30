@@ -18,7 +18,8 @@ public final class StorageTool {
     private static Configuration dataConfig;
     private static File dataFile;
 
-    private StorageTool() {}
+    private StorageTool() {
+    }
 
     /**
      * Shadowban a player!

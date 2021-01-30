@@ -3,10 +3,10 @@ version: ${project.version}
 api-version: 1.13
 main: ca.xera.bungee.queue.bukkit.XeraBungeeQueueBukkit
 author: XeraPlugins
-authors: [Nate Legault, Pistonmaster]
+authors: [ Nate Legault, Pistonmaster ]
 description: Bukkit companion for XeraBungeeQueue
 website: http://www.xera.ca/
-softdepend: ["ProtocolLib"]
+softdepend: [ "ProtocolLib" ]
 
 permissions:
   queue.admin:

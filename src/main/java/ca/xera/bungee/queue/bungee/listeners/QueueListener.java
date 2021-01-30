@@ -19,16 +19,13 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public final class QueueListener implements Listener {
-    public boolean mainOnline = false;
-    public boolean queueOnline = false;
-    public boolean authOnline = false;
-
     private final XeraBungeeQueue plugin;
-
     private final List<UUID> veteran = new ArrayList<>();
     private final List<UUID> priority = new ArrayList<>();
     private final List<UUID> regular = new ArrayList<>();
-
+    public boolean mainOnline = false;
+    public boolean queueOnline = false;
+    public boolean authOnline = false;
     // 1 = veteran, 2 = priority, 3 = regular
     private int line = 1;
 
