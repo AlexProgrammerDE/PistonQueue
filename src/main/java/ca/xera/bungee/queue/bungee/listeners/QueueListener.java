@@ -41,18 +41,20 @@ public final class QueueListener implements Listener {
     public void onPostLogin(PostLoginEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if enableauth is false
-            if (!Config.AUTHFIRST && isMainFull()) {
-                if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                    veteran.add(player.getUniqueId());
-                } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                    priority.add(player.getUniqueId());
-                } else {
-                    regular.add(player.getUniqueId());
+        if (!Config.AUTHFIRST) {
+            if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if enableauth is false
+                if (Config.ALWAYSQUEUE || isMainFull()) {
+                    if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
+                        veteran.add(player.getUniqueId());
+                    } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                        priority.add(player.getUniqueId());
+                    } else {
+                        regular.add(player.getUniqueId());
+                    }
                 }
+            } else {
+                event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
             }
-        } else {
-            event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
         }
     }
 
@@ -60,13 +62,13 @@ public final class QueueListener implements Listener {
     public void onQueueSend(ServerSwitchEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        if (player.hasPermission(Config.QUEUEBYPASSPERMISSION))
-            return;
-
-        if (event.getFrom() == null)
-            return;
-
         if (Config.AUTHFIRST) {
+            if (player.hasPermission(Config.QUEUEBYPASSPERMISSION))
+                return;
+
+            if (event.getFrom() == null)
+                return;
+
             if (event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) &&
                     player.getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER))) {
                 if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
@@ -85,7 +87,10 @@ public final class QueueListener implements Listener {
         ProxiedPlayer player = event.getPlayer();
 
         if (Config.AUTHFIRST) {
-            if (!Config.ALWAYSQUEUE && !isMainFull() && event.getTarget().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER)))
+            if (Config.ALWAYSQUEUE)
+                return;
+
+            if (!isMainFull() && event.getTarget().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER)))
                 event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
         } else {
             if (player.hasPermission(Config.QUEUEBYPASSPERMISSION))
