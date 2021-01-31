@@ -60,18 +60,22 @@ public final class QueueListener implements Listener {
     public void onQueueSend(ServerSwitchEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        if (!Config.AUTHFIRST || player.hasPermission(Config.QUEUEBYPASSPERMISSION))
+        if (player.hasPermission(Config.QUEUEBYPASSPERMISSION))
             return;
 
-        if (event.getFrom() != null &&
-                event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) &&
-                player.getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER))) {
-            if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue);
-            } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                putQueueAuthFirst(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.priorityQueue);
-            } else {
-                putQueueAuthFirst(player, Config.HEADER, Config.FOOTER, XeraBungeeQueue.regularQueue);
+        if (event.getFrom() == null)
+            return;
+
+        if (Config.AUTHFIRST) {
+            if (event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) &&
+                    player.getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER))) {
+                if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
+                    putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue);
+                } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                    putQueueAuthFirst(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.priorityQueue);
+                } else {
+                    putQueueAuthFirst(player, Config.HEADER, Config.FOOTER, XeraBungeeQueue.regularQueue);
+                }
             }
         }
     }
@@ -81,7 +85,7 @@ public final class QueueListener implements Listener {
         ProxiedPlayer player = event.getPlayer();
 
         if (Config.AUTHFIRST) {
-            if (event.getTarget().getName().equals(Config.QUEUESERVER) && !isMainFull())
+            if (!Config.ALWAYSQUEUE && !isMainFull() && event.getTarget().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER)))
                 event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
         } else {
             if (player.hasPermission(Config.QUEUEBYPASSPERMISSION))
@@ -132,10 +136,8 @@ public final class QueueListener implements Listener {
             return;
         }
 
-        int onMainServer = plugin.getProxy().getServerInfo(Config.MAINSERVER).getPlayers().size();
-
         // Check if we even have to move.
-        if (onMainServer >= Config.MAINSERVERSLOTS)
+        if (isMainFull())
             return;
 
         if (line == 1) {
@@ -144,8 +146,9 @@ public final class QueueListener implements Listener {
             movePriority(true);
         } else if (line == 3) {
             moveRegular();
+            line = 0;
         } else {
-            line = 1;
+            line = 0;
         }
 
         line++;
@@ -254,6 +257,6 @@ public final class QueueListener implements Listener {
     }
 
     private boolean isMainFull() {
-        return Config.ALWAYSQUEUE || plugin.getProxy().getOnlineCount() > Config.MAINSERVERSLOTS;
+        return plugin.getProxy().getServerInfo(Config.MAINSERVER).getPlayers().size() >= Config.MAINSERVERSLOTS;
     }
 }
