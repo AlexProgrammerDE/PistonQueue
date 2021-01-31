@@ -185,7 +185,11 @@ public final class QueueListener implements Listener {
     }
 
     private void connectPlayer(Map<UUID, String> queueMap) {
-        Entry<UUID, String> entry = queueMap.entrySet().iterator().next();
+        Optional<Entry<UUID, String>> optional = queueMap.entrySet().stream().findFirst();
+        if (!optional.isPresent())
+            return;
+
+        Entry<UUID, String> entry = optional.get();
         ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
 
         queueMap.remove(entry.getKey());

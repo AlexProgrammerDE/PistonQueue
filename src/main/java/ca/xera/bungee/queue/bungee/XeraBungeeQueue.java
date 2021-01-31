@@ -309,6 +309,9 @@ public final class XeraBungeeQueue extends Plugin {
         out.writeInt(priorityQueue.size());
         out.writeInt(veteranQueue.size());
 
-        networkPlayers.forEach(player -> player.getServer().getInfo().sendData("xera:bungeequeue", out.toByteArray()));
+        networkPlayers.forEach(player -> {
+            if (player.getServer() != null)
+                player.getServer().getInfo().sendData("xera:bungeequeue", out.toByteArray());
+        });
     }
 }
