@@ -1,8 +1,8 @@
-package ca.xera.bungee.queue.bungee.listeners;
+package ca.xera.queue.bungee.listeners;
 
-import ca.xera.bungee.queue.bungee.XeraBungeeQueue;
-import ca.xera.bungee.queue.bungee.utils.ChatUtils;
-import ca.xera.bungee.queue.bungee.utils.Config;
+import ca.xera.queue.bungee.XeraBungeeQueue;
+import ca.xera.queue.bungee.utils.ChatUtils;
+import ca.xera.queue.bungee.utils.Config;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;

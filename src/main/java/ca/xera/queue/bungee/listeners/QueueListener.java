@@ -1,10 +1,10 @@
-package ca.xera.bungee.queue.bungee.listeners;
+package ca.xera.queue.bungee.listeners;
 
-import ca.xera.bungee.queue.bungee.XeraBungeeQueue;
-import ca.xera.bungee.queue.bungee.utils.BanType;
-import ca.xera.bungee.queue.bungee.utils.ChatUtils;
-import ca.xera.bungee.queue.bungee.utils.Config;
-import ca.xera.bungee.queue.bungee.utils.StorageTool;
+import ca.xera.queue.bungee.XeraBungeeQueue;
+import ca.xera.queue.bungee.utils.BanType;
+import ca.xera.queue.bungee.utils.ChatUtils;
+import ca.xera.queue.bungee.utils.Config;
+import ca.xera.queue.bungee.utils.StorageTool;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -72,11 +72,11 @@ public final class QueueListener implements Listener {
             if (event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) &&
                     player.getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER))) {
                 if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                    putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue);
+                    putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.getVeteranQueue());
                 } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                    putQueueAuthFirst(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.priorityQueue);
+                    putQueueAuthFirst(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.getPriorityQueue());
                 } else {
-                    putQueueAuthFirst(player, Config.HEADER, Config.FOOTER, XeraBungeeQueue.regularQueue);
+                    putQueueAuthFirst(player, Config.HEADER, Config.FOOTER, XeraBungeeQueue.getRegularQueue());
                 }
             }
         }
@@ -97,11 +97,11 @@ public final class QueueListener implements Listener {
                 return;
 
             if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.veteranQueue, veteran, event);
+                putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, XeraBungeeQueue.getVeteranQueue(), veteran, event);
             } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.priorityQueue, priority, event);
+                putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, XeraBungeeQueue.getPriorityQueue(), priority, event);
             } else {
-                putQueue(player, Config.HEADER, Config.FOOTER, XeraBungeeQueue.regularQueue, regular, event);
+                putQueue(player, Config.HEADER, Config.FOOTER, XeraBungeeQueue.getRegularQueue(), regular, event);
             }
         }
     }
@@ -110,28 +110,28 @@ public final class QueueListener implements Listener {
     public void onDisconnect(PlayerDisconnectEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
 
-        XeraBungeeQueue.veteranQueue.remove(uuid);
-        XeraBungeeQueue.priorityQueue.remove(uuid);
-        XeraBungeeQueue.regularQueue.remove(uuid);
+        XeraBungeeQueue.getVeteranQueue().remove(uuid);
+        XeraBungeeQueue.getPriorityQueue().remove(uuid);
+        XeraBungeeQueue.getRegularQueue().remove(uuid);
     }
 
     public void moveQueue() {
         if (Config.PAUSEQUEUEIFMAINDOWN && !mainOnline) {
-            XeraBungeeQueue.veteranQueue.forEach((UUID id, String str) -> {
+            XeraBungeeQueue.getVeteranQueue().forEach((UUID id, String str) -> {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(id);
 
                 if (player != null && player.isConnected())
                     player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
             });
 
-            XeraBungeeQueue.priorityQueue.forEach((UUID id, String str) -> {
+            XeraBungeeQueue.getPriorityQueue().forEach((UUID id, String str) -> {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(id);
 
                 if (player != null && player.isConnected())
                     player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
             });
 
-            XeraBungeeQueue.regularQueue.forEach((UUID id, String str) -> {
+            XeraBungeeQueue.getRegularQueue().forEach((UUID id, String str) -> {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(id);
 
                 if (player != null && player.isConnected())
@@ -147,40 +147,40 @@ public final class QueueListener implements Listener {
 
         if (line == 1) {
             moveVeteran(true);
+            line = 2;
         } else if (line == 2) {
             movePriority(true);
+            line = 3;
         } else if (line == 3) {
             moveRegular();
-            line = 0;
+            line = 1;
         } else {
-            line = 0;
+            line = 1;
         }
-
-        line++;
     }
 
     private void moveRegular() {
-        if (XeraBungeeQueue.regularQueue.isEmpty()) {
+        if (XeraBungeeQueue.getRegularQueue().isEmpty()) {
             moveVeteran(false);
         } else {
-            connectPlayer(XeraBungeeQueue.regularQueue);
+            connectPlayer(XeraBungeeQueue.getRegularQueue());
         }
     }
 
     private void movePriority(boolean canMoveRegular) {
-        if (XeraBungeeQueue.priorityQueue.isEmpty()) {
+        if (XeraBungeeQueue.getPriorityQueue().isEmpty()) {
             if (canMoveRegular)
                 moveRegular();
         } else {
-            connectPlayer(XeraBungeeQueue.priorityQueue);
+            connectPlayer(XeraBungeeQueue.getPriorityQueue());
         }
     }
 
     private void moveVeteran(boolean canMoveRegular) {
-        if (XeraBungeeQueue.veteranQueue.isEmpty()) {
+        if (XeraBungeeQueue.getVeteranQueue().isEmpty()) {
             movePriority(canMoveRegular);
         } else {
-            connectPlayer(XeraBungeeQueue.veteranQueue);
+            connectPlayer(XeraBungeeQueue.getVeteranQueue());
         }
     }
 

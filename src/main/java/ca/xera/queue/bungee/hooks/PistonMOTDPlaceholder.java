@@ -1,6 +1,6 @@
-package ca.xera.bungee.queue.bungee.hooks;
+package ca.xera.queue.bungee.hooks;
 
-import ca.xera.bungee.queue.bungee.QueueAPI;
+import ca.xera.queue.bungee.QueueAPI;
 import me.alexprogrammerde.pistonmotd.api.PlaceholderParser;
 import me.alexprogrammerde.pistonmotd.api.PlaceholderUtil;
 

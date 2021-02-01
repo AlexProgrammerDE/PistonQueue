@@ -1,4 +1,4 @@
-package ca.xera.bungee.queue.bukkit;
+package ca.xera.queue.bukkit;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;

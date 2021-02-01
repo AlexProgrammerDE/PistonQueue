@@ -1,4 +1,4 @@
-package ca.xera.bungee.queue.bungee;
+package ca.xera.queue.bungee;
 
 @SuppressWarnings({"unused"})
 public final class QueueAPI {

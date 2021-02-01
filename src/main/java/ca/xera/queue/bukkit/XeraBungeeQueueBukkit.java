@@ -1,4 +1,4 @@
-package ca.xera.bungee.queue.bukkit;
+package ca.xera.queue.bukkit;
 
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.World;

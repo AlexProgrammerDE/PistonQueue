@@ -1,4 +1,4 @@
-package ca.xera.bungee.queue.bukkit;
+package ca.xera.queue.bukkit;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;

@@ -1,10 +1,11 @@
-package ca.xera.bungee.queue.bungee;
+package ca.xera.queue.bungee;
 
-import ca.xera.bungee.queue.bungee.commands.MainCommand;
-import ca.xera.bungee.queue.bungee.hooks.PistonMOTDPlaceholder;
-import ca.xera.bungee.queue.bungee.listeners.QueueListener;
-import ca.xera.bungee.queue.bungee.listeners.XeraListener;
-import ca.xera.bungee.queue.bungee.utils.*;
+import ca.xera.queue.bungee.commands.MainCommand;
+import ca.xera.queue.bungee.hooks.PistonMOTDPlaceholder;
+import ca.xera.queue.bungee.listeners.QueueListener;
+import ca.xera.queue.bungee.listeners.XeraListener;
+import ca.xera.queue.bungee.utils.*;
+import ca.xera.queue.bungee.utils.*;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
@@ -31,9 +32,9 @@ import java.util.logging.Logger;
 
 @SuppressWarnings({"deprecation"})
 public final class XeraBungeeQueue extends Plugin {
-    public static final Map<UUID, String> regularQueue = new LinkedHashMap<>();
-    public static final Map<UUID, String> priorityQueue = new LinkedHashMap<>();
-    public static final Map<UUID, String> veteranQueue = new LinkedHashMap<>();
+    protected static final @Getter Map<UUID, String> regularQueue = new LinkedHashMap<>();
+    protected static final @Getter Map<UUID, String> priorityQueue = new LinkedHashMap<>();
+    protected static final @Getter Map<UUID, String> veteranQueue = new LinkedHashMap<>();
 
     @Getter
     private BanType banType;

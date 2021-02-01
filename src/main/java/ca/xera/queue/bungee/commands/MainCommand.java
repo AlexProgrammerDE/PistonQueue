@@ -1,9 +1,9 @@
-package ca.xera.bungee.queue.bungee.commands;
+package ca.xera.queue.bungee.commands;
 
-import ca.xera.bungee.queue.bungee.QueueAPI;
-import ca.xera.bungee.queue.bungee.XeraBungeeQueue;
-import ca.xera.bungee.queue.bungee.utils.Config;
-import ca.xera.bungee.queue.bungee.utils.StorageTool;
+import ca.xera.queue.bungee.QueueAPI;
+import ca.xera.queue.bungee.XeraBungeeQueue;
+import ca.xera.queue.bungee.utils.Config;
+import ca.xera.queue.bungee.utils.StorageTool;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;

@@ -1,4 +1,4 @@
-package ca.xera.bungee.queue.bungee.utils;
+package ca.xera.queue.bungee.utils;
 
 /**
  * How shadowbanned people should be punished.
