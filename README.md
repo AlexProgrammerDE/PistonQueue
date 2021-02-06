@@ -1,12 +1,12 @@
 # PistonQueue
 
-[![discord](https://discord.com/api/guilds/683053832694923319/embed.png)](https://discord.gg/WWm35Tc) 
+[![PistonDev Discord](https://discord.com/api/guilds/739784741124833301/embed.png)](https://discord.gg/CDrcxzH) 
 [![](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://github.com/AlexProgrammerDE/PistonQueue)
 
 ## About
 
 PistonQueue is a basic and easy to use queue plugin designed for anarchy and survival servers. This plugin is a fork
-of LeeesBungeeQueue but LeeesBungeeQueue was a designed more for the server 6b6t.org so a fork of the plugin was created
+of LeeesBungeeQueue but LeeesBungeeQueue was a designed more for the server 6b6t.org, so a fork of the plugin was created
 that is designed for everyone and has more updates and support.
 
 ## Features
@@ -29,19 +29,13 @@ Instead of showing an error saying the server is down you can customize this mes
 
 ### Auth server support
 
-Auth server support for cracked (offline mode: false) servers. ~~(This is causes some security issues for example: The
-queue goes first then auth and main.).~~ You can now have the authserver go first and then the queue!
-
-# Updates
-
-We make sometimes a small update on what we added in the last
-commits: https://github.com/AlexProgrammerDE/PistonQueue/blob/master/Updates.md
+Auth server support for cracked (offline mode: false) servers. You can now have the authserver go first and then the queue!
 
 ## Setup
 
 [Wiki](https://github.com/AlexProgrammerDE/PistonQueue/wiki)
 Check out the wiki for a tutorial on how to setup PistonQueue.
 
-[![Xera Discord](https://github.com/AlexProgrammerDE/AlexProgrammerDE.github.io/raw/master/discord.png)](https://discord.gg/KgrrEQr)
+[![PistonDev Discord](https://github.com/AlexProgrammerDE/AlexProgrammerDE.github.io/raw/master/discord.png)](https://discord.gg/CDrcxzH)
 
 If you find any bugs or ways to improve the plugin open a issue on github.
