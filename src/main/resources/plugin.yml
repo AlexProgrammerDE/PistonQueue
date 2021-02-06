@@ -1,11 +1,10 @@
-name: XeraBungeeQueueBukkit
+name: PistonQueueBukkit
 version: ${project.version}
 api-version: 1.13
-main: ca.xera.queue.bukkit.XeraBungeeQueueBukkit
-author: XeraPlugins
-authors: [ Nate Legault, Pistonmaster ]
-description: Bukkit companion for XeraBungeeQueue
-website: http://www.xera.ca/
+main: net.pistonmaster.pistonqueue.bukkit.PistonQueueBukkit
+author: AlexProgrammerDE
+description: Bukkit companion for PistonQueue
+website: http://pistonmaster.net/
 softdepend: [ "ProtocolLib" ]
 
 permissions:

@@ -1,10 +1,11 @@
-# XeraBungeeQueue
+# PistonQueue
 
-[![discord](https://discord.com/api/guilds/683053832694923319/embed.png)](https://discord.gg/WWm35Tc) [![](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://github.com/XeraPlugins/XeraBungeeQueue)
+[![discord](https://discord.com/api/guilds/683053832694923319/embed.png)](https://discord.gg/WWm35Tc) 
+[![](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://github.com/AlexProgrammerDE/PistonQueue)
 
 ## About
 
-XeraBungeeQueue is a basic and easy to use queue plugin designed for anarchy and survival servers. This plugin is a fork
+PistonQueue is a basic and easy to use queue plugin designed for anarchy and survival servers. This plugin is a fork
 of LeeesBungeeQueue but LeeesBungeeQueue was a designed more for the server 6b6t.org so a fork of the plugin was created
 that is designed for everyone and has more updates and support.
 
@@ -34,12 +35,12 @@ queue goes first then auth and main.).~~ You can now have the authserver go firs
 # Updates
 
 We make sometimes a small update on what we added in the last
-commits: https://github.com/XeraPlugins/XeraBungeeQueue/blob/master/Updates.md
+commits: https://github.com/AlexProgrammerDE/PistonQueue/blob/master/Updates.md
 
 ## Setup
 
-[Wiki](https://github.com/XeraPlugins/XeraBungeeQueue/wiki)
-Check out the wiki for a tutorial on how to setup XeraBungeeQueue.
+[Wiki](https://github.com/AlexProgrammerDE/PistonQueue/wiki)
+Check out the wiki for a tutorial on how to setup PistonQueue.
 
 [![Xera Discord](https://github.com/AlexProgrammerDE/AlexProgrammerDE.github.io/raw/master/discord.png)](https://discord.gg/KgrrEQr)
 

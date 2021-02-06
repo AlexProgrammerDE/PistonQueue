@@ -2,9 +2,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ca.xera</groupId>
-    <artifactId>XeraBungeeQueue</artifactId>
+    <groupId>net.pistonmaster</groupId>
+    <artifactId>PistonQueue</artifactId>
     <version>1.3.3</version>
+
+    <name>PistonQueue</name>
     <description>Best queue plugin out there!</description>
 
     <properties>
@@ -33,7 +35,7 @@
                     <relocations>
                         <relocation>
                             <pattern>org.bstats</pattern>
-                            <shadedPattern>ca.xera.bungee.queue.bungee.shade.bstats</shadedPattern>
+                            <shadedPattern>net.pistonmaster.pistonqueue.bungee.shade.bstats</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>

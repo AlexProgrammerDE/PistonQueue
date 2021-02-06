@@ -1,6 +1,6 @@
-name: XeraBungeeQueue
-main: ca.xera.queue.bungee.XeraBungeeQueue
+name: PistonQueue
+main: net.pistonmaster.pistonqueue.bungee.PistonQueue
 description: ${project.description}
 version: ${project.version}
-author: XeraPlugins
+author: AlexProgrammerDE
 softDepends: [ PistonMOTD ]

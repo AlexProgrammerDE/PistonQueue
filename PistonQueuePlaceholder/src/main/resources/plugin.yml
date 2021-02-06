@@ -1,0 +1,8 @@
+name: PistonQueuePlaceholder
+version: ${project.version}
+main: net.pistonmaster.pistonqueueplaceholder.PistonQueuePlaceholder
+api-version: 1.13
+authors: [ AlexProgrammerDE ]
+description: Puts queue data in papi
+website: https://pistonmaster.net/
+depend: [ PlaceholderAPI ]
