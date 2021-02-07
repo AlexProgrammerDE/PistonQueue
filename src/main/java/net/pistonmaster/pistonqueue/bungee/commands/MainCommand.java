@@ -1,15 +1,15 @@
 package net.pistonmaster.pistonqueue.bungee.commands;
 
-import net.pistonmaster.pistonqueue.bungee.QueueAPI;
-import net.pistonmaster.pistonqueue.bungee.PistonQueue;
-import net.pistonmaster.pistonqueue.bungee.utils.Config;
-import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
+import net.pistonmaster.pistonqueue.bungee.PistonQueue;
+import net.pistonmaster.pistonqueue.bungee.QueueAPI;
+import net.pistonmaster.pistonqueue.bungee.utils.Config;
+import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
 
 import java.util.*;
 

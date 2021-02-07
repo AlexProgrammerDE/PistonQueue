@@ -1,10 +1,10 @@
 package net.pistonmaster.pistonqueue.bungee.utils;
 
-import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 
 import java.io.File;
 import java.io.IOException;

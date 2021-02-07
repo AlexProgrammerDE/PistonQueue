@@ -1,14 +1,14 @@
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
-import net.pistonmaster.pistonqueue.bungee.PistonQueue;
-import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.bungee.utils.Config;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.pistonmaster.pistonqueue.bungee.PistonQueue;
+import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
+import net.pistonmaster.pistonqueue.bungee.utils.Config;
 
 import java.util.ArrayList;
 import java.util.List;

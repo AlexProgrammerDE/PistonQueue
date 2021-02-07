@@ -1,10 +1,5 @@
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
-import net.pistonmaster.pistonqueue.bungee.PistonQueue;
-import net.pistonmaster.pistonqueue.bungee.utils.BanType;
-import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.bungee.utils.Config;
-import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -15,6 +10,11 @@ import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.pistonmaster.pistonqueue.bungee.PistonQueue;
+import net.pistonmaster.pistonqueue.bungee.utils.BanType;
+import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
+import net.pistonmaster.pistonqueue.bungee.utils.Config;
+import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
 
 import java.util.*;
 import java.util.Map.Entry;

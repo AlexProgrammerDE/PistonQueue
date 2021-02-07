@@ -1,9 +1,9 @@
 package net.pistonmaster.pistonqueue.bungee.utils;
 
-import net.pistonmaster.pistonqueue.bungee.QueueAPI;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.pistonmaster.pistonqueue.bungee.QueueAPI;
 
 public final class ChatUtils {
     private ChatUtils() {

@@ -1,8 +1,8 @@
 package net.pistonmaster.pistonqueue.bungee.hooks;
 
-import net.pistonmaster.pistonqueue.bungee.QueueAPI;
 import me.alexprogrammerde.pistonmotd.api.PlaceholderParser;
 import me.alexprogrammerde.pistonmotd.api.PlaceholderUtil;
+import net.pistonmaster.pistonqueue.bungee.QueueAPI;
 
 public class PistonMOTDPlaceholder implements PlaceholderParser {
     public PistonMOTDPlaceholder() {

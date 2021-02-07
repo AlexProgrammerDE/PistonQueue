@@ -1,9 +1,5 @@
 package net.pistonmaster.pistonqueue.bungee;
 
-import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
-import net.pistonmaster.pistonqueue.bungee.hooks.PistonMOTDPlaceholder;
-import net.pistonmaster.pistonqueue.bungee.listeners.QueueListener;
-import net.pistonmaster.pistonqueue.bungee.listeners.PistonListener;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
@@ -16,6 +12,10 @@ import net.md_5.bungee.api.plugin.PluginManager;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
+import net.pistonmaster.pistonqueue.bungee.hooks.PistonMOTDPlaceholder;
+import net.pistonmaster.pistonqueue.bungee.listeners.PistonListener;
+import net.pistonmaster.pistonqueue.bungee.listeners.QueueListener;
 import net.pistonmaster.pistonqueue.bungee.utils.*;
 import org.bstats.bungeecord.Metrics;
 
@@ -31,9 +31,12 @@ import java.util.logging.Logger;
 
 @SuppressWarnings({"deprecation"})
 public final class PistonQueue extends Plugin {
-    protected static final @Getter Map<UUID, String> regularQueue = new LinkedHashMap<>();
-    protected static final @Getter Map<UUID, String> priorityQueue = new LinkedHashMap<>();
-    protected static final @Getter Map<UUID, String> veteranQueue = new LinkedHashMap<>();
+    protected static final @Getter
+    Map<UUID, String> regularQueue = new LinkedHashMap<>();
+    protected static final @Getter
+    Map<UUID, String> priorityQueue = new LinkedHashMap<>();
+    protected static final @Getter
+    Map<UUID, String> veteranQueue = new LinkedHashMap<>();
 
     @Getter
     private BanType banType;
