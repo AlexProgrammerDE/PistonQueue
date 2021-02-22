@@ -19,44 +19,40 @@ public final class MainCommand extends Command implements TabExecutor {
     private final PistonQueue plugin;
 
     public MainCommand(PistonQueue plugin) {
-        super("xbq");
+        super("pistonqueue", null, "pq");
         this.plugin = plugin;
     }
 
     @Override
     public void execute(CommandSender sender, String[] args) {
-        if (args.length == 0) {
+        if (args.length == 0)
             help(sender);
-        }
 
         if (args.length > 0) {
             switch (args[0].toLowerCase()) {
-                case "help":
-                    help(sender);
-                    break;
                 case "version":
-                    sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                    sendLine(sender);
                     sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
                     sender.sendMessage(new ComponentBuilder("Version " + plugin.getDescription().getVersion() + " by").color(ChatColor.GOLD).create());
                     sender.sendMessage(new ComponentBuilder(plugin.getDescription().getAuthor()).color(ChatColor.GOLD).create());
-                    sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                    sendLine(sender);
                     break;
                 case "stats":
-                    sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                    sendLine(sender);
                     sender.sendMessage(new ComponentBuilder("Queue stats").color(ChatColor.GOLD).create());
                     sender.sendMessage(new ComponentBuilder("Regular: ").color(ChatColor.GOLD).append(String.valueOf(QueueAPI.getRegularSize())).color(ChatColor.GOLD).bold(true).create());
                     sender.sendMessage(new ComponentBuilder("Priority: ").color(ChatColor.GOLD).append(String.valueOf(QueueAPI.getPrioritySize())).color(ChatColor.GOLD).bold(true).create());
                     sender.sendMessage(new ComponentBuilder("Veteran: ").color(ChatColor.GOLD).append(String.valueOf(QueueAPI.getVeteranSize())).color(ChatColor.GOLD).bold(true).create());
-                    sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                    sendLine(sender);
                     break;
                 case "reload":
                     if (sender.hasPermission(Config.ADMINPERMISSION)) {
                         plugin.processConfig();
 
-                        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                        sendLine(sender);
                         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
                         sender.sendMessage(new ComponentBuilder("Config reloaded").color(ChatColor.GREEN).create());
-                        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                        sendLine(sender);
                     } else {
                         noPermission(sender);
                     }
@@ -93,24 +89,24 @@ public final class MainCommand extends Command implements TabExecutor {
                                     }
 
                                     if (StorageTool.shadowBanPlayer(player, calendar.getTime())) {
-                                        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                                        sendLine(sender);
                                         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
                                         sender.sendMessage(new ComponentBuilder("Successfully shadowbanned " + player.getName() + "!").color(ChatColor.GREEN).create());
-                                        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                                        sendLine(sender);
                                     } else {
-                                        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                                        sendLine(sender);
                                         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
                                         sender.sendMessage(new ComponentBuilder(player.getName() + " is already shadowbanned!").color(ChatColor.RED).create());
-                                        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                                        sendLine(sender);
                                     }
                                 } else {
                                     sendBanHelp(sender);
                                 }
                             } else {
-                                sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                                sendLine(sender);
                                 sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
                                 sender.sendMessage(new ComponentBuilder("The player " + args[1] + " was not found!").color(ChatColor.GOLD).create());
-                                sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                                sendLine(sender);
                             }
                         } else {
                             sendBanHelp(sender);
@@ -126,22 +122,21 @@ public final class MainCommand extends Command implements TabExecutor {
                                 ProxiedPlayer player = plugin.getProxy().getPlayer(args[1]);
 
                                 if (StorageTool.unShadowBanPlayer(player)) {
-                                    sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                                    sendLine(sender);
                                     sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
                                     sender.sendMessage(new ComponentBuilder("Successfully unshadowbanned " + player.getName() + "!").color(ChatColor.GREEN).create());
-                                    sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                                    sendLine(sender);
                                 } else {
-                                    sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                                    sendLine(sender);
                                     sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
                                     sender.sendMessage(new ComponentBuilder(player.getName() + " is already shadowbanned!").color(ChatColor.RED).create());
-                                    sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                                    sendLine(sender);
                                 }
                             } else {
-                                sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+                                sendLine(sender);
                                 sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
                                 sender.sendMessage(new ComponentBuilder("The player " + args[1] + " was not found!").color(ChatColor.GOLD).create());
-                                sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
-                            }
+                                sendLine(sender);                            }
                         } else {
                             sendUnBanHelp(sender);
                         }
@@ -157,15 +152,15 @@ public final class MainCommand extends Command implements TabExecutor {
     }
 
     private void noPermission(CommandSender sender) {
-        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+        sendLine(sender);
         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("You do not").color(ChatColor.RED).create());
         sender.sendMessage(new ComponentBuilder("have permission").color(ChatColor.RED).create());
-        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+        sendLine(sender);
     }
 
     private void help(CommandSender sender) {
-        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+        sendLine(sender);
         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/xbq help").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/xbq version").color(ChatColor.GOLD).create());
@@ -177,24 +172,28 @@ public final class MainCommand extends Command implements TabExecutor {
             sender.sendMessage(new ComponentBuilder("/xbq unshadowban").color(ChatColor.GOLD).create());
         }
 
-        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+        sendLine(sender);
     }
 
     private void sendBanHelp(CommandSender sender) {
-        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+        sendLine(sender);
         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/xbq shadowban player <d|h|m|s>").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("Example:").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/xbq shadowban Pistonmaster 2d").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+        sendLine(sender);
     }
 
     private void sendUnBanHelp(CommandSender sender) {
-        sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
+        sendLine(sender);
         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/xbq unshadowban player").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("Example:").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/xbq unshadowban Pistonmaster").color(ChatColor.GOLD).create());
+        sendLine(sender);
+    }
+
+    private void sendLine(CommandSender sender) {
         sender.sendMessage(new ComponentBuilder("----------------").color(ChatColor.DARK_BLUE).create());
     }
 
@@ -215,20 +214,10 @@ public final class MainCommand extends Command implements TabExecutor {
                             completions.add(string);
                     }
                 }
-            } else if (sender.hasPermission(Config.ADMINPERMISSION) &&
-                    args.length == 2 &&
-                    args[0].equalsIgnoreCase("shadowban")) {
-                for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                    if (player.getName().toLowerCase().startsWith(args[1].toLowerCase()))
-                        completions.add(player.getName());
-                }
-            } else if (sender.hasPermission(Config.ADMINPERMISSION) &&
-                    args.length == 2 &&
-                    args[0].equalsIgnoreCase("unshadowban")) {
-                for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                    if (player.getName().toLowerCase().startsWith(args[1].toLowerCase()))
-                        completions.add(player.getName());
-                }
+            } else if (sender.hasPermission(Config.ADMINPERMISSION)
+                    && args.length == 2
+                    && (args[0].equalsIgnoreCase("shadowban") || args[0].equalsIgnoreCase("unshadowban"))) {
+                addPlayers(completions, args);
             }
 
             Collections.sort(completions);
@@ -236,6 +225,13 @@ public final class MainCommand extends Command implements TabExecutor {
             return completions;
         } else {
             return null;
+        }
+    }
+
+    private void addPlayers(List<String> completions, String[] args) {
+        for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
+            if (player.getName().toLowerCase().startsWith(args[1].toLowerCase()))
+                completions.add(player.getName());
         }
     }
 }

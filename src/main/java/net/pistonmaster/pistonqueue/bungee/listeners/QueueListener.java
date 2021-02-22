@@ -56,6 +56,10 @@ public final class QueueListener implements Listener {
                 event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
             }
         }
+
+        if (StorageTool.isShadowBanned(player) && plugin.getBanType() == BanType.KICK) {
+            event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
+        }
     }
 
     @EventHandler

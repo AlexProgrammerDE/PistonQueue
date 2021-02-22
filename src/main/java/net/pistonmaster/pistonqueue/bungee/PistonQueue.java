@@ -31,12 +31,9 @@ import java.util.logging.Logger;
 
 @SuppressWarnings({"deprecation"})
 public final class PistonQueue extends Plugin {
-    protected static final @Getter
-    Map<UUID, String> regularQueue = new LinkedHashMap<>();
-    protected static final @Getter
-    Map<UUID, String> priorityQueue = new LinkedHashMap<>();
-    protected static final @Getter
-    Map<UUID, String> veteranQueue = new LinkedHashMap<>();
+    protected static final @Getter Map<UUID, String> regularQueue = new LinkedHashMap<>();
+    protected static final @Getter Map<UUID, String> priorityQueue = new LinkedHashMap<>();
+    protected static final @Getter Map<UUID, String> veteranQueue = new LinkedHashMap<>();
 
     @Getter
     private BanType banType;
@@ -175,9 +172,8 @@ public final class PistonQueue extends Plugin {
         try {
             loadConfig();
         } catch (IOException e) {
-            if (!getDataFolder().exists() && !getDataFolder().mkdir()) {
+            if (!getDataFolder().exists() && !getDataFolder().mkdir())
                 return;
-            }
 
             File file = new File(getDataFolder(), "config.yml");
 
