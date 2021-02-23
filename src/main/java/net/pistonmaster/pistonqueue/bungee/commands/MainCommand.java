@@ -136,7 +136,8 @@ public final class MainCommand extends Command implements TabExecutor {
                                 sendLine(sender);
                                 sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
                                 sender.sendMessage(new ComponentBuilder("The player " + args[1] + " was not found!").color(ChatColor.GOLD).create());
-                                sendLine(sender);                            }
+                                sendLine(sender);
+                            }
                         } else {
                             sendUnBanHelp(sender);
                         }
@@ -162,14 +163,14 @@ public final class MainCommand extends Command implements TabExecutor {
     private void help(CommandSender sender) {
         sendLine(sender);
         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("/xbq help").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("/xbq version").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("/xbq stats").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/pq help").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/pq version").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/pq stats").color(ChatColor.GOLD).create());
 
         if (sender.hasPermission(Config.ADMINPERMISSION)) {
-            sender.sendMessage(new ComponentBuilder("/xbq reload").color(ChatColor.GOLD).create());
-            sender.sendMessage(new ComponentBuilder("/xbq shadowban").color(ChatColor.GOLD).create());
-            sender.sendMessage(new ComponentBuilder("/xbq unshadowban").color(ChatColor.GOLD).create());
+            sender.sendMessage(new ComponentBuilder("/pq reload").color(ChatColor.GOLD).create());
+            sender.sendMessage(new ComponentBuilder("/pq shadowban").color(ChatColor.GOLD).create());
+            sender.sendMessage(new ComponentBuilder("/pq unshadowban").color(ChatColor.GOLD).create());
         }
 
         sendLine(sender);
@@ -178,18 +179,18 @@ public final class MainCommand extends Command implements TabExecutor {
     private void sendBanHelp(CommandSender sender) {
         sendLine(sender);
         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("/xbq shadowban player <d|h|m|s>").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/pq shadowban player <d|h|m|s>").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("Example:").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("/xbq shadowban Pistonmaster 2d").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/pq shadowban Pistonmaster 2d").color(ChatColor.GOLD).create());
         sendLine(sender);
     }
 
     private void sendUnBanHelp(CommandSender sender) {
         sendLine(sender);
         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("/xbq unshadowban player").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/pq unshadowban player").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("Example:").color(ChatColor.GOLD).create());
-        sender.sendMessage(new ComponentBuilder("/xbq unshadowban Pistonmaster").color(ChatColor.GOLD).create());
+        sender.sendMessage(new ComponentBuilder("/pq unshadowban Pistonmaster").color(ChatColor.GOLD).create());
         sendLine(sender);
     }
 

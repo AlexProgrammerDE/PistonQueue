@@ -63,30 +63,6 @@ public final class QueueListener implements Listener {
     }
 
     @EventHandler
-    public void onQueueSend(ServerSwitchEvent event) {
-        ProxiedPlayer player = event.getPlayer();
-
-        if (Config.AUTHFIRST) {
-            if (player.hasPermission(Config.QUEUEBYPASSPERMISSION))
-                return;
-
-            if (event.getFrom() == null)
-                return;
-
-            if (event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) &&
-                    player.getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER))) {
-                if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                    putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, PistonQueue.getVeteranQueue());
-                } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                    putQueueAuthFirst(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, PistonQueue.getPriorityQueue());
-                } else {
-                    putQueueAuthFirst(player, Config.HEADER, Config.FOOTER, PistonQueue.getRegularQueue());
-                }
-            }
-        }
-    }
-
-    @EventHandler
     public void onSend(ServerConnectEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
@@ -107,6 +83,35 @@ public final class QueueListener implements Listener {
             } else {
                 putQueue(player, Config.HEADER, Config.FOOTER, PistonQueue.getRegularQueue(), regular, event);
             }
+        }
+    }
+
+    @EventHandler
+    public void onQueueSend(ServerSwitchEvent event) {
+        ProxiedPlayer player = event.getPlayer();
+
+        if (Config.AUTHFIRST) {
+            if (player.hasPermission(Config.QUEUEBYPASSPERMISSION))
+                return;
+
+            // Its null when joining!
+            if (event.getFrom() == null) {
+                if (Config.ALLOWAUTHSKIP)
+                    queuePlayerAuthFirst(player);
+            } else if (event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) &&
+                    player.getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER))) {
+                queuePlayerAuthFirst(player);
+            }
+        }
+    }
+
+    private void queuePlayerAuthFirst(ProxiedPlayer player) {
+        if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
+            putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, PistonQueue.getVeteranQueue());
+        } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+            putQueueAuthFirst(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, PistonQueue.getPriorityQueue());
+        } else {
+            putQueueAuthFirst(player, Config.HEADER, Config.FOOTER, PistonQueue.getRegularQueue());
         }
     }
 

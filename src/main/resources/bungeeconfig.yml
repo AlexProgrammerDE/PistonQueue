@@ -6,7 +6,7 @@
 
 # Username regex
 REGEX: "[a-zA-Z0-9_]*"
-REGEXMESSAGE: "&6[XBQ] Invalid username please use: %regex%"
+REGEXMESSAGE: "&6[PQ] Invalid username please use: %regex%"
 
 # Tab auto completion
 REGISTERTAB: true
@@ -65,6 +65,10 @@ AUTHSERVER: "auth"
 # It might also cause more issues because then the players aren't queued to join the auth server. It might overload.
 # We will not provide support for this feature!!!
 AUTHFIRST: false
+
+# Do you want people to join directly to the queue server to be able to get queued?
+# Makes sense when having auth first and the plugin redirecting you instantly to the queue.
+ALLOWAUTHSKIP: true
 
 # Connecting to server message use %server% if you want it
 # to just use the name of the default server
