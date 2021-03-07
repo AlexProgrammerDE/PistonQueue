@@ -44,8 +44,7 @@
                             <relocations>
                                 <relocation>
                                     <pattern>io.papermc.lib</pattern>
-                                    <shadedPattern>me.alexprogrammerde.pistonqueueplaceholder.paperlib
-                                    </shadedPattern>
+                                    <shadedPattern>net.pistonmaster.pistonqueueplaceholder.paperlib</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
