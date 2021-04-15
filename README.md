@@ -36,6 +36,6 @@ Auth server support for cracked (offline mode: false) servers. You can now have 
 [Wiki](https://github.com/AlexProgrammerDE/PistonQueue/wiki)
 Check out the wiki for a tutorial on how to setup PistonQueue.
 
-[![PistonDev Discord](https://github.com/AlexProgrammerDE/AlexProgrammerDE.github.io/raw/master/discord.png)](https://discord.gg/CDrcxzH)
+[![PistonDev Discord](https://discord.com/api/guilds/739784741124833301/widget.png?style=banner2)](https://discord.gg/CDrcxzH)
 
 If you find any bugs or ways to improve the plugin open a issue on github.
