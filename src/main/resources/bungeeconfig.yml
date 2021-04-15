@@ -110,7 +110,7 @@ SHADOWBANTYPE: "LOOP"
 SHADOWBANMESSAGE: "&6You have lost connection to the server"
 
 # Permissions
-QUEUEBYPASSPERMISSION: "queue.override"
+QUEUEBYPASSPERMISSION: "queue.bypass"
 QUEUEPRIORITYPERMISSION: "queue.priority"
 QUEUEVETERANPERMISSION: "queue.veteran"
 ADMINPERMISSION: "queue.admin"

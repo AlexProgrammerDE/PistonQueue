@@ -2,9 +2,7 @@ package net.pistonmaster.pistonqueue.bungee.listeners;
 
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.ServerConnectRequest;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -73,15 +71,16 @@ public final class QueueListener implements Listener {
             if (!isMainFull() && event.getTarget().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER)))
                 event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
         } else {
-            if (player.hasPermission(Config.QUEUEBYPASSPERMISSION))
-                return;
-
-            if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, PistonQueue.getVeteranQueue(), veteran, event);
-            } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, PistonQueue.getPriorityQueue(), priority, event);
+            if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
+                event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
             } else {
-                putQueue(player, Config.HEADER, Config.FOOTER, PistonQueue.getRegularQueue(), regular, event);
+                if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
+                    putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, PistonQueue.getVeteranQueue(), veteran, event);
+                } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                    putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, PistonQueue.getPriorityQueue(), priority, event);
+                } else {
+                    putQueue(player, Config.HEADER, Config.FOOTER, PistonQueue.getRegularQueue(), regular, event);
+                }
             }
         }
     }
