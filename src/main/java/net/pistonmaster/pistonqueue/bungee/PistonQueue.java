@@ -38,11 +38,13 @@ public final class PistonQueue extends Plugin {
     @Getter
     private BanType banType;
 
+    @Getter
+    private QueueListener queueListener = new QueueListener(this);
+
     @Override
     public void onEnable() {
         Logger logger = getLogger();
         PluginManager manager = getProxy().getPluginManager();
-        QueueListener events = new QueueListener(this);
 
         logger.info(ChatColor.BLUE + "Loading config");
         processConfig();
@@ -62,7 +64,7 @@ public final class PistonQueue extends Plugin {
         manager.registerCommand(this, new MainCommand(this));
 
         logger.info(ChatColor.BLUE + "Registering listeners");
-        manager.registerListener(this, events);
+        manager.registerListener(this, queueListener);
         manager.registerListener(this, new PistonListener(this));
 
         logger.info(ChatColor.BLUE + "Loading Metrics");
@@ -106,7 +108,7 @@ public final class PistonQueue extends Plugin {
         getProxy().getScheduler().schedule(this, this::sendCustomData, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
-        getProxy().getScheduler().schedule(this, events::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        getProxy().getScheduler().schedule(this, queueListener::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Checks the status of all the servers
         getProxy().getScheduler().schedule(this, () -> {
@@ -117,10 +119,10 @@ public final class PistonQueue extends Plugin {
                             getProxy().getServerInfo(Config.MAINSERVER).getAddress().getPort());
 
                     s.close();
-                    events.setMainOnline(true);
+                    queueListener.setMainOnline(true);
                 } catch (IOException e) {
                     getLogger().warning("Main Server is down!!!");
-                    events.setMainOnline(false);
+                    queueListener.setMainOnline(false);
                 }
             } else {
                 getLogger().warning("Main Server \"" + Config.MAINSERVER + "\" not set up!!!");
@@ -135,10 +137,10 @@ public final class PistonQueue extends Plugin {
                             getProxy().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
 
                     s.close();
-                    events.setQueueOnline(true);
+                    queueListener.setQueueOnline(true);
                 } catch (IOException e) {
                     getLogger().warning("Queue Server is down!!!");
-                    events.setQueueOnline(false);
+                    queueListener.setQueueOnline(false);
                 }
             } else {
                 getLogger().warning("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!!");
@@ -154,16 +156,16 @@ public final class PistonQueue extends Plugin {
                                 getProxy().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
 
                         s.close();
-                        events.setAuthOnline(true);
+                        queueListener.setAuthOnline(true);
                     } catch (IOException e) {
                         getLogger().warning("Auth Server is down!!!");
-                        events.setAuthOnline(false);
+                        queueListener.setAuthOnline(false);
                     }
                 } else {
                     getLogger().warning("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!!");
                 }
             } else {
-                events.setAuthOnline(true);
+                queueListener.setAuthOnline(true);
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
     }
@@ -218,6 +220,9 @@ public final class PistonQueue extends Plugin {
 
     private void sendMessage(Map<UUID, String> queue, boolean bool, ChatMessageType type) {
         if (bool) {
+            if (!queueListener.mainOnline)
+                return;
+
             int i = 0;
 
             for (Entry<UUID, String> entry : queue.entrySet()) {

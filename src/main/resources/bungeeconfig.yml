@@ -23,17 +23,25 @@ POSITIONMESSAGEHOTBAR: false
 QUEUEPOSITION: "&6Position in queue: &l%position%"
 POSITIONMESSAGEDELAY: 10000
 
+# This is a message to hide the actual reason of why you are getting kicked from the server.
+ENABLEKICKMESSAGE: false
+KICKMESSAGE: "&6You have lost connection to the server"
+
 # Failure protection for the queue
 PAUSEQUEUEIFMAINDOWN: true
 PAUSEQUEUEIFMAINDOWNMESSAGE: "&6The main server is down. We will be back soon!"
 
-# You are getting kicked if the main, queue or is down
-ENABLEKICKMESSAGE: true
-KICKMESSAGE: "&6You have lost connection to the server"
-
 # When the main server is down should you kick the player from the queue?
-KICKWHENDOWN: true
+KICKWHENDOWN: false
 SERVERDOWNKICKMESSAGE: "SERVERNAME &6is down please try again later :("
+
+# If a player gets kicked from the main server (it goes down/crashes), he gets sent into queue and waits.
+IFMAINDOWNSENDTOQUEUE: true
+IFMAINDOWNSENDTOQUEUEMESSAGE: "&cThe main server is offline now! You have been sent to queue while it goes back online."
+
+# If something went wrong while queue -> main happens should the player be sent back into queue?
+RECOVERY: true
+RECOVERYMESSAGE: "&cOops something went wrong... Putting you back in queue."
 
 # This shows the queue size when you hover over the ping on the server list
 SERVERPINGINFOENABLE: true
@@ -85,9 +93,9 @@ FORCEMAINSERVER: true
 # of people you get regularly i set mine to 9000 and 9000 on the queue server
 QUEUESERVERSLOTS: 9000
 
-# Queue move delay in milliseconds default is 2000ms
-# please note this only guaranteed to not have issues 2000ms and higher
-QUEUEMOVEDELAY: 2000
+# Queue move delay in milliseconds default is 1000ms
+# please note this only guaranteed to not have issues 1000ms and higher
+QUEUEMOVEDELAY: 1000
 
 # Should the queue be always active or only when the main server is full?
 # When activated you will always be sent into the queue server and then the main server.

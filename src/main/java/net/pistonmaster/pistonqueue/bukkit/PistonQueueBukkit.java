@@ -57,7 +57,7 @@ public final class PistonQueueBukkit extends JavaPlugin {
 
             ProtocolLibWrapper.setupProtocolLib(this);
         } else {
-            getLogger().info(ChatColor.YELLOW + "It is recommended to install Protocol");
+            getLogger().info(ChatColor.YELLOW + "It is recommended to install ProtocolLib");
         }
 
         getLogger().info(ChatColor.BLUE + "Registering listeners");

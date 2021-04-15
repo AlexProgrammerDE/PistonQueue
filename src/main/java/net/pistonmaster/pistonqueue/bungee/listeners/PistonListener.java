@@ -1,5 +1,6 @@
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ServerPing;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
@@ -35,6 +36,13 @@ public final class PistonListener implements Listener {
     public void onKick(ServerKickEvent event) {
         if (Config.ENABLEKICKMESSAGE) {
             event.setKickReasonComponent(ChatUtils.parseToComponent(Config.KICKMESSAGE));
+        }
+
+        if (Config.IFMAINDOWNSENDTOQUEUE && event.getKickedFrom() == plugin.getProxy().getServerInfo(Config.MAINSERVER)) {
+            event.setCancelServer(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.IFMAINDOWNSENDTOQUEUEMESSAGE));
+            plugin.getQueueListener().queuePlayerAuthFirst(event.getPlayer());
         }
     }
 

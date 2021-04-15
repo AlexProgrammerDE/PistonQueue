@@ -1,7 +1,10 @@
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.md_5.bungee.api.Callback;
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.ServerConnectRequest;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
@@ -19,6 +22,7 @@ import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
 import java.util.*;
 import java.util.Map.Entry;
 
+@RequiredArgsConstructor
 public final class QueueListener implements Listener {
     private final PistonQueue plugin;
     private final List<UUID> veteran = new ArrayList<>();
@@ -32,10 +36,6 @@ public final class QueueListener implements Listener {
     public boolean authOnline = false;
     // 1 = veteran, 2 = priority, 3 = regular
     private int line = 1;
-
-    public QueueListener(PistonQueue plugin) {
-        this.plugin = plugin;
-    }
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
@@ -105,7 +105,7 @@ public final class QueueListener implements Listener {
         }
     }
 
-    private void queuePlayerAuthFirst(ProxiedPlayer player) {
+    public void queuePlayerAuthFirst(ProxiedPlayer player) {
         if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
             putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, PistonQueue.getVeteranQueue());
         } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
@@ -202,7 +202,6 @@ public final class QueueListener implements Listener {
         ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
 
         queueMap.remove(entry.getKey());
-
         if (player == null || !player.isConnected())
             return;
 
@@ -219,7 +218,13 @@ public final class QueueListener implements Listener {
             return;
         }
 
-        player.connect(plugin.getProxy().getServerInfo(entry.getValue()));
+        player.connect(plugin.getProxy().getServerInfo(entry.getValue()), (result, error) -> {
+            if (!result) {
+                player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
+                queueMap.put(entry.getKey(), entry.getValue());
+
+            }
+        });
     }
 
     private void putQueueAuthFirst(ProxiedPlayer player, List<String> header, List<String> footer, Map<UUID, String> queueMap) {
