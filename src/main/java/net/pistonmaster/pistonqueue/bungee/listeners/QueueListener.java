@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * PistonQueue
+ * %%
+ * Copyright (C) 2021 AlexProgrammerDE
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
 import lombok.RequiredArgsConstructor;
@@ -32,7 +51,9 @@ public final class QueueListener implements Listener {
     public boolean queueOnline = false;
     @Setter
     public boolean authOnline = false;
-    // 1 = veteran, 2 = priority, 3 = regular
+    /**
+     * 1 = veteran, 2 = priority, 3 = regular
+     */
     private int line = 1;
 
     @EventHandler
@@ -125,27 +146,6 @@ public final class QueueListener implements Listener {
 
     public void moveQueue() {
         if (Config.PAUSEQUEUEIFMAINDOWN && !mainOnline) {
-            PistonQueue.getVeteranQueue().forEach((UUID id, String str) -> {
-                ProxiedPlayer player = plugin.getProxy().getPlayer(id);
-
-                if (player != null && player.isConnected())
-                    player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
-            });
-
-            PistonQueue.getPriorityQueue().forEach((UUID id, String str) -> {
-                ProxiedPlayer player = plugin.getProxy().getPlayer(id);
-
-                if (player != null && player.isConnected())
-                    player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
-            });
-
-            PistonQueue.getRegularQueue().forEach((UUID id, String str) -> {
-                ProxiedPlayer player = plugin.getProxy().getPlayer(id);
-
-                if (player != null && player.isConnected())
-                    player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
-            });
-
             return;
         }
 

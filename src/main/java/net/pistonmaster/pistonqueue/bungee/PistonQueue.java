@@ -1,3 +1,22 @@
+/*
+ * #%L
+ * PistonQueue
+ * %%
+ * Copyright (C) 2021 AlexProgrammerDE
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package net.pistonmaster.pistonqueue.bungee;
 
 import com.google.common.io.ByteArrayDataOutput;
@@ -39,7 +58,7 @@ public final class PistonQueue extends Plugin {
     private BanType banType;
 
     @Getter
-    private QueueListener queueListener = new QueueListener(this);
+    private final QueueListener queueListener = new QueueListener(this);
 
     @Override
     public void onEnable() {
@@ -103,6 +122,31 @@ public final class PistonQueue extends Plugin {
             updateTab(priorityQueue, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
             updateTab(regularQueue, Config.HEADER, Config.FOOTER);
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+
+        getProxy().getScheduler().schedule(this, () -> {
+            if (Config.PAUSEQUEUEIFMAINDOWN && !queueListener.mainOnline) {
+                PistonQueue.getVeteranQueue().forEach((UUID id, String str) -> {
+                    ProxiedPlayer player = getProxy().getPlayer(id);
+
+                    if (player != null && player.isConnected())
+                        player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
+                });
+
+                PistonQueue.getPriorityQueue().forEach((UUID id, String str) -> {
+                    ProxiedPlayer player = getProxy().getPlayer(id);
+
+                    if (player != null && player.isConnected())
+                        player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
+                });
+
+                PistonQueue.getRegularQueue().forEach((UUID id, String str) -> {
+                    ProxiedPlayer player = getProxy().getPlayer(id);
+
+                    if (player != null && player.isConnected())
+                        player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
+                });
+            }
+        }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Send plugin message
         getProxy().getScheduler().schedule(this, this::sendCustomData, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
