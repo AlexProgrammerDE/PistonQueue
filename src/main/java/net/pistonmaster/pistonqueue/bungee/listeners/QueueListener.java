@@ -111,15 +111,16 @@ public final class QueueListener implements Listener {
         ProxiedPlayer player = event.getPlayer();
 
         if (Config.AUTHFIRST) {
-            if (player.hasPermission(Config.QUEUEBYPASSPERMISSION))
+            if (isAuthToQueue(event) && player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
+                event.getPlayer().connect(plugin.getProxy().getServerInfo(Config.MAINSERVER));
                 return;
+            }
 
             // Its null when joining!
             if (event.getFrom() == null) {
                 if (Config.ALLOWAUTHSKIP)
                     queuePlayerAuthFirst(player);
-            } else if (event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) &&
-                    player.getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER))) {
+            } else if (isAuthToQueue(event)) {
                 queuePlayerAuthFirst(player);
             }
         }
@@ -221,7 +222,6 @@ public final class QueueListener implements Listener {
             if (!result) {
                 player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
                 queueMap.put(entry.getKey(), entry.getValue());
-
             }
         });
     }
@@ -280,5 +280,9 @@ public final class QueueListener implements Listener {
 
     private boolean isMainFull() {
         return plugin.getProxy().getServerInfo(Config.MAINSERVER).getPlayers().size() >= Config.MAINSERVERSLOTS;
+    }
+
+    private boolean isAuthToQueue(ServerSwitchEvent event) {
+        return event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) && event.getPlayer().getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
     }
 }
