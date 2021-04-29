@@ -206,7 +206,7 @@ public final class QueueListener implements Listener {
         }
 
         player.connect(plugin.getProxy().getServerInfo(entry.getValue()), (result, error) -> {
-            if (Boolean.FALSE.equals(result)) {
+            if (!Boolean.TRUE.equals(result)) {
                 player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
                 queueMap.put(entry.getKey(), entry.getValue());
             }
