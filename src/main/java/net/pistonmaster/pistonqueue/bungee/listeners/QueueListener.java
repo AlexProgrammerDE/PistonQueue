@@ -61,8 +61,8 @@ public final class QueueListener implements Listener {
         ProxiedPlayer player = event.getPlayer();
 
         if (!Config.AUTHFIRST) {
-            if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if enableauth is false
-                if (Config.ALWAYSQUEUE || isMainFull()) {
+            if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
+                if (Config.ALWAYSQUEUE || isMainFull() || (!mainOnline && !Config.KICKWHENDOWN)) {
                     if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
                         veteran.add(player.getUniqueId());
                     } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
