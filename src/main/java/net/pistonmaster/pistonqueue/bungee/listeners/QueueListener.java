@@ -42,9 +42,6 @@ import java.util.Map.Entry;
 @RequiredArgsConstructor
 public final class QueueListener implements Listener {
     private final PistonQueue plugin;
-    private final List<UUID> veteran = new ArrayList<>();
-    private final List<UUID> priority = new ArrayList<>();
-    private final List<UUID> regular = new ArrayList<>();
     @Setter
     public boolean mainOnline = false;
     @Setter
@@ -59,22 +56,6 @@ public final class QueueListener implements Listener {
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
         ProxiedPlayer player = event.getPlayer();
-
-        if (!Config.AUTHFIRST) {
-            if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
-                if (Config.ALWAYSQUEUE || isMainFull() || (!mainOnline && !Config.KICKWHENDOWN)) {
-                    if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                        veteran.add(player.getUniqueId());
-                    } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                        priority.add(player.getUniqueId());
-                    } else {
-                        regular.add(player.getUniqueId());
-                    }
-                }
-            } else {
-                event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
-            }
-        }
 
         if (StorageTool.isShadowBanned(player) && plugin.getBanType() == BanType.KICK) {
             event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
@@ -92,16 +73,22 @@ public final class QueueListener implements Listener {
             if (!isMainFull() && event.getTarget().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER)))
                 event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
         } else {
-            if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
-            } else {
-                if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                    putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, PistonQueue.getVeteranQueue(), veteran, event);
-                } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                    putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, PistonQueue.getPriorityQueue(), priority, event);
-                } else {
-                    putQueue(player, Config.HEADER, Config.FOOTER, PistonQueue.getRegularQueue(), regular, event);
+            if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
+                if (Config.ALWAYSQUEUE || isMainFull() || (!mainOnline && !Config.KICKWHENDOWN)) {
+                    if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
+                        event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
+                    } else {
+                        if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
+                            putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, PistonQueue.getVeteranQueue(), event);
+                        } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                            putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, PistonQueue.getPriorityQueue(), event);
+                        } else {
+                            putQueue(player, Config.HEADER, Config.FOOTER, PistonQueue.getRegularQueue(), event);
+                        }
+                    }
                 }
+            } else {
+                event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
             }
         }
     }
@@ -219,7 +206,7 @@ public final class QueueListener implements Listener {
         }
 
         player.connect(plugin.getProxy().getServerInfo(entry.getValue()), (result, error) -> {
-            if (!result) {
+            if (Boolean.FALSE.equals(result)) {
                 player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
                 queueMap.put(entry.getKey(), entry.getValue());
             }
@@ -233,12 +220,7 @@ public final class QueueListener implements Listener {
         queueMap.put(player.getUniqueId(), Config.MAINSERVER);
     }
 
-    private void putQueue(ProxiedPlayer player, List<String> header, List<String> footer, Map<UUID, String> queueMap, List<UUID> queueList, ServerConnectEvent event) {
-        if (!queueList.contains(player.getUniqueId()))
-            return;
-
-        queueList.remove(player.getUniqueId());
-
+    private void putQueue(ProxiedPlayer player, List<String> header, List<String> footer, Map<UUID, String> queueMap, ServerConnectEvent event) {
         preQueueAdding(player, header, footer);
 
         // Redirect the player to the queue.
