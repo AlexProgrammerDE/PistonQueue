@@ -73,22 +73,24 @@ public final class QueueListener implements Listener {
             if (!isMainFull() && event.getTarget().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER)))
                 event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
         } else {
-            if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
-                if (Config.ALWAYSQUEUE || isMainFull() || (!mainOnline && !Config.KICKWHENDOWN)) {
-                    if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                        event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
-                    } else {
-                        if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                            putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, PistonQueue.getVeteranQueue(), event);
-                        } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                            putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, PistonQueue.getPriorityQueue(), event);
+            if (event.getPlayer().getServer() == null) {
+                if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
+                    if (Config.ALWAYSQUEUE || isMainFull() || (!mainOnline && !Config.KICKWHENDOWN)) {
+                        if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
+                            event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
                         } else {
-                            putQueue(player, Config.HEADER, Config.FOOTER, PistonQueue.getRegularQueue(), event);
+                            if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
+                                putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, PistonQueue.getVeteranQueue(), event);
+                            } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
+                                putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, PistonQueue.getPriorityQueue(), event);
+                            } else {
+                                putQueue(player, Config.HEADER, Config.FOOTER, PistonQueue.getRegularQueue(), event);
+                            }
                         }
                     }
+                } else {
+                    event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
                 }
-            } else {
-                event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
             }
         }
     }
@@ -104,7 +106,7 @@ public final class QueueListener implements Listener {
             }
 
             // Its null when joining!
-            if (event.getFrom() == null) {
+            if (event.getFrom() == null && event.getPlayer().getServer().getInfo().getName().equals(Config.MAINSERVER)) {
                 if (Config.ALLOWAUTHSKIP)
                     queuePlayerAuthFirst(player);
             } else if (isAuthToQueue(event)) {

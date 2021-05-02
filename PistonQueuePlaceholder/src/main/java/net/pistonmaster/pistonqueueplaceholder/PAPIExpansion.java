@@ -39,9 +39,8 @@ public class PAPIExpansion extends PlaceholderExpansion {
 
         if (identifier.equals("priority")) {
             return String.valueOf(plugin.priority);
-
-
         }
+
         if (identifier.equals("veteran")) {
             return String.valueOf(plugin.veteran);
         }
