@@ -106,7 +106,7 @@ public final class QueueListener implements Listener {
             }
 
             // Its null when joining!
-            if (event.getFrom() == null && event.getPlayer().getServer().getInfo().getName().equals(Config.MAINSERVER)) {
+            if (event.getFrom() == null && event.getPlayer().getServer().getInfo().getName().equals(Config.QUEUESERVER)) {
                 if (Config.ALLOWAUTHSKIP)
                     queuePlayerAuthFirst(player);
             } else if (isAuthToQueue(event)) {
