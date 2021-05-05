@@ -269,7 +269,8 @@ public final class PistonQueue extends Plugin {
 
             int i = 0;
 
-            for (Entry<UUID, String> entry : queue.entrySet()) {
+            Map<UUID, String> copy = new HashMap<>(queue);
+            for (Entry<UUID, String> entry : copy.entrySet()) {
                 i++;
 
                 ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
@@ -294,7 +295,8 @@ public final class PistonQueue extends Plugin {
         long waitTimeHour;
         long waitTimeMinute;
 
-        for (Entry<UUID, String> entry : queue.entrySet()) {
+        Map<UUID, String> copy = new HashMap<>(queue);
+        for (Entry<UUID, String> entry : copy.entrySet()) {
             w++;
 
             ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
