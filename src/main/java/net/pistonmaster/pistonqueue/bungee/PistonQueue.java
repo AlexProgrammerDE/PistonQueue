@@ -267,11 +267,10 @@ public final class PistonQueue extends Plugin {
             if (!queueListener.mainOnline)
                 return;
 
-            int i = 0;
+            int position = 0;
 
-            Map<UUID, String> copy = new HashMap<>(queue);
-            for (Entry<UUID, String> entry : copy.entrySet()) {
-                i++;
+            for (Entry<UUID, String> entry : new HashMap<>(queue).entrySet()) {
+                position++;
 
                 ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
 
@@ -282,7 +281,7 @@ public final class PistonQueue extends Plugin {
 
                 player.sendMessage(type,
                         ChatUtils.parseToComponent(Config.QUEUEPOSITION
-                                .replace("%position%", i + "")
+                                .replace("%position%", position + "")
                                 .replace("%total%", queue.size() + "")
                                 .replace("%server%", entry.getValue())));
             }
@@ -290,14 +289,13 @@ public final class PistonQueue extends Plugin {
     }
 
     private void updateTab(Map<UUID, String> queue, List<String> header, List<String> footer) {
-        int w = 0;
+        int position = 0;
         long waitTime;
         long waitTimeHour;
         long waitTimeMinute;
 
-        Map<UUID, String> copy = new HashMap<>(queue);
-        for (Entry<UUID, String> entry : copy.entrySet()) {
-            w++;
+        for (Entry<UUID, String> entry : new HashMap<>(queue).entrySet()) {
+            position++;
 
             ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
             if (player == null || !player.isConnected()) {
@@ -305,7 +303,7 @@ public final class PistonQueue extends Plugin {
                 continue;
             }
 
-            waitTime = w;
+            waitTime = position;
 
             waitTimeHour = waitTime / 60;
             waitTimeMinute = waitTime % 60;
@@ -314,7 +312,7 @@ public final class PistonQueue extends Plugin {
             StringBuilder footerBuilder = new StringBuilder();
 
             for (int i = 0; i < header.size(); i++) {
-                headerBuilder.append(ChatUtils.parseToString(replacePosition(header.get(i), waitTimeHour, waitTimeMinute, w)));
+                headerBuilder.append(ChatUtils.parseToString(replacePosition(header.get(i), waitTimeHour, waitTimeMinute, position)));
 
                 if (i != (header.size() - 1)) {
                     headerBuilder.append("\n");
@@ -322,7 +320,7 @@ public final class PistonQueue extends Plugin {
             }
 
             for (int i = 0; i < footer.size(); i++) {
-                footerBuilder.append(ChatUtils.parseToString(replacePosition(footer.get(i), waitTimeHour, waitTimeMinute, w)));
+                footerBuilder.append(ChatUtils.parseToString(replacePosition(footer.get(i), waitTimeHour, waitTimeMinute, position)));
 
                 if (i != (footer.size() - 1)) {
                     footerBuilder.append("\n");
