@@ -20,10 +20,11 @@
 package net.pistonmaster.pistonqueue.bungee;
 
 import lombok.Getter;
+import net.pistonmaster.pistonqueue.bungee.utils.Pair;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
 
 public enum QueueType {
     REGULAR,
@@ -32,4 +33,10 @@ public enum QueueType {
 
     @Getter
     private final Map<UUID, String> queueMap = new LinkedHashMap<>();
+
+    @Getter
+    private final Map<Integer, Duration> durationToPosition = new LinkedHashMap<>();
+
+    @Getter
+    private final Map<UUID, List<Pair<Integer, Instant>>> positionCache = new HashMap<>();
 }

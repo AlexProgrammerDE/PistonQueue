@@ -32,11 +32,10 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 import net.pistonmaster.pistonqueue.bungee.QueueType;
-import net.pistonmaster.pistonqueue.bungee.utils.BanType;
-import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.bungee.utils.Config;
-import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
+import net.pistonmaster.pistonqueue.bungee.utils.*;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -132,6 +131,7 @@ public final class QueueListener implements Listener {
 
         for (QueueType type : QueueType.values()) {
             type.getQueueMap().remove(uuid);
+            type.getPositionCache().remove(uuid);
         }
     }
 
@@ -162,7 +162,7 @@ public final class QueueListener implements Listener {
         if (QueueType.REGULAR.getQueueMap().isEmpty()) {
             moveVeteran(false);
         } else {
-            connectPlayer(QueueType.REGULAR.getQueueMap());
+            connectPlayer(QueueType.REGULAR);
         }
     }
 
@@ -171,7 +171,7 @@ public final class QueueListener implements Listener {
             if (canMoveRegular)
                 moveRegular();
         } else {
-            connectPlayer(QueueType.PRIORITY.getQueueMap());
+            connectPlayer(QueueType.PRIORITY);
         }
     }
 
@@ -179,19 +179,19 @@ public final class QueueListener implements Listener {
         if (QueueType.VETERAN.getQueueMap().isEmpty()) {
             movePriority(canMoveRegular);
         } else {
-            connectPlayer(QueueType.VETERAN.getQueueMap());
+            connectPlayer(QueueType.VETERAN);
         }
     }
 
-    private void connectPlayer(Map<UUID, String> queueMap) {
-        Optional<Entry<UUID, String>> optional = queueMap.entrySet().stream().findFirst();
+    private void connectPlayer(QueueType type) {
+        Optional<Entry<UUID, String>> optional = type.getQueueMap().entrySet().stream().findFirst();
         if (!optional.isPresent())
             return;
 
         Entry<UUID, String> entry = optional.get();
         ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
 
-        queueMap.remove(entry.getKey());
+        type.getQueueMap().remove(entry.getKey());
         if (player == null || !player.isConnected())
             return;
 
@@ -203,15 +203,17 @@ public final class QueueListener implements Listener {
                 || (plugin.getBanType() == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
             player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
 
-            queueMap.put(entry.getKey(), entry.getValue());
+            type.getQueueMap().put(entry.getKey(), entry.getValue());
 
             return;
         }
 
+        type.getPositionCache().get(entry.getKey()).forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
+
         player.connect(plugin.getProxy().getServerInfo(entry.getValue()), (result, error) -> {
             if (!Boolean.TRUE.equals(result)) {
                 player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
-                queueMap.put(entry.getKey(), entry.getValue());
+                type.getQueueMap().put(entry.getKey(), entry.getValue());
             }
         });
     }

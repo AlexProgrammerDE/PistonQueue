@@ -43,9 +43,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
 @SuppressWarnings({"deprecation"})
@@ -286,9 +293,6 @@ public final class PistonQueue extends Plugin {
 
     private void updateTab(QueueType queue, List<String> header, List<String> footer) {
         int position = 0;
-        long waitTime;
-        long waitTimeHour;
-        long waitTimeMinute;
 
         for (Entry<UUID, String> entry : new HashMap<>(queue.getQueueMap()).entrySet()) {
             position++;
@@ -299,16 +303,11 @@ public final class PistonQueue extends Plugin {
                 continue;
             }
 
-            waitTime = position;
-
-            waitTimeHour = waitTime / 60;
-            waitTimeMinute = waitTime % 60;
-
             StringBuilder headerBuilder = new StringBuilder();
             StringBuilder footerBuilder = new StringBuilder();
 
             for (int i = 0; i < header.size(); i++) {
-                headerBuilder.append(ChatUtils.parseToString(replacePosition(header.get(i), waitTimeHour, waitTimeMinute, position)));
+                headerBuilder.append(ChatUtils.parseToString(replacePosition(header.get(i), player.getUniqueId(), position, queue)));
 
                 if (i != (header.size() - 1)) {
                     headerBuilder.append("\n");
@@ -316,7 +315,7 @@ public final class PistonQueue extends Plugin {
             }
 
             for (int i = 0; i < footer.size(); i++) {
-                footerBuilder.append(ChatUtils.parseToString(replacePosition(footer.get(i), waitTimeHour, waitTimeMinute, position)));
+                footerBuilder.append(ChatUtils.parseToString(replacePosition(footer.get(i), player.getUniqueId(), position, queue)));
 
                 if (i != (footer.size() - 1)) {
                     footerBuilder.append("\n");
@@ -329,13 +328,53 @@ public final class PistonQueue extends Plugin {
         }
     }
 
-    private String replacePosition(String text, long waitTimeHour, long waitTimeMinute, int w) {
-        String format = String.format("%dh %dm", waitTimeHour, waitTimeMinute);
+    private String replacePosition(String text, UUID uuid, int position, QueueType type) {
+        if (type.getPositionCache().containsKey(uuid)) {
+            type.getPositionCache().get(uuid).add(new Pair<>(position, Instant.now()));
+        } else {
+            List<Pair<Integer, Instant>> list = new ArrayList<>();
+            list.add(new Pair<>(position, Instant.now()));
+            type.getPositionCache().put(uuid, list);
+        }
 
-        if (waitTimeHour == 0)
-            format = String.format("%dm", waitTimeMinute);
+        if (type.getDurationToPosition().containsKey(position)) {
+            Duration duration = type.getDurationToPosition().get(position);
 
-        return text.replace("%position%", w + "").replace("%wait%", format);
+            String format = String.format("%dh %dm", duration.toHours(), duration.toMinutes() % 60);
+
+            if (duration.toHours() == 0)
+                format = String.format("%dm", duration.toMinutes());
+
+            return text.replace("%position%", String.valueOf(position)).replace("%wait%", format);
+        } else {
+            AtomicInteger biggestPositionAtomic = new AtomicInteger();
+            AtomicReference<Duration> bestDurationAtomic = new AtomicReference<>(Duration.ZERO);
+
+            type.getDurationToPosition().forEach((integer, instant) -> {
+                if (integer > biggestPositionAtomic.get()) {
+                    biggestPositionAtomic.set(integer);
+                    bestDurationAtomic.set(instant);
+                }
+            });
+
+            int biggestPosition = biggestPositionAtomic.get();
+            Duration biggestDuration = bestDurationAtomic.get();
+
+            int difference = position - biggestPosition;
+
+            Duration imaginaryDuration = biggestDuration.plus(difference, ChronoUnit.MINUTES);
+
+            return format(text, imaginaryDuration, position);
+        }
+    }
+
+    private String format(String str, Duration duration, int position) {
+        String format = String.format("%dh %dm", duration.toHours(), duration.toMinutes() % 60);
+
+        if (duration.toHours() == 0)
+            format = String.format("%dm", duration.toMinutes());
+
+        return str.replace("%position%", String.valueOf(position)).replace("%wait%", format);
     }
 
     public void sendCustomData() {
