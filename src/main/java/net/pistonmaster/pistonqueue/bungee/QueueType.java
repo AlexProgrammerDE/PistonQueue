@@ -19,20 +19,17 @@
  */
 package net.pistonmaster.pistonqueue.bungee;
 
-@SuppressWarnings({"unused"})
-public final class QueueAPI {
-    private QueueAPI() {
-    }
+import lombok.Getter;
 
-    public static int getVeteranSize() {
-        return QueueType.VETERAN.getQueueMap().size();
-    }
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 
-    public static int getPrioritySize() {
-        return QueueType.PRIORITY.getQueueMap().size();
-    }
+public enum QueueType {
+    REGULAR,
+    PRIORITY,
+    VETERAN;
 
-    public static int getRegularSize() {
-        return QueueType.REGULAR.getQueueMap().size();
-    }
+    @Getter
+    private final Map<UUID, String> queueMap = new LinkedHashMap<>();
 }

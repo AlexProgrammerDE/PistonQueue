@@ -50,10 +50,6 @@ import java.util.logging.Logger;
 
 @SuppressWarnings({"deprecation"})
 public final class PistonQueue extends Plugin {
-    protected static final @Getter Map<UUID, String> regularQueue = new LinkedHashMap<>();
-    protected static final @Getter Map<UUID, String> priorityQueue = new LinkedHashMap<>();
-    protected static final @Getter Map<UUID, String> veteranQueue = new LinkedHashMap<>();
-
     @Getter
     private BanType banType;
 
@@ -104,42 +100,42 @@ public final class PistonQueue extends Plugin {
 
         // Sends the position message and updates tab on an interval in chat
         getProxy().getScheduler().schedule(this, () -> {
-            sendMessage(veteranQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
-            sendMessage(priorityQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
-            sendMessage(regularQueue, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
+            for (QueueType type : QueueType.values()) {
+                sendMessage(type, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
+            }
         }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Sends the position message and updates tab on an interval on hotbar
         getProxy().getScheduler().schedule(this, () -> {
-            sendMessage(veteranQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
-            sendMessage(priorityQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
-            sendMessage(regularQueue, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
+            for (QueueType type : QueueType.values()) {
+                sendMessage(type, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
+            }
         }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Updates the tab
         getProxy().getScheduler().schedule(this, () -> {
-            updateTab(veteranQueue, Config.HEADERVETERAN, Config.FOOTERVETERAN);
-            updateTab(priorityQueue, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
-            updateTab(regularQueue, Config.HEADER, Config.FOOTER);
+            updateTab(QueueType.VETERAN, Config.HEADERVETERAN, Config.FOOTERVETERAN);
+            updateTab(QueueType.PRIORITY, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
+            updateTab(QueueType.REGULAR, Config.HEADER, Config.FOOTER);
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         getProxy().getScheduler().schedule(this, () -> {
             if (Config.PAUSEQUEUEIFMAINDOWN && !queueListener.mainOnline) {
-                PistonQueue.getVeteranQueue().forEach((UUID id, String str) -> {
+                QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
                         player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
                 });
 
-                PistonQueue.getPriorityQueue().forEach((UUID id, String str) -> {
+                QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
                         player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
                 });
 
-                PistonQueue.getRegularQueue().forEach((UUID id, String str) -> {
+                QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
@@ -262,44 +258,44 @@ public final class PistonQueue extends Plugin {
         banType = BanType.valueOf(config.getString("SHADOWBANTYPE"));
     }
 
-    private void sendMessage(Map<UUID, String> queue, boolean bool, ChatMessageType type) {
+    private void sendMessage(QueueType queue, boolean bool, ChatMessageType type) {
         if (bool) {
             if (!queueListener.mainOnline)
                 return;
 
             int position = 0;
 
-            for (Entry<UUID, String> entry : new HashMap<>(queue).entrySet()) {
+            for (Entry<UUID, String> entry : new HashMap<>(queue.getQueueMap()).entrySet()) {
                 position++;
 
                 ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
 
                 if (player == null || !player.isConnected()) {
-                    queue.remove(entry.getKey());
+                    queue.getQueueMap().remove(entry.getKey());
                     continue;
                 }
 
                 player.sendMessage(type,
                         ChatUtils.parseToComponent(Config.QUEUEPOSITION
                                 .replace("%position%", position + "")
-                                .replace("%total%", queue.size() + "")
+                                .replace("%total%", queue.getQueueMap().size() + "")
                                 .replace("%server%", entry.getValue())));
             }
         }
     }
 
-    private void updateTab(Map<UUID, String> queue, List<String> header, List<String> footer) {
+    private void updateTab(QueueType queue, List<String> header, List<String> footer) {
         int position = 0;
         long waitTime;
         long waitTimeHour;
         long waitTimeMinute;
 
-        for (Entry<UUID, String> entry : new HashMap<>(queue).entrySet()) {
+        for (Entry<UUID, String> entry : new HashMap<>(queue.getQueueMap()).entrySet()) {
             position++;
 
             ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
             if (player == null || !player.isConnected()) {
-                queue.remove(entry.getKey());
+                queue.getQueueMap().remove(entry.getKey());
                 continue;
             }
 
@@ -353,9 +349,9 @@ public final class PistonQueue extends Plugin {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
         out.writeUTF("size");
-        out.writeInt(regularQueue.size());
-        out.writeInt(priorityQueue.size());
-        out.writeInt(veteranQueue.size());
+        out.writeInt(QueueType.REGULAR.getQueueMap().size());
+        out.writeInt(QueueType.PRIORITY.getQueueMap().size());
+        out.writeInt(QueueType.VETERAN.getQueueMap().size());
 
         networkPlayers.forEach(player -> {
             if (player.getServer() != null)

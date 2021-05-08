@@ -31,6 +31,7 @@ import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueue;
+import net.pistonmaster.pistonqueue.bungee.QueueType;
 import net.pistonmaster.pistonqueue.bungee.utils.BanType;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.bungee.utils.Config;
@@ -80,11 +81,11 @@ public final class QueueListener implements Listener {
                             event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
                         } else {
                             if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                                putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, PistonQueue.getVeteranQueue(), event);
+                                putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, QueueType.VETERAN.getQueueMap(), event);
                             } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                                putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, PistonQueue.getPriorityQueue(), event);
+                                putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, QueueType.PRIORITY.getQueueMap(), event);
                             } else {
-                                putQueue(player, Config.HEADER, Config.FOOTER, PistonQueue.getRegularQueue(), event);
+                                putQueue(player, Config.HEADER, Config.FOOTER, QueueType.REGULAR.getQueueMap(), event);
                             }
                         }
                     }
@@ -117,11 +118,11 @@ public final class QueueListener implements Listener {
 
     public void queuePlayerAuthFirst(ProxiedPlayer player) {
         if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-            putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, PistonQueue.getVeteranQueue());
+            putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, QueueType.VETERAN.getQueueMap());
         } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-            putQueueAuthFirst(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, PistonQueue.getPriorityQueue());
+            putQueueAuthFirst(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, QueueType.PRIORITY.getQueueMap());
         } else {
-            putQueueAuthFirst(player, Config.HEADER, Config.FOOTER, PistonQueue.getRegularQueue());
+            putQueueAuthFirst(player, Config.HEADER, Config.FOOTER, QueueType.REGULAR.getQueueMap());
         }
     }
 
@@ -129,9 +130,9 @@ public final class QueueListener implements Listener {
     public void onDisconnect(PlayerDisconnectEvent event) {
         UUID uuid = event.getPlayer().getUniqueId();
 
-        PistonQueue.getVeteranQueue().remove(uuid);
-        PistonQueue.getPriorityQueue().remove(uuid);
-        PistonQueue.getRegularQueue().remove(uuid);
+        for (QueueType type : QueueType.values()) {
+            type.getQueueMap().remove(uuid);
+        }
     }
 
     public void moveQueue() {
@@ -158,27 +159,27 @@ public final class QueueListener implements Listener {
     }
 
     private void moveRegular() {
-        if (PistonQueue.getRegularQueue().isEmpty()) {
+        if (QueueType.REGULAR.getQueueMap().isEmpty()) {
             moveVeteran(false);
         } else {
-            connectPlayer(PistonQueue.getRegularQueue());
+            connectPlayer(QueueType.REGULAR.getQueueMap());
         }
     }
 
     private void movePriority(boolean canMoveRegular) {
-        if (PistonQueue.getPriorityQueue().isEmpty()) {
+        if (QueueType.PRIORITY.getQueueMap().isEmpty()) {
             if (canMoveRegular)
                 moveRegular();
         } else {
-            connectPlayer(PistonQueue.getPriorityQueue());
+            connectPlayer(QueueType.PRIORITY.getQueueMap());
         }
     }
 
     private void moveVeteran(boolean canMoveRegular) {
-        if (PistonQueue.getVeteranQueue().isEmpty()) {
+        if (QueueType.VETERAN.getQueueMap().isEmpty()) {
             movePriority(canMoveRegular);
         } else {
-            connectPlayer(PistonQueue.getVeteranQueue());
+            connectPlayer(QueueType.VETERAN.getQueueMap());
         }
     }
 
