@@ -32,10 +32,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 import net.pistonmaster.pistonqueue.bungee.QueueType;
-import net.pistonmaster.pistonqueue.bungee.utils.BanType;
-import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.bungee.utils.Config;
-import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
+import net.pistonmaster.pistonqueue.bungee.utils.*;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -211,7 +208,11 @@ public final class QueueListener implements Listener {
             return;
         }
 
-        type.getPositionCache().get(entry.getKey()).forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
+        List<Pair<Integer, Instant>> cache = type.getPositionCache().get(entry.getKey());
+
+        if (cache != null) {
+            cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
+        }
 
         player.connect(plugin.getProxy().getServerInfo(entry.getValue()), (result, error) -> {
             if (!Boolean.TRUE.equals(result)) {
