@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,8 +46,6 @@ import java.nio.file.Files;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
-import java.time.temporal.TemporalUnit;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
@@ -58,10 +56,9 @@ import java.util.logging.Logger;
 @SuppressWarnings({"deprecation"})
 public final class PistonQueue extends Plugin {
     @Getter
-    private BanType banType;
-
-    @Getter
     private final QueueListener queueListener = new QueueListener(this);
+    @Getter
+    private BanType banType;
 
     @Override
     public void onEnable() {
@@ -284,8 +281,8 @@ public final class PistonQueue extends Plugin {
 
                 player.sendMessage(type,
                         ChatUtils.parseToComponent(Config.QUEUEPOSITION
-                                .replace("%position%", position + "")
-                                .replace("%total%", queue.getQueueMap().size() + "")
+                                .replace("%position%", String.valueOf(position))
+                                .replace("%total%", String.valueOf(queue.getQueueMap().size()))
                                 .replace("%server%", entry.getValue())));
             }
         }
