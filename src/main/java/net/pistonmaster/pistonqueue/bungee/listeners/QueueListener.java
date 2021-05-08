@@ -70,12 +70,15 @@ public final class QueueListener implements Listener {
             if (Config.ALWAYSQUEUE)
                 return;
 
+            if (isAnyoneQueued())
+                return;
+
             if (!isMainFull() && event.getTarget().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER)))
                 event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
         } else {
             if (event.getPlayer().getServer() == null) {
                 if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
-                    if (Config.ALWAYSQUEUE || isMainFull() || (!mainOnline && !Config.KICKWHENDOWN)) {
+                    if (Config.ALWAYSQUEUE || (isMainFull() || isAnyoneQueued()) || (!mainOnline && !Config.KICKWHENDOWN)) {
                         if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
                             event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
                         } else {
@@ -215,7 +218,7 @@ public final class QueueListener implements Listener {
         }
 
         player.connect(plugin.getProxy().getServerInfo(entry.getValue()), (result, error) -> {
-            if (!Boolean.TRUE.equals(result)) {
+            if (Config.RECOVERY && !Boolean.TRUE.equals(result)) {
                 player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
                 type.getQueueMap().put(entry.getKey(), entry.getValue());
             }
@@ -275,5 +278,14 @@ public final class QueueListener implements Listener {
 
     private boolean isAuthToQueue(ServerSwitchEvent event) {
         return event.getFrom() != null && event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) && event.getPlayer().getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
+    }
+
+    private boolean isAnyoneQueued() {
+        for (QueueType type :QueueType.values()) {
+            if (!type.getQueueMap().isEmpty())
+                return true;
+        }
+
+        return false;
     }
 }
