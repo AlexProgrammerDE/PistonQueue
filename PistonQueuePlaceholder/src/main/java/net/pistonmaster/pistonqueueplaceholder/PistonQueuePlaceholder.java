@@ -50,7 +50,7 @@ public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMe
 
     private void checkIfBungee() {
         if (!PaperLib.isSpigot()) {
-            getLogger().severe(ChatColor.RED + "You probably run CraftBukkit... Please update atleast to spigot for this to work...");
+            getLogger().severe(ChatColor.RED + "You probably run CraftBukkit... Please update at least to spigot for this to work...");
             getLogger().severe(ChatColor.RED + "Plugin disabled!");
             getServer().getPluginManager().disablePlugin(this);
         }

@@ -211,6 +211,8 @@ public final class QueueListener implements Listener {
             return;
         }
 
+        indexPositionTime();
+
         List<Pair<Integer, Instant>> cache = type.getPositionCache().get(entry.getKey());
 
         if (cache != null) {
@@ -287,5 +289,33 @@ public final class QueueListener implements Listener {
         }
 
         return false;
+    }
+
+    private void indexPositionTime() {
+        for (QueueType type : QueueType.values()) {
+            int position = 0;
+
+            for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
+                ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
+                if (player == null || !player.isConnected()) {
+                    type.getQueueMap().remove(entry.getKey());
+                    continue;
+                }
+
+                position++;
+
+                if (type.getPositionCache().containsKey(player.getUniqueId())) {
+                    List<Pair<Integer, Instant>> list = type.getPositionCache().get(player.getUniqueId());
+                    int finalPosition = position;
+                    if (list.stream().map(Pair::getLeft).noneMatch(integer -> integer == finalPosition)) {
+                        list.add(new Pair<>(position, Instant.now()));
+                    }
+                } else {
+                    List<Pair<Integer, Instant>> list = new ArrayList<>();
+                    list.add(new Pair<>(position, Instant.now()));
+                    type.getPositionCache().put(player.getUniqueId(), list);
+                }
+            }
+        }
     }
 }
