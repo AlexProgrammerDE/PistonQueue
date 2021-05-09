@@ -269,15 +269,15 @@ public final class PistonQueue extends Plugin {
 
             int position = 0;
 
-            for (Entry<UUID, String> entry : new HashMap<>(queue.getQueueMap()).entrySet()) {
-                position++;
-
+            for (Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
                 ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
 
                 if (player == null || !player.isConnected()) {
                     queue.getQueueMap().remove(entry.getKey());
                     continue;
                 }
+
+                position++;
 
                 player.sendMessage(type,
                         ChatUtils.parseToComponent(Config.QUEUEPOSITION
@@ -291,14 +291,14 @@ public final class PistonQueue extends Plugin {
     private void updateTab(QueueType queue, List<String> header, List<String> footer) {
         int position = 0;
 
-        for (Entry<UUID, String> entry : new HashMap<>(queue.getQueueMap()).entrySet()) {
-            position++;
-
+        for (Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
             ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
             if (player == null || !player.isConnected()) {
                 queue.getQueueMap().remove(entry.getKey());
                 continue;
             }
+
+            position++;
 
             StringBuilder headerBuilder = new StringBuilder();
             StringBuilder footerBuilder = new StringBuilder();
@@ -327,7 +327,10 @@ public final class PistonQueue extends Plugin {
 
     private String replacePosition(String text, UUID uuid, int position, QueueType type) {
         if (type.getPositionCache().containsKey(uuid)) {
-            type.getPositionCache().get(uuid).add(new Pair<>(position, Instant.now()));
+            List<Pair<Integer, Instant>> list = type.getPositionCache().get(uuid);
+            if (list.stream().map(Pair::getLeft).noneMatch(integer -> integer == position)) {
+                list.add(new Pair<>(position, Instant.now()));
+            }
         } else {
             List<Pair<Integer, Instant>> list = new ArrayList<>();
             list.add(new Pair<>(position, Instant.now()));
@@ -337,12 +340,7 @@ public final class PistonQueue extends Plugin {
         if (type.getDurationToPosition().containsKey(position)) {
             Duration duration = type.getDurationToPosition().get(position);
 
-            String format = String.format("%dh %dm", duration.toHours(), duration.toMinutes() % 60);
-
-            if (duration.toHours() == 0)
-                format = String.format("%dm", duration.toMinutes());
-
-            return text.replace("%position%", String.valueOf(position)).replace("%wait%", format);
+            return format(text, duration, position);
         } else {
             AtomicInteger biggestPositionAtomic = new AtomicInteger();
             AtomicReference<Duration> bestDurationAtomic = new AtomicReference<>(Duration.ZERO);

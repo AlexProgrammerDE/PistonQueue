@@ -281,7 +281,7 @@ public final class QueueListener implements Listener {
     }
 
     private boolean isAnyoneQueued() {
-        for (QueueType type :QueueType.values()) {
+        for (QueueType type : QueueType.values()) {
             if (!type.getQueueMap().isEmpty())
                 return true;
         }
