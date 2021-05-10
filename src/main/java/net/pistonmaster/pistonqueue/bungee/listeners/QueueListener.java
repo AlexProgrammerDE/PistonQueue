@@ -133,7 +133,6 @@ public final class QueueListener implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
 
         for (QueueType type : QueueType.values()) {
-            type.getQueueMap().remove(uuid);
             type.getPositionCache().remove(uuid);
         }
     }
@@ -187,44 +186,42 @@ public final class QueueListener implements Listener {
     }
 
     private void connectPlayer(QueueType type) {
-        Optional<Entry<UUID, String>> optional = type.getQueueMap().entrySet().stream().findFirst();
-        if (!optional.isPresent())
-            return;
-
-        Entry<UUID, String> entry = optional.get();
-        ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
-
-        type.getQueueMap().remove(entry.getKey());
-        if (player == null || !player.isConnected())
-            return;
-
-        player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.JOININGMAINSERVER.replace("%server%", entry.getValue())));
-        player.resetTabHeader();
-
-        if (StorageTool.isShadowBanned(player)
-                && (plugin.getBanType() == BanType.LOOP
-                || (plugin.getBanType() == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
-            player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
-
-            type.getQueueMap().put(entry.getKey(), entry.getValue());
-
-            return;
-        }
-
-        indexPositionTime();
-
-        List<Pair<Integer, Instant>> cache = type.getPositionCache().get(entry.getKey());
-
-        if (cache != null) {
-            cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
-        }
-
-        player.connect(plugin.getProxy().getServerInfo(entry.getValue()), (result, error) -> {
-            if (Config.RECOVERY && !Boolean.TRUE.equals(result)) {
-                player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
-                type.getQueueMap().put(entry.getKey(), entry.getValue());
+        for (Entry<UUID, String> entry : type.getQueueMap().entrySet()) {
+            ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
+            if (player == null || !player.isConnected()) {
+                continue;
             }
-        });
+
+            type.getQueueMap().remove(entry.getKey());
+
+            player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.JOININGMAINSERVER.replace("%server%", entry.getValue())));
+            player.resetTabHeader();
+
+            if (StorageTool.isShadowBanned(player)
+                    && (plugin.getBanType() == BanType.LOOP
+                    || (plugin.getBanType() == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
+                player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
+
+                type.getQueueMap().put(entry.getKey(), entry.getValue());
+
+                return;
+            }
+
+            indexPositionTime();
+
+            List<Pair<Integer, Instant>> cache = type.getPositionCache().get(entry.getKey());
+
+            if (cache != null) {
+                cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
+            }
+
+            player.connect(plugin.getProxy().getServerInfo(entry.getValue()), (result, error) -> {
+                if (Config.RECOVERY && !Boolean.TRUE.equals(result)) {
+                    player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
+                    type.getQueueMap().put(entry.getKey(), entry.getValue());
+                }
+            });
+        }
     }
 
     private void putQueueAuthFirst(ProxiedPlayer player, List<String> header, List<String> footer, Map<UUID, String> queueMap) {

@@ -159,7 +159,6 @@ public final class PistonQueue extends Plugin {
                     ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
 
                     if (player == null || !player.isConnected()) {
-                        getLogger().info("Removed bugged player from data!");
                         type.getQueueMap().remove(entry.getKey());
                     }
                 }
