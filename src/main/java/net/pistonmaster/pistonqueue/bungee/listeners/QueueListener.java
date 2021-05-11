@@ -186,7 +186,7 @@ public final class QueueListener implements Listener {
     }
 
     private void connectPlayer(QueueType type) {
-        for (Entry<UUID, String> entry : type.getQueueMap().entrySet()) {
+        for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
             ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
             if (player == null || !player.isConnected()) {
                 continue;
