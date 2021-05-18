@@ -19,6 +19,8 @@
  */
 package net.pistonmaster.pistonqueue.bungee;
 
+import net.pistonmaster.pistonqueue.bungee.utils.QueueType;
+
 @SuppressWarnings({"unused"})
 public final class QueueAPI {
     private QueueAPI() {

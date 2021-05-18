@@ -325,7 +325,7 @@ public final class PistonQueue extends Plugin {
         if (type.getDurationToPosition().containsKey(position)) {
             Duration duration = type.getDurationToPosition().get(position);
 
-            return format(text, duration, position);
+            return ChatUtils.formatDuration(text, duration, position);
         } else {
             AtomicInteger biggestPositionAtomic = new AtomicInteger();
             AtomicReference<Duration> bestDurationAtomic = new AtomicReference<>(Duration.ZERO);
@@ -344,17 +344,8 @@ public final class PistonQueue extends Plugin {
 
             Duration imaginaryDuration = biggestDuration.plus(difference, ChronoUnit.MINUTES);
 
-            return format(text, imaginaryDuration, position);
+            return ChatUtils.formatDuration(text, imaginaryDuration, position);
         }
-    }
-
-    private String format(String str, Duration duration, int position) {
-        String format = String.format("%dh %dm", duration.toHours(), duration.toMinutes() % 60);
-
-        if (duration.toHours() == 0)
-            format = String.format("%dm", duration.toMinutes() == 0 ? 1 : duration.toMinutes());
-
-        return str.replace("%position%", String.valueOf(position)).replace("%wait%", format);
     }
 
     private void sendCustomData() {

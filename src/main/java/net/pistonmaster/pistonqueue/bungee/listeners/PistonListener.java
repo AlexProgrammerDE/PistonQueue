@@ -83,9 +83,11 @@ public final class PistonListener implements Listener {
         if (Config.SERVERPINGINFOENABLE) {
             List<ServerPing.PlayerInfo> info = new ArrayList<>();
 
-            Config.SERVERPINGINFO.forEach(str -> info.add(
-                    new ServerPing.PlayerInfo(ChatUtils.parseToString(str),
-                            String.valueOf(Config.SERVERPINGINFO.indexOf(str) - 1))));
+            Config.SERVERPINGINFO.forEach(str -> info
+                    .add(new ServerPing.PlayerInfo(ChatUtils
+                    .parseToString(str), String
+                    .valueOf(Config.SERVERPINGINFO.indexOf(str) - 1)))
+            );
 
             players = new ServerPing.Players(Config.QUEUESERVERSLOTS, plugin.getProxy().getOnlineCount(), info.toArray(new ServerPing.PlayerInfo[0]));
         } else {
