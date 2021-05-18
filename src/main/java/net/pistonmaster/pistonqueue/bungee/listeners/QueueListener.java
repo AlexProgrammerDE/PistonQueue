@@ -216,7 +216,7 @@ public final class QueueListener implements Listener {
         }
     }
 
-    private void putQueueAuthFirst(ProxiedPlayer player) {
+    public void putQueueAuthFirst(ProxiedPlayer player) {
         QueueType type = QueueType.getQueueType(player);
 
         preQueueAdding(player, type.getHeader(), type.getFooter());
@@ -247,7 +247,7 @@ public final class QueueListener implements Listener {
 
     private void preQueueAdding(ProxiedPlayer player, List<String> header, List<String> footer) {
         player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
-        
+
         player.sendMessage(ChatUtils.parseToComponent(Config.SERVERISFULLMESSAGE));
     }
 
