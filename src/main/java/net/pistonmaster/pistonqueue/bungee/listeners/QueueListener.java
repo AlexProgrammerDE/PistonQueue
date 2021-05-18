@@ -29,7 +29,6 @@ import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueue;
-import net.pistonmaster.pistonqueue.bungee.utils.QueueType;
 import net.pistonmaster.pistonqueue.bungee.utils.*;
 
 import java.time.Duration;
@@ -106,10 +105,12 @@ public final class QueueListener implements Listener {
             }
 
             // Its null when joining!
-            if (event.getFrom() == null && event.getPlayer().getServer().getInfo().getName().equals(Config.QUEUESERVER))
-                if (Config.ALLOWAUTHSKIP) putQueueAuthFirst(player);
-            else
-                if (isAuthToQueue(event)) putQueueAuthFirst(player);
+            if (event.getFrom() == null && event.getPlayer().getServer().getInfo().getName().equals(Config.QUEUESERVER)) {
+                if (Config.ALLOWAUTHSKIP)
+                    putQueueAuthFirst(player);
+            } else if (isAuthToQueue(event)) {
+                putQueueAuthFirst(player);
+            }
         }
     }
 
@@ -156,24 +157,28 @@ public final class QueueListener implements Listener {
     }
 
     private void moveRegular() {
-        if (QueueType.REGULAR.getQueueMap().isEmpty())
+        if (QueueType.REGULAR.getQueueMap().isEmpty()) {
             moveVeteran(false);
-        else
+        } else {
             connectPlayer(QueueType.REGULAR);
+        }
     }
 
     private void movePriority(boolean canMoveRegular) {
-        if (QueueType.PRIORITY.getQueueMap().isEmpty())
-            if (canMoveRegular) moveRegular();
-        else
+        if (QueueType.PRIORITY.getQueueMap().isEmpty()) {
+            if (canMoveRegular)
+                moveRegular();
+        } else {
             connectPlayer(QueueType.PRIORITY);
+        }
     }
 
     private void moveVeteran(boolean canMoveRegular) {
-        if (QueueType.VETERAN.getQueueMap().isEmpty())
+        if (QueueType.VETERAN.getQueueMap().isEmpty()) {
             movePriority(canMoveRegular);
-        else
+        } else {
             connectPlayer(QueueType.VETERAN);
+        }
     }
 
     private void connectPlayer(QueueType type) {

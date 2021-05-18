@@ -69,7 +69,8 @@ public final class ChatUtils {
     public static String formatDuration(String str, Duration duration, int position) {
         String format = String.format("%dh %dm", duration.toHours(), duration.toMinutes() % 60);
 
-        if (duration.toHours() == 0) format = String.format("%dm", duration.toMinutes() == 0 ? 1 : duration.toMinutes());
+        if (duration.toHours() == 0)
+            format = String.format("%dm", duration.toMinutes() == 0 ? 1 : duration.toMinutes());
 
         return str.replace("%position%", String.valueOf(position)).replace("%wait%", format);
     }

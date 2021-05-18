@@ -49,19 +49,25 @@ public enum QueueType {
             return REGULAR;
     }
 
-    public List<String> getHeader(){
+    public List<String> getHeader() {
         switch (this) {
-            case VETERAN: return Config.HEADERVETERAN;
-            case PRIORITY: return Config.HEADERPRIORITY;
-            default: return Config.HEADER;
+            case VETERAN:
+                return Config.HEADERVETERAN;
+            case PRIORITY:
+                return Config.HEADERPRIORITY;
+            default:
+                return Config.HEADER;
         }
     }
 
-    public List<String> getFooter(){
+    public List<String> getFooter() {
         switch (this) {
-            case VETERAN: return Config.FOOTERVETERAN;
-            case PRIORITY: return Config.FOOTERPRIORITY;
-            default: return Config.FOOTER;
+            case VETERAN:
+                return Config.FOOTERVETERAN;
+            case PRIORITY:
+                return Config.FOOTERPRIORITY;
+            default:
+                return Config.FOOTER;
         }
     }
 }
