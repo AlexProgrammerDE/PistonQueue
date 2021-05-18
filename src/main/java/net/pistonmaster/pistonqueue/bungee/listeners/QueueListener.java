@@ -22,16 +22,14 @@ package net.pistonmaster.pistonqueue.bungee.listeners;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueue;
-import net.pistonmaster.pistonqueue.bungee.QueueType;
+import net.pistonmaster.pistonqueue.bungee.utils.QueueType;
 import net.pistonmaster.pistonqueue.bungee.utils.*;
 
 import java.time.Duration;

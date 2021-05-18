@@ -25,6 +25,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.pistonmaster.pistonqueue.bungee.QueueAPI;
 
+import java.time.Duration;
 import java.util.List;
 
 public final class ChatUtils {
@@ -63,5 +64,13 @@ public final class ChatUtils {
         }
 
         return new ComponentBuilder(builder.toString()).create();
+    }
+
+    public static String formatDuration(String str, Duration duration, int position) {
+        String format = String.format("%dh %dm", duration.toHours(), duration.toMinutes() % 60);
+
+        if (duration.toHours() == 0) format = String.format("%dm", duration.toMinutes() == 0 ? 1 : duration.toMinutes());
+
+        return str.replace("%position%", String.valueOf(position)).replace("%wait%", format);
     }
 }
