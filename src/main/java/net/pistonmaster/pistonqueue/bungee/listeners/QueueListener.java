@@ -41,13 +41,18 @@ import java.util.Map.Entry;
 
 @RequiredArgsConstructor
 public final class QueueListener implements Listener {
+
     private final PistonQueue plugin;
+
     @Setter
     public boolean mainOnline = false;
+
     @Setter
     public boolean queueOnline = false;
+
     @Setter
     public boolean authOnline = false;
+
     /**
      * 1 = veteran, 2 = priority, 3 = regular
      */
@@ -82,13 +87,7 @@ public final class QueueListener implements Listener {
                         if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
                             event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
                         } else {
-                            if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-                                putQueue(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, QueueType.VETERAN.getQueueMap(), event);
-                            } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-                                putQueue(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, QueueType.PRIORITY.getQueueMap(), event);
-                            } else {
-                                putQueue(player, Config.HEADER, Config.FOOTER, QueueType.REGULAR.getQueueMap(), event);
-                            }
+                            putQueue(player, event);
                         }
                     }
                 } else {
@@ -109,22 +108,10 @@ public final class QueueListener implements Listener {
             }
 
             // Its null when joining!
-            if (event.getFrom() == null && event.getPlayer().getServer().getInfo().getName().equals(Config.QUEUESERVER)) {
-                if (Config.ALLOWAUTHSKIP)
-                    queuePlayerAuthFirst(player);
-            } else if (isAuthToQueue(event)) {
-                queuePlayerAuthFirst(player);
-            }
-        }
-    }
-
-    public void queuePlayerAuthFirst(ProxiedPlayer player) {
-        if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
-            putQueueAuthFirst(player, Config.HEADERVETERAN, Config.FOOTERVETERAN, QueueType.VETERAN.getQueueMap());
-        } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
-            putQueueAuthFirst(player, Config.HEADERPRIORITY, Config.FOOTERPRIORITY, QueueType.PRIORITY.getQueueMap());
-        } else {
-            putQueueAuthFirst(player, Config.HEADER, Config.FOOTER, QueueType.REGULAR.getQueueMap());
+            if (event.getFrom() == null && event.getPlayer().getServer().getInfo().getName().equals(Config.QUEUESERVER))
+                if (Config.ALLOWAUTHSKIP) putQueueAuthFirst(player);
+            else
+                if (isAuthToQueue(event)) putQueueAuthFirst(player);
         }
     }
 
@@ -147,43 +134,48 @@ public final class QueueListener implements Listener {
         if (isMainFull())
             return;
 
-        if (line == 1) {
-            moveVeteran(true);
-            line = 2;
-        } else if (line == 2) {
-            movePriority(true);
-            line = 3;
-        } else if (line == 3) {
-            moveRegular();
-            line = 1;
-        } else {
-            line = 1;
+        switch (line) {
+            case 1: {
+                moveVeteran(true);
+                line = 2;
+                break;
+            }
+            case 2: {
+                movePriority(true);
+                line = 3;
+                break;
+            }
+            case 3: {
+                moveRegular();
+                line = 1;
+                break;
+            }
+            default: {
+                line = 1;
+                break;
+            }
         }
     }
 
     private void moveRegular() {
-        if (QueueType.REGULAR.getQueueMap().isEmpty()) {
+        if (QueueType.REGULAR.getQueueMap().isEmpty())
             moveVeteran(false);
-        } else {
+        else
             connectPlayer(QueueType.REGULAR);
-        }
     }
 
     private void movePriority(boolean canMoveRegular) {
-        if (QueueType.PRIORITY.getQueueMap().isEmpty()) {
-            if (canMoveRegular)
-                moveRegular();
-        } else {
+        if (QueueType.PRIORITY.getQueueMap().isEmpty())
+            if (canMoveRegular) moveRegular();
+        else
             connectPlayer(QueueType.PRIORITY);
-        }
     }
 
     private void moveVeteran(boolean canMoveRegular) {
-        if (QueueType.VETERAN.getQueueMap().isEmpty()) {
+        if (QueueType.VETERAN.getQueueMap().isEmpty())
             movePriority(canMoveRegular);
-        } else {
+        else
             connectPlayer(QueueType.VETERAN);
-        }
     }
 
     private void connectPlayer(QueueType type) {
@@ -224,20 +216,26 @@ public final class QueueListener implements Listener {
         }
     }
 
-    private void putQueueAuthFirst(ProxiedPlayer player, List<String> header, List<String> footer, Map<UUID, String> queueMap) {
-        preQueueAdding(player, header, footer);
+    private void putQueueAuthFirst(ProxiedPlayer player) {
+        QueueType type = QueueType.getQueueType(player);
+
+        preQueueAdding(player, type.getHeader(), type.getFooter());
 
         // Store the data concerning the player's original destination
-        queueMap.put(player.getUniqueId(), Config.MAINSERVER);
+        type.getQueueMap().put(player.getUniqueId(), Config.MAINSERVER);
     }
 
-    private void putQueue(ProxiedPlayer player, List<String> header, List<String> footer, Map<UUID, String> queueMap, ServerConnectEvent event) {
-        preQueueAdding(player, header, footer);
+    private void putQueue(ProxiedPlayer player, ServerConnectEvent event) {
+        QueueType type = QueueType.getQueueType(player);
+
+        preQueueAdding(player, type.getHeader(), type.getFooter());
 
         // Redirect the player to the queue.
         String originalTarget = event.getTarget().getName();
 
         event.setTarget(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
+
+        Map<UUID, String> queueMap = type.getQueueMap();
 
         // Store the data concerning the player's original destination
         if (Config.FORCEMAINSERVER) {
@@ -248,27 +246,9 @@ public final class QueueListener implements Listener {
     }
 
     private void preQueueAdding(ProxiedPlayer player, List<String> header, List<String> footer) {
-        player.setTabHeader(
-                new ComponentBuilder(getNoneString(header)).create(),
-                new ComponentBuilder(getNoneString(footer)).create());
-
+        player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+        
         player.sendMessage(ChatUtils.parseToComponent(Config.SERVERISFULLMESSAGE));
-    }
-
-    private String getNoneString(List<String> tab) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < tab.size(); i++) {
-            builder.append(ChatUtils.parseToString(tab.get(i))
-                    .replace("%position%", "None")
-                    .replace("%wait%", "None"));
-
-            if (i != (tab.size() - 1)) {
-                builder.append("\n");
-            }
-        }
-
-        return builder.toString();
     }
 
     private boolean isMainFull() {
