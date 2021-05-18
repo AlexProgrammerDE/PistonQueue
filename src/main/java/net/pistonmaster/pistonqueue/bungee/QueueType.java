@@ -20,6 +20,8 @@
 package net.pistonmaster.pistonqueue.bungee;
 
 import lombok.Getter;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.pistonmaster.pistonqueue.bungee.utils.Config;
 import net.pistonmaster.pistonqueue.bungee.utils.Pair;
 
 import java.time.Duration;
@@ -39,4 +41,29 @@ public enum QueueType {
 
     @Getter
     private final Map<UUID, List<Pair<Integer, Instant>>> positionCache = new HashMap<>();
+
+    public static QueueType getQueueType(ProxiedPlayer player) {
+        if (player.hasPermission(Config.QUEUEVETERANPERMISSION))
+            return VETERAN;
+        else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION))
+            return PRIORITY;
+        else
+            return REGULAR;
+    }
+
+    public List<String> getHeader(){
+        switch (this) {
+            case VETERAN: return Config.HEADERVETERAN;
+            case PRIORITY: return Config.HEADERPRIORITY;
+            default: return Config.HEADER;
+        }
+    }
+
+    public List<String> getFooter(){
+        switch (this) {
+            case VETERAN: return Config.FOOTERVETERAN;
+            case PRIORITY: return Config.FOOTERPRIORITY;
+            default: return Config.FOOTER;
+        }
+    }
 }
