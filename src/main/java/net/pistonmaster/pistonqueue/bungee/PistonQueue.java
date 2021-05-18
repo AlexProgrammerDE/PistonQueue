@@ -153,18 +153,6 @@ public final class PistonQueue extends Plugin {
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
         getProxy().getScheduler().schedule(this, queueListener::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-        getProxy().getScheduler().schedule(this, () -> {
-            for (QueueType type : QueueType.values()) {
-                for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-                    ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
-
-                    if (player == null || !player.isConnected()) {
-                        type.getQueueMap().remove(entry.getKey());
-                    }
-                }
-            }
-        }, 0, 500, TimeUnit.MILLISECONDS);
-
         // Checks the status of all the servers
         getProxy().getScheduler().schedule(this, () -> {
             if (getProxy().getServers().containsKey(Config.MAINSERVER)) {

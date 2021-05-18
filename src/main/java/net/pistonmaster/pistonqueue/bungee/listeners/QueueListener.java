@@ -128,16 +128,17 @@ public final class QueueListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void onDisconnect(PlayerDisconnectEvent event) {
-        UUID uuid = event.getPlayer().getUniqueId();
-
-        for (QueueType type : QueueType.values()) {
-            type.getPositionCache().remove(uuid);
-        }
-    }
-
     public void moveQueue() {
+        for (QueueType type : QueueType.values()) {
+            for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
+                ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
+
+                if (player == null || (player.isConnected() && !plugin.getProxy().getServerInfo(Config.QUEUESERVER).equals(player.getServer().getInfo()))) {
+                    type.getQueueMap().remove(entry.getKey());
+                }
+            }
+        }
+
         if (Config.PAUSEQUEUEIFMAINDOWN && !mainOnline) {
             return;
         }
@@ -210,7 +211,6 @@ public final class QueueListener implements Listener {
             indexPositionTime();
 
             List<Pair<Integer, Instant>> cache = type.getPositionCache().get(entry.getKey());
-
             if (cache != null) {
                 cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
             }
@@ -295,7 +295,6 @@ public final class QueueListener implements Listener {
             for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
                 if (player == null || !player.isConnected()) {
-                    type.getQueueMap().remove(entry.getKey());
                     continue;
                 }
 
