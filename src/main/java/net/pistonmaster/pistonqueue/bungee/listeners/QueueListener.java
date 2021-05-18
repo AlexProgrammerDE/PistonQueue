@@ -246,28 +246,9 @@ public final class QueueListener implements Listener {
     }
 
     private void preQueueAdding(ProxiedPlayer player, List<String> header, List<String> footer) {
-        player.setTabHeader(
-                new ComponentBuilder(getNoneString(header)).create(),
-                new ComponentBuilder(getNoneString(footer)).create()
-        );
-
+        player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+        
         player.sendMessage(ChatUtils.parseToComponent(Config.SERVERISFULLMESSAGE));
-    }
-
-    private String getNoneString(List<String> tab) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < tab.size(); i++) {
-            builder.append(ChatUtils.parseToString(tab.get(i))
-                    .replace("%position%", "None")
-                    .replace("%wait%", "None"));
-
-            if (i != (tab.size() - 1)) {
-                builder.append("\n");
-            }
-        }
-
-        return builder.toString();
     }
 
     private boolean isMainFull() {

@@ -21,8 +21,11 @@ package net.pistonmaster.pistonqueue.bungee.utils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.pistonmaster.pistonqueue.bungee.QueueAPI;
+
+import java.util.List;
 
 public final class ChatUtils {
     private ChatUtils() {
@@ -42,7 +45,23 @@ public final class ChatUtils {
         returnedText = returnedText.replace("%veteran%", String.valueOf(QueueAPI.getVeteranSize()));
         returnedText = returnedText.replace("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
         returnedText = returnedText.replace("%regular%", String.valueOf(QueueAPI.getRegularSize()));
+        returnedText = returnedText.replace("%position%", "None");
+        returnedText = returnedText.replace("%wait%", "None");
 
         return returnedText;
+    }
+
+    public static BaseComponent[] parseTab(List<String> tab) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = 0; i < tab.size(); i++) {
+            builder.append(ChatUtils.parseToString(tab.get(i)));
+
+            if (i != (tab.size() - 1)) {
+                builder.append("\n");
+            }
+        }
+
+        return new ComponentBuilder(builder.toString()).create();
     }
 }
