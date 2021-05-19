@@ -128,7 +128,9 @@ public final class QueueListener implements Listener {
 
         if (Config.RECOVERY) {
             for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                if (player.getServer() != null && plugin.getProxy().getServerInfo(Config.QUEUESERVER).equals(player.getServer().getInfo())) {
+                QueueType type = QueueType.getQueueType(player);
+
+                if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getServer() != null && plugin.getProxy().getServerInfo(Config.QUEUESERVER).equals(player.getServer().getInfo())) {
                     QueueType.getQueueType(player).getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
 
                     player.sendMessage(TextComponent.fromLegacyText(Config.RECOVERYMESSAGE));
