@@ -53,7 +53,7 @@ public final class QueueListener implements Listener {
     private boolean authOnline = false;
 
     @Setter
-    private Instant downSince = null;
+    private Instant onlineSince = null;
 
     /**
      * 1 = veteran, 2 = priority, 3 = regular
@@ -142,18 +142,19 @@ public final class QueueListener implements Listener {
             }
         }
 
-        if (Config.PAUSEQUEUEIFMAINDOWN && !mainOnline) {
-            return;
-        }
-
-        if (mainOnline && downSince != null) {
-            if (Duration.between(downSince, Instant.now()).getSeconds() >= Config.STARTTIME) {
-                downSince = null;
+        if (Config.PAUSEQUEUEIFMAINDOWN) {
+            if (mainOnline) {
+                if (onlineSince != null) {
+                    if (Duration.between(onlineSince, Instant.now()).getSeconds() >= Config.STARTTIME) {
+                        onlineSince = null;
+                    } else {
+                        return;
+                    }
+                }
             } else {
                 return;
             }
         }
-
         // Check if we even have to move.
         if (isMainFull())
             return;

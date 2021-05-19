@@ -54,8 +54,6 @@ public final class PistonListener implements Listener {
 
     @EventHandler
     public void onKick(ServerKickEvent event) {
-
-
         if (Config.IFMAINDOWNSENDTOQUEUE && event.getKickedFrom() == plugin.getProxy().getServerInfo(Config.MAINSERVER)) {
             for (String str : Config.DOWWORDLIST) {
                 if (TextComponent.toLegacyText(event.getKickReasonComponent()).toLowerCase().contains(str)) {

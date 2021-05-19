@@ -163,12 +163,15 @@ public final class PistonQueue extends Plugin {
                             getProxy().getServerInfo(Config.MAINSERVER).getAddress().getPort());
 
                     s.close();
+
+                    if (!queueListener.isMainOnline())
+                        queueListener.setOnlineSince(Instant.now());
+
                     queueListener.setMainOnline(true);
                 } catch (IOException e) {
                     getLogger().warning("Main Server is down!!!");
                     if (queueListener.isMainOnline()) {
                         queueListener.setMainOnline(false);
-                        queueListener.setDownSince(Instant.now());
                     }
                 }
             } else {

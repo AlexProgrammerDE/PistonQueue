@@ -46,6 +46,7 @@ IFMAINDOWNSENDTOQUEUEMESSAGE: "&cThe main server is offline now! You have been s
 DOWWORDLIST:
   - "restarting"
   - "closed"
+  - "went down"
 
 # If something went wrong while queue -> main happens should the player be sent back into queue?
 RECOVERY: true
