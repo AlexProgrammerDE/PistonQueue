@@ -170,9 +170,7 @@ public final class PistonQueue extends Plugin {
                     queueListener.setMainOnline(true);
                 } catch (IOException e) {
                     getLogger().warning("Main Server is down!!!");
-                    if (queueListener.isMainOnline()) {
-                        queueListener.setMainOnline(false);
-                    }
+                    queueListener.setMainOnline(false);
                 }
             } else {
                 getLogger().warning("Main Server \"" + Config.MAINSERVER + "\" not set up!!!");
