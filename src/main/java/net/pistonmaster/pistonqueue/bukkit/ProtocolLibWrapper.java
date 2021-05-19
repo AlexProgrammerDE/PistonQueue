@@ -30,7 +30,7 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class ProtocolLibWrapper {
+public final class ProtocolLibWrapper {
     private ProtocolLibWrapper() {
     }
 

@@ -23,7 +23,7 @@ import net.pistonmaster.pistonmotd.api.PlaceholderParser;
 import net.pistonmaster.pistonmotd.api.PlaceholderUtil;
 import net.pistonmaster.pistonqueue.bungee.QueueAPI;
 
-public class PistonMOTDPlaceholder implements PlaceholderParser {
+public final class PistonMOTDPlaceholder implements PlaceholderParser {
     public PistonMOTDPlaceholder() {
         PlaceholderUtil.registerParser(this);
     }

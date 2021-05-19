@@ -41,12 +41,13 @@ public enum QueueType {
     private final Map<UUID, List<Pair<Integer, Instant>>> positionCache = new HashMap<>();
 
     public static QueueType getQueueType(ProxiedPlayer player) {
-        if (player.hasPermission(Config.QUEUEVETERANPERMISSION))
+        if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
             return VETERAN;
-        else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION))
+        } else if (player.hasPermission(Config.QUEUEPRIORITYPERMISSION)) {
             return PRIORITY;
-        else
+        } else {
             return REGULAR;
+        }
     }
 
     public List<String> getHeader() {
