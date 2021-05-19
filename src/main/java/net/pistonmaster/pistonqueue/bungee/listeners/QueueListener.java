@@ -22,6 +22,7 @@ package net.pistonmaster.pistonqueue.bungee.listeners;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -119,11 +120,22 @@ public final class QueueListener implements Listener {
             for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
 
-                if (player == null || (player.isConnected() && !plugin.getProxy().getServerInfo(Config.QUEUESERVER).equals(player.getServer().getInfo()))) {
+                if (player == null || (player.getServer() != null && !plugin.getProxy().getServerInfo(Config.QUEUESERVER).equals(player.getServer().getInfo()))) {
                     type.getQueueMap().remove(entry.getKey());
                 }
             }
         }
+
+        if (Config.RECOVERY) {
+            for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
+                if (player.getServer() != null && plugin.getProxy().getServerInfo(Config.QUEUESERVER).equals(player.getServer().getInfo())) {
+                    QueueType.getQueueType(player).getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
+
+                    player.sendMessage(TextComponent.fromLegacyText(Config.RECOVERYMESSAGE));
+                }
+            }
+        }
+
 
         if (Config.PAUSEQUEUEIFMAINDOWN && !mainOnline) {
             return;
@@ -210,12 +222,7 @@ public final class QueueListener implements Listener {
                 cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
             }
 
-            player.connect(plugin.getProxy().getServerInfo(entry.getValue()), (result, error) -> {
-                if (Config.RECOVERY && !Boolean.TRUE.equals(result)) {
-                    player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
-                    type.getQueueMap().put(entry.getKey(), entry.getValue());
-                }
-            });
+            player.connect(plugin.getProxy().getServerInfo(entry.getValue()));
         }
     }
 
