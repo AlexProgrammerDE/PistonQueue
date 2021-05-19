@@ -31,6 +31,9 @@ KICKMESSAGE: "&6You have lost connection to the server"
 PAUSEQUEUEIFMAINDOWN: true
 PAUSEQUEUEIFMAINDOWNMESSAGE: "&6The main server is down. We will be back soon!"
 
+# Time to wait for the server to come back up after it binding to the port again. (Seconds)
+STARTTIME: 30
+
 # When the main server is down should you kick the player from the queue?
 KICKWHENDOWN: false
 SERVERDOWNKICKMESSAGE: "SERVERNAME &6is down please try again later :("
@@ -38,6 +41,11 @@ SERVERDOWNKICKMESSAGE: "SERVERNAME &6is down please try again later :("
 # If a player gets kicked from the main server (it goes down/crashes), he gets sent into queue and waits.
 IFMAINDOWNSENDTOQUEUE: true
 IFMAINDOWNSENDTOQUEUEMESSAGE: "&cThe main server is offline now! You have been sent to queue while it goes back online."
+
+# Only send players back to queue if the kick message has these words. (lowercase)
+DOWWORDLIST:
+  - "restarting"
+  - "closed"
 
 # If something went wrong while queue -> main happens should the player be sent back into queue?
 RECOVERY: true

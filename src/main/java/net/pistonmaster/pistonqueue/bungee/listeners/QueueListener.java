@@ -19,10 +19,10 @@
  */
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -43,13 +43,17 @@ public final class QueueListener implements Listener {
     private final PistonQueue plugin;
 
     @Setter
-    public boolean mainOnline = false;
+    @Getter
+    private boolean mainOnline = false;
 
     @Setter
-    public boolean queueOnline = false;
+    private boolean queueOnline = false;
 
     @Setter
-    public boolean authOnline = false;
+    private boolean authOnline = false;
+
+    @Setter
+    private Instant downSince = null;
 
     /**
      * 1 = veteran, 2 = priority, 3 = regular
@@ -138,9 +142,16 @@ public final class QueueListener implements Listener {
             }
         }
 
-
         if (Config.PAUSEQUEUEIFMAINDOWN && !mainOnline) {
             return;
+        }
+
+        if (mainOnline && downSince != null) {
+            if (Duration.between(downSince, Instant.now()).getSeconds() >= Config.STARTTIME) {
+                downSince = null;
+            } else {
+                return;
+            }
         }
 
         // Check if we even have to move.

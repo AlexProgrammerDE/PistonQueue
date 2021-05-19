@@ -44,6 +44,7 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Map.Entry;
@@ -123,7 +124,7 @@ public final class PistonQueue extends Plugin {
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         getProxy().getScheduler().schedule(this, () -> {
-            if (Config.PAUSEQUEUEIFMAINDOWN && !queueListener.mainOnline) {
+            if (Config.PAUSEQUEUEIFMAINDOWN && !queueListener.isMainOnline()) {
                 QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
@@ -165,7 +166,10 @@ public final class PistonQueue extends Plugin {
                     queueListener.setMainOnline(true);
                 } catch (IOException e) {
                     getLogger().warning("Main Server is down!!!");
-                    queueListener.setMainOnline(false);
+                    if (queueListener.isMainOnline()) {
+                        queueListener.setMainOnline(false);
+                        queueListener.setDownSince(Instant.now());
+                    }
                 }
             } else {
                 getLogger().warning("Main Server \"" + Config.MAINSERVER + "\" not set up!!!");
@@ -263,7 +267,7 @@ public final class PistonQueue extends Plugin {
 
     private void sendMessage(QueueType queue, boolean bool, ChatMessageType type) {
         if (bool) {
-            if (!queueListener.mainOnline)
+            if (!queueListener.isMainOnline())
                 return;
 
             int position = 0;

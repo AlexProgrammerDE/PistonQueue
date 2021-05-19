@@ -21,6 +21,7 @@ package net.pistonmaster.pistonqueue.bungee.listeners;
 
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.ServerPing;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
@@ -53,15 +54,22 @@ public final class PistonListener implements Listener {
 
     @EventHandler
     public void onKick(ServerKickEvent event) {
-        if (Config.ENABLEKICKMESSAGE) {
-            event.setKickReasonComponent(ChatUtils.parseToComponent(Config.KICKMESSAGE));
-        }
+
 
         if (Config.IFMAINDOWNSENDTOQUEUE && event.getKickedFrom() == plugin.getProxy().getServerInfo(Config.MAINSERVER)) {
-            event.setCancelServer(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.IFMAINDOWNSENDTOQUEUEMESSAGE));
-            plugin.getQueueListener().putQueueAuthFirst(event.getPlayer());
+            for (String str : Config.DOWWORDLIST) {
+                if (TextComponent.toLegacyText(event.getKickReasonComponent()).toLowerCase().contains(str)) {
+                    event.setCancelServer(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.IFMAINDOWNSENDTOQUEUEMESSAGE));
+                    plugin.getQueueListener().putQueueAuthFirst(event.getPlayer());
+                    break;
+                }
+            }
+        }
+
+        if (Config.ENABLEKICKMESSAGE) {
+            event.setKickReasonComponent(ChatUtils.parseToComponent(Config.KICKMESSAGE));
         }
     }
 
