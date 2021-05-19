@@ -133,7 +133,7 @@ public final class QueueListener implements Listener {
                 if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getServer() != null && plugin.getProxy().getServerInfo(Config.QUEUESERVER).equals(player.getServer().getInfo())) {
                     QueueType.getQueueType(player).getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
 
-                    player.sendMessage(TextComponent.fromLegacyText(Config.RECOVERYMESSAGE));
+                    player.sendMessage(ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
                 }
             }
         }

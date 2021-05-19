@@ -37,7 +37,7 @@ public final class ChatUtils {
     }
 
     public static BaseComponent[] parseToComponent(String str) {
-        return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', parseText(str)));
+        return TextComponent.fromLegacyText(parseToString(str));
     }
 
     private static String parseText(String text) {
