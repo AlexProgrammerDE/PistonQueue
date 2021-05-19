@@ -43,7 +43,7 @@ IFMAINDOWNSENDTOQUEUE: true
 IFMAINDOWNSENDTOQUEUEMESSAGE: "&cThe main server is offline now! You have been sent to queue while it goes back online."
 
 # Only send players back to queue if the kick message has these words. (lowercase)
-DOWWORDLIST:
+DOWNWORDLIST:
   - "restarting"
   - "closed"
   - "went down"

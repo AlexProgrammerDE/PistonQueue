@@ -155,6 +155,7 @@ public final class QueueListener implements Listener {
                 return;
             }
         }
+
         // Check if we even have to move.
         if (isMainFull())
             return;
