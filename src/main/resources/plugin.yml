@@ -4,7 +4,7 @@ api-version: 1.13
 main: net.pistonmaster.pistonqueue.bukkit.PistonQueueBukkit
 author: AlexProgrammerDE
 description: Bukkit companion for PistonQueue
-website: http://pistonmaster.net/
+website: https://pistonmaster.net/
 softdepend: [ "ProtocolLib" ]
 
 permissions:

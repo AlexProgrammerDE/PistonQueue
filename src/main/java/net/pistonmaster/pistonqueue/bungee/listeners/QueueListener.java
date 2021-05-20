@@ -135,7 +135,7 @@ public final class QueueListener implements Listener {
                 QueueType type = QueueType.getQueueType(player);
 
                 if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getServer() != null && plugin.getProxy().getServerInfo(Config.QUEUESERVER).equals(player.getServer().getInfo())) {
-                    QueueType.getQueueType(player).getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
+                    type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
 
                     player.sendMessage(ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
                 }

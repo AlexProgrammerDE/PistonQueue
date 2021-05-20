@@ -41,15 +41,13 @@ public final class ChatUtils {
     }
 
     private static String parseText(String text) {
-        String returnedText = text;
+        text = text.replace("%veteran%", String.valueOf(QueueAPI.getVeteranSize()));
+        text = text.replace("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
+        text = text.replace("%regular%", String.valueOf(QueueAPI.getRegularSize()));
+        text = text.replace("%position%", "None");
+        text = text.replace("%wait%", "None");
 
-        returnedText = returnedText.replace("%veteran%", String.valueOf(QueueAPI.getVeteranSize()));
-        returnedText = returnedText.replace("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
-        returnedText = returnedText.replace("%regular%", String.valueOf(QueueAPI.getRegularSize()));
-        returnedText = returnedText.replace("%position%", "None");
-        returnedText = returnedText.replace("%wait%", "None");
-
-        return returnedText;
+        return text;
     }
 
     public static BaseComponent[] parseTab(List<String> tab) {
