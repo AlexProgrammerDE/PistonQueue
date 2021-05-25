@@ -21,11 +21,15 @@ package net.pistonmaster.pistonqueue.bungee.utils;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public enum QueueType {
     REGULAR,
@@ -41,6 +45,9 @@ public enum QueueType {
 
     @Getter
     private final Map<UUID, List<Pair<Integer, Instant>>> positionCache = new HashMap<>();
+
+    @Getter
+    private int playersWithTypeInMain = 0;
 
     public static QueueType getQueueType(ProxiedPlayer player) {
         if (player.hasPermission(Config.QUEUEVETERANPERMISSION)) {
@@ -72,5 +79,26 @@ public enum QueueType {
             default:
                 return Config.FOOTER;
         }
+    }
+
+    public static void initializeReservationSlots(PistonQueue plugin) {
+        plugin.getProxy().getScheduler().schedule(plugin, () -> {
+            ServerInfo mainServer = plugin.getProxy().getServerInfo(Config.MAINSERVER);
+            Map<QueueType, AtomicInteger> map = new EnumMap<>(QueueType.class);
+
+            for (ProxiedPlayer player : mainServer.getPlayers()) {
+                QueueType playerType = getQueueType(player);
+
+                if (map.containsKey(playerType)) {
+                    map.get(playerType).incrementAndGet();
+                } else {
+                    map.put(playerType, new AtomicInteger(1));
+                }
+            }
+
+            for (Map.Entry<QueueType, AtomicInteger> entry : map.entrySet()) {
+                entry.getKey().playersWithTypeInMain = entry.getValue().get();
+            }
+        }, 0, 1, TimeUnit.SECONDS);
     }
 }

@@ -94,6 +94,10 @@ JOININGMAINSERVER: "&6Connecting to SERVERNAME"
 # Max players allowed onto main server
 MAINSERVERSLOTS: 100
 
+REGULARSLOTS: 50
+PRIORITYSLOTS: 30
+VETERANSLOTS: 20
+
 # Whether you want to set the main server as your target or just want have bungeecord to decide.
 FORCEMAINSERVER: true
 

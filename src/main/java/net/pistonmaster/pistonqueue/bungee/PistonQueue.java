@@ -69,6 +69,7 @@ public final class PistonQueue extends Plugin {
         processConfig();
 
         StorageTool.setupTool(this);
+        QueueType.initializeReservationSlots(this);
 
         logger.info(ChatColor.BLUE + "Looking for hooks");
         if (getProxy().getPluginManager().getPlugin("PistonMOTD") != null) {
