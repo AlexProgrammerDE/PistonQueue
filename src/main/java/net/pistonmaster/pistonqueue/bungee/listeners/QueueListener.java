@@ -143,6 +143,7 @@ public final class QueueListener implements Listener {
                     type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
 
                     if (!noRecoveryMessage.contains(player.getUniqueId())) {
+                        noRecoveryMessage.remove(player.getUniqueId());
                         player.sendMessage(ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
                     }
                 }
