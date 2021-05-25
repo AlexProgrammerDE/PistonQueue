@@ -60,7 +60,8 @@ public final class PistonListener implements Listener {
                     event.setCancelServer(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
                     event.setCancelled(true);
                     event.getPlayer().sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(Config.IFMAINDOWNSENDTOQUEUEMESSAGE));
-                    plugin.getQueueListener().putQueueAuthFirst(event.getPlayer());
+                    // plugin.getQueueListener().putQueueAuthFirst(event.getPlayer());
+                    plugin.getQueueListener().getNoRecoveryMessage().add(event.getPlayer().getUniqueId());
                     break;
                 }
             }

@@ -20,6 +20,7 @@
 package net.pistonmaster.pistonqueue.bungee.utils;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.time.Duration;
@@ -32,7 +33,8 @@ public enum QueueType {
     VETERAN;
 
     @Getter
-    private final Map<UUID, String> queueMap = new LinkedHashMap<>();
+    @Setter
+    private Map<UUID, String> queueMap = new LinkedHashMap<>();
 
     @Getter
     private final Map<Integer, Duration> durationToPosition = new LinkedHashMap<>();

@@ -55,6 +55,9 @@ public final class QueueListener implements Listener {
     @Setter
     private Instant onlineSince = null;
 
+    @Getter
+    private final List<UUID> noRecoveryMessage = new ArrayList<>();
+
     /**
      * 1 = veteran, 2 = priority, 3 = regular
      */
@@ -120,6 +123,8 @@ public final class QueueListener implements Listener {
     }
 
     public void moveQueue() {
+        hotFixQueue();
+
         for (QueueType type : QueueType.values()) {
             for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
@@ -137,7 +142,9 @@ public final class QueueListener implements Listener {
                 if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getServer() != null && plugin.getProxy().getServerInfo(Config.QUEUESERVER).equals(player.getServer().getInfo())) {
                     type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
 
-                    player.sendMessage(ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
+                    if (!noRecoveryMessage.contains(player.getUniqueId())) {
+                        player.sendMessage(ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
+                    }
                 }
             }
         }
@@ -316,6 +323,21 @@ public final class QueueListener implements Listener {
                     list.add(new Pair<>(position, Instant.now()));
                     type.getPositionCache().put(player.getUniqueId(), list);
                 }
+            }
+        }
+    }
+
+    private void hotFixQueue() {
+        for (QueueType type : QueueType.values()) {
+            int size = 0;
+
+            for (UUID ignored : type.getQueueMap().keySet()) {
+                size++;
+            }
+
+            if (size != type.getQueueMap().size()) {
+                type.setQueueMap(new LinkedHashMap<>());
+                plugin.getLogger().severe("Had to hotfix queue " + type.name() + "!!! Report this directly to the plugins developer!!!");
             }
         }
     }
