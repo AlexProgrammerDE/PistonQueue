@@ -81,6 +81,17 @@ public enum QueueType {
         }
     }
 
+    public int getReservatedSlots() {
+        switch (this) {
+            case VETERAN:
+                return Config.VETERANSLOTS;
+            case PRIORITY:
+                return Config.PRIORITYSLOTS;
+            default:
+                return Config.REGULARSLOTS;
+        }
+    }
+
     public static void initializeReservationSlots(PistonQueue plugin) {
         plugin.getProxy().getScheduler().schedule(plugin, () -> {
             ServerInfo mainServer = plugin.getProxy().getServerInfo(Config.MAINSERVER);

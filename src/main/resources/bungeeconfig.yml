@@ -91,9 +91,7 @@ ALLOWAUTHSKIP: true
 # to just use the name of the default server
 JOININGMAINSERVER: "&6Connecting to SERVERNAME"
 
-# Max players allowed onto main server
-MAINSERVERSLOTS: 100
-
+# Max players per queue type allowed on the main server
 REGULARSLOTS: 50
 PRIORITYSLOTS: 30
 VETERANSLOTS: 20

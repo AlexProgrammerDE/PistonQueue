@@ -58,11 +58,6 @@ public final class QueueListener implements Listener {
     @Getter
     private final List<UUID> noRecoveryMessage = new ArrayList<>();
 
-    /**
-     * 1 = veteran, 2 = priority, 3 = regular
-     */
-    private int line = 1;
-
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
         ProxiedPlayer player = event.getPlayer();
@@ -80,15 +75,15 @@ public final class QueueListener implements Listener {
             if (Config.ALWAYSQUEUE)
                 return;
 
-            if (isAnyoneQueued())
+            if (isAnyoneQueuedOfType(player))
                 return;
 
-            if (!isMainFull() && event.getTarget().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER)))
+            if (!isPlayersQueueFull(player) && event.getTarget().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER)))
                 event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
         } else {
             if (event.getPlayer().getServer() == null) {
                 if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
-                    if (Config.ALWAYSQUEUE || (isMainFull() || isAnyoneQueued()) || (!mainOnline && !Config.KICKWHENDOWN)) {
+                    if (Config.ALWAYSQUEUE || (isPlayersQueueFull(player) || isAnyoneQueuedOfType(player)) || (!mainOnline && !Config.KICKWHENDOWN)) {
                         if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
                             event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
                         } else {
@@ -164,55 +159,10 @@ public final class QueueListener implements Listener {
             }
         }
 
-        // Check if we even have to move.
-        if (isMainFull())
-            return;
-
-        switch (line) {
-            case 1: {
-                moveVeteran(true);
-                line = 2;
-                break;
+        for (QueueType type : QueueType.values()) {
+            if (!isQueueFull(type)) {
+                connectPlayer(type);
             }
-            case 2: {
-                movePriority(true);
-                line = 3;
-                break;
-            }
-            case 3: {
-                moveRegular();
-                line = 1;
-                break;
-            }
-            default: {
-                line = 1;
-                break;
-            }
-        }
-    }
-
-    private void moveRegular() {
-        if (QueueType.REGULAR.getQueueMap().isEmpty()) {
-            moveVeteran(false);
-        } else {
-            connectPlayer(QueueType.REGULAR);
-        }
-    }
-
-    private void movePriority(boolean canMoveRegular) {
-        if (QueueType.PRIORITY.getQueueMap().isEmpty()) {
-            if (canMoveRegular)
-                moveRegular();
-        } else {
-            connectPlayer(QueueType.PRIORITY);
-        }
-    }
-
-    private void moveVeteran(boolean canMoveRegular) {
-        if (QueueType.VETERAN.getQueueMap().isEmpty()) {
-            movePriority(canMoveRegular);
-        } else {
-            connectPlayer(QueueType.VETERAN);
         }
     }
 
@@ -284,21 +234,20 @@ public final class QueueListener implements Listener {
         player.sendMessage(ChatUtils.parseToComponent(Config.SERVERISFULLMESSAGE));
     }
 
-    private boolean isMainFull() {
-        return plugin.getProxy().getServerInfo(Config.MAINSERVER).getPlayers().size() >= Config.MAINSERVERSLOTS;
+    private boolean isPlayersQueueFull(ProxiedPlayer player) {
+        return isQueueFull(QueueType.getQueueType(player));
+    }
+
+    private boolean isQueueFull(QueueType type) {
+        return type.getPlayersWithTypeInMain() >= type.getReservatedSlots();
     }
 
     private boolean isAuthToQueue(ServerSwitchEvent event) {
         return event.getFrom() != null && event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) && event.getPlayer().getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
     }
 
-    private boolean isAnyoneQueued() {
-        for (QueueType type : QueueType.values()) {
-            if (!type.getQueueMap().isEmpty())
-                return true;
-        }
-
-        return false;
+    private boolean isAnyoneQueuedOfType(ProxiedPlayer player) {
+        return !QueueType.getQueueType(player).getQueueMap().isEmpty();
     }
 
     private void indexPositionTime() {
