@@ -28,13 +28,14 @@ import net.md_5.bungee.api.plugin.TabExecutor;
 import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 import net.pistonmaster.pistonqueue.bungee.QueueAPI;
 import net.pistonmaster.pistonqueue.bungee.utils.Config;
+import net.pistonmaster.pistonqueue.bungee.utils.QueueType;
 import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
 
 import java.util.*;
 
 public final class MainCommand extends Command implements TabExecutor {
     private static final String[] commands = {"help", "version", "stats"};
-    private static final String[] adminCommands = {"reload", "shadowban", "unshadowban"};
+    private static final String[] adminCommands = {"slotstats", "reload", "shadowban", "unshadowban"};
     private final PistonQueue plugin;
 
     public MainCommand(PistonQueue plugin) {
@@ -63,6 +64,18 @@ public final class MainCommand extends Command implements TabExecutor {
                     sender.sendMessage(new ComponentBuilder("Priority: ").color(ChatColor.GOLD).append(String.valueOf(QueueAPI.getPrioritySize())).color(ChatColor.GOLD).bold(true).create());
                     sender.sendMessage(new ComponentBuilder("Veteran: ").color(ChatColor.GOLD).append(String.valueOf(QueueAPI.getVeteranSize())).color(ChatColor.GOLD).bold(true).create());
                     sendLine(sender);
+                    break;
+                case "slotstats":
+                    if (sender.hasPermission(Config.ADMINPERMISSION)) {
+                        sendLine(sender);
+                        sender.sendMessage(new ComponentBuilder("Main slot stats").color(ChatColor.GOLD).create());
+                        sender.sendMessage(new ComponentBuilder("Regular: ").color(ChatColor.GOLD).append(QueueType.REGULAR.getPlayersWithTypeInMain() + "/" + QueueType.REGULAR.getReservatedSlots()).color(ChatColor.GOLD).bold(true).create());
+                        sender.sendMessage(new ComponentBuilder("Priority: ").color(ChatColor.GOLD).append(QueueType.PRIORITY.getPlayersWithTypeInMain() + "/" + QueueType.PRIORITY.getReservatedSlots()).color(ChatColor.GOLD).bold(true).create());
+                        sender.sendMessage(new ComponentBuilder("Veteran: ").color(ChatColor.GOLD).append(QueueType.VETERAN.getPlayersWithTypeInMain() + "/" + QueueType.VETERAN.getReservatedSlots()).color(ChatColor.GOLD).bold(true).create());
+                        sendLine(sender);
+                    } else {
+                        noPermission(sender);
+                    }
                     break;
                 case "reload":
                     if (sender.hasPermission(Config.ADMINPERMISSION)) {
@@ -187,6 +200,7 @@ public final class MainCommand extends Command implements TabExecutor {
         sender.sendMessage(new ComponentBuilder("/pq stats").color(ChatColor.GOLD).create());
 
         if (sender.hasPermission(Config.ADMINPERMISSION)) {
+            sender.sendMessage(new ComponentBuilder("/pq slotstats").color(ChatColor.GOLD).create());
             sender.sendMessage(new ComponentBuilder("/pq reload").color(ChatColor.GOLD).create());
             sender.sendMessage(new ComponentBuilder("/pq shadowban").color(ChatColor.GOLD).create());
             sender.sendMessage(new ComponentBuilder("/pq unshadowban").color(ChatColor.GOLD).create());
