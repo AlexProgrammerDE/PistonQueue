@@ -39,6 +39,8 @@ public final class PistonQueueBukkit extends JavaPlugin {
     protected String forcedGamemode = "spectator"; // spectator
     protected boolean protocolLib = false;
     protected boolean disableDebug = true;
+    protected boolean team = true;
+    protected boolean protocol = true;
 
     @Override
     public void onEnable() {
@@ -59,6 +61,8 @@ public final class PistonQueueBukkit extends JavaPlugin {
         disableCmd = getConfig().getBoolean("disableCmd");
         forcedGamemode = getConfig().getString("forcedGamemode");
         disableDebug = getConfig().getBoolean("disableDebug");
+        team = getConfig().getBoolean("team");
+        protocol = getConfig().getBoolean("protocol");
 
         getLogger().info(ChatColor.BLUE + "Preparing server");
         if (hidePlayers) {
@@ -74,7 +78,8 @@ public final class PistonQueueBukkit extends JavaPlugin {
             getLogger().info(ChatColor.BLUE + "Hooked into ProtocolLib");
             protocolLib = true;
 
-            ProtocolLibWrapper.setupProtocolLib(this);
+            if (protocol)
+                ProtocolLibWrapper.setupProtocolLib(this);
         } else {
             getLogger().info(ChatColor.YELLOW + "It is recommended to install ProtocolLib");
         }

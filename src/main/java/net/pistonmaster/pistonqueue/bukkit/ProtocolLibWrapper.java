@@ -26,6 +26,8 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import org.bukkit.Difficulty;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
@@ -54,6 +56,41 @@ public final class ProtocolLibWrapper {
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
         manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.MAP_CHUNK) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                event.setCancelled(true);
+            }
+        });
+
+        manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_TIME) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                event.setCancelled(true);
+            }
+        });
+
+        manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_HEALTH) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                event.setCancelled(true);
+            }
+        });
+
+        manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ADVANCEMENTS) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                event.setCancelled(true);
+            }
+        });
+
+        manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.EXPERIENCE) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                event.setCancelled(true);
+            }
+        });
+
+        manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
             @Override
             public void onPacketSending(PacketEvent event) {
                 event.setCancelled(true);

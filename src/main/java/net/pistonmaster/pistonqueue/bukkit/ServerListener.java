@@ -19,6 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.bukkit;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -26,8 +27,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.Objects;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public final class ServerListener implements Listener {
@@ -50,9 +54,6 @@ public final class ServerListener implements Listener {
         if (plugin.forceGamemode)
             player.setGameMode(GameMode.valueOf(plugin.forcedGamemode.toUpperCase()));
 
-        if (plugin.forceLocation)
-            player.teleport(Objects.requireNonNull(generateForcedLocation()));
-
         if (plugin.hidePlayers)
             plugin.getServer().getOnlinePlayers().forEach(onlinePlayer -> {
                 player.hidePlayer(plugin, onlinePlayer);
@@ -60,6 +61,21 @@ public final class ServerListener implements Listener {
 
                 e.setJoinMessage(null);
             });
+
+        if (plugin.team) {
+            Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+
+            Team team = scoreboard.registerNewTeam(player.getName());
+            team.setCanSeeFriendlyInvisibles(false);
+            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+
+            player.setScoreboard(scoreboard);
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> team.addEntry(player.getName()), 20L);
+        }
+
+        if (plugin.forceLocation)
+            player.teleport(Objects.requireNonNull(generateForcedLocation()));
     }
 
     @EventHandler

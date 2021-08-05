@@ -15,5 +15,9 @@ forcedGamemode: "spectator" # The gamemode to force players to remain in.
 disableChat: true # Don't allow players to chat
 disableCmd: true # Don't allow commands
 
+protocol: true # Prevents sending unnecessary data to players and also makes own head visible in spectator. (like on 2b2t)
+
+team: false # Show a players own name to himself in spectator menu.
+
 # ProtocolLib only
 disableDebug: true # Doesn't show the clients position on f3.
