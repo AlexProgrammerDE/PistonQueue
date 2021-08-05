@@ -40,8 +40,13 @@ public final class PistonQueueBukkit extends JavaPlugin {
     protected boolean protocolLib = false;
     protected boolean disableDebug = true;
     protected boolean team = false;
-    protected boolean protocol = true;
     protected String teamName = "%playername%";
+    protected boolean noChunk = true;
+    protected boolean noTime = true;
+    protected boolean noHealth = true;
+    protected boolean noAdvancements = true;
+    protected boolean noExperience = true;
+    protected boolean showHead = true;
 
     @Override
     public void onEnable() {
@@ -63,8 +68,13 @@ public final class PistonQueueBukkit extends JavaPlugin {
         forcedGamemode = getConfig().getString("forcedGamemode");
         disableDebug = getConfig().getBoolean("disableDebug");
         team = getConfig().getBoolean("team");
-        protocol = getConfig().getBoolean("protocol");
         teamName = getConfig().getString("teamName");
+        noChunk = getConfig().getBoolean("noChunk");
+        noTime = getConfig().getBoolean("noTime");
+        noHealth = getConfig().getBoolean("noHealth");
+        noAdvancements = getConfig().getBoolean("noAdvancements");
+        noExperience = getConfig().getBoolean("noExperience");
+        showHead = getConfig().getBoolean("showHead");
 
         getLogger().info(ChatColor.BLUE + "Preparing server");
         if (hidePlayers) {
@@ -80,8 +90,7 @@ public final class PistonQueueBukkit extends JavaPlugin {
             getLogger().info(ChatColor.BLUE + "Hooked into ProtocolLib");
             protocolLib = true;
 
-            if (protocol)
-                ProtocolLibWrapper.setupProtocolLib(this);
+            ProtocolLibWrapper.setupProtocolLib(this);
         } else {
             getLogger().info(ChatColor.YELLOW + "It is recommended to install ProtocolLib");
         }
