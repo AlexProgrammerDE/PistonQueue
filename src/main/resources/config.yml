@@ -19,10 +19,10 @@ team: false # Show a players own name to himself in spectator menu.
 teamName: "%playername%"
 
 # ProtocolLib only
-disableDebug: true # Doesn't show the clients position on f3.
+disableDebug: true # Doesn't show the clients position on F3.
 noChunk: true # Do not send chunk data packets
 noTime: true # Do not send time packets
-noHealth: true # Do not send weather packets
-noAdvancements: true # Do not send advancement packet
+noHealth: true # Do not send health packets
+noAdvancements: true # Do not send advancement packets
 noExperience: true # Do not send experience packets
 showHead: true # Does not send entity metadata anymore, causing that the entire player head is shown while in spectator. (like on 2b2t)
