@@ -65,7 +65,7 @@ public final class ServerListener implements Listener {
         if (plugin.team) {
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-            Team team = scoreboard.registerNewTeam(player.getName());
+            Team team = scoreboard.registerNewTeam(plugin.teamName.replace("%playername%", player.getName()));
             team.setCanSeeFriendlyInvisibles(false);
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
 

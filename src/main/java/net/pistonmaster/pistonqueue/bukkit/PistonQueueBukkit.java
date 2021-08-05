@@ -39,8 +39,9 @@ public final class PistonQueueBukkit extends JavaPlugin {
     protected String forcedGamemode = "spectator"; // spectator
     protected boolean protocolLib = false;
     protected boolean disableDebug = true;
-    protected boolean team = true;
+    protected boolean team = false;
     protected boolean protocol = true;
+    protected String teamName = "%playername%";
 
     @Override
     public void onEnable() {
@@ -63,6 +64,7 @@ public final class PistonQueueBukkit extends JavaPlugin {
         disableDebug = getConfig().getBoolean("disableDebug");
         team = getConfig().getBoolean("team");
         protocol = getConfig().getBoolean("protocol");
+        teamName = getConfig().getString("teamName");
 
         getLogger().info(ChatColor.BLUE + "Preparing server");
         if (hidePlayers) {

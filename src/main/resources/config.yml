@@ -18,6 +18,7 @@ disableCmd: true # Don't allow commands
 protocol: true # Prevents sending unnecessary data to players and also makes own head visible in spectator. (like on 2b2t)
 
 team: false # Show a players own name to himself in spectator menu.
+teamName: "%playername%"
 
 # ProtocolLib only
 disableDebug: true # Doesn't show the clients position on f3.
