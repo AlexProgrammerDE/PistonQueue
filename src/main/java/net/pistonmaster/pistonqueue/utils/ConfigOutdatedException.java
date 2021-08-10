@@ -17,24 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.bungee;
+package net.pistonmaster.pistonqueue.utils;
 
-import net.pistonmaster.pistonqueue.bungee.utils.QueueType;
-
-@SuppressWarnings({"unused"})
-public final class QueueAPI {
-    private QueueAPI() {
-    }
-
-    public static int getVeteranSize() {
-        return QueueType.VETERAN.getQueueMap().size();
-    }
-
-    public static int getPrioritySize() {
-        return QueueType.PRIORITY.getQueueMap().size();
-    }
-
-    public static int getRegularSize() {
-        return QueueType.REGULAR.getQueueMap().size();
+public class ConfigOutdatedException extends Exception {
+    public ConfigOutdatedException(String message) {
+        super(message + " is missing in the config. Please remove the old config and restart the proxy to get the newest one.");
     }
 }

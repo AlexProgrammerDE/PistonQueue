@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.bungee.utils;
+package net.pistonmaster.pistonqueue.utils;
 
 import net.md_5.bungee.api.plugin.Plugin;
 
@@ -28,11 +28,11 @@ import java.util.Scanner;
 import java.util.function.Consumer;
 
 public final class UpdateChecker {
-    private final Plugin plugin;
+    private final Consumer<String> logger;
     private final int resourceId;
 
-    public UpdateChecker(Plugin plugin, int resourceId) {
-        this.plugin = plugin;
+    public UpdateChecker(Consumer<String> logger, int resourceId) {
+        this.logger = logger;
         this.resourceId = resourceId;
     }
 
@@ -42,7 +42,7 @@ public final class UpdateChecker {
                 consumer.accept(scanner.next());
             }
         } catch (IOException exception) {
-            this.plugin.getLogger().info("Cannot look for updates: " + exception.getMessage());
+            logger.accept("Cannot look for updates: " + exception.getMessage());
         }
     }
 }

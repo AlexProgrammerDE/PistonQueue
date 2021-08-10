@@ -25,6 +25,7 @@ import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
@@ -32,10 +33,12 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
-import net.pistonmaster.pistonqueue.bungee.hooks.PistonMOTDPlaceholder;
+import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
+import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.bungee.listeners.PistonListener;
 import net.pistonmaster.pistonqueue.bungee.listeners.QueueListener;
-import net.pistonmaster.pistonqueue.bungee.utils.*;
+import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
+import net.pistonmaster.pistonqueue.utils.*;
 import org.bstats.bungeecord.Metrics;
 
 import java.io.File;
@@ -69,7 +72,7 @@ public final class PistonQueue extends Plugin {
         processConfig();
 
         StorageTool.setupTool(this);
-        QueueType.initializeReservationSlots(this);
+        initializeReservationSlots();
 
         logger.info(ChatColor.BLUE + "Looking for hooks");
         if (getProxy().getPluginManager().getPlugin("PistonMOTD") != null) {
@@ -91,7 +94,7 @@ public final class PistonQueue extends Plugin {
         new Metrics(this, 8755);
 
         logger.info(ChatColor.BLUE + "Checking for update");
-        new UpdateChecker(this, 83541).getVersion(version -> {
+        new UpdateChecker(getLogger()::info, 83541).getVersion(version -> {
             if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
                 logger.info(ChatColor.BLUE + "Your up to date!");
             } else {
@@ -373,5 +376,26 @@ public final class PistonQueue extends Plugin {
             if (player.getServer() != null)
                 player.getServer().getInfo().sendData("piston:queue", out.toByteArray());
         });
+    }
+
+    private void initializeReservationSlots() {
+        getProxy().getScheduler().schedule(this, () -> {
+            ServerInfo mainServer = getProxy().getServerInfo(Config.MAINSERVER);
+            Map<QueueType, AtomicInteger> map = new EnumMap<>(QueueType.class);
+
+            for (ProxiedPlayer player : mainServer.getPlayers()) {
+                QueueType playerType = QueueType.getQueueType(player::hasPermission);
+
+                if (map.containsKey(playerType)) {
+                    map.get(playerType).incrementAndGet();
+                } else {
+                    map.put(playerType, new AtomicInteger(1));
+                }
+            }
+
+            for (Map.Entry<QueueType, AtomicInteger> entry : map.entrySet()) {
+                entry.getKey().setPlayersWithTypeInMain(entry.getValue().get());
+            }
+        }, 0, 1, TimeUnit.SECONDS);
     }
 }

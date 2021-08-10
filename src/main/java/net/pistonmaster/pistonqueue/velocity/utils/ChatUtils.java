@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,27 +17,25 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.bungee.utils;
+package net.pistonmaster.pistonqueue.velocity.utils;
 
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.pistonmaster.pistonqueue.utils.QueueAPI;
 
 import java.time.Duration;
 import java.util.List;
 
-public final class ChatUtils {
+public class ChatUtils {
     private ChatUtils() {
     }
 
-    public static String parseToString(String str) {
-        return ChatColor.translateAlternateColorCodes('&', parseText(str));
+    public static TextComponent parseToComponent(String str) {
+        return LegacyComponentSerializer.legacySection().deserialize(parseToString(str));
     }
 
-    public static BaseComponent[] parseToComponent(String str) {
-        return TextComponent.fromLegacyText(parseToString(str));
+    public static String parseToString(String str) {
+        return LegacyComponentSerializer.legacySection().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(parseText(str)));
     }
 
     private static String parseText(String text) {
@@ -50,18 +48,18 @@ public final class ChatUtils {
         return text;
     }
 
-    public static BaseComponent[] parseTab(List<String> tab) {
+    public static TextComponent parseTab(List<String> tab) {
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < tab.size(); i++) {
-            builder.append(ChatUtils.parseToString(tab.get(i)));
+            builder.append(parseToString(tab.get(i)));
 
             if (i != (tab.size() - 1)) {
                 builder.append("\n");
             }
         }
 
-        return new ComponentBuilder(builder.toString()).create();
+        return LegacyComponentSerializer.legacySection().deserialize(builder.toString());
     }
 
     public static String formatDuration(String str, Duration duration, int position) {

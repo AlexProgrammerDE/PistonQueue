@@ -4,6 +4,10 @@
 # to change the colours to your liking
 # Please don't forget to replace SERVERNAME
 
+# MOTD info support has been moved to a PistonMOTD (https://www.spigotmc.org/resources/80567/)
+# placeholder addon. If both PistonQueue and PistonMOTD are installed on your proxy, the following placeholders will be available:
+# %pistonqueue_regular%, %pistonqueue_priority%, %pistonqueue_veteran%
+
 # Username regex
 REGEX: "[a-zA-Z0-9_]*"
 REGEXMESSAGE: "&6[PQ] Invalid username please use: %regex%"
@@ -51,16 +55,6 @@ DOWNWORDLIST:
 # If something went wrong while queue -> main happens should the player be sent back into queue?
 RECOVERY: true
 RECOVERYMESSAGE: "&cOops something went wrong... Putting you back in queue."
-
-# This shows the queue size when you hover over the ping on the server list
-SERVERPINGINFOENABLE: true
-SERVERPINGINFO:
-  - "SERVERNAME &6Queue Size"
-  - "&6Priority: &l%priority%"
-  - "&6Regular: &l%regular%"
-
-CUSTOMPROTOCOLENABLE: true
-CUSTOMPROTOCOL: "SERVERNAME &61.8.x to 1.16.x"
 
 # Set the queue servers name that is in the bungee config.yml
 # Note that the main server is always the one you login to first

@@ -29,7 +29,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.bungee.utils.Config;
+import net.pistonmaster.pistonqueue.utils.Config;
 
 import java.util.ArrayList;
 import java.util.List;
