@@ -4,8 +4,8 @@
 # to change the colours to your liking
 # Please don't forget to replace SERVERNAME
 
-# MOTD info support has been moved to a PistonMOTD (https://www.spigotmc.org/resources/80567/)
-# placeholder addon. If both PistonQueue and PistonMOTD are installed on your proxy, the following placeholders will be available:
+# MOTD support has been moved to a PistonMOTD (https://www.spigotmc.org/resources/80567/) placeholder addon.
+# If both PistonQueue and PistonMOTD are installed on your proxy, the following placeholders will be available in the PistonMOTD config:
 # %pistonqueue_regular%, %pistonqueue_priority%, %pistonqueue_veteran%
 
 # Username regex

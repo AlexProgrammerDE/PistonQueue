@@ -232,7 +232,7 @@ public final class PistonQueue extends Plugin {
             File file = new File(getDataFolder(), "config.yml");
 
             if (!file.exists()) {
-                try (InputStream in = getResourceAsStream("bungeeconfig.yml")) {
+                try (InputStream in = getResourceAsStream("proxyconfig.yml")) {
                     Files.copy(in, file.toPath());
                     loadConfig();
                 } catch (IOException ie) {

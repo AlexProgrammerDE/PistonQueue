@@ -32,6 +32,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.pistonmaster.pistonqueue.data.PluginData;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.utils.*;
 import net.pistonmaster.pistonqueue.velocity.commands.MainCommand;
@@ -61,8 +62,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-@Plugin(id = "pistonqueue", name = "PistonQueue", version = "0.1.0-SNAPSHOT",
-        url = "https://pistonmaster.net/", description = "Best queue plugin out there!", authors = {"AlexProgrammerDE"})
+@Plugin(id = "pistonqueue", name = PluginData.NAME, version = PluginData.VERSION,
+        url = PluginData.URL, description = PluginData.DESCRIPTION, authors = {"AlexProgrammerDE"})
 public class PistonQueueVelocity {
     @Getter
     private final File dataDirectory;
@@ -232,7 +233,7 @@ public class PistonQueueVelocity {
             File file = new File(dataDirectory, "config.yml");
 
             if (!file.exists()) {
-                try (InputStream in = PistonQueueVelocity.class.getClassLoader().getResourceAsStream("bungeeconfig.yml")) {
+                try (InputStream in = PistonQueueVelocity.class.getClassLoader().getResourceAsStream("proxyconfig.yml")) {
                     Files.copy(in, file.toPath());
                     loadConfig();
                 } catch (IOException ie) {
