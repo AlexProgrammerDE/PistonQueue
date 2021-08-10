@@ -71,38 +71,4 @@ public final class PistonListener implements Listener {
             event.setKickReasonComponent(ChatUtils.parseToComponent(Config.KICKMESSAGE));
         }
     }
-
-    @EventHandler
-    public void onPing(ProxyPingEvent event) {
-        ServerPing.Protocol protocol;
-        ServerPing.Players players;
-
-        if (Config.CUSTOMPROTOCOLENABLE) {
-            ServerPing.Protocol provided = event.getResponse().getVersion();
-
-            provided.setName(ChatUtils.parseToString(Config.CUSTOMPROTOCOL));
-
-            protocol = provided;
-        } else {
-            protocol = event.getResponse().getVersion();
-        }
-
-        if (Config.SERVERPINGINFOENABLE) {
-            List<ServerPing.PlayerInfo> info = new ArrayList<>();
-
-            Config.SERVERPINGINFO.forEach(str -> info
-                    .add(new ServerPing.PlayerInfo(
-                            ChatUtils.parseToString(str),
-                            String.valueOf(Config.SERVERPINGINFO.indexOf(str) - 1)
-                    ))
-            );
-
-            players = new ServerPing.Players(Config.QUEUESERVERSLOTS, plugin.getProxy().getOnlineCount(), info.toArray(new ServerPing.PlayerInfo[0]));
-        } else {
-            players = event.getResponse().getPlayers();
-        }
-
-        ServerPing ping = new ServerPing(protocol, players, event.getResponse().getDescriptionComponent(), event.getResponse().getFaviconObject());
-        event.setResponse(ping);
-    }
 }
