@@ -29,6 +29,7 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -49,7 +50,6 @@ import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -103,7 +103,7 @@ public class PistonQueueVelocity {
         }
 
         logger.info("Registering plugin messaging channel");
-        server.getChannelRegistrar().register(() -> "piston:queue");
+        server.getChannelRegistrar().register(MinecraftChannelIdentifier.from("piston:queue"));
 
         logger.info("Registering commands");
         server.getCommandManager().register("pistonqueue", new MainCommand(this), "pq");
@@ -113,7 +113,7 @@ public class PistonQueueVelocity {
         server.getEventManager().register(this, queueListener);
 
         logger.info("Loading Metrics");
-        Metrics metrics = metricsFactory.make(this, 12389);
+        metricsFactory.make(this, 12389);
 
         logger.info("Checking for update");
         new UpdateChecker(logger::info, 83541).getVersion(version -> {
@@ -151,17 +151,9 @@ public class PistonQueueVelocity {
 
         server.getScheduler().buildTask(this, () -> {
             if (Config.PAUSEQUEUEIFMAINDOWN && !queueListener.isMainOnline()) {
-                QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> {
-                    server.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE)));
-                });
-
-                QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> {
-                    server.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE)));
-                });
-
-                QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> {
-                    server.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE)));
-                });
+                QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> server.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
+                QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> server.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
+                QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> server.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
             }
         }).delay(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).repeat(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).schedule();
 
@@ -225,21 +217,23 @@ public class PistonQueueVelocity {
 
     public void processConfig() {
         try {
-            loadConfig();
-        } catch (IOException e) {
             if (!dataDirectory.exists() && !dataDirectory.mkdir())
                 return;
 
             File file = new File(dataDirectory, "config.yml");
 
             if (!file.exists()) {
-                try (InputStream in = PistonQueueVelocity.class.getClassLoader().getResourceAsStream("proxyconfig.yml")) {
-                    Files.copy(in, file.toPath());
+                try {
+                    Files.copy(Objects.requireNonNull(PistonQueueVelocity.class.getClassLoader().getResourceAsStream("proxyconfig.yml")), file.toPath());
                     loadConfig();
                 } catch (IOException ie) {
                     ie.printStackTrace();
                 }
             }
+
+            loadConfig();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
