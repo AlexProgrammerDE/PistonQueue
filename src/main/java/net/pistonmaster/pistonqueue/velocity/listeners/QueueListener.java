@@ -105,7 +105,7 @@ public class QueueListener {
 
         if (Config.AUTHFIRST) {
             if (isAuthToQueue(event) && player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                event.getPlayer().createConnectionRequest(plugin.getServer().getServer(Config.MAINSERVER).get());
+                event.getPlayer().createConnectionRequest(plugin.getServer().getServer(Config.MAINSERVER).get()).connect();
                 return;
             }
 
@@ -197,7 +197,7 @@ public class QueueListener {
                 cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
             }
 
-            player.get().createConnectionRequest(plugin.getServer().getServer(entry.getValue()).get());
+            player.get().createConnectionRequest(plugin.getServer().getServer(entry.getValue()).get()).connect();
         }
     }
 
