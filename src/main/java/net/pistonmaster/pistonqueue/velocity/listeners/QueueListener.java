@@ -110,7 +110,7 @@ public class QueueListener {
             }
 
             // Its null when joining!
-            if (!event.getPreviousServer().isPresent() && event.getPlayer().getCurrentServer().get().getServerInfo().getName().equals(Config.QUEUESERVER)) {
+            if (!event.getPreviousServer().isPresent() && event.getServer().getServerInfo().getName().equals(Config.QUEUESERVER)) {
                 if (Config.ALLOWAUTHSKIP)
                     putQueueAuthFirst(player);
             } else if (isAuthToQueue(event)) {
