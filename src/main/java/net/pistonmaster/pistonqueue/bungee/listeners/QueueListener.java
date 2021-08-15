@@ -60,16 +60,6 @@ public final class QueueListener implements Listener {
     private final List<UUID> noRecoveryMessage = new ArrayList<>();
 
     @EventHandler
-    public void onKick(ServerKickEvent event) {
-        event.setCancelServer(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
-        event.setCancelled(true);
-
-        if (Config.RECOVERY) {
-            doRecovery(event.getPlayer());
-        }
-    }
-
-    @EventHandler
     public void onPostLogin(PostLoginEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
