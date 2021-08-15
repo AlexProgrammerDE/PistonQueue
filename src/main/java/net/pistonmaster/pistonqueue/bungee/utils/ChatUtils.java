@@ -20,16 +20,30 @@
 package net.pistonmaster.pistonqueue.bungee.utils;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.pistonmaster.pistonqueue.utils.Config;
 import net.pistonmaster.pistonqueue.utils.QueueAPI;
+import org.bukkit.entity.Player;
 
 import java.time.Duration;
 import java.util.List;
 
 public final class ChatUtils {
     private ChatUtils() {
+    }
+
+    public static void sendMessage(ProxiedPlayer p, String str) {
+        sendMessage(ChatMessageType.CHAT, p, str);
+    }
+
+    public static void sendMessage(ChatMessageType type, ProxiedPlayer p, String str) {
+        if (!str.equalsIgnoreCase("/")) {
+            p.sendMessage(type, parseToComponent(str));
+        }
     }
 
     public static String parseToString(String str) {
@@ -41,6 +55,7 @@ public final class ChatUtils {
     }
 
     private static String parseText(String text) {
+        text = text.replace("%server%", Config.SERVERNAME);
         text = text.replace("%veteran%", String.valueOf(QueueAPI.getVeteranSize()));
         text = text.replace("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
         text = text.replace("%regular%", String.valueOf(QueueAPI.getRegularSize()));

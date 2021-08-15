@@ -11,12 +11,13 @@
 # Username regex
 REGEX: "[a-zA-Z0-9_]*"
 REGEXMESSAGE: "&6[PQ] Invalid username please use: %regex%"
+SERVERNAME: "SERVERNAME"
 
 # Tab auto completion
 REGISTERTAB: true
 
 # Server is full message
-SERVERISFULLMESSAGE: "SERVERNAME &6is full"
+SERVERISFULLMESSAGE: "&6%server% is full"
 
 # It is not recommended to decrease this number (milliseconds)
 SERVERONLINECHECKDELAY: 500
@@ -40,7 +41,7 @@ STARTTIME: 30
 
 # When the main server is down should you kick the player from the queue?
 KICKWHENDOWN: false
-SERVERDOWNKICKMESSAGE: "SERVERNAME &6is down please try again later :("
+SERVERDOWNKICKMESSAGE: "&6%server% is down please try again later :("
 
 # If a player gets kicked from the main server (it goes down/crashes), he gets sent into queue and waits.
 IFMAINDOWNSENDTOQUEUE: true
@@ -81,9 +82,8 @@ AUTHFIRST: false
 # Makes sense when having auth first and the plugin redirecting you instantly to the queue.
 ALLOWAUTHSKIP: true
 
-# Connecting to server message use %server% if you want it
-# to just use the name of the default server
-JOININGMAINSERVER: "&6Connecting to SERVERNAME"
+# Connecting to server message
+JOININGMAINSERVER: "&6Connecting to the server..."
 
 # Max players per queue type allowed on the main server
 REGULARSLOTS: 50
@@ -125,9 +125,9 @@ ADMINPERMISSION: "queue.admin"
 # this only shows when your in the queue waiting to join use a separate plugin for your main server
 HEADER:
   - ""
-  - " SERVERNAME "
+  - " %server% "
   - ""
-  - " SERVERNAME &bis full "
+  - " %server% &bis full "
   - " Position in queue: &l%position% "
   - " &6Estimated time: &l%wait% "
   - ""
@@ -145,9 +145,9 @@ FOOTER:
 # Configs for priority queue tab list
 HEADERPRIORITY:
   - ""
-  - " SERVERNAME"
+  - " %server%"
   - ""
-  - " SERVERNAME &bis full "
+  - " %server% &bis full "
   - " Position in queue: &l%position% "
   - " &6Estimated time: &l%wait% "
   - ""
@@ -165,9 +165,9 @@ FOOTERPRIORITY:
 # Configs for veteran queue tab list
 HEADERVETERAN:
   - ""
-  - " SERVERNAME "
+  - " %server% "
   - ""
-  - " SERVERNAME &bis full "
+  - " %server% &bis full "
   - " Position in queue: &l%position% "
   - " &6Estimated time: &l%wait% "
   - ""

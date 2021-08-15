@@ -133,21 +133,21 @@ public final class PistonQueue extends Plugin {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
-                        player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
+                        ChatUtils.sendMessage(player, Config.PAUSEQUEUEIFMAINDOWNMESSAGE);
                 });
 
                 QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
-                        player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
+                        ChatUtils.sendMessage(player, Config.PAUSEQUEUEIFMAINDOWNMESSAGE);
                 });
 
                 QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
-                        player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
+                        ChatUtils.sendMessage(player, Config.PAUSEQUEUEIFMAINDOWNMESSAGE);
                 });
             }
         }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
@@ -285,11 +285,10 @@ public final class PistonQueue extends Plugin {
 
                 position++;
 
-                player.sendMessage(type,
-                        ChatUtils.parseToComponent(Config.QUEUEPOSITION
-                                .replace("%position%", String.valueOf(position))
-                                .replace("%total%", String.valueOf(queue.getQueueMap().size()))
-                                .replace("%server%", entry.getValue())));
+                ChatUtils.sendMessage(type, player, Config.QUEUEPOSITION
+                        .replace("%position%", String.valueOf(position))
+                        .replace("%total%", String.valueOf(queue.getQueueMap().size()))
+                );
             }
         }
     }
