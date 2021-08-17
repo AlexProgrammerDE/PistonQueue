@@ -25,6 +25,7 @@ import lombok.Setter;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 public enum QueueType {
@@ -34,13 +35,13 @@ public enum QueueType {
 
     @Getter
     @Setter
-    private Map<UUID, String> queueMap = new LinkedHashMap<>();
+    private Map<UUID, String> queueMap = Collections.synchronizedMap(new LinkedHashMap<>());
 
     @Getter
-    private final Map<Integer, Duration> durationToPosition = new LinkedHashMap<>();
+    private final Map<Integer, Duration> durationToPosition = Collections.synchronizedMap(new LinkedHashMap<>());
 
     @Getter
-    private final Map<UUID, List<Pair<Integer, Instant>>> positionCache = new HashMap<>();
+    private final Map<UUID, List<Pair<Integer, Instant>>> positionCache = new ConcurrentHashMap<>();
 
     @Setter
     @Getter
