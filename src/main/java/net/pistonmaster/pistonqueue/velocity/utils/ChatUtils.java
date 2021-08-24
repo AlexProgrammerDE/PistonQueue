@@ -21,9 +21,8 @@ package net.pistonmaster.pistonqueue.velocity.utils;
 
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.pistonmaster.pistonqueue.utils.QueueAPI;
+import net.pistonmaster.pistonqueue.utils.SharedChatUtils;
 
-import java.time.Duration;
 import java.util.List;
 
 public class ChatUtils {
@@ -35,17 +34,7 @@ public class ChatUtils {
     }
 
     public static String parseToString(String str) {
-        return LegacyComponentSerializer.legacySection().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(parseText(str)));
-    }
-
-    private static String parseText(String text) {
-        text = text.replace("%veteran%", String.valueOf(QueueAPI.getVeteranSize()));
-        text = text.replace("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
-        text = text.replace("%regular%", String.valueOf(QueueAPI.getRegularSize()));
-        text = text.replace("%position%", "None");
-        text = text.replace("%wait%", "None");
-
-        return text;
+        return LegacyComponentSerializer.legacySection().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(SharedChatUtils.parseText(str)));
     }
 
     public static TextComponent parseTab(List<String> tab) {
@@ -60,14 +49,5 @@ public class ChatUtils {
         }
 
         return LegacyComponentSerializer.legacySection().deserialize(builder.toString());
-    }
-
-    public static String formatDuration(String str, Duration duration, int position) {
-        String format = String.format("%dh %dm", duration.toHours(), duration.toMinutes() % 60);
-
-        if (duration.toHours() == 0)
-            format = String.format("%dm", duration.toMinutes() == 0 ? 1 : duration.toMinutes());
-
-        return str.replace("%position%", String.valueOf(position)).replace("%wait%", format);
     }
 }

@@ -8,16 +8,17 @@
 # If both PistonQueue and PistonMOTD are installed on your proxy, the following placeholders will be available in the PistonMOTD config:
 # %pistonqueue_regular%, %pistonqueue_priority%, %pistonqueue_veteran%
 
+SERVERNAME: "SERVERNAME"
+
 # Username regex
 REGEX: "[a-zA-Z0-9_]*"
 REGEXMESSAGE: "&6[PQ] Invalid username please use: %regex%"
-SERVERNAME: "SERVERNAME"
 
 # Tab auto completion
 REGISTERTAB: true
 
 # Server is full message
-SERVERISFULLMESSAGE: "&6%server% is full"
+SERVERISFULLMESSAGE: "%server% &6is full"
 
 # It is not recommended to decrease this number (milliseconds)
 SERVERONLINECHECKDELAY: 500
@@ -41,7 +42,7 @@ STARTTIME: 30
 
 # When the main server is down should you kick the player from the queue?
 KICKWHENDOWN: false
-SERVERDOWNKICKMESSAGE: "&6%server% is down please try again later :("
+SERVERDOWNKICKMESSAGE: "%server% &6is down please try again later :("
 
 # If a player gets kicked from the main server (it goes down/crashes), he gets sent into queue and waits.
 IFMAINDOWNSENDTOQUEUE: true
@@ -94,8 +95,8 @@ VETERANSLOTS: 20
 FORCEMAINSERVER: true
 
 # Total people allowed to be connected to the queue network
-# Make sure you set the bungeecord slots higher then the amount
-# of people you get regularly i set mine to 9000 and 9000 on the queue server
+# Make sure you set the bungeecord/velocity slots higher then the amount
+# of people you get regularly for example 9000 and 9000 on the queue server
 QUEUESERVERSLOTS: 9000
 
 # Queue move delay in milliseconds default is 1000ms
@@ -137,7 +138,7 @@ FOOTER:
   - " &6You can now donate to receive priority queue status, please visit donate.SERVERNAME.org "
   - ""
   - " &7contact: someone@example.com "
-  - " discussion: http://discord.example.com "
+  - " discussion: https://discord.example.com "
   - " website: https://www.example.com "
   - " These are the only official SERVERNAME websites and contacts "
   - ""
@@ -157,7 +158,7 @@ FOOTERPRIORITY:
   - " &6You have priority queue status please wait for an available slot on the server "
   - ""
   - " &7contact: someone@example.com "
-  - " discussion: http://discord.example.com "
+  - " discussion: https://discord.example.com "
   - " website: https://www.example.com "
   - " These are the only official SERVERNAME websites and contacts "
   - ""
@@ -177,7 +178,7 @@ FOOTERVETERAN:
   - " &6You have veteran queue status please wait for an available slot on the server "
   - ""
   - " &7contact: someone@example.com "
-  - " discussion: http://discord.example.com "
+  - " discussion: https://discord.example.com "
   - " website: https://www.example.com "
   - " These are the only official SERVERNAME websites and contacts "
   - ""

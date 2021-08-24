@@ -25,10 +25,8 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.pistonmaster.pistonqueue.utils.Config;
-import net.pistonmaster.pistonqueue.utils.QueueAPI;
+import net.pistonmaster.pistonqueue.utils.SharedChatUtils;
 
-import java.time.Duration;
 import java.util.List;
 
 public final class ChatUtils {
@@ -46,22 +44,11 @@ public final class ChatUtils {
     }
 
     public static String parseToString(String str) {
-        return ChatColor.translateAlternateColorCodes('&', parseText(str));
+        return ChatColor.translateAlternateColorCodes('&', SharedChatUtils.parseText(str));
     }
 
     public static BaseComponent[] parseToComponent(String str) {
         return TextComponent.fromLegacyText(parseToString(str));
-    }
-
-    private static String parseText(String text) {
-        text = text.replace("%server%", Config.SERVERNAME);
-        text = text.replace("%veteran%", String.valueOf(QueueAPI.getVeteranSize()));
-        text = text.replace("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
-        text = text.replace("%regular%", String.valueOf(QueueAPI.getRegularSize()));
-        text = text.replace("%position%", "None");
-        text = text.replace("%wait%", "None");
-
-        return text;
     }
 
     public static BaseComponent[] parseTab(List<String> tab) {
@@ -76,14 +63,5 @@ public final class ChatUtils {
         }
 
         return new ComponentBuilder(builder.toString()).create();
-    }
-
-    public static String formatDuration(String str, Duration duration, int position) {
-        String format = String.format("%dh %dm", duration.toHours(), duration.toMinutes() % 60);
-
-        if (duration.toHours() == 0)
-            format = String.format("%dm", duration.toMinutes() == 0 ? 1 : duration.toMinutes());
-
-        return str.replace("%position%", String.valueOf(position)).replace("%wait%", format);
     }
 }

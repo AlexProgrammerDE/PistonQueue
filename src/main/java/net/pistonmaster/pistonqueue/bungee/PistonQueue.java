@@ -333,7 +333,7 @@ public final class PistonQueue extends Plugin {
         if (type.getDurationToPosition().containsKey(position)) {
             Duration duration = type.getDurationToPosition().get(position);
 
-            return ChatUtils.formatDuration(text, duration, position);
+            return SharedChatUtils.formatDuration(text, duration, position);
         } else {
             AtomicInteger biggestPositionAtomic = new AtomicInteger();
             AtomicReference<Duration> bestDurationAtomic = new AtomicReference<>(Duration.ZERO);
@@ -352,7 +352,7 @@ public final class PistonQueue extends Plugin {
 
             Duration imaginaryDuration = biggestDuration.plus(difference, ChronoUnit.MINUTES);
 
-            return ChatUtils.formatDuration(text, imaginaryDuration, position);
+            return SharedChatUtils.formatDuration(text, imaginaryDuration, position);
         }
     }
 
