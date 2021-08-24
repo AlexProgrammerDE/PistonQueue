@@ -289,15 +289,13 @@ public class PistonQueueVelocity {
                     case CHAT:
                         player.get().sendMessage(ChatUtils.parseToComponent(Config.QUEUEPOSITION
                                 .replace("%position%", String.valueOf(position))
-                                .replace("%total%", String.valueOf(queue.getQueueMap().size()))
-                                .replace("%server%", entry.getValue())));
+                                .replace("%total%", String.valueOf(queue.getQueueMap().size()))));
                         break;
                     case ACTION_BAR:
                         player.get().sendActionBar(
                                 ChatUtils.parseToComponent(Config.QUEUEPOSITION
                                         .replace("%position%", String.valueOf(position))
-                                        .replace("%total%", String.valueOf(queue.getQueueMap().size()))
-                                        .replace("%server%", entry.getValue())));
+                                        .replace("%total%", String.valueOf(queue.getQueueMap().size()))));
                         break;
                 }
             }

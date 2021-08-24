@@ -172,7 +172,7 @@ public class QueueListener {
 
             type.getQueueMap().remove(entry.getKey());
 
-            player.get().sendMessage(ChatUtils.parseToComponent(Config.JOININGMAINSERVER.replace("%server%", entry.getValue())));
+            player.get().sendMessage(ChatUtils.parseToComponent(Config.JOININGMAINSERVER));
             player.get().sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
 
             if (StorageTool.isShadowBanned(player.get())
