@@ -8,6 +8,8 @@
 # If both PistonQueue and PistonMOTD are installed on your proxy, the following placeholders will be available in the PistonMOTD config:
 # %pistonqueue_regular%, %pistonqueue_priority%, %pistonqueue_veteran%
 
+SERVERNAME: "SERVERNAME"
+
 # Username regex
 REGEX: "[a-zA-Z0-9_]*"
 REGEXMESSAGE: "&6[PQ] Invalid username please use: %regex%"
@@ -16,7 +18,7 @@ REGEXMESSAGE: "&6[PQ] Invalid username please use: %regex%"
 REGISTERTAB: true
 
 # Server is full message
-SERVERISFULLMESSAGE: "SERVERNAME &6is full"
+SERVERISFULLMESSAGE: "%server% &6is full"
 
 # It is not recommended to decrease this number (milliseconds)
 SERVERONLINECHECKDELAY: 500
@@ -40,7 +42,7 @@ STARTTIME: 30
 
 # When the main server is down should you kick the player from the queue?
 KICKWHENDOWN: false
-SERVERDOWNKICKMESSAGE: "SERVERNAME &6is down please try again later :("
+SERVERDOWNKICKMESSAGE: "%server% &6is down please try again later :("
 
 # If a player gets kicked from the main server (it goes down/crashes), he gets sent into queue and waits.
 IFMAINDOWNSENDTOQUEUE: true
@@ -81,9 +83,8 @@ AUTHFIRST: false
 # Makes sense when having auth first and the plugin redirecting you instantly to the queue.
 ALLOWAUTHSKIP: true
 
-# Connecting to server message use %server% if you want it
-# to just use the name of the default server
-JOININGMAINSERVER: "&6Connecting to SERVERNAME"
+# Connecting to server message
+JOININGMAINSERVER: "&6Connecting to the server..."
 
 # Max players per queue type allowed on the main server
 REGULARSLOTS: 50
@@ -94,8 +95,8 @@ VETERANSLOTS: 20
 FORCEMAINSERVER: true
 
 # Total people allowed to be connected to the queue network
-# Make sure you set the bungeecord slots higher then the amount
-# of people you get regularly i set mine to 9000 and 9000 on the queue server
+# Make sure you set the bungeecord/velocity slots higher then the amount
+# of people you get regularly for example 9000 and 9000 on the queue server
 QUEUESERVERSLOTS: 9000
 
 # Queue move delay in milliseconds default is 1000ms
@@ -125,9 +126,9 @@ ADMINPERMISSION: "queue.admin"
 # this only shows when your in the queue waiting to join use a separate plugin for your main server
 HEADER:
   - ""
-  - " SERVERNAME "
+  - " %server% "
   - ""
-  - " SERVERNAME &bis full "
+  - " %server% &bis full "
   - " Position in queue: &l%position% "
   - " &6Estimated time: &l%wait% "
   - ""
@@ -137,7 +138,7 @@ FOOTER:
   - " &6You can now donate to receive priority queue status, please visit donate.SERVERNAME.org "
   - ""
   - " &7contact: someone@example.com "
-  - " discussion: http://discord.example.com "
+  - " discussion: https://discord.example.com "
   - " website: https://www.example.com "
   - " These are the only official SERVERNAME websites and contacts "
   - ""
@@ -145,9 +146,9 @@ FOOTER:
 # Configs for priority queue tab list
 HEADERPRIORITY:
   - ""
-  - " SERVERNAME"
+  - " %server%"
   - ""
-  - " SERVERNAME &bis full "
+  - " %server% &bis full "
   - " Position in queue: &l%position% "
   - " &6Estimated time: &l%wait% "
   - ""
@@ -157,7 +158,7 @@ FOOTERPRIORITY:
   - " &6You have priority queue status please wait for an available slot on the server "
   - ""
   - " &7contact: someone@example.com "
-  - " discussion: http://discord.example.com "
+  - " discussion: https://discord.example.com "
   - " website: https://www.example.com "
   - " These are the only official SERVERNAME websites and contacts "
   - ""
@@ -165,9 +166,9 @@ FOOTERPRIORITY:
 # Configs for veteran queue tab list
 HEADERVETERAN:
   - ""
-  - " SERVERNAME "
+  - " %server% "
   - ""
-  - " SERVERNAME &bis full "
+  - " %server% &bis full "
   - " Position in queue: &l%position% "
   - " &6Estimated time: &l%wait% "
   - ""
@@ -177,7 +178,7 @@ FOOTERVETERAN:
   - " &6You have veteran queue status please wait for an available slot on the server "
   - ""
   - " &7contact: someone@example.com "
-  - " discussion: http://discord.example.com "
+  - " discussion: https://discord.example.com "
   - " website: https://www.example.com "
   - " These are the only official SERVERNAME websites and contacts "
   - ""

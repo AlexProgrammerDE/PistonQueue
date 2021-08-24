@@ -31,7 +31,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Objects;
-import java.util.UUID;
 import java.util.logging.Level;
 
 public final class ServerListener implements Listener {

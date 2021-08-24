@@ -20,7 +20,6 @@
 package net.pistonmaster.pistonqueue.velocity.utils;
 
 import com.velocitypowered.api.proxy.Player;
-import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;

@@ -33,11 +33,11 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
-import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
-import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.bungee.listeners.PistonListener;
 import net.pistonmaster.pistonqueue.bungee.listeners.QueueListener;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
+import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
+import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.utils.*;
 import org.bstats.bungeecord.Metrics;
 
@@ -133,21 +133,21 @@ public final class PistonQueue extends Plugin {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
-                        player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
+                        ChatUtils.sendMessage(player, Config.PAUSEQUEUEIFMAINDOWNMESSAGE);
                 });
 
                 QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
-                        player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
+                        ChatUtils.sendMessage(player, Config.PAUSEQUEUEIFMAINDOWNMESSAGE);
                 });
 
                 QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
-                        player.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE));
+                        ChatUtils.sendMessage(player, Config.PAUSEQUEUEIFMAINDOWNMESSAGE);
                 });
             }
         }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
@@ -285,11 +285,10 @@ public final class PistonQueue extends Plugin {
 
                 position++;
 
-                player.sendMessage(type,
-                        ChatUtils.parseToComponent(Config.QUEUEPOSITION
-                                .replace("%position%", String.valueOf(position))
-                                .replace("%total%", String.valueOf(queue.getQueueMap().size()))
-                                .replace("%server%", entry.getValue())));
+                ChatUtils.sendMessage(type, player, Config.QUEUEPOSITION
+                        .replace("%position%", String.valueOf(position))
+                        .replace("%total%", String.valueOf(queue.getQueueMap().size()))
+                );
             }
         }
     }
@@ -334,7 +333,7 @@ public final class PistonQueue extends Plugin {
         if (type.getDurationToPosition().containsKey(position)) {
             Duration duration = type.getDurationToPosition().get(position);
 
-            return ChatUtils.formatDuration(text, duration, position);
+            return SharedChatUtils.formatDuration(text, duration, position);
         } else {
             AtomicInteger biggestPositionAtomic = new AtomicInteger();
             AtomicReference<Duration> bestDurationAtomic = new AtomicReference<>(Duration.ZERO);
@@ -353,7 +352,7 @@ public final class PistonQueue extends Plugin {
 
             Duration imaginaryDuration = biggestDuration.plus(difference, ChronoUnit.MINUTES);
 
-            return ChatUtils.formatDuration(text, imaginaryDuration, position);
+            return SharedChatUtils.formatDuration(text, imaginaryDuration, position);
         }
     }
 
