@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,9 +75,9 @@ public class PistonQueueVelocity {
     private final PluginContainer pluginContainer;
     @Getter
     private final QueueListener queueListener = new QueueListener(this);
+    private final Metrics.Factory metricsFactory;
     @Getter
     private BanType banType;
-    private final Metrics.Factory metricsFactory;
 
     @Inject
     public PistonQueueVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory, PluginContainer pluginContainer, Metrics.Factory metricsFactory) {
@@ -194,7 +194,7 @@ public class PistonQueueVelocity {
             } else {
                 logger.warn("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!!");
             }
-        }).delay( 500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
+        }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
 
         server.getScheduler().buildTask(this, () -> {
             if (Config.ENABLEAUTHSERVER) {
@@ -212,7 +212,7 @@ public class PistonQueueVelocity {
             } else {
                 queueListener.setAuthOnline(true);
             }
-        }).delay( 500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
+        }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
     }
 
     public void processConfig() {
@@ -288,9 +288,9 @@ public class PistonQueueVelocity {
                 switch (type) {
                     case CHAT:
                         player.get().sendMessage(ChatUtils.parseToComponent(Config.QUEUEPOSITION
-                                        .replace("%position%", String.valueOf(position))
-                                        .replace("%total%", String.valueOf(queue.getQueueMap().size()))
-                                        .replace("%server%", entry.getValue())));
+                                .replace("%position%", String.valueOf(position))
+                                .replace("%total%", String.valueOf(queue.getQueueMap().size()))
+                                .replace("%server%", entry.getValue())));
                         break;
                     case ACTION_BAR:
                         player.get().sendActionBar(

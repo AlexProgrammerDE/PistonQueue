@@ -27,7 +27,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.pistonmaster.pistonqueue.utils.Config;
 import net.pistonmaster.pistonqueue.utils.QueueAPI;
-import org.bukkit.entity.Player;
 
 import java.time.Duration;
 import java.util.List;

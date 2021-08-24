@@ -19,8 +19,6 @@
  */
 package net.pistonmaster.pistonqueue.utils;
 
-import net.md_5.bungee.api.plugin.Plugin;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;

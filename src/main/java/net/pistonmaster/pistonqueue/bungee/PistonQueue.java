@@ -33,11 +33,11 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
-import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
-import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.bungee.listeners.PistonListener;
 import net.pistonmaster.pistonqueue.bungee.listeners.QueueListener;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
+import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
+import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.utils.*;
 import org.bstats.bungeecord.Metrics;
 

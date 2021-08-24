@@ -33,15 +33,12 @@ public enum QueueType {
     VETERAN;
 
     @Getter
-    @Setter
-    private Map<UUID, String> queueMap = new LinkedHashMap<>();
-
-    @Getter
     private final Map<Integer, Duration> durationToPosition = new LinkedHashMap<>();
-
     @Getter
     private final Map<UUID, List<Pair<Integer, Instant>>> positionCache = new HashMap<>();
-
+    @Getter
+    @Setter
+    private Map<UUID, String> queueMap = new LinkedHashMap<>();
     @Setter
     @Getter
     private int playersWithTypeInMain = 0;

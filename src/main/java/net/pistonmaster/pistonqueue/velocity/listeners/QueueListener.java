@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,22 +43,17 @@ import java.util.*;
 @RequiredArgsConstructor
 public class QueueListener {
     private final PistonQueueVelocity plugin;
-
+    @Getter
+    private final List<UUID> noRecoveryMessage = new ArrayList<>();
     @Setter
     @Getter
     private boolean mainOnline = false;
-
     @Setter
     private boolean queueOnline = false;
-
     @Setter
     private boolean authOnline = false;
-
     @Setter
     private Instant onlineSince = null;
-
-    @Getter
-    private final List<UUID> noRecoveryMessage = new ArrayList<>();
 
     @Subscribe
     public void onPostLogin(PostLoginEvent event) {

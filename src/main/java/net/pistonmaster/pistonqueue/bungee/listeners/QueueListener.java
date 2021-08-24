@@ -19,19 +19,22 @@
  */
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
-import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.api.event.*;
+import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.event.ServerConnectEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
-import net.pistonmaster.pistonqueue.utils.*;
+import net.pistonmaster.pistonqueue.utils.BanType;
+import net.pistonmaster.pistonqueue.utils.Config;
+import net.pistonmaster.pistonqueue.utils.Pair;
+import net.pistonmaster.pistonqueue.utils.QueueType;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -42,22 +45,17 @@ import java.util.Map.Entry;
 public final class QueueListener implements Listener {
 
     private final PistonQueue plugin;
-
+    @Getter
+    private final List<UUID> noRecoveryMessage = new ArrayList<>();
     @Setter
     @Getter
     private boolean mainOnline = false;
-
     @Setter
     private boolean queueOnline = false;
-
     @Setter
     private boolean authOnline = false;
-
     @Setter
     private Instant onlineSince = null;
-
-    @Getter
-    private final List<UUID> noRecoveryMessage = new ArrayList<>();
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
