@@ -68,7 +68,7 @@ public class PistonQueueVelocity {
     @Getter
     private final File dataDirectory;
     @Getter
-    private final ProxyServer server;
+    private final ProxyServer proxyServer;
     @Getter
     private final Logger logger;
     @Getter
@@ -80,8 +80,8 @@ public class PistonQueueVelocity {
     private BanType banType;
 
     @Inject
-    public PistonQueueVelocity(ProxyServer server, Logger logger, @DataDirectory Path dataDirectory, PluginContainer pluginContainer, Metrics.Factory metricsFactory) {
-        this.server = server;
+    public PistonQueueVelocity(ProxyServer proxyServer, Logger logger, @DataDirectory Path dataDirectory, PluginContainer pluginContainer, Metrics.Factory metricsFactory) {
+        this.proxyServer = proxyServer;
         this.logger = logger;
         this.dataDirectory = dataDirectory.toFile();
         this.pluginContainer = pluginContainer;
@@ -97,20 +97,20 @@ public class PistonQueueVelocity {
         initializeReservationSlots();
 
         logger.info("Looking for hooks");
-        if (server.getPluginManager().getPlugin("pistonmotd").isPresent()) {
+        if (proxyServer.getPluginManager().getPlugin("pistonmotd").isPresent()) {
             logger.info("Hooking into PistonMOTD");
             new PistonMOTDPlaceholder();
         }
 
         logger.info("Registering plugin messaging channel");
-        server.getChannelRegistrar().register(MinecraftChannelIdentifier.from("piston:queue"));
+        proxyServer.getChannelRegistrar().register(MinecraftChannelIdentifier.from("piston:queue"));
 
         logger.info("Registering commands");
-        server.getCommandManager().register("pistonqueue", new MainCommand(this), "pq");
+        proxyServer.getCommandManager().register("pistonqueue", new MainCommand(this), "pq");
 
         logger.info("Registering listeners");
-        server.getEventManager().register(this, new PistonListener(this));
-        server.getEventManager().register(this, queueListener);
+        proxyServer.getEventManager().register(this, new PistonListener(this));
+        proxyServer.getEventManager().register(this, queueListener);
 
         logger.info("Loading Metrics");
         metricsFactory.make(this, 12389);
@@ -129,45 +129,45 @@ public class PistonQueueVelocity {
         logger.info("Scheduling tasks");
 
         // Sends the position message and updates tab on an interval in chat
-        server.getScheduler().buildTask(this, () -> {
+        proxyServer.getScheduler().buildTask(this, () -> {
             for (QueueType type : QueueType.values()) {
                 sendMessage(type, Config.POSITIONMESSAGECHAT, MessageType.CHAT);
             }
         }).delay(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).repeat(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).schedule();
 
         // Sends the position message and updates tab on an interval on hotbar
-        server.getScheduler().buildTask(this, () -> {
+        proxyServer.getScheduler().buildTask(this, () -> {
             for (QueueType type : QueueType.values()) {
                 sendMessage(type, Config.POSITIONMESSAGEHOTBAR, MessageType.ACTION_BAR);
             }
         }).delay(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).repeat(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).schedule();
 
         // Updates the tab
-        server.getScheduler().buildTask(this, () -> {
+        proxyServer.getScheduler().buildTask(this, () -> {
             updateTab(QueueType.VETERAN, Config.HEADERVETERAN, Config.FOOTERVETERAN);
             updateTab(QueueType.PRIORITY, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
             updateTab(QueueType.REGULAR, Config.HEADER, Config.FOOTER);
         }).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
 
-        server.getScheduler().buildTask(this, () -> {
+        proxyServer.getScheduler().buildTask(this, () -> {
             if (Config.PAUSEQUEUEIFMAINDOWN && !queueListener.isMainOnline()) {
-                QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> server.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
-                QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> server.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
-                QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> server.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
+                QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
+                QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
+                QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
             }
         }).delay(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).repeat(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).schedule();
 
         // Send plugin message
-        server.getScheduler().buildTask(this, this::sendCustomData).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
+        proxyServer.getScheduler().buildTask(this, this::sendCustomData).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
 
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
-        server.getScheduler().buildTask(this, queueListener::moveQueue).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
+        proxyServer.getScheduler().buildTask(this, queueListener::moveQueue).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
 
         // Checks the status of all the servers
-        server.getScheduler().buildTask(this, () -> {
-            if (server.getServer(Config.MAINSERVER).isPresent()) {
+        proxyServer.getScheduler().buildTask(this, () -> {
+            if (proxyServer.getServer(Config.MAINSERVER).isPresent()) {
                 try {
-                    server.getServer(Config.MAINSERVER).get().ping().join();
+                    proxyServer.getServer(Config.MAINSERVER).get().ping().join();
 
                     if (!queueListener.isMainOnline())
                         queueListener.setOnlineSince(Instant.now());
@@ -182,10 +182,10 @@ public class PistonQueueVelocity {
             }
         }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
 
-        server.getScheduler().buildTask(this, () -> {
-            if (server.getServer(Config.QUEUESERVER).isPresent()) {
+        proxyServer.getScheduler().buildTask(this, () -> {
+            if (proxyServer.getServer(Config.QUEUESERVER).isPresent()) {
                 try {
-                    server.getServer(Config.QUEUESERVER).get().ping().join();
+                    proxyServer.getServer(Config.QUEUESERVER).get().ping().join();
                     queueListener.setQueueOnline(true);
                 } catch (CancellationException | CompletionException e) {
                     logger.warn("Queue Server is down!!!");
@@ -196,11 +196,11 @@ public class PistonQueueVelocity {
             }
         }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
 
-        server.getScheduler().buildTask(this, () -> {
+        proxyServer.getScheduler().buildTask(this, () -> {
             if (Config.ENABLEAUTHSERVER) {
-                if (server.getServer(Config.AUTHSERVER).isPresent()) {
+                if (proxyServer.getServer(Config.AUTHSERVER).isPresent()) {
                     try {
-                        server.getServer(Config.AUTHSERVER).get().ping().join();
+                        proxyServer.getServer(Config.AUTHSERVER).get().ping().join();
                         queueListener.setAuthOnline(true);
                     } catch (CancellationException | CompletionException e) {
                         logger.warn("Auth Server is down!!!");
@@ -278,7 +278,7 @@ public class PistonQueueVelocity {
             int position = 0;
 
             for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-                Optional<Player> player = server.getPlayer(entry.getKey());
+                Optional<Player> player = proxyServer.getPlayer(entry.getKey());
                 if (!player.isPresent()) {
                     continue;
                 }
@@ -306,7 +306,7 @@ public class PistonQueueVelocity {
         int position = 0;
 
         for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-            Optional<Player> player = server.getPlayer(entry.getKey());
+            Optional<Player> player = proxyServer.getPlayer(entry.getKey());
             if (!player.isPresent()) {
                 continue;
             }
@@ -366,7 +366,7 @@ public class PistonQueueVelocity {
     }
 
     private void sendCustomData() {
-        Collection<Player> networkPlayers = server.getAllPlayers();
+        Collection<Player> networkPlayers = proxyServer.getAllPlayers();
 
         if (networkPlayers == null || networkPlayers.isEmpty()) {
             return;
@@ -386,11 +386,11 @@ public class PistonQueueVelocity {
     }
 
     private void initializeReservationSlots() {
-        server.getScheduler().buildTask(this, () -> {
-            if (!server.getServer(Config.MAINSERVER).isPresent())
+        proxyServer.getScheduler().buildTask(this, () -> {
+            if (!proxyServer.getServer(Config.MAINSERVER).isPresent())
                 throw new IllegalStateException("Main server not configured properly!!!");
 
-            RegisteredServer mainServer = server.getServer(Config.MAINSERVER).get();
+            RegisteredServer mainServer = proxyServer.getServer(Config.MAINSERVER).get();
             Map<QueueType, AtomicInteger> map = new EnumMap<>(QueueType.class);
 
             for (Player player : mainServer.getPlayersConnected()) {
@@ -407,5 +407,50 @@ public class PistonQueueVelocity {
                 entry.getKey().setPlayersWithTypeInMain(entry.getValue().get());
             }
         }).delay(0, TimeUnit.MILLISECONDS).repeat(1, TimeUnit.SECONDS).schedule();
+    }
+
+    public PlayerWrapper wrapPlayer(Player player) {
+        return new PlayerWrapper() {
+            @Override
+            public boolean hasPermission(String node) {
+                return player.hasPermission(node);
+            }
+
+            @Override
+            public void connect(String server) {
+                Optional<RegisteredServer> optional = proxyServer.getServer(server);
+
+                if (!optional.isPresent()) {
+                    logger.error("Server" + server + " not found!!!");
+                    return;
+                }
+
+                player.createConnectionRequest(optional.get()).connect();
+            }
+
+            @Override
+            public Optional<String> getCurrentServer() {
+                if (player.getCurrentServer().isPresent()) {
+                    return Optional.of(player.getCurrentServer().get().getServerInfo().getName());
+                } else {
+                    return Optional.empty();
+                }
+            }
+
+            @Override
+            public void sendMessage(String message) {
+                ChatUtils.sendMessage(MessageType.CHAT, player, message);
+            }
+
+            @Override
+            public void sendActionBar(String message) {
+                ChatUtils.sendMessage(MessageType.ACTION_BAR, player, message);
+            }
+
+            @Override
+            public UUID getUniqueId() {
+                return player.getUniqueId();
+            }
+        };
     }
 }

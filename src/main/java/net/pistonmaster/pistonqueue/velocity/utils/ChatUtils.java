@@ -19,14 +19,34 @@
  */
 package net.pistonmaster.pistonqueue.velocity.utils;
 
+import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
 
 import java.util.List;
 
 public class ChatUtils {
     private ChatUtils() {
+    }
+
+    public static void sendMessage(Player p, String str) {
+        sendMessage(MessageType.CHAT, p, str);
+    }
+
+    public static void sendMessage(MessageType type, Player p, String str) {
+        if (!str.equalsIgnoreCase("/")) {
+            switch (type) {
+                case CHAT:
+                    p.sendMessage(parseToComponent(str));
+                    break;
+                case ACTION_BAR:
+                    p.sendActionBar(parseToComponent(str));
+                    break;
+            }
+        }
     }
 
     public static TextComponent parseToComponent(String str) {

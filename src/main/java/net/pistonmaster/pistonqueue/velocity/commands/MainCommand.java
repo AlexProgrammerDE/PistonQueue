@@ -90,7 +90,7 @@ public final class MainCommand implements SimpleCommand {
     }
 
     private void addPlayers(List<String> completions, String[] args) {
-        for (Player player : plugin.getServer().getAllPlayers()) {
+        for (Player player : plugin.getProxyServer().getAllPlayers()) {
             if (player.getUsername().toLowerCase().startsWith(args[1].toLowerCase()))
                 completions.add(player.getUsername());
         }
@@ -148,8 +148,8 @@ public final class MainCommand implements SimpleCommand {
                 case "shadowban":
                     if (sender.hasPermission(Config.ADMINPERMISSION)) {
                         if (args.length > 1) {
-                            if (plugin.getServer().getPlayer(args[1]).isPresent()) {
-                                Player player = plugin.getServer().getPlayer(args[1]).get();
+                            if (plugin.getProxyServer().getPlayer(args[1]).isPresent()) {
+                                Player player = plugin.getProxyServer().getPlayer(args[1]).get();
 
                                 if (args.length > 2) {
                                     Calendar calendar = Calendar.getInstance();
@@ -206,8 +206,8 @@ public final class MainCommand implements SimpleCommand {
                 case "unshadowban":
                     if (sender.hasPermission(Config.ADMINPERMISSION)) {
                         if (args.length > 1) {
-                            if (plugin.getServer().getPlayer(args[1]).isPresent()) {
-                                Player player = plugin.getServer().getPlayer(args[1]).get();
+                            if (plugin.getProxyServer().getPlayer(args[1]).isPresent()) {
+                                Player player = plugin.getProxyServer().getPlayer(args[1]).get();
 
                                 if (StorageTool.unShadowBanPlayer(player)) {
                                     sendLine(sender);

@@ -46,13 +46,13 @@ public class PistonListener {
 
     @Subscribe
     public void onKick(KickedFromServerEvent event) {
-        if (Config.IFMAINDOWNSENDTOQUEUE && event.getServer() == plugin.getServer().getServer(Config.MAINSERVER).get()) {
+        if (Config.IFMAINDOWNSENDTOQUEUE && event.getServer() == plugin.getProxyServer().getServer(Config.MAINSERVER).get()) {
             if (!event.getServerKickReason().isPresent())
                 return;
 
             for (String str : Config.DOWNWORDLIST) {
                 if (LegacyComponentSerializer.legacySection().serialize(event.getServerKickReason().get()).toLowerCase().contains(str)) {
-                    event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getServer().getServer(Config.QUEUESERVER).get()));
+                    event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(Config.QUEUESERVER).get()));
                     event.getPlayer().sendMessage(ChatUtils.parseToComponent(Config.IFMAINDOWNSENDTOQUEUEMESSAGE));
                     // plugin.getQueueListener().putQueueAuthFirst(event.getPlayer());
                     plugin.getQueueListener().getNoRecoveryMessage().add(event.getPlayer().getUniqueId());

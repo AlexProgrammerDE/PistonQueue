@@ -75,14 +75,14 @@ public class QueueListener {
             if (isAnyoneQueuedOfType(player))
                 return;
 
-            if (!isPlayersQueueFull(player) && event.getResult().getServer().get().equals(plugin.getServer().getServer(Config.QUEUESERVER).get()))
-                event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getServer().getServer(Config.MAINSERVER).get()));
+            if (!isPlayersQueueFull(player) && event.getResult().getServer().get().equals(plugin.getProxyServer().getServer(Config.QUEUESERVER).get()))
+                event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(Config.MAINSERVER).get()));
         } else {
             if (!event.getPlayer().getCurrentServer().isPresent()) {
                 if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
                     if (Config.ALWAYSQUEUE || isServerFull(player)) {
                         if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                            event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getServer().getServer(Config.MAINSERVER).get()));
+                            event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(Config.MAINSERVER).get()));
                         } else {
                             putQueue(player, event);
                         }
@@ -100,7 +100,7 @@ public class QueueListener {
 
         if (Config.AUTHFIRST) {
             if (isAuthToQueue(event) && player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                event.getPlayer().createConnectionRequest(plugin.getServer().getServer(Config.MAINSERVER).get()).connect();
+                event.getPlayer().createConnectionRequest(plugin.getProxyServer().getServer(Config.MAINSERVER).get()).connect();
                 return;
             }
 
@@ -119,16 +119,16 @@ public class QueueListener {
 
         for (QueueType type : QueueType.values()) {
             for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-                Optional<Player> player = plugin.getServer().getPlayer(entry.getKey());
+                Optional<Player> player = plugin.getProxyServer().getPlayer(entry.getKey());
 
-                if (!player.isPresent() || (player.get().getCurrentServer().isPresent() && !plugin.getServer().getServer(Config.QUEUESERVER).get().equals(player.get().getCurrentServer().get().getServer()))) {
+                if (!player.isPresent() || (player.get().getCurrentServer().isPresent() && !plugin.getProxyServer().getServer(Config.QUEUESERVER).get().equals(player.get().getCurrentServer().get().getServer()))) {
                     type.getQueueMap().remove(entry.getKey());
                 }
             }
         }
 
         if (Config.RECOVERY) {
-            plugin.getServer().getAllPlayers().forEach(this::doRecovery);
+            plugin.getProxyServer().getAllPlayers().forEach(this::doRecovery);
         }
 
         if (Config.PAUSEQUEUEIFMAINDOWN) {
@@ -155,7 +155,7 @@ public class QueueListener {
     private void doRecovery(Player player) {
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
-        if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getCurrentServer().isPresent() && plugin.getServer().getServer(Config.QUEUESERVER).get().equals(player.getCurrentServer().get().getServer())) {
+        if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getCurrentServer().isPresent() && plugin.getProxyServer().getServer(Config.QUEUESERVER).get().equals(player.getCurrentServer().get().getServer())) {
             type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
 
             if (!noRecoveryMessage.contains(player.getUniqueId())) {
@@ -167,7 +167,7 @@ public class QueueListener {
 
     private void connectPlayer(QueueType type) {
         for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-            Optional<Player> player = plugin.getServer().getPlayer(entry.getKey());
+            Optional<Player> player = plugin.getProxyServer().getPlayer(entry.getKey());
             if (!player.isPresent()) {
                 continue;
             }
@@ -194,7 +194,7 @@ public class QueueListener {
                 cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
             }
 
-            player.get().createConnectionRequest(plugin.getServer().getServer(entry.getValue()).get()).connect();
+            player.get().createConnectionRequest(plugin.getProxyServer().getServer(entry.getValue()).get()).connect();
         }
     }
 
@@ -215,7 +215,7 @@ public class QueueListener {
         // Redirect the player to the queue.
         String originalTarget = event.getResult().getServer().get().getServerInfo().getName();
 
-        event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getServer().getServer(Config.QUEUESERVER).get()));
+        event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(Config.QUEUESERVER).get()));
 
         Map<UUID, String> queueMap = type.getQueueMap();
 
@@ -246,7 +246,7 @@ public class QueueListener {
     }
 
     private boolean isAuthToQueue(ServerConnectedEvent event) {
-        return event.getPreviousServer().isPresent() && event.getPreviousServer().get().equals(plugin.getServer().getServer(Config.AUTHSERVER).get()) && event.getServer().equals(plugin.getServer().getServer(Config.QUEUESERVER).get());
+        return event.getPreviousServer().isPresent() && event.getPreviousServer().get().equals(plugin.getProxyServer().getServer(Config.AUTHSERVER).get()) && event.getServer().equals(plugin.getProxyServer().getServer(Config.QUEUESERVER).get());
     }
 
     private boolean isAnyoneQueuedOfType(Player player) {
@@ -258,7 +258,7 @@ public class QueueListener {
             int position = 0;
 
             for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-                Optional<Player> player = plugin.getServer().getPlayer(entry.getKey());
+                Optional<Player> player = plugin.getProxyServer().getPlayer(entry.getKey());
                 if (!player.isPresent()) {
                     continue;
                 }
