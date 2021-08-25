@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.utils;
+package net.pistonmaster.pistonqueue.shared.utils;
 
 public class ConfigOutdatedException extends Exception {
     public ConfigOutdatedException(String message) {

@@ -35,7 +35,7 @@ import lombok.Getter;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.pistonmaster.pistonqueue.data.PluginData;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
-import net.pistonmaster.pistonqueue.utils.*;
+import net.pistonmaster.pistonqueue.shared.utils.*;
 import net.pistonmaster.pistonqueue.velocity.commands.MainCommand;
 import net.pistonmaster.pistonqueue.velocity.listeners.PistonListener;
 import net.pistonmaster.pistonqueue.velocity.listeners.QueueListener;

@@ -26,7 +26,7 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.utils.Config;
+import net.pistonmaster.pistonqueue.shared.utils.Config;
 
 public final class PistonListener implements Listener {
     private final PistonQueue plugin;

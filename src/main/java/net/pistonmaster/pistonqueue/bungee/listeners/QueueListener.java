@@ -31,10 +31,10 @@ import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
-import net.pistonmaster.pistonqueue.utils.BanType;
-import net.pistonmaster.pistonqueue.utils.Config;
-import net.pistonmaster.pistonqueue.utils.Pair;
-import net.pistonmaster.pistonqueue.utils.QueueType;
+import net.pistonmaster.pistonqueue.shared.utils.BanType;
+import net.pistonmaster.pistonqueue.shared.utils.Config;
+import net.pistonmaster.pistonqueue.shared.utils.Pair;
+import net.pistonmaster.pistonqueue.shared.utils.QueueType;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -130,9 +130,7 @@ public final class QueueListener implements Listener {
         }
 
         if (Config.RECOVERY) {
-            for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-                doRecovery(player);
-            }
+            plugin.getProxy().getPlayers().forEach(this::doRecovery);
         }
 
         if (Config.PAUSEQUEUEIFMAINDOWN) {

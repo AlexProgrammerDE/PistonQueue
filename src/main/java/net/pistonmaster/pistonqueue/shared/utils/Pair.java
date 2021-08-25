@@ -17,24 +17,12 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.utils;
+package net.pistonmaster.pistonqueue.shared.utils;
 
-/**
- * How shadowbanned people should be punished.
- */
-public enum BanType {
-    /**
-     * Loop forever in queue!
-     */
-    LOOP,
+import lombok.Data;
 
-    /**
-     * Have a 10% chance of getting into the server!
-     */
-    TENPERCENT,
-
-    /**
-     * Kick a player while joining!
-     */
-    KICK
+@Data
+public class Pair<L, R> {
+    private final L left;
+    private final R right;
 }

@@ -38,7 +38,7 @@ import net.pistonmaster.pistonqueue.bungee.listeners.QueueListener;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
-import net.pistonmaster.pistonqueue.utils.*;
+import net.pistonmaster.pistonqueue.shared.utils.*;
 import org.bstats.bungeecord.Metrics;
 
 import java.io.File;

@@ -28,10 +28,10 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
-import net.pistonmaster.pistonqueue.utils.BanType;
-import net.pistonmaster.pistonqueue.utils.Config;
-import net.pistonmaster.pistonqueue.utils.Pair;
-import net.pistonmaster.pistonqueue.utils.QueueType;
+import net.pistonmaster.pistonqueue.shared.utils.BanType;
+import net.pistonmaster.pistonqueue.shared.utils.Config;
+import net.pistonmaster.pistonqueue.shared.utils.Pair;
+import net.pistonmaster.pistonqueue.shared.utils.QueueType;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.velocity.utils.StorageTool;
@@ -80,7 +80,7 @@ public class QueueListener {
         } else {
             if (!event.getPlayer().getCurrentServer().isPresent()) {
                 if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
-                    if (Config.ALWAYSQUEUE || (isPlayersQueueFull(player) || isAnyoneQueuedOfType(player)) || (!mainOnline && !Config.KICKWHENDOWN)) {
+                    if (Config.ALWAYSQUEUE || isServerFull(player)) {
                         if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
                             event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getServer().getServer(Config.MAINSERVER).get()));
                         } else {
@@ -128,18 +128,7 @@ public class QueueListener {
         }
 
         if (Config.RECOVERY) {
-            for (Player player : plugin.getServer().getAllPlayers()) {
-                QueueType type = QueueType.getQueueType(player::hasPermission);
-
-                if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getCurrentServer().isPresent() && plugin.getServer().getServer(Config.QUEUESERVER).get().equals(player.getCurrentServer().get().getServer())) {
-                    type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
-
-                    if (!noRecoveryMessage.contains(player.getUniqueId())) {
-                        noRecoveryMessage.remove(player.getUniqueId());
-                        player.sendMessage(ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
-                    }
-                }
-            }
+            plugin.getServer().getAllPlayers().forEach(this::doRecovery);
         }
 
         if (Config.PAUSEQUEUEIFMAINDOWN) {
@@ -159,6 +148,19 @@ public class QueueListener {
         for (QueueType type : QueueType.values()) {
             if (!isQueueFull(type)) {
                 connectPlayer(type);
+            }
+        }
+    }
+
+    private void doRecovery(Player player) {
+        QueueType type = QueueType.getQueueType(player::hasPermission);
+
+        if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getCurrentServer().isPresent() && plugin.getServer().getServer(Config.QUEUESERVER).get().equals(player.getCurrentServer().get().getServer())) {
+            type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
+
+            if (!noRecoveryMessage.contains(player.getUniqueId())) {
+                noRecoveryMessage.remove(player.getUniqueId());
+                player.sendMessage(ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
             }
         }
     }
@@ -229,6 +231,10 @@ public class QueueListener {
         player.sendPlayerListHeaderAndFooter(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
 
         player.sendMessage(ChatUtils.parseToComponent(Config.SERVERISFULLMESSAGE));
+    }
+
+    private boolean isServerFull(Player player) {
+        return (isPlayersQueueFull(player) || isAnyoneQueuedOfType(player)) || (!mainOnline && !Config.KICKWHENDOWN);
     }
 
     private boolean isPlayersQueueFull(Player player) {

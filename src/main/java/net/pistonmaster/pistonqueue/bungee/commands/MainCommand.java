@@ -27,9 +27,9 @@ import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import net.pistonmaster.pistonqueue.bungee.PistonQueue;
 import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
-import net.pistonmaster.pistonqueue.utils.Config;
-import net.pistonmaster.pistonqueue.utils.QueueAPI;
-import net.pistonmaster.pistonqueue.utils.QueueType;
+import net.pistonmaster.pistonqueue.shared.utils.Config;
+import net.pistonmaster.pistonqueue.shared.utils.QueueAPI;
+import net.pistonmaster.pistonqueue.shared.utils.QueueType;
 
 import java.util.*;
 

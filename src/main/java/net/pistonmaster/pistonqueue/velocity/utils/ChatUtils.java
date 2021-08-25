@@ -21,7 +21,7 @@ package net.pistonmaster.pistonqueue.velocity.utils;
 
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.pistonmaster.pistonqueue.utils.SharedChatUtils;
+import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
 
 import java.util.List;
 

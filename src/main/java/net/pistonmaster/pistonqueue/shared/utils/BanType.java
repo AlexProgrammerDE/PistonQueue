@@ -17,22 +17,24 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.utils;
+package net.pistonmaster.pistonqueue.shared.utils;
 
-@SuppressWarnings({"unused"})
-public final class QueueAPI {
-    private QueueAPI() {
-    }
+/**
+ * How shadowbanned people should be punished.
+ */
+public enum BanType {
+    /**
+     * Loop forever in queue!
+     */
+    LOOP,
 
-    public static int getVeteranSize() {
-        return QueueType.VETERAN.getQueueMap().size();
-    }
+    /**
+     * Have a 10% chance of getting into the server!
+     */
+    TENPERCENT,
 
-    public static int getPrioritySize() {
-        return QueueType.PRIORITY.getQueueMap().size();
-    }
-
-    public static int getRegularSize() {
-        return QueueType.REGULAR.getQueueMap().size();
-    }
+    /**
+     * Kick a player while joining!
+     */
+    KICK
 }

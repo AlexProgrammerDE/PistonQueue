@@ -23,7 +23,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.pistonmaster.pistonqueue.utils.Config;
+import net.pistonmaster.pistonqueue.shared.utils.Config;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 

@@ -1,4 +1,4 @@
-package net.pistonmaster.pistonqueue.utils;
+package net.pistonmaster.pistonqueue.shared.utils;
 
 import java.time.Duration;
 

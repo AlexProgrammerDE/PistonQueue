@@ -25,9 +25,9 @@ import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.pistonmaster.pistonqueue.utils.Config;
-import net.pistonmaster.pistonqueue.utils.QueueAPI;
-import net.pistonmaster.pistonqueue.utils.QueueType;
+import net.pistonmaster.pistonqueue.shared.utils.Config;
+import net.pistonmaster.pistonqueue.shared.utils.QueueAPI;
+import net.pistonmaster.pistonqueue.shared.utils.QueueType;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.StorageTool;
 

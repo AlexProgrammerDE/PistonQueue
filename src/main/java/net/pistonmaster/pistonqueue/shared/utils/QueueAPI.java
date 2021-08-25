@@ -17,12 +17,22 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.utils;
+package net.pistonmaster.pistonqueue.shared.utils;
 
-import lombok.Data;
+@SuppressWarnings({"unused"})
+public final class QueueAPI {
+    private QueueAPI() {
+    }
 
-@Data
-public class Pair<L, R> {
-    private final L left;
-    private final R right;
+    public static int getVeteranSize() {
+        return QueueType.VETERAN.getQueueMap().size();
+    }
+
+    public static int getPrioritySize() {
+        return QueueType.PRIORITY.getQueueMap().size();
+    }
+
+    public static int getRegularSize() {
+        return QueueType.REGULAR.getQueueMap().size();
+    }
 }
