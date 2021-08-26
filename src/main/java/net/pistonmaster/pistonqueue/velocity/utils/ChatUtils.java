@@ -22,9 +22,7 @@ package net.pistonmaster.pistonqueue.velocity.utils;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
+import net.pistonmaster.pistonqueue.shared.SharedChatUtils;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package net.pistonmaster.pistonqueue.shared.utils;
+package net.pistonmaster.pistonqueue.shared;
 
 import java.util.Optional;
 import java.util.UUID;

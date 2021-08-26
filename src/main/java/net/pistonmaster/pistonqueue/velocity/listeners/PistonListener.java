@@ -23,7 +23,7 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.pistonmaster.pistonqueue.shared.utils.Config;
+import net.pistonmaster.pistonqueue.shared.Config;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 
@@ -54,8 +54,8 @@ public class PistonListener {
                 if (LegacyComponentSerializer.legacySection().serialize(event.getServerKickReason().get()).toLowerCase().contains(str)) {
                     event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(Config.QUEUESERVER).get()));
                     event.getPlayer().sendMessage(ChatUtils.parseToComponent(Config.IFMAINDOWNSENDTOQUEUEMESSAGE));
-                    // plugin.getQueueListener().putQueueAuthFirst(event.getPlayer());
-                    plugin.getQueueListener().getNoRecoveryMessage().add(event.getPlayer().getUniqueId());
+                    // plugin.getQueueListenerBungee().putQueueAuthFirst(event.getPlayer());
+                    plugin.getQueueListenerVelocity().getNoRecoveryMessage().add(event.getPlayer().getUniqueId());
                     break;
                 }
             }

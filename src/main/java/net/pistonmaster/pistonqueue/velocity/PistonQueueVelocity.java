@@ -35,10 +35,10 @@ import lombok.Getter;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.pistonmaster.pistonqueue.data.PluginData;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
-import net.pistonmaster.pistonqueue.shared.utils.*;
+import net.pistonmaster.pistonqueue.shared.*;
 import net.pistonmaster.pistonqueue.velocity.commands.MainCommand;
 import net.pistonmaster.pistonqueue.velocity.listeners.PistonListener;
-import net.pistonmaster.pistonqueue.velocity.listeners.QueueListener;
+import net.pistonmaster.pistonqueue.velocity.listeners.QueueListenerVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.velocity.utils.MessageType;
 import net.pistonmaster.pistonqueue.velocity.utils.StorageTool;
@@ -52,19 +52,16 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Plugin(id = "pistonqueue", name = PluginData.NAME, version = PluginData.VERSION,
         url = PluginData.URL, description = PluginData.DESCRIPTION, authors = {"AlexProgrammerDE"})
-public class PistonQueueVelocity {
+public class PistonQueueVelocity implements PistonQueueProxy {
     @Getter
     private final File dataDirectory;
     @Getter
@@ -74,7 +71,7 @@ public class PistonQueueVelocity {
     @Getter
     private final PluginContainer pluginContainer;
     @Getter
-    private final QueueListener queueListener = new QueueListener(this);
+    private final QueueListenerVelocity queueListenerVelocity = new QueueListenerVelocity(this);
     private final Metrics.Factory metricsFactory;
     @Getter
     private BanType banType;
@@ -110,7 +107,7 @@ public class PistonQueueVelocity {
 
         logger.info("Registering listeners");
         proxyServer.getEventManager().register(this, new PistonListener(this));
-        proxyServer.getEventManager().register(this, queueListener);
+        proxyServer.getEventManager().register(this, queueListenerVelocity);
 
         logger.info("Loading Metrics");
         metricsFactory.make(this, 12389);
@@ -150,7 +147,7 @@ public class PistonQueueVelocity {
         }).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
 
         proxyServer.getScheduler().buildTask(this, () -> {
-            if (Config.PAUSEQUEUEIFMAINDOWN && !queueListener.isMainOnline()) {
+            if (Config.PAUSEQUEUEIFMAINDOWN && !queueListenerVelocity.isMainOnline()) {
                 QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
                 QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
                 QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
@@ -161,7 +158,7 @@ public class PistonQueueVelocity {
         proxyServer.getScheduler().buildTask(this, this::sendCustomData).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
 
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
-        proxyServer.getScheduler().buildTask(this, queueListener::moveQueue).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
+        proxyServer.getScheduler().buildTask(this, queueListenerVelocity::moveQueue).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
 
         // Checks the status of all the servers
         proxyServer.getScheduler().buildTask(this, () -> {
@@ -169,13 +166,13 @@ public class PistonQueueVelocity {
                 try {
                     proxyServer.getServer(Config.MAINSERVER).get().ping().join();
 
-                    if (!queueListener.isMainOnline())
-                        queueListener.setOnlineSince(Instant.now());
+                    if (!queueListenerVelocity.isMainOnline())
+                        queueListenerVelocity.setOnlineSince(Instant.now());
 
-                    queueListener.setMainOnline(true);
+                    queueListenerVelocity.setMainOnline(true);
                 } catch (CancellationException | CompletionException e) {
                     logger.warn("Main Server is down!!!");
-                    queueListener.setMainOnline(false);
+                    queueListenerVelocity.setMainOnline(false);
                 }
             } else {
                 logger.warn("Main Server \"" + Config.MAINSERVER + "\" not set up!!!");
@@ -186,10 +183,10 @@ public class PistonQueueVelocity {
             if (proxyServer.getServer(Config.QUEUESERVER).isPresent()) {
                 try {
                     proxyServer.getServer(Config.QUEUESERVER).get().ping().join();
-                    queueListener.setQueueOnline(true);
+                    queueListenerVelocity.setQueueOnline(true);
                 } catch (CancellationException | CompletionException e) {
                     logger.warn("Queue Server is down!!!");
-                    queueListener.setQueueOnline(false);
+                    queueListenerVelocity.setQueueOnline(false);
                 }
             } else {
                 logger.warn("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!!");
@@ -201,16 +198,16 @@ public class PistonQueueVelocity {
                 if (proxyServer.getServer(Config.AUTHSERVER).isPresent()) {
                     try {
                         proxyServer.getServer(Config.AUTHSERVER).get().ping().join();
-                        queueListener.setAuthOnline(true);
+                        queueListenerVelocity.setAuthOnline(true);
                     } catch (CancellationException | CompletionException e) {
                         logger.warn("Auth Server is down!!!");
-                        queueListener.setAuthOnline(false);
+                        queueListenerVelocity.setAuthOnline(false);
                     }
                 } else {
                     logger.warn("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!!");
                 }
             } else {
-                queueListener.setAuthOnline(true);
+                queueListenerVelocity.setAuthOnline(true);
             }
         }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
     }
@@ -272,7 +269,7 @@ public class PistonQueueVelocity {
 
     private void sendMessage(QueueType queue, boolean bool, MessageType type) {
         if (bool) {
-            if (!queueListener.isMainOnline())
+            if (!queueListenerVelocity.isMainOnline())
                 return;
 
             int position = 0;
@@ -335,33 +332,6 @@ public class PistonQueueVelocity {
             player.get().sendPlayerListHeaderAndFooter(
                     LegacyComponentSerializer.legacySection().deserialize(headerBuilder.toString()),
                     LegacyComponentSerializer.legacySection().deserialize(footerBuilder.toString()));
-        }
-    }
-
-    private String replacePosition(String text, int position, QueueType type) {
-        if (type.getDurationToPosition().containsKey(position)) {
-            Duration duration = type.getDurationToPosition().get(position);
-
-            return SharedChatUtils.formatDuration(text, duration, position);
-        } else {
-            AtomicInteger biggestPositionAtomic = new AtomicInteger();
-            AtomicReference<Duration> bestDurationAtomic = new AtomicReference<>(Duration.ZERO);
-
-            type.getDurationToPosition().forEach((integer, instant) -> {
-                if (integer > biggestPositionAtomic.get()) {
-                    biggestPositionAtomic.set(integer);
-                    bestDurationAtomic.set(instant);
-                }
-            });
-
-            int biggestPosition = biggestPositionAtomic.get();
-            Duration biggestDuration = bestDurationAtomic.get();
-
-            int difference = position - biggestPosition;
-
-            Duration imaginaryDuration = biggestDuration.plus(difference, ChronoUnit.MINUTES);
-
-            return SharedChatUtils.formatDuration(text, imaginaryDuration, position);
         }
     }
 

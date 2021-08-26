@@ -25,20 +25,20 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
-import net.pistonmaster.pistonqueue.bungee.PistonQueue;
+import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
-import net.pistonmaster.pistonqueue.shared.utils.Config;
-import net.pistonmaster.pistonqueue.shared.utils.QueueAPI;
-import net.pistonmaster.pistonqueue.shared.utils.QueueType;
+import net.pistonmaster.pistonqueue.shared.Config;
+import net.pistonmaster.pistonqueue.shared.QueueAPI;
+import net.pistonmaster.pistonqueue.shared.QueueType;
 
 import java.util.*;
 
 public final class MainCommand extends Command implements TabExecutor {
     private static final String[] commands = {"help", "version", "stats"};
     private static final String[] adminCommands = {"slotstats", "reload", "shadowban", "unshadowban"};
-    private final PistonQueue plugin;
+    private final PistonQueueBungee plugin;
 
-    public MainCommand(PistonQueue plugin) {
+    public MainCommand(PistonQueueBungee plugin) {
         super("pistonqueue", null, "pq");
         this.plugin = plugin;
     }

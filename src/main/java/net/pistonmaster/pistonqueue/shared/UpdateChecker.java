@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared.utils;
+package net.pistonmaster.pistonqueue.shared;
 
 import java.io.IOException;
 import java.io.InputStream;

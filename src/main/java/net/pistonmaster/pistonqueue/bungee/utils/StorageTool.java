@@ -23,7 +23,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
-import net.pistonmaster.pistonqueue.bungee.PistonQueue;
+import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,7 +33,7 @@ import java.util.Date;
 import java.util.Locale;
 
 public final class StorageTool {
-    private static PistonQueue plugin;
+    private static PistonQueueBungee plugin;
     private static Configuration dataConfig;
     private static File dataFile;
 
@@ -137,7 +137,7 @@ public final class StorageTool {
         }
     }
 
-    public static void setupTool(PistonQueue plugin) {
+    public static void setupTool(PistonQueueBungee plugin) {
         StorageTool.plugin = plugin;
         StorageTool.dataFile = new File(plugin.getDataFolder(), "data.yml");
 

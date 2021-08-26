@@ -24,14 +24,14 @@ import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.pistonmaster.pistonqueue.bungee.PistonQueue;
+import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.shared.utils.Config;
+import net.pistonmaster.pistonqueue.shared.Config;
 
 public final class PistonListener implements Listener {
-    private final PistonQueue plugin;
+    private final PistonQueueBungee plugin;
 
-    public PistonListener(PistonQueue plugin) {
+    public PistonListener(PistonQueueBungee plugin) {
         this.plugin = plugin;
     }
 
@@ -56,7 +56,7 @@ public final class PistonListener implements Listener {
 
                     ChatUtils.sendMessage(event.getPlayer(), Config.IFMAINDOWNSENDTOQUEUEMESSAGE);
 
-                    plugin.getQueueListener().getNoRecoveryMessage().add(event.getPlayer().getUniqueId());
+                    plugin.getQueueListenerBungee().getNoRecoveryMessage().add(event.getPlayer().getUniqueId());
                     break;
                 }
             }

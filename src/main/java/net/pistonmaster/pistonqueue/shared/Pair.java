@@ -17,10 +17,12 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared.utils;
+package net.pistonmaster.pistonqueue.shared;
 
-public class ConfigOutdatedException extends Exception {
-    public ConfigOutdatedException(String message) {
-        super(message + " is missing in the config. Please remove the old config and restart the proxy to get the newest one.");
-    }
+import lombok.Data;
+
+@Data
+public class Pair<L, R> {
+    private final L left;
+    private final R right;
 }

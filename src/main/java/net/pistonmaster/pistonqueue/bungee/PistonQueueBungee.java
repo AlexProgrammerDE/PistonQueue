@@ -34,11 +34,11 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
 import net.pistonmaster.pistonqueue.bungee.listeners.PistonListener;
-import net.pistonmaster.pistonqueue.bungee.listeners.QueueListener;
+import net.pistonmaster.pistonqueue.bungee.listeners.QueueListenerBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
-import net.pistonmaster.pistonqueue.shared.utils.*;
+import net.pistonmaster.pistonqueue.shared.*;
 import org.bstats.bungeecord.Metrics;
 
 import java.io.File;
@@ -46,20 +46,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 
 @SuppressWarnings({"deprecation"})
-public final class PistonQueue extends Plugin {
+public final class PistonQueueBungee extends Plugin implements PistonQueueProxy {
     @Getter
-    private final QueueListener queueListener = new QueueListener(this);
+    private final QueueListenerBungee queueListenerBungee = new QueueListenerBungee(this);
     @Getter
     private BanType banType;
 
@@ -87,7 +84,7 @@ public final class PistonQueue extends Plugin {
         manager.registerCommand(this, new MainCommand(this));
 
         logger.info(ChatColor.BLUE + "Registering listeners");
-        manager.registerListener(this, queueListener);
+        manager.registerListener(this, queueListenerBungee);
         manager.registerListener(this, new PistonListener(this));
 
         logger.info(ChatColor.BLUE + "Loading Metrics");
@@ -128,7 +125,7 @@ public final class PistonQueue extends Plugin {
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         getProxy().getScheduler().schedule(this, () -> {
-            if (Config.PAUSEQUEUEIFMAINDOWN && !queueListener.isMainOnline()) {
+            if (Config.PAUSEQUEUEIFMAINDOWN && !queueListenerBungee.isMainOnline()) {
                 QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
@@ -156,7 +153,7 @@ public final class PistonQueue extends Plugin {
         getProxy().getScheduler().schedule(this, this::sendCustomData, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
-        getProxy().getScheduler().schedule(this, queueListener::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        getProxy().getScheduler().schedule(this, queueListenerBungee::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Checks the status of all the servers
         getProxy().getScheduler().schedule(this, () -> {
@@ -168,13 +165,13 @@ public final class PistonQueue extends Plugin {
 
                     s.close();
 
-                    if (!queueListener.isMainOnline())
-                        queueListener.setOnlineSince(Instant.now());
+                    if (!queueListenerBungee.isMainOnline())
+                        queueListenerBungee.setOnlineSince(Instant.now());
 
-                    queueListener.setMainOnline(true);
+                    queueListenerBungee.setMainOnline(true);
                 } catch (IOException e) {
                     getLogger().warning("Main Server is down!!!");
-                    queueListener.setMainOnline(false);
+                    queueListenerBungee.setMainOnline(false);
                 }
             } else {
                 getLogger().warning("Main Server \"" + Config.MAINSERVER + "\" not set up!!!");
@@ -189,10 +186,10 @@ public final class PistonQueue extends Plugin {
                             getProxy().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
 
                     s.close();
-                    queueListener.setQueueOnline(true);
+                    queueListenerBungee.setQueueOnline(true);
                 } catch (IOException e) {
                     getLogger().warning("Queue Server is down!!!");
-                    queueListener.setQueueOnline(false);
+                    queueListenerBungee.setQueueOnline(false);
                 }
             } else {
                 getLogger().warning("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!!");
@@ -208,16 +205,16 @@ public final class PistonQueue extends Plugin {
                                 getProxy().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
 
                         s.close();
-                        queueListener.setAuthOnline(true);
+                        queueListenerBungee.setAuthOnline(true);
                     } catch (IOException e) {
                         getLogger().warning("Auth Server is down!!!");
-                        queueListener.setAuthOnline(false);
+                        queueListenerBungee.setAuthOnline(false);
                     }
                 } else {
                     getLogger().warning("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!!");
                 }
             } else {
-                queueListener.setAuthOnline(true);
+                queueListenerBungee.setAuthOnline(true);
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
     }
@@ -256,7 +253,7 @@ public final class PistonQueue extends Plugin {
                 String value = "";
 
                 for (String str : text) {
-                    if (str.toLowerCase().startsWith(PistonQueue.class.getPackage().getName().toLowerCase())) {
+                    if (str.toLowerCase().startsWith(PistonQueueBungee.class.getPackage().getName().toLowerCase())) {
                         value = str;
                     }
                 }
@@ -272,7 +269,7 @@ public final class PistonQueue extends Plugin {
 
     private void sendMessage(QueueType queue, boolean bool, ChatMessageType type) {
         if (bool) {
-            if (!queueListener.isMainOnline())
+            if (!queueListenerBungee.isMainOnline())
                 return;
 
             int position = 0;
@@ -329,33 +326,6 @@ public final class PistonQueue extends Plugin {
         }
     }
 
-    private String replacePosition(String text, int position, QueueType type) {
-        if (type.getDurationToPosition().containsKey(position)) {
-            Duration duration = type.getDurationToPosition().get(position);
-
-            return SharedChatUtils.formatDuration(text, duration, position);
-        } else {
-            AtomicInteger biggestPositionAtomic = new AtomicInteger();
-            AtomicReference<Duration> bestDurationAtomic = new AtomicReference<>(Duration.ZERO);
-
-            type.getDurationToPosition().forEach((integer, instant) -> {
-                if (integer > biggestPositionAtomic.get()) {
-                    biggestPositionAtomic.set(integer);
-                    bestDurationAtomic.set(instant);
-                }
-            });
-
-            int biggestPosition = biggestPositionAtomic.get();
-            Duration biggestDuration = bestDurationAtomic.get();
-
-            int difference = position - biggestPosition;
-
-            Duration imaginaryDuration = biggestDuration.plus(difference, ChronoUnit.MINUTES);
-
-            return SharedChatUtils.formatDuration(text, imaginaryDuration, position);
-        }
-    }
-
     private void sendCustomData() {
         Collection<ProxiedPlayer> networkPlayers = getProxy().getPlayers();
 
@@ -396,5 +366,46 @@ public final class PistonQueue extends Plugin {
                 entry.getKey().setPlayersWithTypeInMain(entry.getValue().get());
             }
         }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    public PlayerWrapper wrapPlayer(ProxiedPlayer player) {
+        return new PlayerWrapper() {
+            @Override
+            public boolean hasPermission(String node) {
+                return player.hasPermission(node);
+            }
+
+            @Override
+            public void connect(String server) {
+                Optional<ServerInfo> optional = Optional.ofNullable(getProxy().getServerInfo(server));
+
+                if (!optional.isPresent()) {
+                    getLogger().severe("Server" + server + " not found!!!");
+                    return;
+                }
+
+                player.connect(optional.get());
+            }
+
+            @Override
+            public Optional<String> getCurrentServer() {
+                return Optional.ofNullable(player.getServer()).map(server -> server.getInfo().getName());
+            }
+
+            @Override
+            public void sendMessage(String message) {
+                ChatUtils.sendMessage(ChatMessageType.CHAT, player, message);
+            }
+
+            @Override
+            public void sendActionBar(String message) {
+                ChatUtils.sendMessage(ChatMessageType.ACTION_BAR, player, message);
+            }
+
+            @Override
+            public UUID getUniqueId() {
+                return player.getUniqueId();
+            }
+        };
     }
 }
