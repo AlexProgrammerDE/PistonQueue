@@ -34,6 +34,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public final class QueueListenerBungee extends QueueListenerShared implements Listener {
@@ -99,8 +100,6 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
     }
 
     public void moveQueue() {
-        hotFixQueue();
-
         for (QueueType type : QueueType.values()) {
             for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
                 ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
@@ -218,21 +217,6 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
                     list.add(new Pair<>(position, Instant.now()));
                     type.getPositionCache().put(player.getUniqueId(), list);
                 }
-            }
-        }
-    }
-
-    private void hotFixQueue() {
-        for (QueueType type : QueueType.values()) {
-            int size = 0;
-
-            for (UUID ignored : type.getQueueMap().keySet()) {
-                size++;
-            }
-
-            if (size != type.getQueueMap().size()) {
-                type.setQueueMap(new LinkedHashMap<>());
-                plugin.getLogger().severe("Had to hotfix queue " + type.name() + "!!! Report this directly to the plugins developer!!!");
             }
         }
     }

@@ -34,8 +34,7 @@ public enum QueueType {
     VETERAN;
 
     @Getter
-    @Setter
-    private Map<UUID, String> queueMap = Collections.synchronizedMap(new LinkedHashMap<>());
+    private final Map<UUID, String> queueMap = Collections.synchronizedMap(new LinkedHashMap<>());
 
     @Getter
     private final Map<Integer, Duration> durationToPosition = Collections.synchronizedMap(new LinkedHashMap<>());

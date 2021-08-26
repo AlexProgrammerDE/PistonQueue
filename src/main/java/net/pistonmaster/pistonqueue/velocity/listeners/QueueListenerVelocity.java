@@ -99,8 +99,6 @@ public class QueueListenerVelocity extends QueueListenerShared {
     }
 
     public void moveQueue() {
-        hotFixQueue();
-
         for (QueueType type : QueueType.values()) {
             for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
                 Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
@@ -216,21 +214,6 @@ public class QueueListenerVelocity extends QueueListenerShared {
                     list.add(new Pair<>(position, Instant.now()));
                     type.getPositionCache().put(player.get().getUniqueId(), list);
                 }
-            }
-        }
-    }
-
-    private void hotFixQueue() {
-        for (QueueType type : QueueType.values()) {
-            int size = 0;
-
-            for (UUID ignored : type.getQueueMap().keySet()) {
-                size++;
-            }
-
-            if (size != type.getQueueMap().size()) {
-                type.setQueueMap(new LinkedHashMap<>());
-                plugin.getLogger().error("Had to hotfix queue " + type.name() + "!!! Report this directly to the plugins developer!!!");
             }
         }
     }
