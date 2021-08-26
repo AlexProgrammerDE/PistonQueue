@@ -304,7 +304,11 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
 
             @Override
             public void sendPlayerListHeaderAndFooter(List<String> header, List<String> footer) {
-                player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+                if (header == null || footer == null) {
+                    player.resetTabHeader();
+                } else {
+                    player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+                }
             }
 
             @Override

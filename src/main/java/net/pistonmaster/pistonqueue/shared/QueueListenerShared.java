@@ -20,12 +20,16 @@
 package net.pistonmaster.pistonqueue.shared;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
+@RequiredArgsConstructor
 public abstract class QueueListenerShared {
+    private final PistonQueueProxy plugin;
     @Setter
     @Getter
     protected boolean mainOnline = false;
@@ -101,6 +105,39 @@ public abstract class QueueListenerShared {
                     type.getPositionCache().put(player.get().getUniqueId(), list);
                 }
             }
+        }
+    }
+
+    protected void connectPlayer(QueueType type) {
+        for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
+            Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
+            if (!player.isPresent()) {
+                continue;
+            }
+
+            type.getQueueMap().remove(entry.getKey());
+
+            player.get().sendMessage(Config.JOININGMAINSERVER);
+            player.get().sendPlayerListHeaderAndFooter(null, null);
+
+            if (StorageTool.isShadowBanned(player.get().getUniqueId())
+                    && (Config.SHADOWBANTYPE == BanType.LOOP
+                    || (Config.SHADOWBANTYPE == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
+                player.get().sendMessage(Config.SHADOWBANMESSAGE);
+
+                type.getQueueMap().put(entry.getKey(), entry.getValue());
+
+                return;
+            }
+
+            indexPositionTime();
+
+            List<Pair<Integer, Instant>> cache = type.getPositionCache().get(entry.getKey());
+            if (cache != null) {
+                cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
+            }
+
+            player.get().connect(entry.getValue());
         }
     }
 }

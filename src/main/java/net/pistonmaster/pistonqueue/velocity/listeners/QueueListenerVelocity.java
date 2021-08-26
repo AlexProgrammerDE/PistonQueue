@@ -24,7 +24,6 @@ import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
-import lombok.RequiredArgsConstructor;
 import net.pistonmaster.pistonqueue.shared.*;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
@@ -34,9 +33,13 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 
-@RequiredArgsConstructor
 public class QueueListenerVelocity extends QueueListenerShared {
     private final PistonQueueVelocity plugin;
+
+    public QueueListenerVelocity(PistonQueueVelocity plugin) {
+        super(plugin);
+        this.plugin = plugin;
+    }
 
     @Subscribe
     public void onPostLogin(PostLoginEvent event) {
@@ -133,38 +136,7 @@ public class QueueListenerVelocity extends QueueListenerShared {
         }
     }
 
-    private void connectPlayer(QueueType type) {
-        for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-            Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
-            if (!player.isPresent()) {
-                continue;
-            }
 
-            type.getQueueMap().remove(entry.getKey());
-
-            player.get().sendMessage(Config.JOININGMAINSERVER);
-            player.get().sendPlayerListHeaderAndFooter(null, null);
-
-            if (StorageTool.isShadowBanned(player.get().getUniqueId())
-                    && (Config.SHADOWBANTYPE == BanType.LOOP
-                    || (Config.SHADOWBANTYPE == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
-                player.get().sendMessage(Config.SHADOWBANMESSAGE);
-
-                type.getQueueMap().put(entry.getKey(), entry.getValue());
-
-                return;
-            }
-
-            indexPositionTime();
-
-            List<Pair<Integer, Instant>> cache = type.getPositionCache().get(entry.getKey());
-            if (cache != null) {
-                cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
-            }
-
-            player.get().connect(entry.getValue());
-        }
-    }
 
     private void putQueue(PlayerWrapper player, ServerPreConnectEvent event) {
         QueueType type = QueueType.getQueueType(player::hasPermission);

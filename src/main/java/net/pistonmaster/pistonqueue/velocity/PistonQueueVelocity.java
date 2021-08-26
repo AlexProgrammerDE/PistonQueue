@@ -32,6 +32,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
+import net.kyori.adventure.text.Component;
 import net.pistonmaster.pistonqueue.data.PluginData;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.*;
@@ -39,7 +40,6 @@ import net.pistonmaster.pistonqueue.velocity.commands.MainCommand;
 import net.pistonmaster.pistonqueue.velocity.listeners.PistonListener;
 import net.pistonmaster.pistonqueue.velocity.listeners.QueueListenerVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.shared.MessageType;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
 
@@ -51,7 +51,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 @Plugin(id = "pistonqueue", name = PluginData.NAME, version = PluginData.VERSION,
         url = PluginData.URL, description = PluginData.DESCRIPTION, authors = {"AlexProgrammerDE"})
@@ -306,7 +305,11 @@ public class PistonQueueVelocity implements PistonQueueProxy {
 
             @Override
             public void sendPlayerListHeaderAndFooter(List<String> header, List<String> footer) {
-                player.sendPlayerListHeaderAndFooter(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+                if (header == null || footer == null) {
+                    player.sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
+                } else {
+                    player.sendPlayerListHeaderAndFooter(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+                }
             }
 
             @Override

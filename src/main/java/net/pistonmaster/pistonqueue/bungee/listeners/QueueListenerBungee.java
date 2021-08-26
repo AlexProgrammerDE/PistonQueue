@@ -20,7 +20,6 @@
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
 import com.google.common.collect.ImmutableList;
-import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -36,9 +35,13 @@ import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
 
-@RequiredArgsConstructor
 public final class QueueListenerBungee extends QueueListenerShared implements Listener {
     private final PistonQueueBungee plugin;
+
+    public QueueListenerBungee(PistonQueueBungee plugin) {
+        super(plugin);
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
@@ -135,41 +138,6 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
         }
     }
 
-    private void connectPlayer(QueueType type) {
-        for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-            Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
-            if (!player.isPresent()) {
-                continue;
-            }
-
-            type.getQueueMap().remove(entry.getKey());
-
-            player.get().sendMessage(Config.JOININGMAINSERVER);
-
-            player.get().sendPlayerListHeaderAndFooter(ImmutableList.of(""), ImmutableList.of(""));
-
-            if (StorageTool.isShadowBanned(player.get().getUniqueId())
-                    && (Config.SHADOWBANTYPE == BanType.LOOP
-                    || (Config.SHADOWBANTYPE == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
-
-                player.get().sendMessage(Config.SHADOWBANMESSAGE);
-
-                type.getQueueMap().put(entry.getKey(), entry.getValue());
-
-                return;
-            }
-
-            indexPositionTime();
-
-            List<Pair<Integer, Instant>> cache = type.getPositionCache().get(entry.getKey());
-            if (cache != null) {
-                cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
-            }
-
-            player.get().connect(entry.getValue());
-        }
-    }
-
     private void putQueue(PlayerWrapper player, ServerConnectEvent event) {
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
@@ -193,6 +161,4 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
     private boolean isAuthToQueue(ServerSwitchEvent event) {
         return event.getFrom() != null && event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) && event.getPlayer().getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
     }
-
-
 }
