@@ -27,6 +27,7 @@ import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.shared.Config;
+import net.pistonmaster.pistonqueue.shared.QueueType;
 
 public final class PistonListener implements Listener {
     private final PistonQueueBungee plugin;
@@ -48,17 +49,18 @@ public final class PistonListener implements Listener {
 
     @EventHandler
     public void onKick(ServerKickEvent event) {
-        if (Config.IFMAINDOWNSENDTOQUEUE && event.getKickedFrom() == plugin.getProxy().getServerInfo(Config.MAINSERVER)) {
+        if (Config.IFMAINDOWNSENDTOQUEUE && event.getKickedFrom().getName().equals(Config.MAINSERVER)) {
             for (String str : Config.DOWNWORDLIST) {
-                if (TextComponent.toLegacyText(event.getKickReasonComponent()).toLowerCase().contains(str)) {
-                    event.setCancelServer(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
-                    event.setCancelled(true);
+                if (!TextComponent.toLegacyText(event.getKickReasonComponent()).toLowerCase().contains(str))
+                    continue;
 
-                    ChatUtils.sendMessage(event.getPlayer(), Config.IFMAINDOWNSENDTOQUEUEMESSAGE);
+                event.setCancelServer(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
+                event.setCancelled(true);
 
-                    plugin.getQueueListenerBungee().getNoRecoveryMessage().add(event.getPlayer().getUniqueId());
-                    break;
-                }
+                ChatUtils.sendMessage(event.getPlayer(), Config.IFMAINDOWNSENDTOQUEUEMESSAGE);
+
+                QueueType.getQueueType(event.getPlayer()::hasPermission).getQueueMap().put(event.getPlayer().getUniqueId(), event.getKickedFrom().getName());
+                break;
             }
         }
 

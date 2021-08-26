@@ -32,9 +32,48 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public interface PistonQueueProxy {
     Optional<PlayerWrapper> getPlayer(UUID uuid);
+
+    default void sendMessage(QueueType queue, boolean bool, MessageType type) {
+        if (bool) {
+            int position = 0;
+
+            for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
+                Optional<PlayerWrapper> player = getPlayer(entry.getKey());
+                if (!player.isPresent()) {
+                    continue;
+                }
+
+                position++;
+
+                player.get().sendMessage(type, Config.QUEUEPOSITION
+                        .replace("%position%", String.valueOf(position))
+                        .replace("%total%", String.valueOf(queue.getQueueMap().size())));
+            }
+        }
+    }
+
+    default void updateTab(QueueType queue, List<String> header, List<String> footer) {
+        int position = 0;
+
+        for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
+            Optional<PlayerWrapper> player = getPlayer(entry.getKey());
+            if (!player.isPresent()) {
+                continue;
+            }
+
+            position++;
+
+            int finalPosition = position;
+            header = header.stream().map(str -> replacePosition(str, finalPosition, queue)).collect(Collectors.toList());
+            footer = footer.stream().map(str -> replacePosition(str, finalPosition, queue)).collect(Collectors.toList());
+
+            player.get().sendPlayerListHeaderAndFooter(header, footer);
+        }
+    }
 
     default String replacePosition(String text, int position, QueueType type) {
         if (type.getDurationToPosition().containsKey(position)) {

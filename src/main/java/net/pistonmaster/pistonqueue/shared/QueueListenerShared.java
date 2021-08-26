@@ -23,13 +23,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public abstract class QueueListenerShared {
-    @Getter
-    protected final List<UUID> noRecoveryMessage = new ArrayList<>();
     @Setter
     @Getter
     protected boolean mainOnline = false;
@@ -46,10 +42,7 @@ public abstract class QueueListenerShared {
         if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getCurrentServer().isPresent() && player.getCurrentServer().get().equals(Config.QUEUESERVER)) {
             type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
 
-            if (!noRecoveryMessage.contains(player.getUniqueId())) {
-                noRecoveryMessage.remove(player.getUniqueId());
-                player.sendMessage(Config.RECOVERYMESSAGE);
-            }
+            player.sendMessage(Config.RECOVERYMESSAGE);
         }
     }
 
@@ -82,5 +75,32 @@ public abstract class QueueListenerShared {
 
     protected boolean isAnyoneQueuedOfType(PlayerWrapper player) {
         return !QueueType.getQueueType(player::hasPermission).getQueueMap().isEmpty();
+    }
+
+    protected void indexPositionTime() {
+        for (QueueType type : QueueType.values()) {
+            int position = 0;
+
+            for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
+                Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
+                if (!player.isPresent()) {
+                    continue;
+                }
+
+                position++;
+
+                if (type.getPositionCache().containsKey(player.get().getUniqueId())) {
+                    List<Pair<Integer, Instant>> list = type.getPositionCache().get(player.get().getUniqueId());
+                    int finalPosition = position;
+                    if (list.stream().map(Pair::getLeft).noneMatch(integer -> integer == finalPosition)) {
+                        list.add(new Pair<>(position, Instant.now()));
+                    }
+                } else {
+                    List<Pair<Integer, Instant>> list = new ArrayList<>();
+                    list.add(new Pair<>(position, Instant.now()));
+                    type.getPositionCache().put(player.get().getUniqueId(), list);
+                }
+            }
+        }
     }
 }

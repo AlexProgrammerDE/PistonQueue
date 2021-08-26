@@ -19,6 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
+import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
@@ -34,7 +35,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.Consumer;
 
 @RequiredArgsConstructor
 public final class QueueListenerBungee extends QueueListenerShared implements Listener {
@@ -146,7 +146,7 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
 
             player.get().sendMessage(Config.JOININGMAINSERVER);
 
-            player.get().sendPlayerListHeaderAndFooter(null, null);
+            player.get().sendPlayerListHeaderAndFooter(ImmutableList.of(""), ImmutableList.of(""));
 
             if (StorageTool.isShadowBanned(player.get().getUniqueId())
                     && (Config.SHADOWBANTYPE == BanType.LOOP
@@ -194,30 +194,5 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
         return event.getFrom() != null && event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) && event.getPlayer().getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
     }
 
-    private void indexPositionTime() {
-        for (QueueType type : QueueType.values()) {
-            int position = 0;
 
-            for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-                ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
-                if (player == null || !player.isConnected()) {
-                    continue;
-                }
-
-                position++;
-
-                if (type.getPositionCache().containsKey(player.getUniqueId())) {
-                    List<Pair<Integer, Instant>> list = type.getPositionCache().get(player.getUniqueId());
-                    int finalPosition = position;
-                    if (list.stream().map(Pair::getLeft).noneMatch(integer -> integer == finalPosition)) {
-                        list.add(new Pair<>(position, Instant.now()));
-                    }
-                } else {
-                    List<Pair<Integer, Instant>> list = new ArrayList<>();
-                    list.add(new Pair<>(position, Instant.now()));
-                    type.getPositionCache().put(player.getUniqueId(), list);
-                }
-            }
-        }
-    }
 }

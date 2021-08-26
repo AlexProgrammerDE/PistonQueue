@@ -25,7 +25,6 @@ import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import lombok.RequiredArgsConstructor;
-import net.kyori.adventure.text.Component;
 import net.pistonmaster.pistonqueue.shared.*;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
@@ -189,32 +188,5 @@ public class QueueListenerVelocity extends QueueListenerShared {
 
     private boolean isAuthToQueue(ServerConnectedEvent event) {
         return event.getPreviousServer().isPresent() && event.getPreviousServer().get().equals(plugin.getProxyServer().getServer(Config.AUTHSERVER).get()) && event.getServer().equals(plugin.getProxyServer().getServer(Config.QUEUESERVER).get());
-    }
-
-    private void indexPositionTime() {
-        for (QueueType type : QueueType.values()) {
-            int position = 0;
-
-            for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-                Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
-                if (!player.isPresent()) {
-                    continue;
-                }
-
-                position++;
-
-                if (type.getPositionCache().containsKey(player.get().getUniqueId())) {
-                    List<Pair<Integer, Instant>> list = type.getPositionCache().get(player.get().getUniqueId());
-                    int finalPosition = position;
-                    if (list.stream().map(Pair::getLeft).noneMatch(integer -> integer == finalPosition)) {
-                        list.add(new Pair<>(position, Instant.now()));
-                    }
-                } else {
-                    List<Pair<Integer, Instant>> list = new ArrayList<>();
-                    list.add(new Pair<>(position, Instant.now()));
-                    type.getPositionCache().put(player.get().getUniqueId(), list);
-                }
-            }
-        }
     }
 }

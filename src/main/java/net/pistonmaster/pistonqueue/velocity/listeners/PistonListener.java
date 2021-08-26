@@ -24,6 +24,7 @@ import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.pistonmaster.pistonqueue.shared.Config;
+import net.pistonmaster.pistonqueue.shared.QueueType;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 
@@ -46,16 +47,16 @@ public class PistonListener {
 
     @Subscribe
     public void onKick(KickedFromServerEvent event) {
-        if (Config.IFMAINDOWNSENDTOQUEUE && event.getServer() == plugin.getProxyServer().getServer(Config.MAINSERVER).get()) {
-            if (!event.getServerKickReason().isPresent())
-                return;
+        if (Config.IFMAINDOWNSENDTOQUEUE && event.getServer().getServerInfo().getName().equals(Config.MAINSERVER)) {
+            if (event.getServerKickReason().isPresent()) {
+                for (String str : Config.DOWNWORDLIST) {
+                    if (!LegacyComponentSerializer.legacySection().serialize(event.getServerKickReason().get()).toLowerCase().contains(str))
+                        continue;
 
-            for (String str : Config.DOWNWORDLIST) {
-                if (LegacyComponentSerializer.legacySection().serialize(event.getServerKickReason().get()).toLowerCase().contains(str)) {
                     event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(Config.QUEUESERVER).get()));
                     event.getPlayer().sendMessage(ChatUtils.parseToComponent(Config.IFMAINDOWNSENDTOQUEUEMESSAGE));
-                    // plugin.getQueueListenerBungee().putQueueAuthFirst(event.getPlayer());
-                    plugin.getQueueListenerVelocity().getNoRecoveryMessage().add(event.getPlayer().getUniqueId());
+
+                    QueueType.getQueueType(event.getPlayer()::hasPermission).getQueueMap().put(event.getPlayer().getUniqueId(), event.getServer().getServerInfo().getName());
                     break;
                 }
             }

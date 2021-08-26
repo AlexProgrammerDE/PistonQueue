@@ -24,7 +24,6 @@ import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -41,7 +40,6 @@ import java.io.IOException;
 import java.net.Socket;
 import java.time.Instant;
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
@@ -96,15 +94,21 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
 
         // Sends the position message and updates tab on an interval in chat
         getProxy().getScheduler().schedule(this, () -> {
+            if (!queueListenerBungee.isMainOnline())
+                return;
+
             for (QueueType type : QueueType.values()) {
-                sendMessage(type, Config.POSITIONMESSAGECHAT, ChatMessageType.CHAT);
+                sendMessage(type, Config.POSITIONMESSAGECHAT, MessageType.CHAT);
             }
         }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Sends the position message and updates tab on an interval on hotbar
         getProxy().getScheduler().schedule(this, () -> {
+            if (!queueListenerBungee.isMainOnline())
+                return;
+
             for (QueueType type : QueueType.values()) {
-                sendMessage(type, Config.POSITIONMESSAGEHOTBAR, ChatMessageType.ACTION_BAR);
+                sendMessage(type, Config.POSITIONMESSAGEHOTBAR, MessageType.ACTION_BAR);
             }
         }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
@@ -210,65 +214,6 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
     }
 
-    private void sendMessage(QueueType queue, boolean bool, ChatMessageType type) {
-        if (bool) {
-            if (!queueListenerBungee.isMainOnline())
-                return;
-
-            int position = 0;
-
-            for (Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-                ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
-                if (player == null || !player.isConnected()) {
-                    continue;
-                }
-
-                position++;
-
-                ChatUtils.sendMessage(type, player, Config.QUEUEPOSITION
-                        .replace("%position%", String.valueOf(position))
-                        .replace("%total%", String.valueOf(queue.getQueueMap().size()))
-                );
-            }
-        }
-    }
-
-    private void updateTab(QueueType queue, List<String> header, List<String> footer) {
-        int position = 0;
-
-        for (Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-            ProxiedPlayer player = getProxy().getPlayer(entry.getKey());
-            if (player == null || !player.isConnected()) {
-                continue;
-            }
-
-            position++;
-
-            StringBuilder headerBuilder = new StringBuilder();
-            StringBuilder footerBuilder = new StringBuilder();
-
-            for (int i = 0; i < header.size(); i++) {
-                headerBuilder.append(ChatUtils.parseToString(replacePosition(header.get(i), position, queue)));
-
-                if (i != (header.size() - 1)) {
-                    headerBuilder.append("\n");
-                }
-            }
-
-            for (int i = 0; i < footer.size(); i++) {
-                footerBuilder.append(ChatUtils.parseToString(replacePosition(footer.get(i), position, queue)));
-
-                if (i != (footer.size() - 1)) {
-                    footerBuilder.append("\n");
-                }
-            }
-
-            player.setTabHeader(
-                    new ComponentBuilder(headerBuilder.toString()).create(),
-                    new ComponentBuilder(footerBuilder.toString()).create());
-        }
-    }
-
     private void sendCustomData() {
         Collection<ProxiedPlayer> networkPlayers = getProxy().getPlayers();
 
@@ -341,13 +286,20 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
             }
 
             @Override
-            public void sendMessage(String message) {
-                ChatUtils.sendMessage(ChatMessageType.CHAT, player, message);
+            public void sendMessage(MessageType type, String message) {
+                switch (type) {
+                    case CHAT:
+                        ChatUtils.sendMessage(ChatMessageType.CHAT, player, message);
+                        break;
+                    case ACTION_BAR:
+                        ChatUtils.sendMessage(ChatMessageType.ACTION_BAR, player, message);
+                        break;
+                }
             }
 
             @Override
-            public void sendActionBar(String message) {
-                ChatUtils.sendMessage(ChatMessageType.ACTION_BAR, player, message);
+            public void sendMessage(String message) {
+                sendMessage(MessageType.CHAT, message);
             }
 
             @Override

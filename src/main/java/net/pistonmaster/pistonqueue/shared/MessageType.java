@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.velocity.utils;
+package net.pistonmaster.pistonqueue.shared;
 
 public enum MessageType {
     CHAT,

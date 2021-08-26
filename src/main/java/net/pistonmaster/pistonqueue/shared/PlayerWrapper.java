@@ -28,7 +28,7 @@ public interface PlayerWrapper {
     void connect(String server);
     Optional<String> getCurrentServer();
     void sendMessage(String message);
-    void sendActionBar(String message);
+    void sendMessage(MessageType type, String message);
     void sendPlayerListHeaderAndFooter(List<String> header, List<String> footer);
     UUID getUniqueId();
 }

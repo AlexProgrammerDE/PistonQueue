@@ -32,7 +32,6 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.pistonmaster.pistonqueue.data.PluginData;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.*;
@@ -40,8 +39,7 @@ import net.pistonmaster.pistonqueue.velocity.commands.MainCommand;
 import net.pistonmaster.pistonqueue.velocity.listeners.PistonListener;
 import net.pistonmaster.pistonqueue.velocity.listeners.QueueListenerVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.velocity.utils.MessageType;
-import net.pistonmaster.pistonqueue.shared.StorageTool;
+import net.pistonmaster.pistonqueue.shared.MessageType;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
 
@@ -53,6 +51,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Plugin(id = "pistonqueue", name = PluginData.NAME, version = PluginData.VERSION,
         url = PluginData.URL, description = PluginData.DESCRIPTION, authors = {"AlexProgrammerDE"})
@@ -120,6 +119,9 @@ public class PistonQueueVelocity implements PistonQueueProxy {
 
         // Sends the position message and updates tab on an interval in chat
         proxyServer.getScheduler().buildTask(this, () -> {
+            if (!queueListenerVelocity.isMainOnline())
+                return;
+
             for (QueueType type : QueueType.values()) {
                 sendMessage(type, Config.POSITIONMESSAGECHAT, MessageType.CHAT);
             }
@@ -127,6 +129,9 @@ public class PistonQueueVelocity implements PistonQueueProxy {
 
         // Sends the position message and updates tab on an interval on hotbar
         proxyServer.getScheduler().buildTask(this, () -> {
+            if (!queueListenerVelocity.isMainOnline())
+                return;
+
             for (QueueType type : QueueType.values()) {
                 sendMessage(type, Config.POSITIONMESSAGEHOTBAR, MessageType.ACTION_BAR);
             }
@@ -203,74 +208,6 @@ public class PistonQueueVelocity implements PistonQueueProxy {
                 queueListenerVelocity.setAuthOnline(true);
             }
         }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
-    }
-
-    private void sendMessage(QueueType queue, boolean bool, MessageType type) {
-        if (bool) {
-            if (!queueListenerVelocity.isMainOnline())
-                return;
-
-            int position = 0;
-
-            for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-                Optional<Player> player = proxyServer.getPlayer(entry.getKey());
-                if (!player.isPresent()) {
-                    continue;
-                }
-
-                position++;
-
-                switch (type) {
-                    case CHAT:
-                        player.get().sendMessage(ChatUtils.parseToComponent(Config.QUEUEPOSITION
-                                .replace("%position%", String.valueOf(position))
-                                .replace("%total%", String.valueOf(queue.getQueueMap().size()))));
-                        break;
-                    case ACTION_BAR:
-                        player.get().sendActionBar(
-                                ChatUtils.parseToComponent(Config.QUEUEPOSITION
-                                        .replace("%position%", String.valueOf(position))
-                                        .replace("%total%", String.valueOf(queue.getQueueMap().size()))));
-                        break;
-                }
-            }
-        }
-    }
-
-    private void updateTab(QueueType queue, List<String> header, List<String> footer) {
-        int position = 0;
-
-        for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-            Optional<Player> player = proxyServer.getPlayer(entry.getKey());
-            if (!player.isPresent()) {
-                continue;
-            }
-
-            position++;
-
-            StringBuilder headerBuilder = new StringBuilder();
-            StringBuilder footerBuilder = new StringBuilder();
-
-            for (int i = 0; i < header.size(); i++) {
-                headerBuilder.append(ChatUtils.parseToString(replacePosition(header.get(i), position, queue)));
-
-                if (i != (header.size() - 1)) {
-                    headerBuilder.append("\n");
-                }
-            }
-
-            for (int i = 0; i < footer.size(); i++) {
-                footerBuilder.append(ChatUtils.parseToString(replacePosition(footer.get(i), position, queue)));
-
-                if (i != (footer.size() - 1)) {
-                    footerBuilder.append("\n");
-                }
-            }
-
-            player.get().sendPlayerListHeaderAndFooter(
-                    LegacyComponentSerializer.legacySection().deserialize(headerBuilder.toString()),
-                    LegacyComponentSerializer.legacySection().deserialize(footerBuilder.toString()));
-        }
     }
 
     private void sendCustomData() {
@@ -351,13 +288,20 @@ public class PistonQueueVelocity implements PistonQueueProxy {
             }
 
             @Override
-            public void sendMessage(String message) {
-                ChatUtils.sendMessage(MessageType.CHAT, player, message);
+            public void sendMessage(MessageType type, String message) {
+                switch (type) {
+                    case CHAT:
+                        ChatUtils.sendMessage(MessageType.CHAT, player, message);
+                        break;
+                    case ACTION_BAR:
+                        ChatUtils.sendMessage(MessageType.ACTION_BAR, player, message);
+                        break;
+                }
             }
 
             @Override
-            public void sendActionBar(String message) {
-                ChatUtils.sendMessage(MessageType.ACTION_BAR, player, message);
+            public void sendMessage(String message) {
+                sendMessage(MessageType.CHAT, message);
             }
 
             @Override
