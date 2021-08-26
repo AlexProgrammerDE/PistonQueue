@@ -20,6 +20,7 @@
 package net.pistonmaster.pistonqueue.velocity.utils;
 
 import com.velocitypowered.api.proxy.Player;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.pistonmaster.pistonqueue.shared.SharedChatUtils;
@@ -56,6 +57,9 @@ public class ChatUtils {
     }
 
     public static TextComponent parseTab(List<String> tab) {
+        if (tab == null)
+            return Component.empty();
+
         StringBuilder builder = new StringBuilder();
 
         for (int i = 0; i < tab.size(); i++) {

@@ -26,10 +26,10 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
-import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
 import net.pistonmaster.pistonqueue.shared.Config;
 import net.pistonmaster.pistonqueue.shared.QueueAPI;
 import net.pistonmaster.pistonqueue.shared.QueueType;
+import net.pistonmaster.pistonqueue.shared.StorageTool;
 
 import java.util.*;
 
@@ -120,7 +120,7 @@ public final class MainCommand extends Command implements TabExecutor {
                                         break;
                                     }
 
-                                    if (StorageTool.shadowBanPlayer(player, calendar.getTime())) {
+                                    if (StorageTool.shadowBanPlayer(player.getUniqueId(), calendar.getTime())) {
                                         sendLine(sender);
                                         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
                                         sender.sendMessage(new ComponentBuilder("Successfully shadowbanned " + player.getName() + "!").color(ChatColor.GREEN).create());
@@ -153,7 +153,7 @@ public final class MainCommand extends Command implements TabExecutor {
                             if (plugin.getProxy().getPlayer(args[1]) != null) {
                                 ProxiedPlayer player = plugin.getProxy().getPlayer(args[1]);
 
-                                if (StorageTool.unShadowBanPlayer(player)) {
+                                if (StorageTool.unShadowBanPlayer(player.getUniqueId())) {
                                     sendLine(sender);
                                     sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());
                                     sender.sendMessage(new ComponentBuilder("Successfully unshadowbanned " + player.getName() + "!").color(ChatColor.GREEN).create());

@@ -29,7 +29,7 @@ import net.pistonmaster.pistonqueue.shared.Config;
 import net.pistonmaster.pistonqueue.shared.QueueAPI;
 import net.pistonmaster.pistonqueue.shared.QueueType;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
-import net.pistonmaster.pistonqueue.velocity.utils.StorageTool;
+import net.pistonmaster.pistonqueue.shared.StorageTool;
 
 import java.util.*;
 
@@ -176,7 +176,7 @@ public final class MainCommand implements SimpleCommand {
                                         break;
                                     }
 
-                                    if (StorageTool.shadowBanPlayer(player, calendar.getTime())) {
+                                    if (StorageTool.shadowBanPlayer(player.getUniqueId(), calendar.getTime())) {
                                         sendLine(sender);
                                         sender.sendMessage(Component.text("PistonQueue").color(NamedTextColor.GOLD));
                                         sender.sendMessage(Component.text("Successfully shadowbanned " + player.getUsername() + "!").color(NamedTextColor.GREEN));
@@ -209,7 +209,7 @@ public final class MainCommand implements SimpleCommand {
                             if (plugin.getProxyServer().getPlayer(args[1]).isPresent()) {
                                 Player player = plugin.getProxyServer().getPlayer(args[1]).get();
 
-                                if (StorageTool.unShadowBanPlayer(player)) {
+                                if (StorageTool.unShadowBanPlayer(player.getUniqueId())) {
                                     sendLine(sender);
                                     sender.sendMessage(Component.text("PistonQueue").color(NamedTextColor.GOLD));
                                     sender.sendMessage(Component.text("Successfully unshadowbanned " + player.getUsername() + "!").color(NamedTextColor.GREEN));

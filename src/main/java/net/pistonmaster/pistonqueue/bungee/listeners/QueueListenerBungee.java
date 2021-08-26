@@ -28,7 +28,6 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
 import net.pistonmaster.pistonqueue.shared.*;
 
 import java.time.Duration;
@@ -44,7 +43,7 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
     public void onPostLogin(PostLoginEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        if (StorageTool.isShadowBanned(player) && Config.SHADOWBANTYPE == BanType.KICK) {
+        if (StorageTool.isShadowBanned(player.getUniqueId()) && Config.SHADOWBANTYPE == BanType.KICK) {
             player.disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
         }
     }
@@ -146,11 +145,11 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
 
             type.getQueueMap().remove(entry.getKey());
 
-            ChatUtils.sendMessage(player, Config.JOININGMAINSERVER);
+            player.get().sendMessage(Config.JOININGMAINSERVER);
 
             player.get().sendPlayerListHeaderAndFooter(null, null);
 
-            if (StorageTool.isShadowBanned(player)
+            if (StorageTool.isShadowBanned(player.get().getUniqueId())
                     && (Config.SHADOWBANTYPE == BanType.LOOP
                     || (Config.SHADOWBANTYPE == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
 

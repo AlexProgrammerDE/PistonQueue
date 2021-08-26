@@ -33,7 +33,6 @@ import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
 import net.pistonmaster.pistonqueue.bungee.listeners.PistonListener;
 import net.pistonmaster.pistonqueue.bungee.listeners.QueueListenerBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.*;
 import org.bstats.bungeecord.Metrics;
@@ -60,7 +59,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
         logger.info(ChatColor.BLUE + "Loading config");
         processConfig(getDataFolder());
 
-        StorageTool.setupTool(this);
+        StorageTool.setupTool(getDataFolder());
         initializeReservationSlots();
 
         logger.info(ChatColor.BLUE + "Looking for hooks");

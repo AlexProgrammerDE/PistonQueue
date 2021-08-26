@@ -17,13 +17,11 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.bungee.utils;
+package net.pistonmaster.pistonqueue.shared;
 
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
-import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
+import org.spongepowered.configurate.ConfigurationNode;
+import org.spongepowered.configurate.serialize.SerializationException;
+import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,10 +29,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.UUID;
 
 public final class StorageTool {
-    private static PistonQueueBungee plugin;
-    private static Configuration dataConfig;
+    private static File dataDirectory;
+    private static ConfigurationNode dataConfig;
     private static File dataFile;
 
     private StorageTool() {
@@ -47,11 +46,15 @@ public final class StorageTool {
      * @param date   The date when he will be unbanned.
      * @return true if player got shadow banned and if already shadow banned false.
      */
-    public static boolean shadowBanPlayer(ProxiedPlayer player, Date date) {
+    public static boolean shadowBanPlayer(UUID player, Date date) {
         manageBan(player);
 
-        if (!dataConfig.contains(player.getUniqueId().toString())) {
-            dataConfig.set(player.getUniqueId().toString(), date.toString());
+        if (dataConfig.node(player.toString()).virtual()) {
+            try {
+                dataConfig.node(player.toString()).set(date.toString());
+            } catch (SerializationException e) {
+                e.printStackTrace();
+            }
 
             saveData();
 
@@ -67,9 +70,13 @@ public final class StorageTool {
      * @param player The player to unshadowban.
      * @return true if player got unshadowbanned and false if not was shadow banned.
      */
-    public static boolean unShadowBanPlayer(ProxiedPlayer player) {
-        if (dataConfig.contains(player.getUniqueId().toString())) {
-            dataConfig.set(player.getUniqueId().toString(), null);
+    public static boolean unShadowBanPlayer(UUID player) {
+        if (!dataConfig.node(player.toString()).virtual()) {
+            try {
+                dataConfig.node(player.toString()).set(null);
+            } catch (SerializationException e) {
+                e.printStackTrace();
+            }
 
             saveData();
 
@@ -79,20 +86,20 @@ public final class StorageTool {
         }
     }
 
-    public static boolean isShadowBanned(ProxiedPlayer player) {
+    public static boolean isShadowBanned(UUID player) {
         manageBan(player);
 
-        return dataConfig.contains(player.getUniqueId().toString());
+        return !dataConfig.node(player.toString()).virtual();
     }
 
-    private static void manageBan(ProxiedPlayer player) {
+    private static void manageBan(UUID player) {
         Date now = new Date();
 
-        if (dataConfig.contains(player.getUniqueId().toString())) {
+        if (!dataConfig.node(player.toString()).virtual()) {
             SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", new Locale("us"));
 
             try {
-                Date date = sdf.parse(dataConfig.getString(player.getUniqueId().toString()));
+                Date date = sdf.parse(dataConfig.getString(player.toString()));
 
                 if (now.after(date) || (now.equals(date))) {
                     unShadowBanPlayer(player);
@@ -107,7 +114,7 @@ public final class StorageTool {
         generateFile();
 
         try {
-            dataConfig = ConfigurationProvider.getProvider(YamlConfiguration.class).load(dataFile);
+            dataConfig = YamlConfigurationLoader.builder().path(dataFile.toPath()).build().load();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,14 +124,14 @@ public final class StorageTool {
         generateFile();
 
         try {
-            ConfigurationProvider.getProvider(YamlConfiguration.class).save(dataConfig, dataFile);
+            YamlConfigurationLoader.builder().path(dataFile.toPath()).build().save(dataConfig);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private static void generateFile() {
-        if (!plugin.getDataFolder().exists() && !plugin.getDataFolder().mkdir())
+        if (!dataDirectory.exists() && !dataDirectory.mkdir())
             return;
 
         if (!dataFile.exists()) {
@@ -137,9 +144,8 @@ public final class StorageTool {
         }
     }
 
-    public static void setupTool(PistonQueueBungee plugin) {
-        StorageTool.plugin = plugin;
-        StorageTool.dataFile = new File(plugin.getDataFolder(), "data.yml");
+    public static void setupTool(File dataDirectory) {
+        StorageTool.dataFile = new File(dataDirectory, "data.yml");
 
         loadData();
     }

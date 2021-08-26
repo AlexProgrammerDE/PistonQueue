@@ -41,7 +41,7 @@ import net.pistonmaster.pistonqueue.velocity.listeners.PistonListener;
 import net.pistonmaster.pistonqueue.velocity.listeners.QueueListenerVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.velocity.utils.MessageType;
-import net.pistonmaster.pistonqueue.velocity.utils.StorageTool;
+import net.pistonmaster.pistonqueue.shared.StorageTool;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
 
@@ -83,7 +83,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
         logger.info("Loading config");
         processConfig(dataDirectory);
 
-        StorageTool.setupTool(this);
+        StorageTool.setupTool(dataDirectory);
         initializeReservationSlots();
 
         logger.info("Looking for hooks");

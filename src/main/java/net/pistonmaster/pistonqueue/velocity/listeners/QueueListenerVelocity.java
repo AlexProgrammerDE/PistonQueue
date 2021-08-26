@@ -29,7 +29,7 @@ import net.kyori.adventure.text.Component;
 import net.pistonmaster.pistonqueue.shared.*;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.velocity.utils.StorageTool;
+import net.pistonmaster.pistonqueue.shared.StorageTool;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -43,7 +43,7 @@ public class QueueListenerVelocity extends QueueListenerShared {
     public void onPostLogin(PostLoginEvent event) {
         Player player = event.getPlayer();
 
-        if (StorageTool.isShadowBanned(player) && Config.SHADOWBANTYPE == BanType.KICK) {
+        if (StorageTool.isShadowBanned(player.getUniqueId()) && Config.SHADOWBANTYPE == BanType.KICK) {
             player.disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
         }
     }
@@ -146,9 +146,9 @@ public class QueueListenerVelocity extends QueueListenerShared {
             type.getQueueMap().remove(entry.getKey());
 
             player.get().sendMessage(Config.JOININGMAINSERVER);
-            player.get().sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
+            player.get().sendPlayerListHeaderAndFooter(null, null);
 
-            if (StorageTool.isShadowBanned(player.get())
+            if (StorageTool.isShadowBanned(player.get().getUniqueId())
                     && (Config.SHADOWBANTYPE == BanType.LOOP
                     || (Config.SHADOWBANTYPE == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
                 player.get().sendMessage(Config.SHADOWBANMESSAGE);
