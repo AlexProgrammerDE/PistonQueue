@@ -1,6 +1,7 @@
 # PistonQueue
 
 [![PistonDev Discord](https://discord.com/api/guilds/739784741124833301/embed.png)](https://discord.gg/CDrcxzH)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue?ref=badge_shield)
 [![](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://github.com/AlexProgrammerDE/PistonQueue)
 
 ## About
@@ -40,3 +41,7 @@ Check out the wiki for a tutorial on how to setup PistonQueue.
 [![PistonDev Discord](https://discord.com/api/guilds/739784741124833301/widget.png?style=banner2)](https://discord.gg/CDrcxzH)
 
 If you find any bugs or ways to improve the plugin open a issue on github.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue?ref=badge_large)
