@@ -29,9 +29,6 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
 import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
 import net.pistonmaster.pistonqueue.bungee.listeners.PistonListener;
 import net.pistonmaster.pistonqueue.bungee.listeners.QueueListenerBungee;
@@ -41,11 +38,8 @@ import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.*;
 import org.bstats.bungeecord.Metrics;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.Socket;
-import java.nio.file.Files;
 import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
@@ -316,6 +310,11 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
                 entry.getKey().setPlayersWithTypeInMain(entry.getValue().get());
             }
         }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public Optional<PlayerWrapper> getPlayer(UUID uuid) {
+        return Optional.ofNullable(getProxy().getPlayer(uuid)).map(this::wrapPlayer);
     }
 
     public PlayerWrapper wrapPlayer(ProxiedPlayer player) {

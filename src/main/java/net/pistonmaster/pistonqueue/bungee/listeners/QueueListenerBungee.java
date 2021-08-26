@@ -139,8 +139,8 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
 
     private void connectPlayer(QueueType type) {
         for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-            ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
-            if (player == null || !player.isConnected()) {
+            Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
+            if (!player.isPresent()) {
                 continue;
             }
 
@@ -148,13 +148,13 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
 
             ChatUtils.sendMessage(player, Config.JOININGMAINSERVER);
 
-            player.resetTabHeader();
+            player.get().sendPlayerListHeaderAndFooter(null, null);
 
             if (StorageTool.isShadowBanned(player)
                     && (Config.SHADOWBANTYPE == BanType.LOOP
                     || (Config.SHADOWBANTYPE == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
 
-                ChatUtils.sendMessage(player, Config.SHADOWBANMESSAGE);
+                player.get().sendMessage(Config.SHADOWBANMESSAGE);
 
                 type.getQueueMap().put(entry.getKey(), entry.getValue());
 
@@ -168,7 +168,7 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
                 cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
             }
 
-            player.connect(plugin.getProxy().getServerInfo(entry.getValue()));
+            player.get().connect(entry.getValue());
         }
     }
 

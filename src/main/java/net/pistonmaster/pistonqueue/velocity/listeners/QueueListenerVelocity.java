@@ -24,9 +24,7 @@ import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.Player;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.kyori.adventure.text.Component;
 import net.pistonmaster.pistonqueue.shared.*;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
@@ -105,9 +103,9 @@ public class QueueListenerVelocity extends QueueListenerShared {
 
         for (QueueType type : QueueType.values()) {
             for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-                Optional<Player> player = plugin.getProxyServer().getPlayer(entry.getKey());
+                Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
 
-                if (!player.isPresent() || (player.get().getCurrentServer().isPresent() && !plugin.getProxyServer().getServer(Config.QUEUESERVER).get().equals(player.get().getCurrentServer().get().getServer()))) {
+                if (!player.isPresent() || (player.get().getCurrentServer().isPresent() && !player.get().getCurrentServer().get().equals(Config.QUEUESERVER))) {
                     type.getQueueMap().remove(entry.getKey());
                 }
             }
@@ -140,20 +138,20 @@ public class QueueListenerVelocity extends QueueListenerShared {
 
     private void connectPlayer(QueueType type) {
         for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-            Optional<Player> player = plugin.getProxyServer().getPlayer(entry.getKey());
+            Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
             if (!player.isPresent()) {
                 continue;
             }
 
             type.getQueueMap().remove(entry.getKey());
 
-            player.get().sendMessage(ChatUtils.parseToComponent(Config.JOININGMAINSERVER));
+            player.get().sendMessage(Config.JOININGMAINSERVER);
             player.get().sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
 
             if (StorageTool.isShadowBanned(player.get())
                     && (Config.SHADOWBANTYPE == BanType.LOOP
                     || (Config.SHADOWBANTYPE == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
-                player.get().sendMessage(ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
+                player.get().sendMessage(Config.SHADOWBANMESSAGE);
 
                 type.getQueueMap().put(entry.getKey(), entry.getValue());
 
@@ -167,7 +165,7 @@ public class QueueListenerVelocity extends QueueListenerShared {
                 cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
             }
 
-            player.get().createConnectionRequest(plugin.getProxyServer().getServer(entry.getValue()).get()).connect();
+            player.get().connect(entry.getValue());
         }
     }
 
@@ -200,7 +198,7 @@ public class QueueListenerVelocity extends QueueListenerShared {
             int position = 0;
 
             for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-                Optional<Player> player = plugin.getProxyServer().getPlayer(entry.getKey());
+                Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
                 if (!player.isPresent()) {
                     continue;
                 }

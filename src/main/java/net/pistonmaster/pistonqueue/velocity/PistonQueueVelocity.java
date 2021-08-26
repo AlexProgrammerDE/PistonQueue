@@ -317,6 +317,11 @@ public class PistonQueueVelocity implements PistonQueueProxy {
         }).delay(0, TimeUnit.MILLISECONDS).repeat(1, TimeUnit.SECONDS).schedule();
     }
 
+    @Override
+    public Optional<PlayerWrapper> getPlayer(UUID uuid) {
+        return proxyServer.getPlayer(uuid).map(this::wrapPlayer);
+    }
+
     public PlayerWrapper wrapPlayer(Player player) {
         return new PlayerWrapper() {
             @Override

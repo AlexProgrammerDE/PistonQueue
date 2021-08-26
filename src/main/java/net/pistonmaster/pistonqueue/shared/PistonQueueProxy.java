@@ -29,13 +29,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public interface PistonQueueProxy {
+    Optional<PlayerWrapper> getPlayer(UUID uuid);
+
     default String replacePosition(String text, int position, QueueType type) {
         if (type.getDurationToPosition().containsKey(position)) {
             Duration duration = type.getDurationToPosition().get(position);
