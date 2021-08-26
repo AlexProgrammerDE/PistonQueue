@@ -19,7 +19,6 @@
  */
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
-import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -30,10 +29,8 @@ import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.shared.*;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.Map;
+import java.util.UUID;
 
 public final class QueueListenerBungee extends QueueListenerShared implements Listener {
     private final PistonQueueBungee plugin;
@@ -102,41 +99,6 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
         }
     }
 
-    public void moveQueue() {
-        for (QueueType type : QueueType.values()) {
-            for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-                ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
-
-                if (player == null || (player.getServer() != null && !plugin.getProxy().getServerInfo(Config.QUEUESERVER).equals(player.getServer().getInfo()))) {
-                    type.getQueueMap().remove(entry.getKey());
-                }
-            }
-        }
-
-        if (Config.RECOVERY) {
-            plugin.getProxy().getPlayers().stream().map(plugin::wrapPlayer).forEach(this::doRecovery);
-        }
-
-        if (Config.PAUSEQUEUEIFMAINDOWN) {
-            if (mainOnline) {
-                if (onlineSince != null) {
-                    if (Duration.between(onlineSince, Instant.now()).getSeconds() >= Config.STARTTIME) {
-                        onlineSince = null;
-                    } else {
-                        return;
-                    }
-                }
-            } else {
-                return;
-            }
-        }
-
-        for (QueueType type : QueueType.values()) {
-            if (!isQueueFull(type)) {
-                connectPlayer(type);
-            }
-        }
-    }
 
     private void putQueue(PlayerWrapper player, ServerConnectEvent event) {
         QueueType type = QueueType.getQueueType(player::hasPermission);

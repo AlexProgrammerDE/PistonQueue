@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -138,6 +138,42 @@ public abstract class QueueListenerShared {
             }
 
             player.get().connect(entry.getValue());
+        }
+    }
+
+    public void moveQueue() {
+        for (QueueType type : QueueType.values()) {
+            for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
+                Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
+
+                if (!player.isPresent() || (player.get().getCurrentServer().isPresent() && !player.get().getCurrentServer().get().equals(Config.QUEUESERVER))) {
+                    type.getQueueMap().remove(entry.getKey());
+                }
+            }
+        }
+
+        if (Config.RECOVERY) {
+            plugin.getPlayers().forEach(this::doRecovery);
+        }
+
+        if (Config.PAUSEQUEUEIFMAINDOWN) {
+            if (mainOnline) {
+                if (onlineSince != null) {
+                    if (Duration.between(onlineSince, Instant.now()).getSeconds() >= Config.STARTTIME) {
+                        onlineSince = null;
+                    } else {
+                        return;
+                    }
+                }
+            } else {
+                return;
+            }
+        }
+
+        for (QueueType type : QueueType.values()) {
+            if (!isQueueFull(type)) {
+                connectPlayer(type);
+            }
         }
     }
 }

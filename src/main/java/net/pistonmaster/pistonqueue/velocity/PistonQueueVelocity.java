@@ -51,6 +51,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 @Plugin(id = "pistonqueue", name = PluginData.NAME, version = PluginData.VERSION,
         url = PluginData.URL, description = PluginData.DESCRIPTION, authors = {"AlexProgrammerDE"})
@@ -256,6 +257,11 @@ public class PistonQueueVelocity implements PistonQueueProxy {
     @Override
     public Optional<PlayerWrapper> getPlayer(UUID uuid) {
         return proxyServer.getPlayer(uuid).map(this::wrapPlayer);
+    }
+
+    @Override
+    public List<PlayerWrapper> getPlayers() {
+        return proxyServer.getAllPlayers().stream().map(this::wrapPlayer).collect(Collectors.toList());
     }
 
     public PlayerWrapper wrapPlayer(Player player) {

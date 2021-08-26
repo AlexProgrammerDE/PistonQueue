@@ -43,6 +43,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @SuppressWarnings({"deprecation"})
 public final class PistonQueueBungee extends Plugin implements PistonQueueProxy {
@@ -259,6 +260,11 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
     @Override
     public Optional<PlayerWrapper> getPlayer(UUID uuid) {
         return Optional.ofNullable(getProxy().getPlayer(uuid)).map(this::wrapPlayer);
+    }
+
+    @Override
+    public List<PlayerWrapper> getPlayers() {
+        return getProxy().getPlayers().stream().map(this::wrapPlayer).collect(Collectors.toList());
     }
 
     public PlayerWrapper wrapPlayer(ProxiedPlayer player) {

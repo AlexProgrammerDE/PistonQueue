@@ -28,8 +28,8 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.pistonmaster.pistonqueue.shared.Config;
 import net.pistonmaster.pistonqueue.shared.QueueAPI;
 import net.pistonmaster.pistonqueue.shared.QueueType;
-import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.shared.StorageTool;
+import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 
 import java.util.*;
 

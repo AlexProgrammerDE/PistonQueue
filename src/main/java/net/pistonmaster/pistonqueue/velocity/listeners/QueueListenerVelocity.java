@@ -27,11 +27,9 @@ import com.velocitypowered.api.proxy.Player;
 import net.pistonmaster.pistonqueue.shared.*;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.shared.StorageTool;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.*;
+import java.util.Map;
+import java.util.UUID;
 
 public class QueueListenerVelocity extends QueueListenerShared {
     private final PistonQueueVelocity plugin;
@@ -99,44 +97,6 @@ public class QueueListenerVelocity extends QueueListenerShared {
             }
         }
     }
-
-    public void moveQueue() {
-        for (QueueType type : QueueType.values()) {
-            for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-                Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
-
-                if (!player.isPresent() || (player.get().getCurrentServer().isPresent() && !player.get().getCurrentServer().get().equals(Config.QUEUESERVER))) {
-                    type.getQueueMap().remove(entry.getKey());
-                }
-            }
-        }
-
-        if (Config.RECOVERY) {
-            plugin.getProxyServer().getAllPlayers().stream().map(plugin::wrapPlayer).forEach(this::doRecovery);
-        }
-
-        if (Config.PAUSEQUEUEIFMAINDOWN) {
-            if (mainOnline) {
-                if (onlineSince != null) {
-                    if (Duration.between(onlineSince, Instant.now()).getSeconds() >= Config.STARTTIME) {
-                        onlineSince = null;
-                    } else {
-                        return;
-                    }
-                }
-            } else {
-                return;
-            }
-        }
-
-        for (QueueType type : QueueType.values()) {
-            if (!isQueueFull(type)) {
-                connectPlayer(type);
-            }
-        }
-    }
-
-
 
     private void putQueue(PlayerWrapper player, ServerPreConnectEvent event) {
         QueueType type = QueueType.getQueueType(player::hasPermission);
