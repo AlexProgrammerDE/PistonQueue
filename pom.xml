@@ -46,6 +46,10 @@
                             <pattern>org.bstats</pattern>
                             <shadedPattern>net.pistonmaster.pistonqueue.shade.bstats</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>org.spongepowered.configurate</pattern>
+                            <shadedPattern>net.pistonmaster.pistonqueue.shade.configurate</shadedPattern>
+                        </relocation>
                     </relocations>
                     <filters>
                         <filter>

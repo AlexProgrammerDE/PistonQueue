@@ -44,13 +44,8 @@ import net.pistonmaster.pistonqueue.velocity.utils.MessageType;
 import net.pistonmaster.pistonqueue.velocity.utils.StorageTool;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.serialize.SerializationException;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
@@ -73,8 +68,6 @@ public class PistonQueueVelocity implements PistonQueueProxy {
     @Getter
     private final QueueListenerVelocity queueListenerVelocity = new QueueListenerVelocity(this);
     private final Metrics.Factory metricsFactory;
-    @Getter
-    private BanType banType;
 
     @Inject
     public PistonQueueVelocity(ProxyServer proxyServer, Logger logger, @DataDirectory Path dataDirectory, PluginContainer pluginContainer, Metrics.Factory metricsFactory) {
@@ -88,7 +81,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         logger.info("Loading config");
-        processConfig();
+        processConfig(dataDirectory);
 
         StorageTool.setupTool(this);
         initializeReservationSlots();
@@ -210,61 +203,6 @@ public class PistonQueueVelocity implements PistonQueueProxy {
                 queueListenerVelocity.setAuthOnline(true);
             }
         }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
-    }
-
-    public void processConfig() {
-        try {
-            if (!dataDirectory.exists() && !dataDirectory.mkdir())
-                return;
-
-            File file = new File(dataDirectory, "config.yml");
-
-            if (!file.exists()) {
-                try {
-                    Files.copy(Objects.requireNonNull(PistonQueueVelocity.class.getClassLoader().getResourceAsStream("proxyconfig.yml")), file.toPath());
-                    loadConfig();
-                } catch (IOException ie) {
-                    ie.printStackTrace();
-                }
-            }
-
-            loadConfig();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void loadConfig() throws IOException {
-        ConfigurationNode config = YamlConfigurationLoader.builder().path(new File(dataDirectory, "config.yml").toPath()).build().load();
-
-        Arrays.asList(Config.class.getDeclaredFields()).forEach(it -> {
-            try {
-                it.setAccessible(true);
-
-                if (List.class.isAssignableFrom(it.getType())) {
-                    it.set(Config.class, config.node(it.getName()).getList(String.class));
-                } else {
-                    it.set(Config.class, config.node(it.getName()).get(it.getType()));
-                }
-            } catch (SecurityException | IllegalAccessException | SerializationException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                String[] text = e.getMessage().split(" ");
-                String value = "";
-
-                for (String str : text) {
-                    if (str.toLowerCase().startsWith(PistonQueueVelocity.class.getPackage().getName().toLowerCase())) {
-                        value = str;
-                    }
-                }
-
-                String[] packageSplit = value.split("\\.");
-
-                new ConfigOutdatedException(packageSplit[packageSplit.length - 1]).printStackTrace();
-            }
-        });
-
-        banType = BanType.valueOf(config.node("SHADOWBANTYPE").getString());
     }
 
     private void sendMessage(QueueType queue, boolean bool, MessageType type) {
@@ -415,6 +353,11 @@ public class PistonQueueVelocity implements PistonQueueProxy {
             @Override
             public void sendActionBar(String message) {
                 ChatUtils.sendMessage(MessageType.ACTION_BAR, player, message);
+            }
+
+            @Override
+            public void sendPlayerListHeaderAndFooter(List<String> header, List<String> footer) {
+                player.sendPlayerListHeaderAndFooter(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
             }
 
             @Override

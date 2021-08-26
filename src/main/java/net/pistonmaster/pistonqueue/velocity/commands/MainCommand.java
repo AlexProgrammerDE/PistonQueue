@@ -135,7 +135,7 @@ public final class MainCommand implements SimpleCommand {
                     break;
                 case "reload":
                     if (sender.hasPermission(Config.ADMINPERMISSION)) {
-                        plugin.processConfig();
+                        plugin.processConfig(plugin.getDataDirectory());
 
                         sendLine(sender);
                         sender.sendMessage(Component.text("PistonQueue").color(NamedTextColor.GOLD));

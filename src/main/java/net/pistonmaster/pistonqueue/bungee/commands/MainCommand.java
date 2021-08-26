@@ -79,7 +79,7 @@ public final class MainCommand extends Command implements TabExecutor {
                     break;
                 case "reload":
                     if (sender.hasPermission(Config.ADMINPERMISSION)) {
-                        plugin.processConfig();
+                        plugin.processConfig(plugin.getDataFolder());
 
                         sendLine(sender);
                         sender.sendMessage(new ComponentBuilder("PistonQueue").color(ChatColor.GOLD).create());

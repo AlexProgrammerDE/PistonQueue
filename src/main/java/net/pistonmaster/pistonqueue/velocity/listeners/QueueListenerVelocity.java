@@ -28,10 +28,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.kyori.adventure.text.Component;
-import net.pistonmaster.pistonqueue.shared.BanType;
-import net.pistonmaster.pistonqueue.shared.Config;
-import net.pistonmaster.pistonqueue.shared.Pair;
-import net.pistonmaster.pistonqueue.shared.QueueType;
+import net.pistonmaster.pistonqueue.shared.*;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.velocity.utils.StorageTool;
@@ -41,32 +38,21 @@ import java.time.Instant;
 import java.util.*;
 
 @RequiredArgsConstructor
-public class QueueListenerVelocity {
+public class QueueListenerVelocity extends QueueListenerShared {
     private final PistonQueueVelocity plugin;
-    @Getter
-    private final List<UUID> noRecoveryMessage = new ArrayList<>();
-    @Setter
-    @Getter
-    private boolean mainOnline = false;
-    @Setter
-    private boolean queueOnline = false;
-    @Setter
-    private boolean authOnline = false;
-    @Setter
-    private Instant onlineSince = null;
 
     @Subscribe
     public void onPostLogin(PostLoginEvent event) {
         Player player = event.getPlayer();
 
-        if (StorageTool.isShadowBanned(player) && plugin.getBanType() == BanType.KICK) {
-            event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
+        if (StorageTool.isShadowBanned(player) && Config.SHADOWBANTYPE == BanType.KICK) {
+            player.disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
         }
     }
 
     @Subscribe
     public void onSend(ServerPreConnectEvent event) {
-        Player player = event.getPlayer();
+        PlayerWrapper player = plugin.wrapPlayer(event.getPlayer());
 
         if (Config.AUTHFIRST) {
             if (Config.ALWAYSQUEUE)
@@ -96,11 +82,11 @@ public class QueueListenerVelocity {
 
     @Subscribe
     public void onQueueSend(ServerConnectedEvent event) {
-        Player player = event.getPlayer();
+        PlayerWrapper player = plugin.wrapPlayer(event.getPlayer());
 
         if (Config.AUTHFIRST) {
             if (isAuthToQueue(event) && player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                event.getPlayer().createConnectionRequest(plugin.getProxyServer().getServer(Config.MAINSERVER).get()).connect();
+                player.connect(Config.MAINSERVER);
                 return;
             }
 
@@ -128,7 +114,7 @@ public class QueueListenerVelocity {
         }
 
         if (Config.RECOVERY) {
-            plugin.getProxyServer().getAllPlayers().forEach(this::doRecovery);
+            plugin.getProxyServer().getAllPlayers().stream().map(plugin::wrapPlayer).forEach(this::doRecovery);
         }
 
         if (Config.PAUSEQUEUEIFMAINDOWN) {
@@ -152,19 +138,6 @@ public class QueueListenerVelocity {
         }
     }
 
-    private void doRecovery(Player player) {
-        QueueType type = QueueType.getQueueType(player::hasPermission);
-
-        if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getCurrentServer().isPresent() && plugin.getProxyServer().getServer(Config.QUEUESERVER).get().equals(player.getCurrentServer().get().getServer())) {
-            type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
-
-            if (!noRecoveryMessage.contains(player.getUniqueId())) {
-                noRecoveryMessage.remove(player.getUniqueId());
-                player.sendMessage(ChatUtils.parseToComponent(Config.RECOVERYMESSAGE));
-            }
-        }
-    }
-
     private void connectPlayer(QueueType type) {
         for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
             Optional<Player> player = plugin.getProxyServer().getPlayer(entry.getKey());
@@ -178,8 +151,8 @@ public class QueueListenerVelocity {
             player.get().sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
 
             if (StorageTool.isShadowBanned(player.get())
-                    && (plugin.getBanType() == BanType.LOOP
-                    || (plugin.getBanType() == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
+                    && (Config.SHADOWBANTYPE == BanType.LOOP
+                    || (Config.SHADOWBANTYPE == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
                 player.get().sendMessage(ChatUtils.parseToComponent(Config.SHADOWBANMESSAGE));
 
                 type.getQueueMap().put(entry.getKey(), entry.getValue());
@@ -198,16 +171,7 @@ public class QueueListenerVelocity {
         }
     }
 
-    public void putQueueAuthFirst(Player player) {
-        QueueType type = QueueType.getQueueType(player::hasPermission);
-
-        preQueueAdding(player, type.getHeader(), type.getFooter());
-
-        // Store the data concerning the player's original destination
-        type.getQueueMap().put(player.getUniqueId(), Config.MAINSERVER);
-    }
-
-    private void putQueue(Player player, ServerPreConnectEvent event) {
+    private void putQueue(PlayerWrapper player, ServerPreConnectEvent event) {
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
         preQueueAdding(player, type.getHeader(), type.getFooter());
@@ -227,30 +191,8 @@ public class QueueListenerVelocity {
         }
     }
 
-    private void preQueueAdding(Player player, List<String> header, List<String> footer) {
-        player.sendPlayerListHeaderAndFooter(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
-
-        player.sendMessage(ChatUtils.parseToComponent(Config.SERVERISFULLMESSAGE));
-    }
-
-    private boolean isServerFull(Player player) {
-        return (isPlayersQueueFull(player) || isAnyoneQueuedOfType(player)) || (!mainOnline && !Config.KICKWHENDOWN);
-    }
-
-    private boolean isPlayersQueueFull(Player player) {
-        return isQueueFull(QueueType.getQueueType(player::hasPermission));
-    }
-
-    private boolean isQueueFull(QueueType type) {
-        return type.getPlayersWithTypeInMain() >= type.getReservatedSlots();
-    }
-
     private boolean isAuthToQueue(ServerConnectedEvent event) {
         return event.getPreviousServer().isPresent() && event.getPreviousServer().get().equals(plugin.getProxyServer().getServer(Config.AUTHSERVER).get()) && event.getServer().equals(plugin.getProxyServer().getServer(Config.QUEUESERVER).get());
-    }
-
-    private boolean isAnyoneQueuedOfType(Player player) {
-        return !QueueType.getQueueType(player::hasPermission).getQueueMap().isEmpty();
     }
 
     private void indexPositionTime() {

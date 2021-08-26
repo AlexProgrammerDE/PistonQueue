@@ -57,8 +57,6 @@ import java.util.logging.Logger;
 public final class PistonQueueBungee extends Plugin implements PistonQueueProxy {
     @Getter
     private final QueueListenerBungee queueListenerBungee = new QueueListenerBungee(this);
-    @Getter
-    private BanType banType;
 
     @Override
     public void onEnable() {
@@ -66,7 +64,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
         PluginManager manager = getProxy().getPluginManager();
 
         logger.info(ChatColor.BLUE + "Loading config");
-        processConfig();
+        processConfig(getDataFolder());
 
         StorageTool.setupTool(this);
         initializeReservationSlots();
@@ -219,54 +217,6 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
     }
 
-    public void processConfig() {
-        try {
-            loadConfig();
-        } catch (IOException e) {
-            if (!getDataFolder().exists() && !getDataFolder().mkdir())
-                return;
-
-            File file = new File(getDataFolder(), "config.yml");
-
-            if (!file.exists()) {
-                try (InputStream in = getResourceAsStream("proxyconfig.yml")) {
-                    Files.copy(in, file.toPath());
-                    loadConfig();
-                } catch (IOException ie) {
-                    ie.printStackTrace();
-                }
-            }
-        }
-    }
-
-    private void loadConfig() throws IOException {
-        Configuration config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
-
-        Arrays.asList(Config.class.getDeclaredFields()).forEach(it -> {
-            try {
-                it.setAccessible(true);
-                it.set(Config.class, config.get(it.getName()));
-            } catch (SecurityException | IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                String[] text = e.getMessage().split(" ");
-                String value = "";
-
-                for (String str : text) {
-                    if (str.toLowerCase().startsWith(PistonQueueBungee.class.getPackage().getName().toLowerCase())) {
-                        value = str;
-                    }
-                }
-
-                String[] packageSplit = value.split("\\.");
-
-                new ConfigOutdatedException(packageSplit[packageSplit.length - 1]).printStackTrace();
-            }
-        });
-
-        banType = BanType.valueOf(config.getString("SHADOWBANTYPE"));
-    }
-
     private void sendMessage(QueueType queue, boolean bool, ChatMessageType type) {
         if (bool) {
             if (!queueListenerBungee.isMainOnline())
@@ -400,6 +350,11 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
             @Override
             public void sendActionBar(String message) {
                 ChatUtils.sendMessage(ChatMessageType.ACTION_BAR, player, message);
+            }
+
+            @Override
+            public void sendPlayerListHeaderAndFooter(List<String> header, List<String> footer) {
+                player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
             }
 
             @Override

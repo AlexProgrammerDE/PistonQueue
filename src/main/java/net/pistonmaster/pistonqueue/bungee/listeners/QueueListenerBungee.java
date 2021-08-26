@@ -19,9 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
@@ -31,10 +29,7 @@ import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.bungee.utils.StorageTool;
-import net.pistonmaster.pistonqueue.shared.BanType;
-import net.pistonmaster.pistonqueue.shared.Config;
-import net.pistonmaster.pistonqueue.shared.Pair;
-import net.pistonmaster.pistonqueue.shared.QueueType;
+import net.pistonmaster.pistonqueue.shared.*;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -42,33 +37,21 @@ import java.util.*;
 import java.util.Map.Entry;
 
 @RequiredArgsConstructor
-public final class QueueListenerBungee implements Listener {
-
+public final class QueueListenerBungee extends QueueListenerShared implements Listener {
     private final PistonQueueBungee plugin;
-    @Getter
-    private final List<UUID> noRecoveryMessage = new ArrayList<>();
-    @Setter
-    @Getter
-    private boolean mainOnline = false;
-    @Setter
-    private boolean queueOnline = false;
-    @Setter
-    private boolean authOnline = false;
-    @Setter
-    private Instant onlineSince = null;
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
         ProxiedPlayer player = event.getPlayer();
 
-        if (StorageTool.isShadowBanned(player) && plugin.getBanType() == BanType.KICK) {
-            event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
+        if (StorageTool.isShadowBanned(player) && Config.SHADOWBANTYPE == BanType.KICK) {
+            player.disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
         }
     }
 
     @EventHandler
     public void onSend(ServerConnectEvent event) {
-        ProxiedPlayer player = event.getPlayer();
+        PlayerWrapper player = plugin.wrapPlayer(event.getPlayer());
 
         if (Config.AUTHFIRST) {
             if (Config.ALWAYSQUEUE)
@@ -98,7 +81,7 @@ public final class QueueListenerBungee implements Listener {
 
     @EventHandler
     public void onQueueSend(ServerSwitchEvent event) {
-        ProxiedPlayer player = event.getPlayer();
+        PlayerWrapper player = plugin.wrapPlayer(event.getPlayer());
 
         if (Config.AUTHFIRST) {
             if (isAuthToQueue(event) && player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
@@ -130,7 +113,7 @@ public final class QueueListenerBungee implements Listener {
         }
 
         if (Config.RECOVERY) {
-            plugin.getProxy().getPlayers().forEach(this::doRecovery);
+            plugin.getProxy().getPlayers().stream().map(plugin::wrapPlayer).forEach(this::doRecovery);
         }
 
         if (Config.PAUSEQUEUEIFMAINDOWN) {
@@ -154,20 +137,6 @@ public final class QueueListenerBungee implements Listener {
         }
     }
 
-    private void doRecovery(ProxiedPlayer player) {
-        QueueType type = QueueType.getQueueType(player::hasPermission);
-
-        if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getServer() != null && plugin.getProxy().getServerInfo(Config.QUEUESERVER).equals(player.getServer().getInfo())) {
-            type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
-
-            if (!noRecoveryMessage.contains(player.getUniqueId())) {
-                noRecoveryMessage.remove(player.getUniqueId());
-
-                ChatUtils.sendMessage(player, Config.RECOVERYMESSAGE);
-            }
-        }
-    }
-
     private void connectPlayer(QueueType type) {
         for (Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
             ProxiedPlayer player = plugin.getProxy().getPlayer(entry.getKey());
@@ -182,8 +151,8 @@ public final class QueueListenerBungee implements Listener {
             player.resetTabHeader();
 
             if (StorageTool.isShadowBanned(player)
-                    && (plugin.getBanType() == BanType.LOOP
-                    || (plugin.getBanType() == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
+                    && (Config.SHADOWBANTYPE == BanType.LOOP
+                    || (Config.SHADOWBANTYPE == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
 
                 ChatUtils.sendMessage(player, Config.SHADOWBANMESSAGE);
 
@@ -203,16 +172,7 @@ public final class QueueListenerBungee implements Listener {
         }
     }
 
-    public void putQueueAuthFirst(ProxiedPlayer player) {
-        QueueType type = QueueType.getQueueType(player::hasPermission);
-
-        preQueueAdding(player, type.getHeader(), type.getFooter());
-
-        // Store the data concerning the player's original destination
-        type.getQueueMap().put(player.getUniqueId(), Config.MAINSERVER);
-    }
-
-    private void putQueue(ProxiedPlayer player, ServerConnectEvent event) {
+    private void putQueue(PlayerWrapper player, ServerConnectEvent event) {
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
         preQueueAdding(player, type.getHeader(), type.getFooter());
@@ -232,32 +192,8 @@ public final class QueueListenerBungee implements Listener {
         }
     }
 
-    private void preQueueAdding(ProxiedPlayer player, List<String> header, List<String> footer) {
-        player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
-
-        if (isServerFull(player)) {
-            ChatUtils.sendMessage(player, Config.SERVERISFULLMESSAGE);
-        }
-    }
-
-    private boolean isServerFull(ProxiedPlayer player) {
-        return (isPlayersQueueFull(player) || isAnyoneQueuedOfType(player)) || (!mainOnline && !Config.KICKWHENDOWN);
-    }
-
-    private boolean isPlayersQueueFull(ProxiedPlayer player) {
-        return isQueueFull(QueueType.getQueueType(player::hasPermission));
-    }
-
-    private boolean isQueueFull(QueueType type) {
-        return type.getPlayersWithTypeInMain() >= type.getReservatedSlots();
-    }
-
     private boolean isAuthToQueue(ServerSwitchEvent event) {
         return event.getFrom() != null && event.getFrom().equals(plugin.getProxy().getServerInfo(Config.AUTHSERVER)) && event.getPlayer().getServer().getInfo().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
-    }
-
-    private boolean isAnyoneQueuedOfType(ProxiedPlayer player) {
-        return !QueueType.getQueueType(player::hasPermission).getQueueMap().isEmpty();
     }
 
     private void indexPositionTime() {
