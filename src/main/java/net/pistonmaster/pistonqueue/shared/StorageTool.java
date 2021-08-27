@@ -145,6 +145,7 @@ public final class StorageTool {
     }
 
     public static void setupTool(File dataDirectory) {
+        StorageTool.dataDirectory = dataDirectory;
         StorageTool.dataFile = new File(dataDirectory, "data.yml");
 
         loadData();
