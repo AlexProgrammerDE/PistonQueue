@@ -17,9 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.utils;
 
-public enum MessageType {
-    CHAT,
-    ACTION_BAR
+public class ConfigOutdatedException extends Exception {
+    public ConfigOutdatedException(String message) {
+        super(message + " is missing in the config. Please remove the old config and restart the proxy to get the newest one.");
+    }
 }

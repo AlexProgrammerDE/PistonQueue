@@ -19,6 +19,8 @@
  */
 package net.pistonmaster.pistonqueue.shared;
 
+import net.pistonmaster.pistonqueue.shared.utils.BanType;
+
 import java.util.List;
 
 /**

@@ -17,10 +17,24 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.utils;
 
-public class ConfigOutdatedException extends Exception {
-    public ConfigOutdatedException(String message) {
-        super(message + " is missing in the config. Please remove the old config and restart the proxy to get the newest one.");
-    }
+/**
+ * How shadowbanned people should be punished.
+ */
+public enum BanType {
+    /**
+     * Loop forever in queue!
+     */
+    LOOP,
+
+    /**
+     * Have a 10% chance of getting into the server!
+     */
+    TENPERCENT,
+
+    /**
+     * Kick a player while joining!
+     */
+    KICK
 }

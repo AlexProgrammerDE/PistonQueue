@@ -36,6 +36,8 @@ import net.kyori.adventure.text.Component;
 import net.pistonmaster.pistonqueue.data.PluginData;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.*;
+import net.pistonmaster.pistonqueue.shared.utils.MessageType;
+import net.pistonmaster.pistonqueue.shared.utils.UpdateChecker;
 import net.pistonmaster.pistonqueue.velocity.commands.MainCommand;
 import net.pistonmaster.pistonqueue.velocity.listeners.PistonListener;
 import net.pistonmaster.pistonqueue.velocity.listeners.QueueListenerVelocity;

@@ -25,6 +25,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.pistonmaster.pistonqueue.shared.utils.MessageType;
 import net.pistonmaster.pistonqueue.shared.SharedChatUtils;
 
 import java.util.List;
@@ -34,12 +35,19 @@ public final class ChatUtils {
     }
 
     public static void sendMessage(ProxiedPlayer p, String str) {
-        sendMessage(ChatMessageType.CHAT, p, str);
+        sendMessage(MessageType.CHAT, p, str);
     }
 
-    public static void sendMessage(ChatMessageType type, ProxiedPlayer p, String str) {
+    public static void sendMessage(MessageType type, ProxiedPlayer p, String str) {
         if (!str.equalsIgnoreCase("/")) {
-            p.sendMessage(type, parseToComponent(str));
+            switch (type) {
+                case CHAT:
+                    p.sendMessage(ChatMessageType.CHAT, parseToComponent(str));
+                    break;
+                case ACTION_BAR:
+                    p.sendMessage(ChatMessageType.ACTION_BAR, parseToComponent(str));
+                    break;
+            }
         }
     }
 

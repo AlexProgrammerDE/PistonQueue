@@ -23,7 +23,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -34,6 +33,8 @@ import net.pistonmaster.pistonqueue.bungee.listeners.QueueListenerBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.*;
+import net.pistonmaster.pistonqueue.shared.utils.MessageType;
+import net.pistonmaster.pistonqueue.shared.utils.UpdateChecker;
 import org.bstats.bungeecord.Metrics;
 
 import java.io.IOException;
@@ -293,14 +294,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
 
             @Override
             public void sendMessage(MessageType type, String message) {
-                switch (type) {
-                    case CHAT:
-                        ChatUtils.sendMessage(ChatMessageType.CHAT, player, message);
-                        break;
-                    case ACTION_BAR:
-                        ChatUtils.sendMessage(ChatMessageType.ACTION_BAR, player, message);
-                        break;
-                }
+                ChatUtils.sendMessage(type, player, message);
             }
 
             @Override

@@ -19,6 +19,8 @@
  */
 package net.pistonmaster.pistonqueue.shared;
 
+import net.pistonmaster.pistonqueue.shared.utils.MessageType;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

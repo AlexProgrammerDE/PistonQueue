@@ -19,6 +19,8 @@
  */
 package net.pistonmaster.pistonqueue.shared;
 
+import net.pistonmaster.pistonqueue.shared.utils.ConfigOutdatedException;
+import net.pistonmaster.pistonqueue.shared.utils.MessageType;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;

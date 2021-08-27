@@ -24,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.pistonmaster.pistonqueue.shared.events.PQServerConnectedEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
+import net.pistonmaster.pistonqueue.shared.utils.BanType;
+import net.pistonmaster.pistonqueue.shared.utils.Pair;
 
 import java.time.Duration;
 import java.time.Instant;

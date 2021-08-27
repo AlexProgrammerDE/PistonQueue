@@ -21,6 +21,7 @@ package net.pistonmaster.pistonqueue.shared;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.pistonmaster.pistonqueue.shared.utils.Pair;
 
 import java.time.Duration;
 import java.time.Instant;
