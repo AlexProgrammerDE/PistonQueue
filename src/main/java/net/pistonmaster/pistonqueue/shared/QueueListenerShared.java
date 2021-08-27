@@ -22,6 +22,8 @@ package net.pistonmaster.pistonqueue.shared;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.pistonmaster.pistonqueue.shared.events.PQServerConnectedEvent;
+import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -43,6 +45,74 @@ public abstract class QueueListenerShared {
     protected void onPostLogin(PlayerWrapper player) {
         if (StorageTool.isShadowBanned(player.getUniqueId()) && Config.SHADOWBANTYPE == BanType.KICK) {
             player.disconnect(Config.SERVERDOWNKICKMESSAGE);
+        }
+    }
+
+    protected void onPreConnect(PQServerPreConnectEvent event) {
+        PlayerWrapper player = event.getPlayer();
+
+        if (Config.AUTHFIRST) {
+            if (Config.ALWAYSQUEUE)
+                return;
+
+            if (isAnyoneQueuedOfType(player))
+                return;
+
+            if (!isPlayersQueueFull(player) && event.getTarget().equals(Config.QUEUESERVER))
+                event.setTarget(Config.MAINSERVER);
+        } else {
+            if (!player.getCurrentServer().isPresent()) {
+                if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
+                    if (Config.ALWAYSQUEUE || isServerFull(player) || (!mainOnline && !Config.KICKWHENDOWN)) {
+                        if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
+                            event.setTarget(Config.MAINSERVER);
+                        } else {
+                            putQueue(player, event);
+                        }
+                    }
+                } else {
+                    player.disconnect(Config.SERVERDOWNKICKMESSAGE);
+                }
+            }
+        }
+    }
+
+    protected void onConnected(PQServerConnectedEvent event) {
+        PlayerWrapper player = event.getPlayer();
+
+        if (Config.AUTHFIRST) {
+            if (isAuthToQueue(event) && player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
+                player.connect(Config.MAINSERVER);
+                return;
+            }
+
+            // Its null when joining!
+            if (!event.getPreviousServer().isPresent() && player.getCurrentServer().isPresent() && player.getCurrentServer().get().equals(Config.QUEUESERVER)) {
+                if (Config.ALLOWAUTHSKIP)
+                    putQueueAuthFirst(player);
+            } else if (isAuthToQueue(event)) {
+                putQueueAuthFirst(player);
+            }
+        }
+    }
+
+    protected void putQueue(PlayerWrapper player, PQServerPreConnectEvent event) {
+        QueueType type = QueueType.getQueueType(player::hasPermission);
+
+        preQueueAdding(player, type.getHeader(), type.getFooter());
+
+        // Redirect the player to the queue.
+        String originalTarget = event.getTarget();
+
+        event.setTarget(Config.QUEUESERVER);
+
+        Map<UUID, String> queueMap = type.getQueueMap();
+
+        // Store the data concerning the player's original destination
+        if (Config.FORCEMAINSERVER) {
+            queueMap.put(player.getUniqueId(), Config.MAINSERVER);
+        } else {
+            queueMap.put(player.getUniqueId(), originalTarget);
         }
     }
 
@@ -86,6 +156,10 @@ public abstract class QueueListenerShared {
 
     protected boolean isAnyoneQueuedOfType(PlayerWrapper player) {
         return !QueueType.getQueueType(player::hasPermission).getQueueMap().isEmpty();
+    }
+
+    protected boolean isAuthToQueue(PQServerConnectedEvent event) {
+        return event.getPreviousServer().isPresent() && event.getPreviousServer().get().equals(Config.AUTHSERVER) && event.getServer().equals(Config.QUEUESERVER);
     }
 
     protected void indexPositionTime() {

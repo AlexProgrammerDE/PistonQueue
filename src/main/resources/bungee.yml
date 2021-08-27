@@ -3,4 +3,4 @@ main: net.pistonmaster.pistonqueue.bungee.PistonQueueBungee
 description: ${project.description}
 version: ${project.version}
 author: AlexProgrammerDE
-softDepends: [ PistonMOTD ]
+softDepends: [ "PistonMOTD" ]

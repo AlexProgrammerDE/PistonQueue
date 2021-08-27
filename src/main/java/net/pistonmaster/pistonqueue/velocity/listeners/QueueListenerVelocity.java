@@ -23,11 +23,15 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
-import net.pistonmaster.pistonqueue.shared.*;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
+import com.velocitypowered.api.proxy.server.ServerInfo;
+import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
+import net.pistonmaster.pistonqueue.shared.QueueListenerShared;
+import net.pistonmaster.pistonqueue.shared.events.PQServerConnectedEvent;
+import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.Optional;
 
 public class QueueListenerVelocity extends QueueListenerShared {
     private final PistonQueueVelocity plugin;
@@ -39,84 +43,54 @@ public class QueueListenerVelocity extends QueueListenerShared {
 
     @Subscribe
     public void onPostLogin(PostLoginEvent event) {
-        PlayerWrapper player = plugin.wrapPlayer(event.getPlayer());
-
-        if (StorageTool.isShadowBanned(player.getUniqueId()) && Config.SHADOWBANTYPE == BanType.KICK) {
-            player.disconnect(Config.SERVERDOWNKICKMESSAGE);
-        }
+        onPostLogin(plugin.wrapPlayer(event.getPlayer()));
     }
 
     @Subscribe
     public void onSend(ServerPreConnectEvent event) {
-        PlayerWrapper player = plugin.wrapPlayer(event.getPlayer());
-
-        if (Config.AUTHFIRST) {
-            if (Config.ALWAYSQUEUE)
-                return;
-
-            if (isAnyoneQueuedOfType(player))
-                return;
-
-            if (!isPlayersQueueFull(player) && event.getResult().getServer().get().getServerInfo().getName().equals(Config.QUEUESERVER))
-                event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(Config.MAINSERVER).get()));
-        } else {
-            if (!event.getPlayer().getCurrentServer().isPresent()) {
-                if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
-                    if (Config.ALWAYSQUEUE || isServerFull(player) || (!mainOnline && !Config.KICKWHENDOWN)) {
-                        if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                            event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(Config.MAINSERVER).get()));
-                        } else {
-                            putQueue(player, event);
-                        }
-                    }
-                } else {
-                    player.disconnect(Config.SERVERDOWNKICKMESSAGE);
-                }
-            }
-        }
+        onPreConnect(wrap(event));
     }
 
     @Subscribe
     public void onQueueSend(ServerConnectedEvent event) {
-        PlayerWrapper player = plugin.wrapPlayer(event.getPlayer());
-
-        if (Config.AUTHFIRST) {
-            if (isAuthToQueue(event) && player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                player.connect(Config.MAINSERVER);
-                return;
-            }
-
-            // Its null when joining!
-            if (!event.getPreviousServer().isPresent() && event.getServer().getServerInfo().getName().equals(Config.QUEUESERVER)) {
-                if (Config.ALLOWAUTHSKIP)
-                    putQueueAuthFirst(player);
-            } else if (isAuthToQueue(event)) {
-                putQueueAuthFirst(player);
-            }
-        }
+        onConnected(wrap(event));
     }
 
-    private void putQueue(PlayerWrapper player, ServerPreConnectEvent event) {
-        QueueType type = QueueType.getQueueType(player::hasPermission);
+    private PQServerConnectedEvent wrap(ServerConnectedEvent event) {
+        return new PQServerConnectedEvent() {
+            @Override
+            public PlayerWrapper getPlayer() {
+                return plugin.wrapPlayer(event.getPlayer());
+            }
 
-        preQueueAdding(player, type.getHeader(), type.getFooter());
+            @Override
+            public Optional<String> getPreviousServer() {
+                return event.getPreviousServer().map(RegisteredServer::getServerInfo).map(ServerInfo::getName);
+            }
 
-        // Redirect the player to the queue.
-        String originalTarget = event.getResult().getServer().get().getServerInfo().getName();
-
-        event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(Config.QUEUESERVER).get()));
-
-        Map<UUID, String> queueMap = type.getQueueMap();
-
-        // Store the data concerning the player's original destination
-        if (Config.FORCEMAINSERVER) {
-            queueMap.put(player.getUniqueId(), Config.MAINSERVER);
-        } else {
-            queueMap.put(player.getUniqueId(), originalTarget);
-        }
+            @Override
+            public String getServer() {
+                return event.getServer().getServerInfo().getName();
+            }
+        };
     }
 
-    private boolean isAuthToQueue(ServerConnectedEvent event) {
-        return event.getPreviousServer().isPresent() && event.getPreviousServer().get().getServerInfo().getName().equals(Config.AUTHSERVER) && event.getServer().getServerInfo().getName().equals(Config.QUEUESERVER);
+    private PQServerPreConnectEvent wrap(ServerPreConnectEvent event) {
+        return new PQServerPreConnectEvent() {
+            @Override
+            public PlayerWrapper getPlayer() {
+                return plugin.wrapPlayer(event.getPlayer());
+            }
+
+            @Override
+            public String getTarget() {
+                return event.getResult().getServer().get().getServerInfo().getName();
+            }
+
+            @Override
+            public void setTarget(String server) {
+                event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(server).get()));
+            }
+        };
     }
 }
