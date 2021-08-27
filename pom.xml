@@ -50,6 +50,18 @@
                             <pattern>org.spongepowered.configurate</pattern>
                             <shadedPattern>net.pistonmaster.pistonqueue.shade.configurate</shadedPattern>
                         </relocation>
+                        <relocation>
+                            <pattern>io.leangen.geantyref</pattern>
+                            <shadedPattern>net.pistonmaster.pistonqueue.shade.geantyref</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.checkerframework</pattern>
+                            <shadedPattern>net.pistonmaster.pistonqueue.shade.checkerframework</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.yaml.snakeyaml</pattern>
+                            <shadedPattern>net.pistonmaster.pistonqueue.shade.snakeyaml</shadedPattern>
+                        </relocation>
                     </relocations>
                     <filters>
                         <filter>
