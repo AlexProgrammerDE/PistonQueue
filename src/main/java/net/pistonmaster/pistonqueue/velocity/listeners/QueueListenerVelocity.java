@@ -23,10 +23,8 @@ import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
-import com.velocitypowered.api.proxy.Player;
 import net.pistonmaster.pistonqueue.shared.*;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
-import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 
 import java.util.Map;
 import java.util.UUID;
@@ -41,10 +39,10 @@ public class QueueListenerVelocity extends QueueListenerShared {
 
     @Subscribe
     public void onPostLogin(PostLoginEvent event) {
-        Player player = event.getPlayer();
+        PlayerWrapper player = plugin.wrapPlayer(event.getPlayer());
 
         if (StorageTool.isShadowBanned(player.getUniqueId()) && Config.SHADOWBANTYPE == BanType.KICK) {
-            player.disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
+            player.disconnect(Config.SERVERDOWNKICKMESSAGE);
         }
     }
 
@@ -59,12 +57,12 @@ public class QueueListenerVelocity extends QueueListenerShared {
             if (isAnyoneQueuedOfType(player))
                 return;
 
-            if (!isPlayersQueueFull(player) && event.getResult().getServer().get().equals(plugin.getProxyServer().getServer(Config.QUEUESERVER).get()))
+            if (!isPlayersQueueFull(player) && event.getResult().getServer().get().getServerInfo().getName().equals(Config.QUEUESERVER))
                 event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(Config.MAINSERVER).get()));
         } else {
             if (!event.getPlayer().getCurrentServer().isPresent()) {
                 if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
-                    if (Config.ALWAYSQUEUE || isServerFull(player)) {
+                    if (Config.ALWAYSQUEUE || isServerFull(player) || (!mainOnline && !Config.KICKWHENDOWN)) {
                         if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
                             event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(Config.MAINSERVER).get()));
                         } else {
@@ -72,7 +70,7 @@ public class QueueListenerVelocity extends QueueListenerShared {
                         }
                     }
                 } else {
-                    event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
+                    player.disconnect(Config.SERVERDOWNKICKMESSAGE);
                 }
             }
         }
@@ -119,6 +117,6 @@ public class QueueListenerVelocity extends QueueListenerShared {
     }
 
     private boolean isAuthToQueue(ServerConnectedEvent event) {
-        return event.getPreviousServer().isPresent() && event.getPreviousServer().get().equals(plugin.getProxyServer().getServer(Config.AUTHSERVER).get()) && event.getServer().equals(plugin.getProxyServer().getServer(Config.QUEUESERVER).get());
+        return event.getPreviousServer().isPresent() && event.getPreviousServer().get().getServerInfo().getName().equals(Config.AUTHSERVER) && event.getServer().getServerInfo().getName().equals(Config.QUEUESERVER);
     }
 }

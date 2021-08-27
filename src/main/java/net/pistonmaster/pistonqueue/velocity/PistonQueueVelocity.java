@@ -322,6 +322,11 @@ public class PistonQueueVelocity implements PistonQueueProxy {
             public UUID getUniqueId() {
                 return player.getUniqueId();
             }
+
+            @Override
+            public void disconnect(String message) {
+                player.disconnect(ChatUtils.parseToComponent(message));
+            }
         };
     }
 }

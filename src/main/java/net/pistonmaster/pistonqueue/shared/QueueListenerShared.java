@@ -40,6 +40,12 @@ public abstract class QueueListenerShared {
     @Setter
     protected Instant onlineSince = null;
 
+    protected void onPostLogin(PlayerWrapper player) {
+        if (StorageTool.isShadowBanned(player.getUniqueId()) && Config.SHADOWBANTYPE == BanType.KICK) {
+            player.disconnect(Config.SERVERDOWNKICKMESSAGE);
+        }
+    }
+
     protected void doRecovery(PlayerWrapper player) {
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
@@ -62,11 +68,12 @@ public abstract class QueueListenerShared {
     protected void preQueueAdding(PlayerWrapper player, List<String> header, List<String> footer) {
         player.sendPlayerListHeaderAndFooter(header, footer);
 
-        player.sendMessage(Config.SERVERISFULLMESSAGE);
+        if (isServerFull(player))
+            player.sendMessage(Config.SERVERISFULLMESSAGE);
     }
 
     protected boolean isServerFull(PlayerWrapper player) {
-        return (isPlayersQueueFull(player) || isAnyoneQueuedOfType(player)) || (!mainOnline && !Config.KICKWHENDOWN);
+        return isPlayersQueueFull(player) || isAnyoneQueuedOfType(player);
     }
 
     protected boolean isPlayersQueueFull(PlayerWrapper player) {

@@ -19,15 +19,16 @@
  */
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
-import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.shared.*;
+import net.pistonmaster.pistonqueue.shared.Config;
+import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
+import net.pistonmaster.pistonqueue.shared.QueueListenerShared;
+import net.pistonmaster.pistonqueue.shared.QueueType;
 
 import java.util.Map;
 import java.util.UUID;
@@ -42,11 +43,7 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
 
     @EventHandler
     public void onPostLogin(PostLoginEvent event) {
-        ProxiedPlayer player = event.getPlayer();
-
-        if (StorageTool.isShadowBanned(player.getUniqueId()) && Config.SHADOWBANTYPE == BanType.KICK) {
-            player.disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
-        }
+        onPostLogin(plugin.wrapPlayer(event.getPlayer()));
     }
 
     @EventHandler
@@ -60,12 +57,12 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
             if (isAnyoneQueuedOfType(player))
                 return;
 
-            if (!isPlayersQueueFull(player) && event.getTarget().equals(plugin.getProxy().getServerInfo(Config.QUEUESERVER)))
+            if (!isPlayersQueueFull(player) && event.getTarget().getName().equals(Config.QUEUESERVER))
                 event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
         } else {
-            if (event.getPlayer().getServer() == null) {
+            if (!player.getCurrentServer().isPresent()) {
                 if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
-                    if (Config.ALWAYSQUEUE || isServerFull(player)) {
+                    if (Config.ALWAYSQUEUE || isServerFull(player) || (!mainOnline && !Config.KICKWHENDOWN)) {
                         if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
                             event.setTarget(plugin.getProxy().getServerInfo(Config.MAINSERVER));
                         } else {
@@ -73,7 +70,7 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
                         }
                     }
                 } else {
-                    event.getPlayer().disconnect(ChatUtils.parseToComponent(Config.SERVERDOWNKICKMESSAGE));
+                    player.disconnect(Config.SERVERDOWNKICKMESSAGE);
                 }
             }
         }
@@ -85,12 +82,12 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
 
         if (Config.AUTHFIRST) {
             if (isAuthToQueue(event) && player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                event.getPlayer().connect(plugin.getProxy().getServerInfo(Config.MAINSERVER));
+                player.connect(Config.MAINSERVER);
                 return;
             }
 
             // Its null when joining!
-            if (event.getFrom() == null && event.getPlayer().getServer().getInfo().getName().equals(Config.QUEUESERVER)) {
+            if (event.getFrom() == null && player.getCurrentServer().isPresent() && player.getCurrentServer().get().equals(Config.QUEUESERVER)) {
                 if (Config.ALLOWAUTHSKIP)
                     putQueueAuthFirst(player);
             } else if (isAuthToQueue(event)) {
