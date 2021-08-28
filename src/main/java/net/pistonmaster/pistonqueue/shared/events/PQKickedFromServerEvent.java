@@ -21,13 +21,14 @@ package net.pistonmaster.pistonqueue.shared.events;
 
 import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
 
-/**
- * Event for trying to connect to a server that allows us to intercept the connection and redirect the player.
- */
-public interface PQServerPreConnectEvent {
+import java.util.Optional;
+
+public interface PQKickedFromServerEvent {
+    void setCancelServer(String server);
+
     PlayerWrapper getPlayer();
 
-    String getTarget();
+    String getKickedFrom();
 
-    void setTarget(String server);
+    Optional<String> getKickReason();
 }

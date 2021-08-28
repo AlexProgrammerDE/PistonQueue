@@ -22,6 +22,7 @@ package net.pistonmaster.pistonqueue.shared;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerConnectedEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 import net.pistonmaster.pistonqueue.shared.utils.BanType;
@@ -50,6 +51,24 @@ public abstract class QueueListenerShared {
         }
     }
 
+    protected void onKick(PQKickedFromServerEvent event) {
+        if (Config.IFMAINDOWNSENDTOQUEUE && event.getKickedFrom().equals(Config.MAINSERVER)) {
+            if (event.getKickReason().isPresent()) {
+                for (String str : Config.DOWNWORDLIST) {
+                    if (!event.getKickReason().get().toLowerCase().contains(str))
+                        continue;
+
+                    event.setCancelServer(Config.QUEUESERVER);
+
+                    event.getPlayer().sendMessage(Config.IFMAINDOWNSENDTOQUEUEMESSAGE);
+
+                    QueueType.getQueueType(event.getPlayer()::hasPermission).getQueueMap().put(event.getPlayer().getUniqueId(), event.getKickedFrom());
+                    break;
+                }
+            }
+        }
+    }
+
     protected void onPreConnect(PQServerPreConnectEvent event) {
         PlayerWrapper player = event.getPlayer();
 
@@ -63,37 +82,20 @@ public abstract class QueueListenerShared {
             if (!isPlayersQueueFull(player) && event.getTarget().equals(Config.QUEUESERVER))
                 event.setTarget(Config.MAINSERVER);
         } else {
-            if (!player.getCurrentServer().isPresent()) {
-                if (!Config.KICKWHENDOWN || (mainOnline && queueOnline && authOnline)) { // authOnline is always true if auth is not enabled
-                    if (Config.ALWAYSQUEUE || isServerFull(player) || (!mainOnline && !Config.KICKWHENDOWN)) {
-                        if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                            event.setTarget(Config.MAINSERVER);
-                        } else {
-                            putQueue(player, event);
-                        }
-                    }
-                } else {
-                    player.disconnect(Config.SERVERDOWNKICKMESSAGE);
-                }
-            }
-        }
-    }
+            if (player.getCurrentServer().isPresent())
+                return;
 
-    protected void onConnected(PQServerConnectedEvent event) {
-        PlayerWrapper player = event.getPlayer();
-
-        if (Config.AUTHFIRST) {
-            if (isAuthToQueue(event) && player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                player.connect(Config.MAINSERVER);
+            if ((Config.KICKWHENDOWN && !mainOnline) || !queueOnline || !authOnline) { // authOnline is always true if auth is not enabled
+                player.disconnect(Config.SERVERDOWNKICKMESSAGE);
                 return;
             }
 
-            // Its null when joining!
-            if (!event.getPreviousServer().isPresent() && player.getCurrentServer().isPresent() && player.getCurrentServer().get().equals(Config.QUEUESERVER)) {
-                if (Config.ALLOWAUTHSKIP)
-                    putQueueAuthFirst(player);
-            } else if (isAuthToQueue(event)) {
-                putQueueAuthFirst(player);
+            if (Config.ALWAYSQUEUE || isServerFull(player)) {
+                if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
+                    event.setTarget(Config.MAINSERVER);
+                } else {
+                    putQueue(player, event);
+                }
             }
         }
     }
@@ -118,13 +120,22 @@ public abstract class QueueListenerShared {
         }
     }
 
-    protected void doRecovery(PlayerWrapper player) {
-        QueueType type = QueueType.getQueueType(player::hasPermission);
+    protected void onConnected(PQServerConnectedEvent event) {
+        PlayerWrapper player = event.getPlayer();
 
-        if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getCurrentServer().isPresent() && player.getCurrentServer().get().equals(Config.QUEUESERVER)) {
-            type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
+        if (Config.AUTHFIRST) {
+            if (isAuthToQueue(event) && player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
+                player.connect(Config.MAINSERVER);
+                return;
+            }
 
-            player.sendMessage(Config.RECOVERYMESSAGE);
+            // Its null when joining!
+            if (!event.getPreviousServer().isPresent() && player.getCurrentServer().isPresent() && player.getCurrentServer().get().equals(Config.QUEUESERVER)) {
+                if (Config.ALLOWAUTHSKIP)
+                    putQueueAuthFirst(player);
+            } else if (isAuthToQueue(event)) {
+                putQueueAuthFirst(player);
+            }
         }
     }
 
@@ -164,30 +175,49 @@ public abstract class QueueListenerShared {
         return event.getPreviousServer().isPresent() && event.getPreviousServer().get().equals(Config.AUTHSERVER) && event.getServer().equals(Config.QUEUESERVER);
     }
 
-    protected void indexPositionTime() {
+    public void moveQueue() {
         for (QueueType type : QueueType.values()) {
-            int position = 0;
-
             for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
                 Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
-                if (!player.isPresent()) {
-                    continue;
-                }
 
-                position++;
-
-                if (type.getPositionCache().containsKey(player.get().getUniqueId())) {
-                    List<Pair<Integer, Instant>> list = type.getPositionCache().get(player.get().getUniqueId());
-                    int finalPosition = position;
-                    if (list.stream().map(Pair::getLeft).noneMatch(integer -> integer == finalPosition)) {
-                        list.add(new Pair<>(position, Instant.now()));
-                    }
-                } else {
-                    List<Pair<Integer, Instant>> list = new ArrayList<>();
-                    list.add(new Pair<>(position, Instant.now()));
-                    type.getPositionCache().put(player.get().getUniqueId(), list);
+                if (!player.isPresent() || !player.get().getCurrentServer().isPresent() || !player.get().getCurrentServer().get().equals(Config.QUEUESERVER)) {
+                    type.getQueueMap().remove(entry.getKey());
                 }
             }
+        }
+
+        if (Config.RECOVERY) {
+            plugin.getPlayers().forEach(this::doRecovery);
+        }
+
+        if (Config.PAUSEQUEUEIFMAINDOWN) {
+            if (mainOnline) {
+                if (onlineSince != null) {
+                    if (Duration.between(onlineSince, Instant.now()).getSeconds() >= Config.STARTTIME) {
+                        onlineSince = null;
+                    } else {
+                        return;
+                    }
+                }
+            } else {
+                return;
+            }
+        }
+
+        for (QueueType type : QueueType.values()) {
+            if (!isQueueFull(type)) {
+                connectPlayer(type);
+            }
+        }
+    }
+
+    protected void doRecovery(PlayerWrapper player) {
+        QueueType type = QueueType.getQueueType(player::hasPermission);
+
+        if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getCurrentServer().isPresent() && player.getCurrentServer().get().equals(Config.QUEUESERVER)) {
+            type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
+
+            player.sendMessage(Config.RECOVERYMESSAGE);
         }
     }
 
@@ -224,38 +254,29 @@ public abstract class QueueListenerShared {
         }
     }
 
-    public void moveQueue() {
+    protected void indexPositionTime() {
         for (QueueType type : QueueType.values()) {
+            int position = 0;
+
             for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
                 Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
-
-                if (!player.isPresent() || (player.get().getCurrentServer().isPresent() && !player.get().getCurrentServer().get().equals(Config.QUEUESERVER))) {
-                    type.getQueueMap().remove(entry.getKey());
+                if (!player.isPresent()) {
+                    continue;
                 }
-            }
-        }
 
-        if (Config.RECOVERY) {
-            plugin.getPlayers().forEach(this::doRecovery);
-        }
+                position++;
 
-        if (Config.PAUSEQUEUEIFMAINDOWN) {
-            if (mainOnline) {
-                if (onlineSince != null) {
-                    if (Duration.between(onlineSince, Instant.now()).getSeconds() >= Config.STARTTIME) {
-                        onlineSince = null;
-                    } else {
-                        return;
+                if (type.getPositionCache().containsKey(player.get().getUniqueId())) {
+                    List<Pair<Integer, Instant>> list = type.getPositionCache().get(player.get().getUniqueId());
+                    int finalPosition = position;
+                    if (list.stream().map(Pair::getLeft).noneMatch(integer -> integer == finalPosition)) {
+                        list.add(new Pair<>(position, Instant.now()));
                     }
+                } else {
+                    List<Pair<Integer, Instant>> list = new ArrayList<>();
+                    list.add(new Pair<>(position, Instant.now()));
+                    type.getPositionCache().put(player.get().getUniqueId(), list);
                 }
-            } else {
-                return;
-            }
-        }
-
-        for (QueueType type : QueueType.values()) {
-            if (!isQueueFull(type)) {
-                connectPlayer(type);
             }
         }
     }

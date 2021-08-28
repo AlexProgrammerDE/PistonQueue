@@ -21,15 +21,20 @@ package net.pistonmaster.pistonqueue.velocity.listeners;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.pistonmaster.pistonqueue.shared.Config;
 import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
 import net.pistonmaster.pistonqueue.shared.QueueListenerShared;
+import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerConnectedEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
+import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 
 import java.util.Optional;
 
@@ -44,6 +49,16 @@ public class QueueListenerVelocity extends QueueListenerShared {
     @Subscribe
     public void onPostLogin(PostLoginEvent event) {
         onPostLogin(plugin.wrapPlayer(event.getPlayer()));
+    }
+
+    @Subscribe
+    public void onKick(KickedFromServerEvent event) {
+        onKick(wrap(event));
+
+        if (Config.ENABLEKICKMESSAGE) {
+            if (event.getResult() instanceof KickedFromServerEvent.DisconnectPlayer)
+                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(ChatUtils.parseToComponent(Config.KICKMESSAGE)));
+        }
     }
 
     @Subscribe
@@ -90,6 +105,30 @@ public class QueueListenerVelocity extends QueueListenerShared {
             @Override
             public void setTarget(String server) {
                 event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(server).get()));
+            }
+        };
+    }
+
+    private PQKickedFromServerEvent wrap(KickedFromServerEvent event) {
+        return new PQKickedFromServerEvent() {
+            @Override
+            public void setCancelServer(String server) {
+                event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(Config.QUEUESERVER).get()));
+            }
+
+            @Override
+            public PlayerWrapper getPlayer() {
+                return plugin.wrapPlayer(event.getPlayer());
+            }
+
+            @Override
+            public String getKickedFrom() {
+                return event.getServer().getServerInfo().getName();
+            }
+
+            @Override
+            public Optional<String> getKickReason() {
+                return event.getServerKickReason().map(LegacyComponentSerializer.legacySection()::serialize);
             }
         };
     }
