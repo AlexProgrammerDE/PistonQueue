@@ -1,5 +1,5 @@
 # PistonQueue V${project.version}
-# Make the main server the default one you login to
+# Make the main server the default one you log in to
 # READ ME: all colours are orange by default just add & and colour
 # to change the colours to your liking
 # Please don't forget to replace SERVERNAME
@@ -11,6 +11,7 @@
 SERVERNAME: "SERVERNAME"
 
 # Username regex
+ENABLEREGEX: true
 REGEX: "[a-zA-Z0-9_]*"
 REGEXMESSAGE: "&6[PQ] Invalid username please use: %regex%"
 
