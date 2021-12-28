@@ -19,34 +19,36 @@
  */
 package net.pistonmaster.pistonqueue.bukkit;
 
+import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
+@Getter
 public final class PistonQueueBukkit extends JavaPlugin {
-    protected boolean forceLocation = true;
+    private boolean forceLocation;
 
-    protected String forcedWorldName = "world_the_end";
-    protected int forcedX = 0;
-    protected int forcedY = 200;
-    protected int forcedZ = 0;
+    private String forcedWorldName;
+    private int forcedX;
+    private int forcedY;
+    private int forcedZ;
 
-    protected boolean hidePlayers = true;
-    protected boolean disableChat = true;
-    protected boolean disableCmd = true;
-    protected boolean restrictMovement = true;
-    protected boolean forceGamemode = true;
-    protected String forcedGamemode = "spectator"; // spectator
-    protected boolean protocolLib = false;
-    protected boolean disableDebug = true;
-    protected boolean team = false;
-    protected String teamName = "%playername%";
-    protected boolean noChunk = true;
-    protected boolean noTime = true;
-    protected boolean noHealth = true;
-    protected boolean noAdvancements = true;
-    protected boolean noExperience = true;
-    protected boolean showHead = true;
+    private boolean hidePlayers;
+    private boolean disableChat;
+    private boolean disableCmd;
+    private boolean restrictMovement;
+    private boolean forceGamemode;
+    private String forcedGamemode;
+    private boolean protocolLib;
+    private boolean disableDebug;
+    private boolean team;
+    private String teamName;
+    private boolean noChunk;
+    private boolean noTime;
+    private boolean noHealth;
+    private boolean noAdvancements;
+    private boolean noExperience;
+    private boolean showHead;
 
     @Override
     public void onEnable() {

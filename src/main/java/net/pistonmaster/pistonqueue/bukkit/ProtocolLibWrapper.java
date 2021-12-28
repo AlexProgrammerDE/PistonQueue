@@ -53,7 +53,7 @@ public final class ProtocolLibWrapper {
     public static void setupProtocolLib(PistonQueueBukkit plugin) {
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
-        if (plugin.noChunk)
+        if (plugin.isNoChunk())
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.MAP_CHUNK) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
@@ -61,7 +61,7 @@ public final class ProtocolLibWrapper {
                 }
             });
 
-        if (plugin.noTime)
+        if (plugin.isNoTime())
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_TIME) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
@@ -69,7 +69,7 @@ public final class ProtocolLibWrapper {
                 }
             });
 
-        if (plugin.noHealth)
+        if (plugin.isNoHealth())
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_HEALTH) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
@@ -77,7 +77,7 @@ public final class ProtocolLibWrapper {
                 }
             });
 
-        if (plugin.noAdvancements)
+        if (plugin.isNoAdvancements())
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ADVANCEMENTS) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
@@ -85,7 +85,7 @@ public final class ProtocolLibWrapper {
                 }
             });
 
-        if (plugin.noExperience)
+        if (plugin.isNoExperience())
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.EXPERIENCE) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
@@ -93,7 +93,7 @@ public final class ProtocolLibWrapper {
                 }
             });
 
-        if (plugin.showHead)
+        if (plugin.isShowHead())
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
