@@ -175,7 +175,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
                     queueListenerVelocity.setMainOnline(false);
                 }
             } else {
-                logger.warn("Main Server \"" + Config.MAINSERVER + "\" not set up!!!");
+                logger.warn("Main Server \"" + Config.MAINSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
             }
         }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
 
@@ -189,7 +189,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
                     queueListenerVelocity.setQueueOnline(false);
                 }
             } else {
-                logger.warn("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!!");
+                logger.warn("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
             }
         }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
 
@@ -204,7 +204,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
                         queueListenerVelocity.setAuthOnline(false);
                     }
                 } else {
-                    logger.warn("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!!");
+                    logger.warn("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
                 }
             } else {
                 queueListenerVelocity.setAuthOnline(true);

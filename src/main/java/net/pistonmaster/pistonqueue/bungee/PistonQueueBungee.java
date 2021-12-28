@@ -171,7 +171,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
                     queueListenerBungee.setMainOnline(false);
                 }
             } else {
-                getLogger().warning("Main Server \"" + Config.MAINSERVER + "\" not set up!!!");
+                getLogger().warning("Main Server \"" + Config.MAINSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
@@ -189,7 +189,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
                     queueListenerBungee.setQueueOnline(false);
                 }
             } else {
-                getLogger().warning("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!!");
+                getLogger().warning("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
@@ -208,7 +208,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
                         queueListenerBungee.setAuthOnline(false);
                     }
                 } else {
-                    getLogger().warning("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!!");
+                    getLogger().warning("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
                 }
             } else {
                 queueListenerBungee.setAuthOnline(true);
