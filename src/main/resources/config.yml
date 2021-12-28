@@ -1,28 +1,27 @@
 # PistonQueue V${project.version}
-# Note - Operators and users with the permission "queue.admin" will be excluded from restrictions. ##
+# Note - Operators and users with the permission "queue.admin" will be excluded from restrictions.
 
-forceLocation: true # Force the user to remain in a certain location.
+forceLocation: true # Force the user to remain in a certain position.
+forcedWorldName: "world_the_end" # Forced world
+forcedX: 500 # Forced x coordinate
+forcedY: 256 # Forced y coordinate
+forcedZ: 500 # Forced z coordinate
 
-forcedWorldName: "world_the_end" # the name of the world to force the user to remain in
-forcedX: 500 # the coordinates that the user must remain at.
-forcedY: 256
-forcedZ: 500
-
-hidePlayers: true # Hide players from each other so that it looks like every user is alone in the world. This will also disable join/leave messages.
+hidePlayers: true # Hide players from each other, so that it looks like every user is alone in the world. This will also disable join/leave messages.
 restrictMovement: true # Prevent players from moving.
-forceGamemode: true # Force players to remain in a single gamemode
+forceGamemode: true # Force players to remain in a gamemode.
 forcedGamemode: "spectator" # The gamemode to force players to remain in.
-disableChat: true # Don't allow players to chat
-disableCmd: true # Don't allow commands
+disableChat: true # Don't allow players to chat.
+disableCmd: true # Don't allow commands.
 
 team: false # Show a players own name to himself in spectator menu.
-teamName: "%playername%"
+teamName: "%playername%" # The name the user sees.
 
 # ProtocolLib only
 disableDebug: true # Doesn't show the clients position on F3.
-noChunk: true # Do not send chunk data packets
-noTime: true # Do not send time packets
-noHealth: true # Do not send health packets
-noAdvancements: true # Do not send advancement packets
-noExperience: true # Do not send experience packets
-showHead: true # Does not send entity metadata anymore, causing that the entire player head is shown while in spectator. (like on 2b2t)
+noChunk: true # Do not send chunk data packets.
+noTime: true # Do not send time packets.
+noHealth: true # Do not send health packets.
+noAdvancements: true # Do not send advancement packets.
+noExperience: true # Do not send experience packets.
+showHead: true # Does not send entity metadata anymore, causing that the entire player head is shown while in spectator.
