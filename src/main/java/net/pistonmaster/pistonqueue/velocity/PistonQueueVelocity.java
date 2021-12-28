@@ -52,6 +52,7 @@ import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -120,66 +121,69 @@ public class PistonQueueVelocity implements PistonQueueProxy {
         logger.info("Scheduling tasks");
 
         // Sends the position message and updates tab on an interval in chat
-        proxyServer.getScheduler().buildTask(this, () -> {
+        schedule(() -> {
             if (!queueListenerVelocity.isMainOnline())
                 return;
 
             for (QueueType type : QueueType.values()) {
                 sendMessage(type, Config.POSITIONMESSAGECHAT, MessageType.CHAT);
             }
-        }).delay(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).repeat(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).schedule();
+        }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Sends the position message and updates tab on an interval on hot bar
-        proxyServer.getScheduler().buildTask(this, () -> {
+        schedule(() -> {
             if (!queueListenerVelocity.isMainOnline())
                 return;
 
             for (QueueType type : QueueType.values()) {
                 sendMessage(type, Config.POSITIONMESSAGEHOTBAR, MessageType.ACTION_BAR);
             }
-        }).delay(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).repeat(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).schedule();
+        }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Updates the tab
-        proxyServer.getScheduler().buildTask(this, () -> {
+        schedule(() -> {
             updateTab(QueueType.VETERAN, Config.HEADERVETERAN, Config.FOOTERVETERAN);
             updateTab(QueueType.PRIORITY, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
             updateTab(QueueType.REGULAR, Config.HEADER, Config.FOOTER);
-        }).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
+        }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-        proxyServer.getScheduler().buildTask(this, () -> {
+        schedule(() -> {
             if (Config.PAUSEQUEUEIFMAINDOWN && !queueListenerVelocity.isMainOnline()) {
                 QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
                 QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
                 QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSEQUEUEIFMAINDOWNMESSAGE))));
             }
-        }).delay(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).repeat(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).schedule();
+        }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Send plugin message
-        proxyServer.getScheduler().buildTask(this, this::sendCustomData).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
+        schedule(this::sendCustomData, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
-        proxyServer.getScheduler().buildTask(this, queueListenerVelocity::moveQueue).delay(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).repeat(Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS).schedule();
+        schedule(queueListenerVelocity::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
+        AtomicBoolean isFirstRun = new AtomicBoolean(true);
         // Checks the status of all the servers
-        proxyServer.getScheduler().buildTask(this, () -> {
+        schedule(() -> {
             if (proxyServer.getServer(Config.MAINSERVER).isPresent()) {
                 try {
                     proxyServer.getServer(Config.MAINSERVER).get().ping().join();
 
-                    if (!queueListenerVelocity.isMainOnline())
+                    if (!isFirstRun.get() && !queueListenerVelocity.isMainOnline()) {
                         queueListenerVelocity.setOnlineSince(Instant.now());
+                    }
 
                     queueListenerVelocity.setMainOnline(true);
                 } catch (CancellationException | CompletionException e) {
                     logger.warn("Main Server is down!!!");
                     queueListenerVelocity.setMainOnline(false);
                 }
+                isFirstRun.set(false);
             } else {
                 logger.warn("Main Server \"" + Config.MAINSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
             }
-        }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
+        }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
-        proxyServer.getScheduler().buildTask(this, () -> {
+        schedule(() -> {
             if (proxyServer.getServer(Config.QUEUESERVER).isPresent()) {
                 try {
                     proxyServer.getServer(Config.QUEUESERVER).get().ping().join();
@@ -191,9 +195,9 @@ public class PistonQueueVelocity implements PistonQueueProxy {
             } else {
                 logger.warn("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
             }
-        }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
+        }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
-        proxyServer.getScheduler().buildTask(this, () -> {
+        schedule(() -> {
             if (Config.ENABLEAUTHSERVER) {
                 if (proxyServer.getServer(Config.AUTHSERVER).isPresent()) {
                     try {
@@ -209,7 +213,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
             } else {
                 queueListenerVelocity.setAuthOnline(true);
             }
-        }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
+        }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
     }
 
     @SuppressWarnings({"UnstableApiUsage"})
@@ -262,6 +266,11 @@ public class PistonQueueVelocity implements PistonQueueProxy {
     @Override
     public List<PlayerWrapper> getPlayers() {
         return proxyServer.getAllPlayers().stream().map(this::wrapPlayer).collect(Collectors.toList());
+    }
+
+    @Override
+    public void schedule(Runnable runnable, long delay, long period, TimeUnit unit) {
+        proxyServer.getScheduler().buildTask(this, runnable).delay(delay, unit).repeat(period, unit).schedule();
     }
 
     public PlayerWrapper wrapPlayer(Player player) {

@@ -42,6 +42,7 @@ import java.net.Socket;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -95,7 +96,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
         logger.info(ChatColor.BLUE + "Scheduling tasks");
 
         // Sends the position message and updates tab on an interval in chat
-        getProxy().getScheduler().schedule(this, () -> {
+        schedule(() -> {
             if (!queueListenerBungee.isMainOnline())
                 return;
 
@@ -105,7 +106,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
         }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Sends the position message and updates tab on an interval on hot bar
-        getProxy().getScheduler().schedule(this, () -> {
+        schedule(() -> {
             if (!queueListenerBungee.isMainOnline())
                 return;
 
@@ -115,13 +116,13 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
         }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Updates the tab
-        getProxy().getScheduler().schedule(this, () -> {
+        schedule(() -> {
             updateTab(QueueType.VETERAN, Config.HEADERVETERAN, Config.FOOTERVETERAN);
             updateTab(QueueType.PRIORITY, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
             updateTab(QueueType.REGULAR, Config.HEADER, Config.FOOTER);
         }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
-        getProxy().getScheduler().schedule(this, () -> {
+        schedule(() -> {
             if (Config.PAUSEQUEUEIFMAINDOWN && !queueListenerBungee.isMainOnline()) {
                 QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
@@ -147,13 +148,14 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
         }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
         // Send plugin message
-        getProxy().getScheduler().schedule(this, this::sendCustomData, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        schedule(this::sendCustomData, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
-        getProxy().getScheduler().schedule(this, queueListenerBungee::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        schedule(queueListenerBungee::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
 
+        AtomicBoolean isFirstRun = new AtomicBoolean(true);
         // Checks the status of all the servers
-        getProxy().getScheduler().schedule(this, () -> {
+        schedule(() -> {
             if (getProxy().getServers().containsKey(Config.MAINSERVER)) {
                 try {
                     Socket s = new Socket(
@@ -162,20 +164,22 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
 
                     s.close();
 
-                    if (!queueListenerBungee.isMainOnline())
+                    if (!isFirstRun.get() && !queueListenerBungee.isMainOnline()) {
                         queueListenerBungee.setOnlineSince(Instant.now());
+                    }
 
                     queueListenerBungee.setMainOnline(true);
                 } catch (IOException e) {
                     getLogger().warning("Main Server is down!!!");
                     queueListenerBungee.setMainOnline(false);
                 }
+                isFirstRun.set(false);
             } else {
                 getLogger().warning("Main Server \"" + Config.MAINSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
-        getProxy().getScheduler().schedule(this, () -> {
+        schedule(() -> {
             if (getProxy().getServers().containsKey(Config.QUEUESERVER)) {
                 try {
                     Socket s = new Socket(
@@ -193,7 +197,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
-        getProxy().getScheduler().schedule(this, () -> {
+        schedule(() -> {
             if (Config.ENABLEAUTHSERVER) {
                 if (getProxy().getServers().containsKey(Config.AUTHSERVER)) {
                     try {
@@ -266,6 +270,11 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
     @Override
     public List<PlayerWrapper> getPlayers() {
         return getProxy().getPlayers().stream().map(this::wrapPlayer).collect(Collectors.toList());
+    }
+
+    @Override
+    public void schedule(Runnable runnable, long delay, long period, TimeUnit unit) {
+        getProxy().getScheduler().schedule(this, runnable, delay, period, unit);
     }
 
     public PlayerWrapper wrapPlayer(ProxiedPlayer player) {

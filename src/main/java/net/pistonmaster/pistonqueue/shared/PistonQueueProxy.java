@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -40,6 +41,8 @@ public interface PistonQueueProxy {
     Optional<PlayerWrapper> getPlayer(UUID uuid);
 
     List<PlayerWrapper> getPlayers();
+
+    void schedule(Runnable runnable, long delay, long period, TimeUnit unit);
 
     default void sendMessage(QueueType queue, boolean bool, MessageType type) {
         if (bool) {
