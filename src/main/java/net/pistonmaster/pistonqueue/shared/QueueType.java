@@ -20,13 +20,13 @@
 package net.pistonmaster.pistonqueue.shared;
 
 import lombok.Getter;
-import lombok.Setter;
 import net.pistonmaster.pistonqueue.shared.utils.Pair;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 public enum QueueType {
@@ -43,9 +43,8 @@ public enum QueueType {
     @Getter
     private final Map<UUID, List<Pair<Integer, Instant>>> positionCache = new ConcurrentHashMap<>();
 
-    @Setter
     @Getter
-    private int playersWithTypeInMain = 0;
+    private final AtomicInteger playersWithTypeInMain = new AtomicInteger();
 
     public static QueueType getQueueType(Function<String, Boolean> player) {
         if (player.apply(Config.QUEUEVETERANPERMISSION)) {
@@ -79,7 +78,7 @@ public enum QueueType {
         }
     }
 
-    public int getReservatedSlots() {
+    public int getReservedSlots() {
         switch (this) {
             case VETERAN:
                 return Config.VETERANSLOTS;
@@ -89,6 +88,4 @@ public enum QueueType {
                 return Config.REGULARSLOTS;
         }
     }
-
-
 }

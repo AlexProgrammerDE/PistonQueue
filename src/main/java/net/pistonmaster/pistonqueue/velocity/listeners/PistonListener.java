@@ -21,15 +21,10 @@ package net.pistonmaster.pistonqueue.velocity.listeners;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PreLoginEvent;
-import lombok.RequiredArgsConstructor;
 import net.pistonmaster.pistonqueue.shared.Config;
-import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 
-@RequiredArgsConstructor
 public class PistonListener {
-    private final PistonQueueVelocity plugin;
-
     @Subscribe
     public void onPreLogin(PreLoginEvent ple) {
         if (ple.getResult() != PreLoginEvent.PreLoginComponentResult.allowed())

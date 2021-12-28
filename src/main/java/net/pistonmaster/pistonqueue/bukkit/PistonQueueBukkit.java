@@ -84,7 +84,7 @@ public final class PistonQueueBukkit extends JavaPlugin {
                 world.setGameRuleValue("announceAdvancements", "false");
             }
 
-            getLogger().info(ChatColor.BLUE + "Gamerule announceAdvancements was set to false because hidePlayers was true.");
+            getLogger().info(ChatColor.BLUE + "Game-rule announceAdvancements was set to false because hidePlayers was true.");
         }
 
         getLogger().info(ChatColor.BLUE + "Looking for hooks");

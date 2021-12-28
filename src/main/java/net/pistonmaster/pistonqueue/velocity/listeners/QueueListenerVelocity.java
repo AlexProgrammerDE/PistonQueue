@@ -98,13 +98,13 @@ public class QueueListenerVelocity extends QueueListenerShared {
             }
 
             @Override
-            public String getTarget() {
-                return event.getResult().getServer().get().getServerInfo().getName();
+            public Optional<String> getTarget() {
+                return event.getResult().getServer().map(RegisteredServer::getServerInfo).map(ServerInfo::getName);
             }
 
             @Override
             public void setTarget(String server) {
-                event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(server).get()));
+                event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(server).orElseThrow(() -> new IllegalArgumentException(String.format("Server %s not found", server)))));
             }
         };
     }
@@ -113,7 +113,7 @@ public class QueueListenerVelocity extends QueueListenerShared {
         return new PQKickedFromServerEvent() {
             @Override
             public void setCancelServer(String server) {
-                event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(Config.QUEUESERVER).get()));
+                event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(Config.QUEUESERVER).orElseThrow(() -> new IllegalArgumentException(String.format("Server %s not found", Config.QUEUESERVER)))));
             }
 
             @Override

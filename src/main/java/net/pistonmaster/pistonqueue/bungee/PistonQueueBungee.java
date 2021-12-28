@@ -46,11 +46,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@SuppressWarnings({"deprecation"})
 public final class PistonQueueBungee extends Plugin implements PistonQueueProxy {
     @Getter
     private final QueueListenerBungee queueListenerBungee = new QueueListenerBungee(this);
 
+    @SuppressWarnings({"deprecation"})
     @Override
     public void onEnable() {
         Logger logger = getLogger();
@@ -76,7 +76,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
 
         logger.info(ChatColor.BLUE + "Registering listeners");
         manager.registerListener(this, queueListenerBungee);
-        manager.registerListener(this, new PistonListener(this));
+        manager.registerListener(this, new PistonListener());
 
         logger.info(ChatColor.BLUE + "Loading Metrics");
         new Metrics(this, 8755);
@@ -104,7 +104,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
             }
         }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
 
-        // Sends the position message and updates tab on an interval on hotbar
+        // Sends the position message and updates tab on an interval on hot bar
         getProxy().getScheduler().schedule(this, () -> {
             if (!queueListenerBungee.isMainOnline())
                 return;
@@ -253,7 +253,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
             }
 
             for (Map.Entry<QueueType, AtomicInteger> entry : map.entrySet()) {
-                entry.getKey().setPlayersWithTypeInMain(entry.getValue().get());
+                entry.getKey().getPlayersWithTypeInMain().set(entry.getValue().get());
             }
         }, 0, 1, TimeUnit.SECONDS);
     }

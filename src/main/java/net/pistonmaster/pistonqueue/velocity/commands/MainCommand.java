@@ -125,9 +125,9 @@ public final class MainCommand implements SimpleCommand {
                     if (sender.hasPermission(Config.ADMINPERMISSION)) {
                         sendLine(sender);
                         sender.sendMessage(Component.text("Main slot stats").color(NamedTextColor.GOLD));
-                        sender.sendMessage(Component.text("Regular: ").color(NamedTextColor.GOLD).append(Component.text(QueueType.REGULAR.getPlayersWithTypeInMain() + "/" + QueueType.REGULAR.getReservatedSlots()).color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD)));
-                        sender.sendMessage(Component.text("Priority: ").color(NamedTextColor.GOLD).append(Component.text(QueueType.PRIORITY.getPlayersWithTypeInMain() + "/" + QueueType.PRIORITY.getReservatedSlots()).color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD)));
-                        sender.sendMessage(Component.text("Veteran: ").color(NamedTextColor.GOLD).append(Component.text(QueueType.VETERAN.getPlayersWithTypeInMain() + "/" + QueueType.VETERAN.getReservatedSlots()).color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD)));
+                        sender.sendMessage(Component.text("Regular: ").color(NamedTextColor.GOLD).append(Component.text(QueueType.REGULAR.getPlayersWithTypeInMain().get() + "/" + QueueType.REGULAR.getReservedSlots()).color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD)));
+                        sender.sendMessage(Component.text("Priority: ").color(NamedTextColor.GOLD).append(Component.text(QueueType.PRIORITY.getPlayersWithTypeInMain().get() + "/" + QueueType.PRIORITY.getReservedSlots()).color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD)));
+                        sender.sendMessage(Component.text("Veteran: ").color(NamedTextColor.GOLD).append(Component.text(QueueType.VETERAN.getPlayersWithTypeInMain().get() + "/" + QueueType.VETERAN.getReservedSlots()).color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD)));
                         sendLine(sender);
                     } else {
                         noPermission(sender);

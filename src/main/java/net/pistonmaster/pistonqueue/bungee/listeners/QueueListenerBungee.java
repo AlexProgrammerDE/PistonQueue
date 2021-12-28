@@ -97,8 +97,8 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
             }
 
             @Override
-            public String getTarget() {
-                return event.getTarget().getName();
+            public Optional<String> getTarget() {
+                return Optional.of(event.getTarget().getName());
             }
 
             @Override

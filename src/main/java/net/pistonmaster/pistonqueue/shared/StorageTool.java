@@ -40,11 +40,11 @@ public final class StorageTool {
     }
 
     /**
-     * Shadowban a player!
+     * Shadow-ban a player!
      *
-     * @param player The player to shadowban.
+     * @param player The player to shadow-ban.
      * @param date   The date when he will be unbanned.
-     * @return true if player got shadow banned and if already shadow banned false.
+     * @return true if player got shadow-banned and if already shadow-banned false.
      */
     public static boolean shadowBanPlayer(UUID player, Date date) {
         manageBan(player);
@@ -65,10 +65,10 @@ public final class StorageTool {
     }
 
     /**
-     * Unshadowban a player!
+     * Un-shadow-ban a player!
      *
-     * @param player The player to unshadowban.
-     * @return true if player got unshadowbanned and false if not was shadow banned.
+     * @param player The player to un-shadow-ban.
+     * @return true if a player got un-shadow-banned and false if he wasn't shadow-banned.
      */
     public static boolean unShadowBanPlayer(UUID player) {
         if (!dataConfig.node(player.toString()).virtual()) {

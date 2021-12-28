@@ -19,18 +19,13 @@
  */
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
-import lombok.RequiredArgsConstructor;
 import net.md_5.bungee.api.event.PreLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
-import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.shared.Config;
 
-@RequiredArgsConstructor
 public final class PistonListener implements Listener {
-    private final PistonQueueBungee plugin;
-
     @EventHandler
     public void onPreLogin(PreLoginEvent ple) {
         if (ple.isCancelled())

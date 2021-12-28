@@ -69,9 +69,9 @@ public final class MainCommand extends Command implements TabExecutor {
                     if (sender.hasPermission(Config.ADMINPERMISSION)) {
                         sendLine(sender);
                         sender.sendMessage(new ComponentBuilder("Main slot stats").color(ChatColor.GOLD).create());
-                        sender.sendMessage(new ComponentBuilder("Regular: ").color(ChatColor.GOLD).append(QueueType.REGULAR.getPlayersWithTypeInMain() + "/" + QueueType.REGULAR.getReservatedSlots()).color(ChatColor.GOLD).bold(true).create());
-                        sender.sendMessage(new ComponentBuilder("Priority: ").color(ChatColor.GOLD).append(QueueType.PRIORITY.getPlayersWithTypeInMain() + "/" + QueueType.PRIORITY.getReservatedSlots()).color(ChatColor.GOLD).bold(true).create());
-                        sender.sendMessage(new ComponentBuilder("Veteran: ").color(ChatColor.GOLD).append(QueueType.VETERAN.getPlayersWithTypeInMain() + "/" + QueueType.VETERAN.getReservatedSlots()).color(ChatColor.GOLD).bold(true).create());
+                        sender.sendMessage(new ComponentBuilder("Regular: ").color(ChatColor.GOLD).append(QueueType.REGULAR.getPlayersWithTypeInMain().get() + "/" + QueueType.REGULAR.getReservedSlots()).color(ChatColor.GOLD).bold(true).create());
+                        sender.sendMessage(new ComponentBuilder("Priority: ").color(ChatColor.GOLD).append(QueueType.PRIORITY.getPlayersWithTypeInMain().get() + "/" + QueueType.PRIORITY.getReservedSlots()).color(ChatColor.GOLD).bold(true).create());
+                        sender.sendMessage(new ComponentBuilder("Veteran: ").color(ChatColor.GOLD).append(QueueType.VETERAN.getPlayersWithTypeInMain().get() + "/" + QueueType.VETERAN.getReservedSlots()).color(ChatColor.GOLD).bold(true).create());
                         sendLine(sender);
                     } else {
                         noPermission(sender);

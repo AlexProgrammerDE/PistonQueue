@@ -79,7 +79,7 @@ public abstract class QueueListenerShared {
             if (isAnyoneQueuedOfType(player))
                 return;
 
-            if (!isPlayersQueueFull(player) && event.getTarget().equals(Config.QUEUESERVER))
+            if (!isPlayersQueueFull(player) && event.getTarget().isPresent() && event.getTarget().get().equals(Config.QUEUESERVER))
                 event.setTarget(Config.MAINSERVER);
         } else {
             if (player.getCurrentServer().isPresent())
@@ -106,17 +106,17 @@ public abstract class QueueListenerShared {
         preQueueAdding(player, type.getHeader(), type.getFooter());
 
         // Redirect the player to the queue.
-        String originalTarget = event.getTarget();
+        Optional<String> originalTarget = event.getTarget();
 
         event.setTarget(Config.QUEUESERVER);
 
         Map<UUID, String> queueMap = type.getQueueMap();
 
         // Store the data concerning the player's original destination
-        if (Config.FORCEMAINSERVER) {
+        if (Config.FORCEMAINSERVER || !originalTarget.isPresent()) {
             queueMap.put(player.getUniqueId(), Config.MAINSERVER);
         } else {
-            queueMap.put(player.getUniqueId(), originalTarget);
+            queueMap.put(player.getUniqueId(), originalTarget.get());
         }
     }
 
@@ -164,7 +164,7 @@ public abstract class QueueListenerShared {
     }
 
     protected boolean isQueueFull(QueueType type) {
-        return type.getPlayersWithTypeInMain() >= type.getReservatedSlots();
+        return type.getPlayersWithTypeInMain().get() >= type.getReservedSlots();
     }
 
     protected boolean isAnyoneQueuedOfType(PlayerWrapper player) {

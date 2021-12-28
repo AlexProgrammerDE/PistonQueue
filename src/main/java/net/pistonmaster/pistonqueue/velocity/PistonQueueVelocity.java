@@ -100,7 +100,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
         proxyServer.getCommandManager().register("pistonqueue", new MainCommand(this), "pq");
 
         logger.info("Registering listeners");
-        proxyServer.getEventManager().register(this, new PistonListener(this));
+        proxyServer.getEventManager().register(this, new PistonListener());
         proxyServer.getEventManager().register(this, queueListenerVelocity);
 
         logger.info("Loading Metrics");
@@ -129,7 +129,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
             }
         }).delay(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).repeat(Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS).schedule();
 
-        // Sends the position message and updates tab on an interval on hotbar
+        // Sends the position message and updates tab on an interval on hot bar
         proxyServer.getScheduler().buildTask(this, () -> {
             if (!queueListenerVelocity.isMainOnline())
                 return;
@@ -212,6 +212,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
         }).delay(500, TimeUnit.MILLISECONDS).repeat(Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS).schedule();
     }
 
+    @SuppressWarnings({"UnstableApiUsage"})
     private void sendCustomData() {
         Collection<Player> networkPlayers = proxyServer.getAllPlayers();
 
@@ -219,7 +220,6 @@ public class PistonQueueVelocity implements PistonQueueProxy {
             return;
         }
 
-        @SuppressWarnings({"UnstableApiUsage"})
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
         out.writeUTF("size");
@@ -227,9 +227,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
         out.writeInt(QueueType.PRIORITY.getQueueMap().size());
         out.writeInt(QueueType.VETERAN.getQueueMap().size());
 
-        networkPlayers.forEach(player -> {
-            player.sendPluginMessage(() -> "piston:queue", out.toByteArray());
-        });
+        networkPlayers.forEach(player -> player.sendPluginMessage(() -> "piston:queue", out.toByteArray()));
     }
 
     private void initializeReservationSlots() {
@@ -251,7 +249,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
             }
 
             for (Map.Entry<QueueType, AtomicInteger> entry : map.entrySet()) {
-                entry.getKey().setPlayersWithTypeInMain(entry.getValue().get());
+                entry.getKey().getPlayersWithTypeInMain().set(entry.getValue().get());
             }
         }).delay(0, TimeUnit.MILLISECONDS).repeat(1, TimeUnit.SECONDS).schedule();
     }
