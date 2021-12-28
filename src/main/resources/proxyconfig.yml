@@ -93,7 +93,7 @@ PRIORITYSLOTS: 30
 VETERANSLOTS: 20
 
 # Whether you want to set the main server as your target or just want to have BungeeCord to decide.
-FORCEMAINSERVER: true
+FORCEMAINSERVER: false
 
 # Total people allowed to be connected to the queue network
 # Make sure you set the BungeeCord/Velocity slots higher than the amount
