@@ -243,10 +243,13 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
 
     private void initializeReservationSlots() {
         getProxy().getScheduler().schedule(this, () -> {
-            ServerInfo mainServer = getProxy().getServerInfo(Config.MAINSERVER);
+            Optional<ServerInfo> mainServer = Optional.ofNullable(getProxy().getServerInfo(Config.MAINSERVER));
+            if (!mainServer.isPresent())
+                return;
+
             Map<QueueType, AtomicInteger> map = new EnumMap<>(QueueType.class);
 
-            for (ProxiedPlayer player : mainServer.getPlayers()) {
+            for (ProxiedPlayer player : mainServer.get().getPlayers()) {
                 QueueType playerType = QueueType.getQueueType(player::hasPermission);
 
                 if (map.containsKey(playerType)) {

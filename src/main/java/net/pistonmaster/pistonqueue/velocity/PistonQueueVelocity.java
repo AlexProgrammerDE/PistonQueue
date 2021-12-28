@@ -237,7 +237,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
     private void initializeReservationSlots() {
         proxyServer.getScheduler().buildTask(this, () -> {
             if (!proxyServer.getServer(Config.MAINSERVER).isPresent())
-                throw new IllegalStateException("Main server not configured properly!!!");
+                return;
 
             RegisteredServer mainServer = proxyServer.getServer(Config.MAINSERVER).get();
             Map<QueueType, AtomicInteger> map = new EnumMap<>(QueueType.class);
