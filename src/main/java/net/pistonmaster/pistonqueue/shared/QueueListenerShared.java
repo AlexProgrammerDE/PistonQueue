@@ -235,7 +235,7 @@ public abstract class QueueListenerShared {
 
             if (StorageTool.isShadowBanned(player.get().getUniqueId())
                     && (Config.SHADOWBANTYPE == BanType.LOOP
-                    || (Config.SHADOWBANTYPE == BanType.TENPERCENT && new Random().nextInt(100) >= 10))) {
+                    || (Config.SHADOWBANTYPE == BanType.TEN_PERCENT && new Random().nextInt(100) >= 10))) {
                 player.get().sendMessage(Config.SHADOWBANMESSAGE);
 
                 type.getQueueMap().put(entry.getKey(), entry.getValue());

@@ -21,7 +21,7 @@ REGISTERTAB: true
 # Server is full message
 SERVERISFULLMESSAGE: "%server% &6is full"
 
-# It is not recommended to decrease this number (milliseconds)
+# It is not recommended decreasing this number (milliseconds)
 SERVERONLINECHECKDELAY: 500
 
 # Where to send the queue position message and what to send.
@@ -60,8 +60,8 @@ RECOVERY: true
 RECOVERYMESSAGE: "&cOops something went wrong... Putting you back in queue."
 
 # Set the queue servers name that is in the bungee config.yml
-# Note that the main server is always the one you login to first
-# The main server server is the one that has a queue to protect it
+# Note that the main server is always the one you log in to first
+# The main server is the one that has a queue to protect it
 # Make sure you set the default server in bungee config.yml correctly
 QUEUESERVER: "queue"
 MAINSERVER: "main"
@@ -74,7 +74,7 @@ AUTHSERVER: "auth"
 
 # Have the auth server go first instead of the default settings which are Queue -> Auth -> and main
 # This option will let you have the auth server go first then queue and the main server.
-# You need to additionally setup your auth server to send you to the queue server after login
+# You need to additionally set up your auth server to send you to the queue server after login
 # DISCLAIMER: This feature is experimental and may cause some issues!
 # It might also cause more issues because then the players aren't queued to join the auth server. It might overload.
 # We will not provide support for this feature!!!
@@ -92,11 +92,11 @@ REGULARSLOTS: 50
 PRIORITYSLOTS: 30
 VETERANSLOTS: 20
 
-# Whether you want to set the main server as your target or just want have bungeecord to decide.
+# Whether you want to set the main server as your target or just want to have BungeeCord to decide.
 FORCEMAINSERVER: true
 
 # Total people allowed to be connected to the queue network
-# Make sure you set the bungeecord/velocity slots higher then the amount
+# Make sure you set the BungeeCord/Velocity slots higher than the amount
 # of people you get regularly for example 9000 and 9000 on the queue server
 QUEUESERVERSLOTS: 9000
 
@@ -108,12 +108,12 @@ QUEUEMOVEDELAY: 1000
 # When activated you will always be sent into the queue server and then the main server.
 ALWAYSQUEUE: true
 
-# The way shadow bans should work on your server. Valid types are: LOOP, TENPERCENT
+# The way shadow-bans should work on your server. Valid types are: LOOP, TEN_PERCENT
 # LOOP: When reaching the end of the queue you will get put in front of it again.
-# TENPERCENT: You have a ten percent chance of getting in.
+# TEN_PERCENT: Loop, but you have a ten percent chance of getting in.
 SHADOWBANTYPE: "LOOP"
 
-# LOOP: When your shadow banned you will be put in queue, but before joining it "fails" and you start all over again.
+# LOOP: When you're shadow-banned you will be put in queue, but before joining it "fails" and you start all over again.
 SHADOWBANMESSAGE: "&6You have lost connection to the server"
 
 # Permissions

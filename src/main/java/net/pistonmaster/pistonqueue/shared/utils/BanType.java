@@ -31,7 +31,7 @@ public enum BanType {
     /**
      * Have a 10% chance of getting into the server!
      */
-    TENPERCENT,
+    TEN_PERCENT,
 
     /**
      * Kick a player while joining!
