@@ -38,7 +38,9 @@ import org.bstats.bungeecord.Metrics;
 import java.io.IOException;
 import java.net.Socket;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
@@ -118,26 +120,9 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
 
         schedule(() -> {
             if (Config.PAUSE_QUEUE_IF_MAIN_DOWN && !queueListenerBungee.isMainOnline()) {
-                QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> {
-                    ProxiedPlayer player = getProxy().getPlayer(id);
-
-                    if (player != null && player.isConnected())
-                        ChatUtils.sendMessage(player, Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE);
-                });
-
-                QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> {
-                    ProxiedPlayer player = getProxy().getPlayer(id);
-
-                    if (player != null && player.isConnected())
-                        ChatUtils.sendMessage(player, Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE);
-                });
-
-                QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> {
-                    ProxiedPlayer player = getProxy().getPlayer(id);
-
-                    if (player != null && player.isConnected())
-                        ChatUtils.sendMessage(player, Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE);
-                });
+                QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
+                QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
+                QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
             }
         }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
 
@@ -296,11 +281,6 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
             @Override
             public void sendMessage(MessageType type, String message) {
                 ChatUtils.sendMessage(type, player, message);
-            }
-
-            @Override
-            public void sendMessage(String message) {
-                sendMessage(MessageType.CHAT, message);
             }
 
             @Override

@@ -46,7 +46,6 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -149,9 +148,9 @@ public class PistonQueueVelocity implements PistonQueueProxy {
 
         schedule(() -> {
             if (Config.PAUSE_QUEUE_IF_MAIN_DOWN && !queueListenerVelocity.isMainOnline()) {
-                QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE))));
-                QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE))));
-                QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> proxyServer.getPlayer(id).ifPresent(value -> value.sendMessage(ChatUtils.parseToComponent(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE))));
+                QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
+                QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
+                QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
             }
         }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
 
@@ -316,11 +315,6 @@ public class PistonQueueVelocity implements PistonQueueProxy {
                         ChatUtils.sendMessage(MessageType.ACTION_BAR, player, message);
                         break;
                 }
-            }
-
-            @Override
-            public void sendMessage(String message) {
-                sendMessage(MessageType.CHAT, message);
             }
 
             @Override

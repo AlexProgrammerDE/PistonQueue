@@ -32,7 +32,9 @@ public interface PlayerWrapper {
 
     Optional<String> getCurrentServer();
 
-    void sendMessage(String message);
+    default void sendMessage(String message) {
+        sendMessage(MessageType.CHAT, message);
+    }
 
     void sendMessage(MessageType type, String message);
 
