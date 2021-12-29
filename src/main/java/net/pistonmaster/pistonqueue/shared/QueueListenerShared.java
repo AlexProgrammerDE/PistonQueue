@@ -79,7 +79,7 @@ public abstract class QueueListenerShared {
             if (isAnyoneQueuedOfType(player))
                 return;
 
-            if (!isPlayersQueueFull(player) && event.getTarget().isPresent() && event.getTarget().get().equals(Config.QUEUE_SERVER))
+            if (!isPlayerMainFull(player) && event.getTarget().isPresent() && event.getTarget().get().equals(Config.QUEUE_SERVER))
                 event.setTarget(Config.MAIN_SERVER);
         } else {
             if (player.getCurrentServer().isPresent())
@@ -156,15 +156,23 @@ public abstract class QueueListenerShared {
     }
 
     protected boolean isServerFull(PlayerWrapper player) {
-        return isPlayersQueueFull(player) || isAnyoneQueuedOfType(player);
+        return isPlayerMainFull(player) || isAnyoneQueuedOfType(player);
     }
 
-    protected boolean isPlayersQueueFull(PlayerWrapper player) {
-        return isQueueFull(QueueType.getQueueType(player::hasPermission));
+    protected boolean isPlayerMainFull(PlayerWrapper player) {
+        return isMainFull(QueueType.getQueueType(player::hasPermission));
     }
 
-    protected boolean isQueueFull(QueueType type) {
-        return type.getPlayersWithTypeInMain().get() >= type.getReservedSlots();
+    protected int getFreeSlots(QueueType type) {
+        return type.getReservedSlots() - type.getPlayersWithTypeInMain().get();
+    }
+
+    protected boolean isSlotsFull(int slots) {
+        return slots <= 0;
+    }
+
+    protected boolean isMainFull(QueueType type) {
+        return isSlotsFull(getFreeSlots(type));
     }
 
     protected boolean isAnyoneQueuedOfType(PlayerWrapper player) {
@@ -204,11 +212,7 @@ public abstract class QueueListenerShared {
             }
         }
 
-        for (QueueType type : QueueType.values()) {
-            if (!isQueueFull(type)) {
-                connectPlayer(type);
-            }
-        }
+        Arrays.stream(QueueType.values()).forEachOrdered(this::connectPlayer);
     }
 
     protected void doRecovery(PlayerWrapper player) {
@@ -222,11 +226,21 @@ public abstract class QueueListenerShared {
     }
 
     protected void connectPlayer(QueueType type) {
+        int freeSlots = getFreeSlots(type);
+
+        if (isSlotsFull(freeSlots))
+            return;
+
         for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
+            if (isSlotsFull(freeSlots))
+                break;
+
             Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
             if (!player.isPresent()) {
                 continue;
             }
+
+            freeSlots--;
 
             type.getQueueMap().remove(entry.getKey());
 
