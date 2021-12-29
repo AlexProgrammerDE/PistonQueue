@@ -73,7 +73,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
 
     @Inject
     public PistonQueueVelocity(ProxyServer proxyServer, Logger logger, @DataDirectory Path dataDirectory, PluginContainer pluginContainer, Metrics.Factory metricsFactory) {
-        this.proxyServer = proxyServer;
+                this.proxyServer = proxyServer;
         this.logger = logger;
         this.dataDirectory = dataDirectory.toFile();
         this.pluginContainer = pluginContainer;
@@ -82,43 +82,43 @@ public class PistonQueueVelocity implements PistonQueueProxy {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        logger.info("Loading config");
+        info("Loading config");
         processConfig(dataDirectory);
 
         StorageTool.setupTool(dataDirectory);
         initializeReservationSlots();
 
-        logger.info("Looking for hooks");
+        info("Looking for hooks");
         if (proxyServer.getPluginManager().getPlugin("pistonmotd").isPresent()) {
-            logger.info("Hooking into PistonMOTD");
+            info("Hooking into PistonMOTD");
             new PistonMOTDPlaceholder();
         }
 
-        logger.info("Registering plugin messaging channel");
+        info("Registering plugin messaging channel");
         proxyServer.getChannelRegistrar().register(MinecraftChannelIdentifier.from("piston:queue"));
 
-        logger.info("Registering commands");
+        info("Registering commands");
         proxyServer.getCommandManager().register("pistonqueue", new MainCommand(this), "pq");
 
-        logger.info("Registering listeners");
+        info("Registering listeners");
         proxyServer.getEventManager().register(this, new PistonListener());
         proxyServer.getEventManager().register(this, queueListenerVelocity);
 
-        logger.info("Loading Metrics");
+        info("Loading Metrics");
         metricsFactory.make(this, 12389);
 
-        logger.info("Checking for update");
-        new UpdateChecker(logger::info, 83541).getVersion(version -> {
+        info("Checking for update");
+        new UpdateChecker(this::info, 83541).getVersion(version -> {
             if (pluginContainer.getDescription().getVersion().orElse("unknown").equalsIgnoreCase(version)) {
-                logger.info("Your up to date!");
+                info("Your up to date!");
             } else {
-                logger.info("There is a update available.");
-                logger.info("Current version: " + pluginContainer.getDescription().getVersion().orElse("unknown") + " New version: " + version);
-                logger.info("Download it at: https://www.spigotmc.org/resources/83541");
+                info("There is a update available.");
+                info("Current version: " + pluginContainer.getDescription().getVersion().orElse("unknown") + " New version: " + version);
+                info("Download it at: https://www.spigotmc.org/resources/83541");
             }
         });
 
-        logger.info("Scheduling tasks");
+        info("Scheduling tasks");
 
         // Sends the position message and updates tab on an interval in chat
         schedule(() -> {
@@ -174,12 +174,12 @@ public class PistonQueueVelocity implements PistonQueueProxy {
 
                     queueListenerVelocity.setMainOnline(true);
                 } catch (CancellationException | CompletionException e) {
-                    logger.warn("Main Server is down!!!");
+                    warning("Main Server is down!!!");
                     queueListenerVelocity.setMainOnline(false);
                 }
                 isFirstRun.set(false);
             } else {
-                logger.warn("Main Server \"" + Config.MAINSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+                warning("Main Server \"" + Config.MAINSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
@@ -189,11 +189,11 @@ public class PistonQueueVelocity implements PistonQueueProxy {
                     proxyServer.getServer(Config.QUEUESERVER).get().ping().join();
                     queueListenerVelocity.setQueueOnline(true);
                 } catch (CancellationException | CompletionException e) {
-                    logger.warn("Queue Server is down!!!");
+                    warning("Queue Server is down!!!");
                     queueListenerVelocity.setQueueOnline(false);
                 }
             } else {
-                logger.warn("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+                warning("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
             }
         }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
 
@@ -204,11 +204,11 @@ public class PistonQueueVelocity implements PistonQueueProxy {
                         proxyServer.getServer(Config.AUTHSERVER).get().ping().join();
                         queueListenerVelocity.setAuthOnline(true);
                     } catch (CancellationException | CompletionException e) {
-                        logger.warn("Auth Server is down!!!");
+                        warning("Auth Server is down!!!");
                         queueListenerVelocity.setAuthOnline(false);
                     }
                 } else {
-                    logger.warn("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+                    warning("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
                 }
             } else {
                 queueListenerVelocity.setAuthOnline(true);
@@ -273,6 +273,21 @@ public class PistonQueueVelocity implements PistonQueueProxy {
         proxyServer.getScheduler().buildTask(this, runnable).delay(delay, unit).repeat(period, unit).schedule();
     }
 
+    @Override
+    public void info(String message) {
+        logger.info(message);
+    }
+
+    @Override
+    public void warning(String message) {
+        logger.warn(message);
+    }
+
+    @Override
+    public void error(String message) {
+        logger.error(message);
+    }
+
     public PlayerWrapper wrapPlayer(Player player) {
         return new PlayerWrapper() {
             @Override
@@ -285,7 +300,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
                 Optional<RegisteredServer> optional = proxyServer.getServer(server);
 
                 if (!optional.isPresent()) {
-                    logger.error("Server" + server + " not found!!!");
+                    error("Server" + server + " not found!!!");
                     return;
                 }
 

@@ -44,6 +44,12 @@ public interface PistonQueueProxy {
 
     void schedule(Runnable runnable, long delay, long period, TimeUnit unit);
 
+    void info(String message);
+
+    void warning(String message);
+
+    void error(String message);
+
     default void sendMessage(QueueType queue, boolean bool, MessageType type) {
         if (bool) {
             int position = 0;
