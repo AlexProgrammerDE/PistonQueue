@@ -19,6 +19,8 @@
  */
 package net.pistonmaster.pistonqueue.shared;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import net.pistonmaster.pistonqueue.shared.utils.ConfigOutdatedException;
 import net.pistonmaster.pistonqueue.shared.utils.MessageType;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
@@ -115,6 +117,53 @@ public interface PistonQueueProxy {
 
             return SharedChatUtils.formatDuration(text, imaginaryDuration, position);
         }
+    }
+
+    default void initializeReservationSlots() {
+        schedule(() -> {
+            Optional<ServerInfoWrapper> mainServer = getServer(Config.MAIN_SERVER);
+            if (!mainServer.isPresent())
+                return;
+
+            Map<QueueType, AtomicInteger> map = new EnumMap<>(QueueType.class);
+
+            for (PlayerWrapper player : mainServer.get().getConnectedPlayers()) {
+                QueueType playerType = QueueType.getQueueType(player::hasPermission);
+
+                if (map.containsKey(playerType)) {
+                    map.get(playerType).incrementAndGet();
+                } else {
+                    map.put(playerType, new AtomicInteger(1));
+                }
+            }
+
+            for (Map.Entry<QueueType, AtomicInteger> entry : map.entrySet()) {
+                entry.getKey().getPlayersWithTypeInMain().set(entry.getValue().get());
+            }
+        }, 0, 1, TimeUnit.SECONDS);
+    }
+
+    @SuppressWarnings({"UnstableApiUsage"})
+    default void sendCustomData() {
+        List<PlayerWrapper> networkPlayers = getPlayers();
+
+        if (networkPlayers == null || networkPlayers.isEmpty()) {
+            return;
+        }
+
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+
+        out.writeUTF("size");
+        out.writeInt(QueueType.REGULAR.getQueueMap().size());
+        out.writeInt(QueueType.PRIORITY.getQueueMap().size());
+        out.writeInt(QueueType.VETERAN.getQueueMap().size());
+
+        networkPlayers.forEach(player -> {
+            if (player.getCurrentServer().isPresent()) {
+                getServer(player.getCurrentServer().get()).ifPresent(serverInfoWrapper ->
+                        serverInfoWrapper.sendPluginMessage("piston:queue", out.toByteArray()));
+            }
+        });
     }
 
     default void processConfig(File dataDirectory) {

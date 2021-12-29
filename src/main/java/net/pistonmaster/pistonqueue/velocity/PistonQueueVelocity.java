@@ -19,8 +19,6 @@
  */
 package net.pistonmaster.pistonqueue.velocity;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
@@ -48,12 +46,14 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Plugin(id = "pistonqueue", name = PluginData.NAME, version = PluginData.VERSION,
@@ -73,7 +73,7 @@ public class PistonQueueVelocity implements PistonQueueProxy {
 
     @Inject
     public PistonQueueVelocity(ProxyServer proxyServer, Logger logger, @DataDirectory Path dataDirectory, PluginContainer pluginContainer, Metrics.Factory metricsFactory) {
-                this.proxyServer = proxyServer;
+        this.proxyServer = proxyServer;
         this.logger = logger;
         this.dataDirectory = dataDirectory.toFile();
         this.pluginContainer = pluginContainer;
@@ -164,16 +164,16 @@ public class PistonQueueVelocity implements PistonQueueProxy {
         AtomicBoolean isFirstRun = new AtomicBoolean(true);
         // Checks the status of all the servers
         schedule(() -> {
-            if (proxyServer.getServer(Config.MAIN_SERVER).isPresent()) {
-                try {
-                    proxyServer.getServer(Config.MAIN_SERVER).get().ping().join();
+            Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.MAIN_SERVER);
 
+            if (serverInfoWrapper.isPresent()) {
+                if (serverInfoWrapper.get().isOnline()) {
                     if (!isFirstRun.get() && !queueListenerVelocity.isMainOnline()) {
                         queueListenerVelocity.setOnlineSince(Instant.now());
                     }
 
                     queueListenerVelocity.setMainOnline(true);
-                } catch (CancellationException | CompletionException e) {
+                } else {
                     warning("Main Server is down!!!");
                     queueListenerVelocity.setMainOnline(false);
                 }
@@ -184,11 +184,12 @@ public class PistonQueueVelocity implements PistonQueueProxy {
         }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
 
         schedule(() -> {
-            if (proxyServer.getServer(Config.QUEUE_SERVER).isPresent()) {
-                try {
-                    proxyServer.getServer(Config.QUEUE_SERVER).get().ping().join();
+            Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.QUEUE_SERVER);
+
+            if (serverInfoWrapper.isPresent()) {
+                if (serverInfoWrapper.get().isOnline()) {
                     queueListenerVelocity.setQueueOnline(true);
-                } catch (CancellationException | CompletionException e) {
+                } else {
                     warning("Queue Server is down!!!");
                     queueListenerVelocity.setQueueOnline(false);
                 }
@@ -199,11 +200,12 @@ public class PistonQueueVelocity implements PistonQueueProxy {
 
         schedule(() -> {
             if (Config.ENABLE_AUTH_SERVER) {
-                if (proxyServer.getServer(Config.AUTH_SERVER).isPresent()) {
-                    try {
-                        proxyServer.getServer(Config.AUTH_SERVER).get().ping().join();
+                Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.AUTH_SERVER);
+
+                if (serverInfoWrapper.isPresent()) {
+                    if (serverInfoWrapper.get().isOnline()) {
                         queueListenerVelocity.setAuthOnline(true);
-                    } catch (CancellationException | CompletionException e) {
+                    } else {
                         warning("Auth Server is down!!!");
                         queueListenerVelocity.setAuthOnline(false);
                     }
@@ -214,48 +216,6 @@ public class PistonQueueVelocity implements PistonQueueProxy {
                 queueListenerVelocity.setAuthOnline(true);
             }
         }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
-    }
-
-    @SuppressWarnings({"UnstableApiUsage"})
-    private void sendCustomData() {
-        Collection<Player> networkPlayers = proxyServer.getAllPlayers();
-
-        if (networkPlayers == null || networkPlayers.isEmpty()) {
-            return;
-        }
-
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-
-        out.writeUTF("size");
-        out.writeInt(QueueType.REGULAR.getQueueMap().size());
-        out.writeInt(QueueType.PRIORITY.getQueueMap().size());
-        out.writeInt(QueueType.VETERAN.getQueueMap().size());
-
-        networkPlayers.forEach(player -> player.sendPluginMessage(() -> "piston:queue", out.toByteArray()));
-    }
-
-    private void initializeReservationSlots() {
-        schedule(() -> {
-            if (!proxyServer.getServer(Config.MAIN_SERVER).isPresent())
-                return;
-
-            RegisteredServer mainServer = proxyServer.getServer(Config.MAIN_SERVER).get();
-            Map<QueueType, AtomicInteger> map = new EnumMap<>(QueueType.class);
-
-            for (Player player : mainServer.getPlayersConnected()) {
-                QueueType playerType = QueueType.getQueueType(player::hasPermission);
-
-                if (map.containsKey(playerType)) {
-                    map.get(playerType).incrementAndGet();
-                } else {
-                    map.put(playerType, new AtomicInteger(1));
-                }
-            }
-
-            for (Map.Entry<QueueType, AtomicInteger> entry : map.entrySet()) {
-                entry.getKey().getPlayersWithTypeInMain().set(entry.getValue().get());
-            }
-        },0, 1, TimeUnit.SECONDS);
     }
 
     @Override
@@ -309,6 +269,11 @@ public class PistonQueueVelocity implements PistonQueueProxy {
                 } catch (CancellationException | CompletionException e) {
                     return false;
                 }
+            }
+
+            @Override
+            public void sendPluginMessage(String channel, byte[] data) {
+                server.sendPluginMessage(() -> "piston:queue", data);
             }
         };
     }

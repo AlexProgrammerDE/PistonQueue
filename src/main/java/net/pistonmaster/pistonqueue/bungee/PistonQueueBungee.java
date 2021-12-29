@@ -19,8 +19,6 @@
  */
 package net.pistonmaster.pistonqueue.bungee;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -43,14 +41,12 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public final class PistonQueueBungee extends Plugin implements PistonQueueProxy {
     @Getter
     private final QueueListenerBungee queueListenerBungee = new QueueListenerBungee(this);
 
-    @SuppressWarnings({"deprecation"})
     @Override
     public void onEnable() {
         PluginManager manager = getProxy().getPluginManager();
@@ -156,20 +152,14 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
         schedule(() -> {
             Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.MAIN_SERVER);
 
-            if (getProxy().getServers().containsKey(Config.MAIN_SERVER)) {
-                try {
-                    Socket s = new Socket(
-                            getProxy().getServerInfo(Config.MAIN_SERVER).getAddress().getAddress(),
-                            getProxy().getServerInfo(Config.MAIN_SERVER).getAddress().getPort());
-
-                    s.close();
-
+            if (serverInfoWrapper.isPresent()) {
+                if (serverInfoWrapper.get().isOnline()) {
                     if (!isFirstRun.get() && !queueListenerBungee.isMainOnline()) {
                         queueListenerBungee.setOnlineSince(Instant.now());
                     }
 
                     queueListenerBungee.setMainOnline(true);
-                } catch (IOException e) {
+                } else {
                     warning("Main Server is down!!!");
                     queueListenerBungee.setMainOnline(false);
                 }
@@ -180,15 +170,12 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
         }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
 
         schedule(() -> {
-            if (getProxy().getServers().containsKey(Config.QUEUE_SERVER)) {
-                try {
-                    Socket s = new Socket(
-                            getProxy().getServerInfo(Config.QUEUE_SERVER).getAddress().getAddress(),
-                            getProxy().getServerInfo(Config.QUEUE_SERVER).getAddress().getPort());
+            Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.QUEUE_SERVER);
 
-                    s.close();
+            if (serverInfoWrapper.isPresent()) {
+                if (serverInfoWrapper.get().isOnline()) {
                     queueListenerBungee.setQueueOnline(true);
-                } catch (IOException e) {
+                } else {
                     warning("Queue Server is down!!!");
                     queueListenerBungee.setQueueOnline(false);
                 }
@@ -199,15 +186,12 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
 
         schedule(() -> {
             if (Config.ENABLE_AUTH_SERVER) {
-                if (getProxy().getServers().containsKey(Config.AUTH_SERVER)) {
-                    try {
-                        Socket s = new Socket(
-                                getProxy().getServerInfo(Config.AUTH_SERVER).getAddress().getAddress(),
-                                getProxy().getServerInfo(Config.AUTH_SERVER).getAddress().getPort());
+                Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.AUTH_SERVER);
 
-                        s.close();
+                if (serverInfoWrapper.isPresent()) {
+                    if (serverInfoWrapper.get().isOnline()) {
                         queueListenerBungee.setAuthOnline(true);
-                    } catch (IOException e) {
+                    } else {
                         warning("Auth Server is down!!!");
                         queueListenerBungee.setAuthOnline(false);
                     }
@@ -218,51 +202,6 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
                 queueListenerBungee.setAuthOnline(true);
             }
         }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
-    }
-
-    private void sendCustomData() {
-        Collection<ProxiedPlayer> networkPlayers = getProxy().getPlayers();
-
-        if (networkPlayers == null || networkPlayers.isEmpty()) {
-            return;
-        }
-
-        @SuppressWarnings({"UnstableApiUsage"})
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-
-        out.writeUTF("size");
-        out.writeInt(QueueType.REGULAR.getQueueMap().size());
-        out.writeInt(QueueType.PRIORITY.getQueueMap().size());
-        out.writeInt(QueueType.VETERAN.getQueueMap().size());
-
-        networkPlayers.forEach(player -> {
-            if (player.getServer() != null)
-                player.getServer().getInfo().sendData("piston:queue", out.toByteArray());
-        });
-    }
-
-    private void initializeReservationSlots() {
-        schedule(() -> {
-            Optional<ServerInfo> mainServer = Optional.ofNullable(getProxy().getServerInfo(Config.MAIN_SERVER));
-            if (!mainServer.isPresent())
-                return;
-
-            Map<QueueType, AtomicInteger> map = new EnumMap<>(QueueType.class);
-
-            for (ProxiedPlayer player : mainServer.get().getPlayers()) {
-                QueueType playerType = QueueType.getQueueType(player::hasPermission);
-
-                if (map.containsKey(playerType)) {
-                    map.get(playerType).incrementAndGet();
-                } else {
-                    map.put(playerType, new AtomicInteger(1));
-                }
-            }
-
-            for (Map.Entry<QueueType, AtomicInteger> entry : map.entrySet()) {
-                entry.getKey().getPlayersWithTypeInMain().set(entry.getValue().get());
-            }
-        }, 0, 1, TimeUnit.SECONDS);
     }
 
     @Override
@@ -313,14 +252,19 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
             public boolean isOnline() {
                 try {
                     Socket s = new Socket(
-                            getProxy().getServerInfo(Config.AUTH_SERVER).getAddress().getAddress(),
-                            getProxy().getServerInfo(Config.AUTH_SERVER).getAddress().getPort());
+                            serverInfo.getAddress().getAddress(),
+                            serverInfo.getAddress().getPort());
 
                     s.close();
                     return true;
                 } catch (IOException e) {
                     return false;
                 }
+            }
+
+            @Override
+            public void sendPluginMessage(String channel, byte[] data) {
+                serverInfo.sendData("piston:queue", data);
             }
         };
     }
