@@ -32,9 +32,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -53,6 +55,105 @@ public interface PistonQueueProxy {
     void warning(String message);
 
     void error(String message);
+
+    default void scheduleTasks(QueueListenerShared queueListener) {
+        // Sends the position message and updates tab on an interval in chat
+        schedule(() -> {
+            if (!queueListener.isMainOnline())
+                return;
+
+            for (QueueType type : QueueType.values()) {
+                sendMessage(type, Config.POSITION_MESSAGE_CHAT, MessageType.CHAT);
+            }
+        }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
+
+        // Sends the position message and updates tab on an interval on hot bar
+        schedule(() -> {
+            if (!queueListener.isMainOnline())
+                return;
+
+            for (QueueType type : QueueType.values()) {
+                sendMessage(type, Config.POSITION_MESSAGE_HOT_BAR, MessageType.ACTION_BAR);
+            }
+        }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
+
+        // Updates the tab
+        schedule(() -> {
+            updateTab(QueueType.VETERAN, Config.HEADER_VETERAN, Config.FOOTER_VETERAN);
+            updateTab(QueueType.PRIORITY, Config.HEADER_PRIORITY, Config.FOOTER_PRIORITY);
+            updateTab(QueueType.REGULAR, Config.HEADER, Config.FOOTER);
+        }, Config.QUEUE_MOVE_DELAY, Config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
+
+        schedule(() -> {
+            if (Config.PAUSE_QUEUE_IF_MAIN_DOWN && !queueListener.isMainOnline()) {
+                QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
+                QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
+                QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
+            }
+        }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
+
+        // Send plugin message
+        schedule(this::sendCustomData, Config.QUEUE_MOVE_DELAY, Config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
+
+        // Moves the queue when someone logs off the main server on an interval set in the config.yml
+        schedule(queueListener::moveQueue, Config.QUEUE_MOVE_DELAY, Config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
+
+        AtomicBoolean isFirstRun = new AtomicBoolean(true);
+        // Checks the status of all the servers
+        schedule(() -> {
+            Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.MAIN_SERVER);
+
+            if (serverInfoWrapper.isPresent()) {
+                if (serverInfoWrapper.get().isOnline()) {
+                    if (!isFirstRun.get() && !queueListener.isMainOnline()) {
+                        queueListener.setOnlineSince(Instant.now());
+                    }
+
+                    queueListener.setMainOnline(true);
+                } else {
+                    warning("Main Server is down!!!");
+                    queueListener.setMainOnline(false);
+                }
+                isFirstRun.set(false);
+            } else {
+                warning("Main Server \"" + Config.MAIN_SERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+            }
+        }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
+
+        schedule(() -> {
+            Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.QUEUE_SERVER);
+
+            if (serverInfoWrapper.isPresent()) {
+                if (serverInfoWrapper.get().isOnline()) {
+                    queueListener.setQueueOnline(true);
+                } else {
+                    warning("Queue Server is down!!!");
+                    queueListener.setQueueOnline(false);
+                }
+            } else {
+                warning("Queue Server \"" + Config.QUEUE_SERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+            }
+        }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
+
+        schedule(() -> {
+            if (Config.ENABLE_AUTH_SERVER) {
+                Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.AUTH_SERVER);
+
+                if (serverInfoWrapper.isPresent()) {
+                    if (serverInfoWrapper.get().isOnline()) {
+                        queueListener.setAuthOnline(true);
+                    } else {
+                        warning("Auth Server is down!!!");
+                        queueListener.setAuthOnline(false);
+                    }
+                } else {
+                    warning("Auth Server \"" + Config.AUTH_SERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+                }
+            } else {
+                queueListener.setAuthOnline(true);
+            }
+        }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
+    }
 
     default void sendMessage(QueueType queue, boolean bool, MessageType type) {
         if (bool) {
