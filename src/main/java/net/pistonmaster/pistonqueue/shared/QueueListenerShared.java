@@ -234,6 +234,9 @@ public abstract class QueueListenerShared {
         if (isSlotsFull(freeSlots))
             return;
 
+        if (freeSlots > Config.MAX_PLAYERS_PER_MOVE)
+            freeSlots = Config.MAX_PLAYERS_PER_MOVE;
+
         for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
             if (isSlotsFull(freeSlots))
                 break;

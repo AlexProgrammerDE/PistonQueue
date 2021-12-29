@@ -104,6 +104,9 @@ QUEUESERVERSLOTS: 9000
 # please note this only guaranteed to not have issues 1000ms and higher
 QUEUEMOVEDELAY: 1000
 
+# Max players allowed to be moved into the main server at once.
+MAXPLAYERSPERMOVE: 10
+
 # Should the queue be always active or only when the main server is full?
 # When activated you will always be sent into the queue server and then the main server.
 ALWAYSQUEUE: true
