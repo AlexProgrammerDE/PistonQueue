@@ -31,8 +31,8 @@ public final class PistonListener implements Listener {
         if (ple.isCancelled())
             return;
 
-        if (Config.ENABLEREGEX && !ple.getConnection().getName().matches(Config.REGEX)) {
-            ple.setCancelReason(ChatUtils.parseToComponent(Config.REGEXMESSAGE.replace("%regex%", Config.REGEX)));
+        if (Config.ENABLE_REGEX && !ple.getConnection().getName().matches(Config.REGEX)) {
+            ple.setCancelReason(ChatUtils.parseToComponent(Config.REGEX_MESSAGE.replace("%regex%", Config.REGEX)));
             ple.setCancelled(true);
         }
     }

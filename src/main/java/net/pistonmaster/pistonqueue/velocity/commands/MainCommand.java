@@ -57,7 +57,7 @@ public final class MainCommand implements SimpleCommand {
         sender.sendMessage(Component.text("/pq version").color(NamedTextColor.GOLD));
         sender.sendMessage(Component.text("/pq stats").color(NamedTextColor.GOLD));
 
-        if (sender.hasPermission(Config.ADMINPERMISSION)) {
+        if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
             sender.sendMessage(Component.text("/pq slotstats").color(NamedTextColor.GOLD));
             sender.sendMessage(Component.text("/pq reload").color(NamedTextColor.GOLD));
             sender.sendMessage(Component.text("/pq shadowban").color(NamedTextColor.GOLD));
@@ -122,7 +122,7 @@ public final class MainCommand implements SimpleCommand {
                     sendLine(sender);
                     break;
                 case "slotstats":
-                    if (sender.hasPermission(Config.ADMINPERMISSION)) {
+                    if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         sendLine(sender);
                         sender.sendMessage(Component.text("Main slot stats").color(NamedTextColor.GOLD));
                         sender.sendMessage(Component.text("Regular: ").color(NamedTextColor.GOLD).append(Component.text(QueueType.REGULAR.getPlayersWithTypeInMain().get() + "/" + QueueType.REGULAR.getReservedSlots()).color(NamedTextColor.GOLD).decorate(TextDecoration.BOLD)));
@@ -134,7 +134,7 @@ public final class MainCommand implements SimpleCommand {
                     }
                     break;
                 case "reload":
-                    if (sender.hasPermission(Config.ADMINPERMISSION)) {
+                    if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         plugin.processConfig(plugin.getDataDirectory());
 
                         sendLine(sender);
@@ -146,7 +146,7 @@ public final class MainCommand implements SimpleCommand {
                     }
                     break;
                 case "shadowban":
-                    if (sender.hasPermission(Config.ADMINPERMISSION)) {
+                    if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         if (args.length > 1) {
                             if (plugin.getProxyServer().getPlayer(args[1]).isPresent()) {
                                 Player player = plugin.getProxyServer().getPlayer(args[1]).get();
@@ -204,7 +204,7 @@ public final class MainCommand implements SimpleCommand {
                     }
                     break;
                 case "unshadowban":
-                    if (sender.hasPermission(Config.ADMINPERMISSION)) {
+                    if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         if (args.length > 1) {
                             if (plugin.getProxyServer().getPlayer(args[1]).isPresent()) {
                                 Player player = plugin.getProxyServer().getPlayer(args[1]).get();
@@ -245,7 +245,7 @@ public final class MainCommand implements SimpleCommand {
         String[] args = invocation.arguments();
         CommandSource sender = invocation.source();
 
-        if (Config.REGISTERTAB) {
+        if (Config.REGISTER_TAB) {
             final List<String> completions = new ArrayList<>();
 
             if (args.length == 1) {
@@ -254,13 +254,13 @@ public final class MainCommand implements SimpleCommand {
                         completions.add(string);
                 }
 
-                if (sender.hasPermission(Config.ADMINPERMISSION)) {
+                if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                     for (String string : adminCommands) {
                         if (string.toLowerCase().startsWith(args[0].toLowerCase()))
                             completions.add(string);
                     }
                 }
-            } else if (sender.hasPermission(Config.ADMINPERMISSION)
+            } else if (sender.hasPermission(Config.ADMIN_PERMISSION)
                     && args.length == 2
                     && (args[0].equalsIgnoreCase("shadowban") || args[0].equalsIgnoreCase("unshadowban"))) {
                 addPlayers(completions, args);

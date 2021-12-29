@@ -55,9 +55,9 @@ public class QueueListenerVelocity extends QueueListenerShared {
     public void onKick(KickedFromServerEvent event) {
         onKick(wrap(event));
 
-        if (Config.ENABLEKICKMESSAGE) {
+        if (Config.ENABLE_KICK_MESSAGE) {
             if (event.getResult() instanceof KickedFromServerEvent.DisconnectPlayer)
-                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(ChatUtils.parseToComponent(Config.KICKMESSAGE)));
+                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(ChatUtils.parseToComponent(Config.KICK_MESSAGE)));
         }
     }
 
@@ -113,7 +113,7 @@ public class QueueListenerVelocity extends QueueListenerShared {
         return new PQKickedFromServerEvent() {
             @Override
             public void setCancelServer(String server) {
-                event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(Config.QUEUESERVER).orElseThrow(() -> new IllegalArgumentException(String.format("Server %s not found", Config.QUEUESERVER)))));
+                event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(Config.QUEUE_SERVER).orElseThrow(() -> new IllegalArgumentException(String.format("Server %s not found", Config.QUEUE_SERVER)))));
             }
 
             @Override

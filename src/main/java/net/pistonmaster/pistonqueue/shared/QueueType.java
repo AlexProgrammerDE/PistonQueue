@@ -47,9 +47,9 @@ public enum QueueType {
     private final AtomicInteger playersWithTypeInMain = new AtomicInteger();
 
     public static QueueType getQueueType(Function<String, Boolean> player) {
-        if (player.apply(Config.QUEUEVETERANPERMISSION)) {
+        if (player.apply(Config.QUEUE_VETERAN_PERMISSION)) {
             return VETERAN;
-        } else if (player.apply(Config.QUEUEPRIORITYPERMISSION)) {
+        } else if (player.apply(Config.QUEUE_PRIORITY_PERMISSION)) {
             return PRIORITY;
         } else {
             return REGULAR;
@@ -59,9 +59,9 @@ public enum QueueType {
     public List<String> getHeader() {
         switch (this) {
             case VETERAN:
-                return Config.HEADERVETERAN;
+                return Config.HEADER_VETERAN;
             case PRIORITY:
-                return Config.HEADERPRIORITY;
+                return Config.HEADER_PRIORITY;
             default:
                 return Config.HEADER;
         }
@@ -70,9 +70,9 @@ public enum QueueType {
     public List<String> getFooter() {
         switch (this) {
             case VETERAN:
-                return Config.FOOTERVETERAN;
+                return Config.FOOTER_VETERAN;
             case PRIORITY:
-                return Config.FOOTERPRIORITY;
+                return Config.FOOTER_PRIORITY;
             default:
                 return Config.FOOTER;
         }
@@ -81,11 +81,11 @@ public enum QueueType {
     public int getReservedSlots() {
         switch (this) {
             case VETERAN:
-                return Config.VETERANSLOTS;
+                return Config.VETERAN_SLOTS;
             case PRIORITY:
-                return Config.PRIORITYSLOTS;
+                return Config.PRIORITY_SLOTS;
             default:
-                return Config.REGULARSLOTS;
+                return Config.REGULAR_SLOTS;
         }
     }
 }

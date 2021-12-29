@@ -35,7 +35,7 @@ public class SharedChatUtils {
     }
 
     public static String parseText(String text) {
-        text = text.replace("%server%", Config.SERVERNAME);
+        text = text.replace("%server%", Config.SERVER_NAME);
         text = text.replace("%veteran%", String.valueOf(QueueAPI.getVeteranSize()));
         text = text.replace("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
         text = text.replace("%regular%", String.valueOf(QueueAPI.getRegularSize()));

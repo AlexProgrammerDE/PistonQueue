@@ -66,7 +66,7 @@ public final class MainCommand extends Command implements TabExecutor {
                     sendLine(sender);
                     break;
                 case "slotstats":
-                    if (sender.hasPermission(Config.ADMINPERMISSION)) {
+                    if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         sendLine(sender);
                         sender.sendMessage(new ComponentBuilder("Main slot stats").color(ChatColor.GOLD).create());
                         sender.sendMessage(new ComponentBuilder("Regular: ").color(ChatColor.GOLD).append(QueueType.REGULAR.getPlayersWithTypeInMain().get() + "/" + QueueType.REGULAR.getReservedSlots()).color(ChatColor.GOLD).bold(true).create());
@@ -78,7 +78,7 @@ public final class MainCommand extends Command implements TabExecutor {
                     }
                     break;
                 case "reload":
-                    if (sender.hasPermission(Config.ADMINPERMISSION)) {
+                    if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         plugin.processConfig(plugin.getDataFolder());
 
                         sendLine(sender);
@@ -90,7 +90,7 @@ public final class MainCommand extends Command implements TabExecutor {
                     }
                     break;
                 case "shadowban":
-                    if (sender.hasPermission(Config.ADMINPERMISSION)) {
+                    if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         if (args.length > 1) {
                             if (plugin.getProxy().getPlayer(args[1]) != null) {
                                 ProxiedPlayer player = plugin.getProxy().getPlayer(args[1]);
@@ -148,7 +148,7 @@ public final class MainCommand extends Command implements TabExecutor {
                     }
                     break;
                 case "unshadowban":
-                    if (sender.hasPermission(Config.ADMINPERMISSION)) {
+                    if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         if (args.length > 1) {
                             if (plugin.getProxy().getPlayer(args[1]) != null) {
                                 ProxiedPlayer player = plugin.getProxy().getPlayer(args[1]);
@@ -199,7 +199,7 @@ public final class MainCommand extends Command implements TabExecutor {
         sender.sendMessage(new ComponentBuilder("/pq version").color(ChatColor.GOLD).create());
         sender.sendMessage(new ComponentBuilder("/pq stats").color(ChatColor.GOLD).create());
 
-        if (sender.hasPermission(Config.ADMINPERMISSION)) {
+        if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
             sender.sendMessage(new ComponentBuilder("/pq slotstats").color(ChatColor.GOLD).create());
             sender.sendMessage(new ComponentBuilder("/pq reload").color(ChatColor.GOLD).create());
             sender.sendMessage(new ComponentBuilder("/pq shadowban").color(ChatColor.GOLD).create());
@@ -233,7 +233,7 @@ public final class MainCommand extends Command implements TabExecutor {
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        if (Config.REGISTERTAB) {
+        if (Config.REGISTER_TAB) {
             final List<String> completions = new ArrayList<>();
 
             if (args.length == 1) {
@@ -242,13 +242,13 @@ public final class MainCommand extends Command implements TabExecutor {
                         completions.add(string);
                 }
 
-                if (sender.hasPermission(Config.ADMINPERMISSION)) {
+                if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                     for (String string : adminCommands) {
                         if (string.toLowerCase().startsWith(args[0].toLowerCase()))
                             completions.add(string);
                     }
                 }
-            } else if (sender.hasPermission(Config.ADMINPERMISSION)
+            } else if (sender.hasPermission(Config.ADMIN_PERMISSION)
                     && args.length == 2
                     && (args[0].equalsIgnoreCase("shadowban") || args[0].equalsIgnoreCase("unshadowban"))) {
                 addPlayers(completions, args);

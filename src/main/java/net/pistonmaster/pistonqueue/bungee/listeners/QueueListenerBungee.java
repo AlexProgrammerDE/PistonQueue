@@ -55,8 +55,8 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
     public void onKick(ServerKickEvent event) {
         onKick(wrap(event));
 
-        if (Config.ENABLEKICKMESSAGE) {
-            event.setKickReasonComponent(ChatUtils.parseToComponent(Config.KICKMESSAGE));
+        if (Config.ENABLE_KICK_MESSAGE) {
+            event.setKickReasonComponent(ChatUtils.parseToComponent(Config.KICK_MESSAGE));
         }
     }
 
@@ -103,7 +103,7 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
 
             @Override
             public void setTarget(String server) {
-                event.setTarget(plugin.getProxy().getServerInfo(Config.QUEUESERVER));
+                event.setTarget(plugin.getProxy().getServerInfo(Config.QUEUE_SERVER));
             }
         };
     }

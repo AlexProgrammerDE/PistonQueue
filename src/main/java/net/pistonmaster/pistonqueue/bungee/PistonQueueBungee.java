@@ -44,7 +44,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public final class PistonQueueBungee extends Plugin implements PistonQueueProxy {
@@ -100,9 +99,9 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
                 return;
 
             for (QueueType type : QueueType.values()) {
-                sendMessage(type, Config.POSITIONMESSAGECHAT, MessageType.CHAT);
+                sendMessage(type, Config.POSITION_MESSAGE_CHAT, MessageType.CHAT);
             }
-        }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
+        }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
 
         // Sends the position message and updates tab on an interval on hot bar
         schedule(() -> {
@@ -110,56 +109,58 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
                 return;
 
             for (QueueType type : QueueType.values()) {
-                sendMessage(type, Config.POSITIONMESSAGEHOTBAR, MessageType.ACTION_BAR);
+                sendMessage(type, Config.POSITION_MESSAGE_HOT_BAR, MessageType.ACTION_BAR);
             }
-        }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
+        }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
 
         // Updates the tab
         schedule(() -> {
-            updateTab(QueueType.VETERAN, Config.HEADERVETERAN, Config.FOOTERVETERAN);
-            updateTab(QueueType.PRIORITY, Config.HEADERPRIORITY, Config.FOOTERPRIORITY);
+            updateTab(QueueType.VETERAN, Config.HEADER_VETERAN, Config.FOOTER_VETERAN);
+            updateTab(QueueType.PRIORITY, Config.HEADER_PRIORITY, Config.FOOTER_PRIORITY);
             updateTab(QueueType.REGULAR, Config.HEADER, Config.FOOTER);
-        }, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        }, Config.QUEUE_MOVE_DELAY, Config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
 
         schedule(() -> {
-            if (Config.PAUSEQUEUEIFMAINDOWN && !queueListenerBungee.isMainOnline()) {
+            if (Config.PAUSE_QUEUE_IF_MAIN_DOWN && !queueListenerBungee.isMainOnline()) {
                 QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
-                        ChatUtils.sendMessage(player, Config.PAUSEQUEUEIFMAINDOWNMESSAGE);
+                        ChatUtils.sendMessage(player, Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE);
                 });
 
                 QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
-                        ChatUtils.sendMessage(player, Config.PAUSEQUEUEIFMAINDOWNMESSAGE);
+                        ChatUtils.sendMessage(player, Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE);
                 });
 
                 QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> {
                     ProxiedPlayer player = getProxy().getPlayer(id);
 
                     if (player != null && player.isConnected())
-                        ChatUtils.sendMessage(player, Config.PAUSEQUEUEIFMAINDOWNMESSAGE);
+                        ChatUtils.sendMessage(player, Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE);
                 });
             }
-        }, Config.POSITIONMESSAGEDELAY, Config.POSITIONMESSAGEDELAY, TimeUnit.MILLISECONDS);
+        }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
 
         // Send plugin message
-        schedule(this::sendCustomData, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        schedule(this::sendCustomData, Config.QUEUE_MOVE_DELAY, Config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
 
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
-        schedule(queueListenerBungee::moveQueue, Config.QUEUEMOVEDELAY, Config.QUEUEMOVEDELAY, TimeUnit.MILLISECONDS);
+        schedule(queueListenerBungee::moveQueue, Config.QUEUE_MOVE_DELAY, Config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
 
         AtomicBoolean isFirstRun = new AtomicBoolean(true);
         // Checks the status of all the servers
         schedule(() -> {
-            if (getProxy().getServers().containsKey(Config.MAINSERVER)) {
+            Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.MAIN_SERVER);
+
+            if (getProxy().getServers().containsKey(Config.MAIN_SERVER)) {
                 try {
                     Socket s = new Socket(
-                            getProxy().getServerInfo(Config.MAINSERVER).getAddress().getAddress(),
-                            getProxy().getServerInfo(Config.MAINSERVER).getAddress().getPort());
+                            getProxy().getServerInfo(Config.MAIN_SERVER).getAddress().getAddress(),
+                            getProxy().getServerInfo(Config.MAIN_SERVER).getAddress().getPort());
 
                     s.close();
 
@@ -174,16 +175,16 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
                 }
                 isFirstRun.set(false);
             } else {
-                warning("Main Server \"" + Config.MAINSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+                warning("Main Server \"" + Config.MAIN_SERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
             }
-        }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
+        }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
 
         schedule(() -> {
-            if (getProxy().getServers().containsKey(Config.QUEUESERVER)) {
+            if (getProxy().getServers().containsKey(Config.QUEUE_SERVER)) {
                 try {
                     Socket s = new Socket(
-                            getProxy().getServerInfo(Config.QUEUESERVER).getAddress().getAddress(),
-                            getProxy().getServerInfo(Config.QUEUESERVER).getAddress().getPort());
+                            getProxy().getServerInfo(Config.QUEUE_SERVER).getAddress().getAddress(),
+                            getProxy().getServerInfo(Config.QUEUE_SERVER).getAddress().getPort());
 
                     s.close();
                     queueListenerBungee.setQueueOnline(true);
@@ -192,17 +193,17 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
                     queueListenerBungee.setQueueOnline(false);
                 }
             } else {
-                warning("Queue Server \"" + Config.QUEUESERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+                warning("Queue Server \"" + Config.QUEUE_SERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
             }
-        }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
+        }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
 
         schedule(() -> {
-            if (Config.ENABLEAUTHSERVER) {
-                if (getProxy().getServers().containsKey(Config.AUTHSERVER)) {
+            if (Config.ENABLE_AUTH_SERVER) {
+                if (getProxy().getServers().containsKey(Config.AUTH_SERVER)) {
                     try {
                         Socket s = new Socket(
-                                getProxy().getServerInfo(Config.AUTHSERVER).getAddress().getAddress(),
-                                getProxy().getServerInfo(Config.AUTHSERVER).getAddress().getPort());
+                                getProxy().getServerInfo(Config.AUTH_SERVER).getAddress().getAddress(),
+                                getProxy().getServerInfo(Config.AUTH_SERVER).getAddress().getPort());
 
                         s.close();
                         queueListenerBungee.setAuthOnline(true);
@@ -211,12 +212,12 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
                         queueListenerBungee.setAuthOnline(false);
                     }
                 } else {
-                    warning("Auth Server \"" + Config.AUTHSERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+                    warning("Auth Server \"" + Config.AUTH_SERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
                 }
             } else {
                 queueListenerBungee.setAuthOnline(true);
             }
-        }, 500, Config.SERVERONLINECHECKDELAY, TimeUnit.MILLISECONDS);
+        }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
     }
 
     private void sendCustomData() {
@@ -241,8 +242,8 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
     }
 
     private void initializeReservationSlots() {
-        getProxy().getScheduler().schedule(this, () -> {
-            Optional<ServerInfo> mainServer = Optional.ofNullable(getProxy().getServerInfo(Config.MAINSERVER));
+        schedule(() -> {
+            Optional<ServerInfo> mainServer = Optional.ofNullable(getProxy().getServerInfo(Config.MAIN_SERVER));
             if (!mainServer.isPresent())
                 return;
 
@@ -275,6 +276,11 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
     }
 
     @Override
+    public Optional<ServerInfoWrapper> getServer(String name) {
+        return Optional.ofNullable(getProxy().getServerInfo(name)).map(this::wrapServer);
+    }
+
+    @Override
     public void schedule(Runnable runnable, long delay, long period, TimeUnit unit) {
         getProxy().getScheduler().schedule(this, runnable, delay, period, unit);
     }
@@ -292,6 +298,31 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
     @Override
     public void error(String message) {
         getLogger().severe(message);
+    }
+
+    private ServerInfoWrapper wrapServer(ServerInfo serverInfo) {
+        PistonQueueBungee reference = this;
+        return new ServerInfoWrapper() {
+            @Override
+            public List<PlayerWrapper> getConnectedPlayers() {
+                return serverInfo.getPlayers().stream().map(reference::wrapPlayer).collect(Collectors.toList());
+            }
+
+            @SuppressWarnings("deprecation")
+            @Override
+            public boolean isOnline() {
+                try {
+                    Socket s = new Socket(
+                            getProxy().getServerInfo(Config.AUTH_SERVER).getAddress().getAddress(),
+                            getProxy().getServerInfo(Config.AUTH_SERVER).getAddress().getPort());
+
+                    s.close();
+                    return true;
+                } catch (IOException e) {
+                    return false;
+                }
+            }
+        };
     }
 
     public PlayerWrapper wrapPlayer(ProxiedPlayer player) {

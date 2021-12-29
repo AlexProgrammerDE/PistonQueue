@@ -46,21 +46,21 @@ public abstract class QueueListenerShared {
     protected Instant onlineSince = null;
 
     protected void onPostLogin(PlayerWrapper player) {
-        if (StorageTool.isShadowBanned(player.getUniqueId()) && Config.SHADOWBANTYPE == BanType.KICK) {
-            player.disconnect(Config.SERVERDOWNKICKMESSAGE);
+        if (StorageTool.isShadowBanned(player.getUniqueId()) && Config.SHADOW_BAN_TYPE == BanType.KICK) {
+            player.disconnect(Config.SERVER_DOWN_KICK_MESSAGE);
         }
     }
 
     protected void onKick(PQKickedFromServerEvent event) {
-        if (Config.IFMAINDOWNSENDTOQUEUE && event.getKickedFrom().equals(Config.MAINSERVER)) {
+        if (Config.IF_MAIN_DOWN_SEND_TO_QUEUE && event.getKickedFrom().equals(Config.MAIN_SERVER)) {
             if (event.getKickReason().isPresent()) {
-                for (String str : Config.DOWNWORDLIST) {
+                for (String str : Config.DOWN_WORD_LIST) {
                     if (!event.getKickReason().get().toLowerCase().contains(str))
                         continue;
 
-                    event.setCancelServer(Config.QUEUESERVER);
+                    event.setCancelServer(Config.QUEUE_SERVER);
 
-                    event.getPlayer().sendMessage(Config.IFMAINDOWNSENDTOQUEUEMESSAGE);
+                    event.getPlayer().sendMessage(Config.IF_MAIN_DOWN_SEND_TO_QUEUE_MESSAGE);
 
                     QueueType.getQueueType(event.getPlayer()::hasPermission).getQueueMap().put(event.getPlayer().getUniqueId(), event.getKickedFrom());
                     break;
@@ -72,27 +72,27 @@ public abstract class QueueListenerShared {
     protected void onPreConnect(PQServerPreConnectEvent event) {
         PlayerWrapper player = event.getPlayer();
 
-        if (Config.AUTHFIRST) {
-            if (Config.ALWAYSQUEUE)
+        if (Config.AUTH_FIRST) {
+            if (Config.ALWAYS_QUEUE)
                 return;
 
             if (isAnyoneQueuedOfType(player))
                 return;
 
-            if (!isPlayersQueueFull(player) && event.getTarget().isPresent() && event.getTarget().get().equals(Config.QUEUESERVER))
-                event.setTarget(Config.MAINSERVER);
+            if (!isPlayersQueueFull(player) && event.getTarget().isPresent() && event.getTarget().get().equals(Config.QUEUE_SERVER))
+                event.setTarget(Config.MAIN_SERVER);
         } else {
             if (player.getCurrentServer().isPresent())
                 return;
 
-            if ((Config.KICKWHENDOWN && !mainOnline) || !queueOnline || !authOnline) { // authOnline is always true if auth is not enabled
-                player.disconnect(Config.SERVERDOWNKICKMESSAGE);
+            if ((Config.KICK_WHEN_DOWN && !mainOnline) || !queueOnline || !authOnline) { // authOnline is always true if auth is not enabled
+                player.disconnect(Config.SERVER_DOWN_KICK_MESSAGE);
                 return;
             }
 
-            if (Config.ALWAYSQUEUE || isServerFull(player)) {
-                if (player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                    event.setTarget(Config.MAINSERVER);
+            if (Config.ALWAYS_QUEUE || isServerFull(player)) {
+                if (player.hasPermission(Config.QUEUE_BYPASS_PERMISSION)) {
+                    event.setTarget(Config.MAIN_SERVER);
                 } else {
                     putQueue(player, event);
                 }
@@ -108,13 +108,13 @@ public abstract class QueueListenerShared {
         // Redirect the player to the queue.
         Optional<String> originalTarget = event.getTarget();
 
-        event.setTarget(Config.QUEUESERVER);
+        event.setTarget(Config.QUEUE_SERVER);
 
         Map<UUID, String> queueMap = type.getQueueMap();
 
         // Store the data concerning the player's original destination
-        if (Config.FORCEMAINSERVER || !originalTarget.isPresent()) {
-            queueMap.put(player.getUniqueId(), Config.MAINSERVER);
+        if (Config.FORCE_MAIN_SERVER || !originalTarget.isPresent()) {
+            queueMap.put(player.getUniqueId(), Config.MAIN_SERVER);
         } else {
             queueMap.put(player.getUniqueId(), originalTarget.get());
         }
@@ -123,15 +123,15 @@ public abstract class QueueListenerShared {
     protected void onConnected(PQServerConnectedEvent event) {
         PlayerWrapper player = event.getPlayer();
 
-        if (Config.AUTHFIRST) {
-            if (isAuthToQueue(event) && player.hasPermission(Config.QUEUEBYPASSPERMISSION)) {
-                player.connect(Config.MAINSERVER);
+        if (Config.AUTH_FIRST) {
+            if (isAuthToQueue(event) && player.hasPermission(Config.QUEUE_BYPASS_PERMISSION)) {
+                player.connect(Config.MAIN_SERVER);
                 return;
             }
 
             // Its null when joining!
-            if (!event.getPreviousServer().isPresent() && player.getCurrentServer().isPresent() && player.getCurrentServer().get().equals(Config.QUEUESERVER)) {
-                if (Config.ALLOWAUTHSKIP)
+            if (!event.getPreviousServer().isPresent() && player.getCurrentServer().isPresent() && player.getCurrentServer().get().equals(Config.QUEUE_SERVER)) {
+                if (Config.ALLOW_AUTH_SKIP)
                     putQueueAuthFirst(player);
             } else if (isAuthToQueue(event)) {
                 putQueueAuthFirst(player);
@@ -145,14 +145,14 @@ public abstract class QueueListenerShared {
         preQueueAdding(player, type.getHeader(), type.getFooter());
 
         // Store the data concerning the player's original destination
-        type.getQueueMap().put(player.getUniqueId(), Config.MAINSERVER);
+        type.getQueueMap().put(player.getUniqueId(), Config.MAIN_SERVER);
     }
 
     protected void preQueueAdding(PlayerWrapper player, List<String> header, List<String> footer) {
         player.sendPlayerListHeaderAndFooter(header, footer);
 
         if (isServerFull(player))
-            player.sendMessage(Config.SERVERISFULLMESSAGE);
+            player.sendMessage(Config.SERVER_IS_FULL_MESSAGE);
     }
 
     protected boolean isServerFull(PlayerWrapper player) {
@@ -172,7 +172,7 @@ public abstract class QueueListenerShared {
     }
 
     protected boolean isAuthToQueue(PQServerConnectedEvent event) {
-        return event.getPreviousServer().isPresent() && event.getPreviousServer().get().equals(Config.AUTHSERVER) && event.getServer().equals(Config.QUEUESERVER);
+        return event.getPreviousServer().isPresent() && event.getPreviousServer().get().equals(Config.AUTH_SERVER) && event.getServer().equals(Config.QUEUE_SERVER);
     }
 
     public void moveQueue() {
@@ -180,7 +180,7 @@ public abstract class QueueListenerShared {
             for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
                 Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
 
-                if (!player.isPresent() || !player.get().getCurrentServer().isPresent() || !player.get().getCurrentServer().get().equals(Config.QUEUESERVER)) {
+                if (!player.isPresent() || !player.get().getCurrentServer().isPresent() || !player.get().getCurrentServer().get().equals(Config.QUEUE_SERVER)) {
                     type.getQueueMap().remove(entry.getKey());
                 }
             }
@@ -190,10 +190,10 @@ public abstract class QueueListenerShared {
             plugin.getPlayers().forEach(this::doRecovery);
         }
 
-        if (Config.PAUSEQUEUEIFMAINDOWN) {
+        if (Config.PAUSE_QUEUE_IF_MAIN_DOWN) {
             if (mainOnline) {
                 if (onlineSince != null) {
-                    if (Duration.between(onlineSince, Instant.now()).getSeconds() >= Config.STARTTIME) {
+                    if (Duration.between(onlineSince, Instant.now()).getSeconds() >= Config.START_TIME) {
                         onlineSince = null;
                     } else {
                         return;
@@ -214,10 +214,10 @@ public abstract class QueueListenerShared {
     protected void doRecovery(PlayerWrapper player) {
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
-        if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getCurrentServer().isPresent() && player.getCurrentServer().get().equals(Config.QUEUESERVER)) {
-            type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAINSERVER);
+        if (!type.getQueueMap().containsKey(player.getUniqueId()) && player.getCurrentServer().isPresent() && player.getCurrentServer().get().equals(Config.QUEUE_SERVER)) {
+            type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.MAIN_SERVER);
 
-            player.sendMessage(Config.RECOVERYMESSAGE);
+            player.sendMessage(Config.RECOVERY_MESSAGE);
         }
     }
 
@@ -230,13 +230,13 @@ public abstract class QueueListenerShared {
 
             type.getQueueMap().remove(entry.getKey());
 
-            player.get().sendMessage(Config.JOININGMAINSERVER);
+            player.get().sendMessage(Config.JOINING_MAIN_SERVER);
             player.get().sendPlayerListHeaderAndFooter(null, null);
 
             if (StorageTool.isShadowBanned(player.get().getUniqueId())
-                    && (Config.SHADOWBANTYPE == BanType.LOOP
-                    || (Config.SHADOWBANTYPE == BanType.TEN_PERCENT && new Random().nextInt(100) >= 10))) {
-                player.get().sendMessage(Config.SHADOWBANMESSAGE);
+                    && (Config.SHADOW_BAN_TYPE == BanType.LOOP
+                    || (Config.SHADOW_BAN_TYPE == BanType.TEN_PERCENT && new Random().nextInt(100) >= 10))) {
+                player.get().sendMessage(Config.SHADOW_BAN_MESSAGE);
 
                 type.getQueueMap().put(entry.getKey(), entry.getValue());
 

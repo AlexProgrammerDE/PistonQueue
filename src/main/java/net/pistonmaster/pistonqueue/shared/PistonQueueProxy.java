@@ -42,6 +42,8 @@ public interface PistonQueueProxy {
 
     List<PlayerWrapper> getPlayers();
 
+    Optional<ServerInfoWrapper> getServer(String name);
+
     void schedule(Runnable runnable, long delay, long period, TimeUnit unit);
 
     void info(String message);
@@ -62,7 +64,7 @@ public interface PistonQueueProxy {
 
                 position++;
 
-                player.get().sendMessage(type, Config.QUEUEPOSITION
+                player.get().sendMessage(type, Config.QUEUE_POSITION
                         .replace("%position%", String.valueOf(position))
                         .replace("%total%", String.valueOf(queue.getQueueMap().size())));
             }
@@ -145,10 +147,11 @@ public interface PistonQueueProxy {
             try {
                 it.setAccessible(true);
 
+                String fieldName = it.getName().replace("_", "");
                 if (List.class.isAssignableFrom(it.getType())) {
-                    it.set(Config.class, config.node(it.getName()).getList(String.class));
+                    it.set(Config.class, config.node(fieldName).getList(String.class));
                 } else {
-                    it.set(Config.class, config.node(it.getName()).get(it.getType()));
+                    it.set(Config.class, config.node(fieldName).get(it.getType()));
                 }
             } catch (SecurityException | IllegalAccessException | SerializationException e) {
                 e.printStackTrace();
