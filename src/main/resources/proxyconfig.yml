@@ -108,6 +108,9 @@ QUEUEMOVEDELAY: 1000
 # When activated you will always be sent into the queue server and then the main server.
 ALWAYSQUEUE: true
 
+# Send an XP sound to every player who gets to position 5 or below in the queue
+SENDXPSOUND: true
+
 # The way shadow-bans should work on your server. Valid types are: LOOP, TEN_PERCENT
 # LOOP: When reaching the end of the queue you will get put in front of it again.
 # TEN_PERCENT: Loop, but you have a ten percent chance of getting in.

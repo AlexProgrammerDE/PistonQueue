@@ -19,6 +19,8 @@
  */
 package net.pistonmaster.pistonqueue.shared;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -31,6 +33,7 @@ import net.pistonmaster.pistonqueue.shared.utils.Pair;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiredArgsConstructor
 public abstract class QueueListenerShared {
@@ -244,6 +247,9 @@ public abstract class QueueListenerShared {
 
             type.getQueueMap().remove(entry.getKey());
 
+            if (Config.SEND_XP_SOUND)
+                sendXPSoundToQueueType(type);
+
             player.get().sendMessage(Config.JOINING_MAIN_SERVER);
             player.get().sendPlayerListHeaderAndFooter(null, null);
 
@@ -267,6 +273,21 @@ public abstract class QueueListenerShared {
 
             player.get().connect(entry.getValue());
         }
+    }
+
+    protected void sendXPSoundToQueueType(QueueType type) {
+        @SuppressWarnings("UnstableApiUsage")
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("xp");
+
+        AtomicInteger counter = new AtomicInteger(0);
+        type.getQueueMap().forEach((uuid, server) -> {
+            if (counter.incrementAndGet() <= 5) {
+                plugin.getPlayer(uuid).flatMap(playerWrapper ->
+                        playerWrapper.getCurrentServer().flatMap(plugin::getServer)).ifPresent(serverWrapper ->
+                        serverWrapper.sendPluginMessage("piston:queue", out.toByteArray()));
+            }
+        });
     }
 
     protected void indexPositionTime() {
