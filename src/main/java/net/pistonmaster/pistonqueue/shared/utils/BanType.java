@@ -34,6 +34,11 @@ public enum BanType {
     TEN_PERCENT,
 
     /**
+     * Have a custom chance of getting into the server!
+     */
+    CUSTOM_PERCENT,
+
+    /**
      * Kick a player while joining!
      */
     KICK

@@ -31,6 +31,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Objects;
+import java.util.Random;
 import java.util.logging.Level;
 
 public final class ServerListener implements Listener {
@@ -64,7 +65,9 @@ public final class ServerListener implements Listener {
         if (plugin.isTeam()) {
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-            Team team = scoreboard.registerNewTeam(plugin.getTeamName().replace("%playername%", player.getName()));
+            Team team = scoreboard.registerNewTeam(plugin.getTeamName()
+                    .replace("%playername%", player.getName())
+                    .replace("%random%", String.valueOf(getRandomNumberUsingNextInt(-9999, 9999))));
             team.setCanSeeFriendlyInvisibles(false);
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
 
@@ -124,5 +127,9 @@ public final class ServerListener implements Listener {
         }
 
         return new Location(plugin.getServer().getWorld(plugin.getForcedWorldName()), plugin.getForcedX(), plugin.getForcedY(), plugin.getForcedZ());
+    }
+
+    public int getRandomNumberUsingNextInt(int min, int max) {
+        return new Random().nextInt(max - min) + min;
     }
 }

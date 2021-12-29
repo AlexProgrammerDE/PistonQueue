@@ -111,7 +111,12 @@ ALWAYSQUEUE: true
 # The way shadow-bans should work on your server. Valid types are: LOOP, TEN_PERCENT
 # LOOP: When reaching the end of the queue you will get put in front of it again.
 # TEN_PERCENT: Loop, but you have a ten percent chance of getting in.
+# CUSTOM_PERCENT: Loop, but you have a custom chance of getting in.
+# KICK: You will be kicked from the queue server on joining it.
 SHADOWBANTYPE: "LOOP"
+
+# Custom percentage for the shadow-ban type. Only used when SHADOWBANTYPE is set to CUSTOM_PERCENT.
+CUSTOMPERCENTPERCENTAGE: 20
 
 # LOOP: When you're shadow-banned you will be put in queue, but before joining it "fails" and you start all over again.
 SHADOWBANMESSAGE: "&6You have lost connection to the server"

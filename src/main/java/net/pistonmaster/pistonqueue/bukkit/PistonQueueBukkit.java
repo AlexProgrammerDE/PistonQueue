@@ -49,6 +49,7 @@ public final class PistonQueueBukkit extends JavaPlugin {
     private boolean noAdvancements;
     private boolean noExperience;
     private boolean showHead;
+    private boolean playXP;
 
     @Override
     public void onEnable() {
@@ -77,6 +78,7 @@ public final class PistonQueueBukkit extends JavaPlugin {
         noAdvancements = getConfig().getBoolean("noAdvancements");
         noExperience = getConfig().getBoolean("noExperience");
         showHead = getConfig().getBoolean("showHead");
+        playXP = getConfig().getBoolean("playXP");
 
         getLogger().info(ChatColor.BLUE + "Preparing server");
         if (hidePlayers) {
@@ -99,5 +101,6 @@ public final class PistonQueueBukkit extends JavaPlugin {
 
         getLogger().info(ChatColor.BLUE + "Registering listeners");
         getServer().getPluginManager().registerEvents(new ServerListener(this), this);
+        getServer().getMessenger().registerIncomingPluginChannel(this, "piston:queue", new QueuePluginMessageListener(this));
     }
 }
