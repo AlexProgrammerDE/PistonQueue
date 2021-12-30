@@ -70,6 +70,10 @@ public abstract class QueueListenerShared {
                 }
             }
         }
+
+        if (Config.ENABLE_KICK_MESSAGE) {
+            event.setKickMessage(Config.KICK_MESSAGE);
+        }
     }
 
     protected void onPreConnect(PQServerPreConnectEvent event) {

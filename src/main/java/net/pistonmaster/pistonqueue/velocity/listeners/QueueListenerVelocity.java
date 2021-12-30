@@ -27,7 +27,6 @@ import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.pistonmaster.pistonqueue.shared.Config;
 import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
 import net.pistonmaster.pistonqueue.shared.QueueListenerShared;
 import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
@@ -54,11 +53,6 @@ public class QueueListenerVelocity extends QueueListenerShared {
     @Subscribe
     public void onKick(KickedFromServerEvent event) {
         onKick(wrap(event));
-
-        if (Config.ENABLE_KICK_MESSAGE) {
-            if (event.getResult() instanceof KickedFromServerEvent.DisconnectPlayer)
-                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(ChatUtils.parseToComponent(Config.KICK_MESSAGE)));
-        }
     }
 
     @Subscribe
@@ -104,7 +98,8 @@ public class QueueListenerVelocity extends QueueListenerShared {
 
             @Override
             public void setTarget(String server) {
-                event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(server).orElseThrow(() -> new IllegalArgumentException(String.format("Server %s not found", server)))));
+                event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(server).orElseThrow(() ->
+                        new IllegalArgumentException(String.format("Server %s not found", server)))));
             }
         };
     }
@@ -113,7 +108,14 @@ public class QueueListenerVelocity extends QueueListenerShared {
         return new PQKickedFromServerEvent() {
             @Override
             public void setCancelServer(String server) {
-                event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(Config.QUEUE_SERVER).orElseThrow(() -> new IllegalArgumentException(String.format("Server %s not found", Config.QUEUE_SERVER)))));
+                event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(server).orElseThrow(() ->
+                        new IllegalArgumentException(String.format("Server %s not found", server)))));
+            }
+
+            @Override
+            public void setKickMessage(String message) {
+                if (event.getResult() instanceof KickedFromServerEvent.DisconnectPlayer)
+                    event.setResult(KickedFromServerEvent.DisconnectPlayer.create(ChatUtils.parseToComponent(message)));
             }
 
             @Override

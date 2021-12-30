@@ -29,7 +29,6 @@ import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
-import net.pistonmaster.pistonqueue.shared.Config;
 import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
 import net.pistonmaster.pistonqueue.shared.QueueListenerShared;
 import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
@@ -54,10 +53,6 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
     @EventHandler
     public void onKick(ServerKickEvent event) {
         onKick(wrap(event));
-
-        if (Config.ENABLE_KICK_MESSAGE) {
-            event.setKickReasonComponent(ChatUtils.parseToComponent(Config.KICK_MESSAGE));
-        }
     }
 
     @EventHandler
@@ -103,7 +98,7 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
 
             @Override
             public void setTarget(String server) {
-                event.setTarget(plugin.getProxy().getServerInfo(Config.QUEUE_SERVER));
+                event.setTarget(plugin.getProxy().getServerInfo(server));
             }
         };
     }
@@ -114,6 +109,11 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
             public void setCancelServer(String server) {
                 event.setCancelServer(plugin.getProxy().getServerInfo(server));
                 event.setCancelled(true);
+            }
+
+            @Override
+            public void setKickMessage(String message) {
+                event.setKickReasonComponent(ChatUtils.parseToComponent(message));
             }
 
             @Override

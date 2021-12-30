@@ -26,6 +26,8 @@ import java.util.Optional;
 public interface PQKickedFromServerEvent {
     void setCancelServer(String server);
 
+    void setKickMessage(String message);
+
     PlayerWrapper getPlayer();
 
     String getKickedFrom();
