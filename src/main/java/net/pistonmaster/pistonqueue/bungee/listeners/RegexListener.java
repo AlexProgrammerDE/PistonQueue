@@ -25,7 +25,7 @@ import net.md_5.bungee.event.EventHandler;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.shared.Config;
 
-public final class PistonListener implements Listener {
+public final class RegexListener implements Listener {
     @EventHandler
     public void onPreLogin(PreLoginEvent ple) {
         if (ple.isCancelled())

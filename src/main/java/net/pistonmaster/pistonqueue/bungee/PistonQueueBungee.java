@@ -26,7 +26,7 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
-import net.pistonmaster.pistonqueue.bungee.listeners.PistonListener;
+import net.pistonmaster.pistonqueue.bungee.listeners.RegexListener;
 import net.pistonmaster.pistonqueue.bungee.listeners.QueueListenerBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
@@ -76,7 +76,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
 
         info(ChatColor.BLUE + "Registering listeners");
         manager.registerListener(this, queueListenerBungee);
-        manager.registerListener(this, new PistonListener());
+        manager.registerListener(this, new RegexListener());
 
         info(ChatColor.BLUE + "Loading Metrics");
         new Metrics(this, 8755);

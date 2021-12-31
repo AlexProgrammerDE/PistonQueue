@@ -24,7 +24,7 @@ import com.velocitypowered.api.event.connection.PreLoginEvent;
 import net.pistonmaster.pistonqueue.shared.Config;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 
-public class PistonListener {
+public class RegexListener {
     @Subscribe
     public void onPreLogin(PreLoginEvent ple) {
         if (ple.getResult() != PreLoginEvent.PreLoginComponentResult.allowed())
