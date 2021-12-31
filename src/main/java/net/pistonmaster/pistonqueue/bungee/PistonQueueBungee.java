@@ -30,7 +30,7 @@ import net.pistonmaster.pistonqueue.bungee.listeners.PistonListener;
 import net.pistonmaster.pistonqueue.bungee.listeners.QueueListenerBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
-import net.pistonmaster.pistonqueue.shared.PistonQueueProxy;
+import net.pistonmaster.pistonqueue.shared.PistonQueuePlugin;
 import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
 import net.pistonmaster.pistonqueue.shared.ServerInfoWrapper;
 import net.pistonmaster.pistonqueue.shared.StorageTool;
@@ -38,15 +38,17 @@ import net.pistonmaster.pistonqueue.shared.utils.MessageType;
 import net.pistonmaster.pistonqueue.shared.utils.UpdateChecker;
 import org.bstats.bungeecord.Metrics;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public final class PistonQueueBungee extends Plugin implements PistonQueueProxy {
+public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin {
     @Getter
     private final QueueListenerBungee queueListenerBungee = new QueueListenerBungee(this);
 
@@ -100,6 +102,11 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
     }
 
     @Override
+    public Optional<PlayerWrapper> getPlayer(String name) {
+        return Optional.ofNullable(getProxy().getPlayer(name)).map(this::wrapPlayer);
+    }
+
+    @Override
     public List<PlayerWrapper> getPlayers() {
         return getProxy().getPlayers().stream().map(this::wrapPlayer).collect(Collectors.toList());
     }
@@ -127,6 +134,21 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
     @Override
     public void error(String message) {
         getLogger().severe(message);
+    }
+
+    @Override
+    public List<String> getAuthors() {
+        return Collections.singletonList(getDescription().getAuthor());
+    }
+
+    @Override
+    public String getVersion() {
+        return getDescription().getVersion();
+    }
+
+    @Override
+    public File getDataDirectory() {
+        return getDataFolder();
     }
 
     private ServerInfoWrapper wrapServer(ServerInfo serverInfo) {

@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiredArgsConstructor
 public abstract class QueueListenerShared {
-    private final PistonQueueProxy plugin;
+    private final PistonQueuePlugin plugin;
     @Setter
     @Getter
     protected boolean mainOnline = false;

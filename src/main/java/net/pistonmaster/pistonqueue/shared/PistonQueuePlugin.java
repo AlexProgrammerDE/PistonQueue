@@ -41,8 +41,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
-public interface PistonQueueProxy {
+public interface PistonQueuePlugin {
     Optional<PlayerWrapper> getPlayer(UUID uuid);
+
+    Optional<PlayerWrapper> getPlayer(String name);
 
     List<PlayerWrapper> getPlayers();
 
@@ -55,6 +57,12 @@ public interface PistonQueueProxy {
     void warning(String message);
 
     void error(String message);
+
+    List<String> getAuthors();
+
+    String getVersion();
+
+    File getDataDirectory();
 
     default void scheduleTasks(QueueListenerShared queueListener) {
         // Sends the position message and updates tab on an interval in chat

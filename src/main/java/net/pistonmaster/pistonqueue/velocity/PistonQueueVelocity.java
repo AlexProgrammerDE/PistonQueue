@@ -33,7 +33,7 @@ import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.pistonmaster.pistonqueue.data.PluginData;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
-import net.pistonmaster.pistonqueue.shared.PistonQueueProxy;
+import net.pistonmaster.pistonqueue.shared.PistonQueuePlugin;
 import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
 import net.pistonmaster.pistonqueue.shared.ServerInfoWrapper;
 import net.pistonmaster.pistonqueue.shared.StorageTool;
@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 
 @Plugin(id = "pistonqueue", name = PluginData.NAME, version = PluginData.VERSION,
         url = PluginData.URL, description = PluginData.DESCRIPTION, authors = {"AlexProgrammerDE"})
-public class PistonQueueVelocity implements PistonQueueProxy {
+public class PistonQueueVelocity implements PistonQueuePlugin {
     @Getter
     private final File dataDirectory;
     @Getter
@@ -128,6 +128,11 @@ public class PistonQueueVelocity implements PistonQueueProxy {
     }
 
     @Override
+    public Optional<PlayerWrapper> getPlayer(String name) {
+        return proxyServer.getPlayer(name).map(this::wrapPlayer);
+    }
+
+    @Override
     public List<PlayerWrapper> getPlayers() {
         return proxyServer.getAllPlayers().stream().map(this::wrapPlayer).collect(Collectors.toList());
     }
@@ -155,6 +160,16 @@ public class PistonQueueVelocity implements PistonQueueProxy {
     @Override
     public void error(String message) {
         logger.error(message);
+    }
+
+    @Override
+    public List<String> getAuthors() {
+        return pluginContainer.getDescription().getAuthors();
+    }
+
+    @Override
+    public String getVersion() {
+        return pluginContainer.getDescription().getVersion().orElse("unknown");
     }
 
     private ServerInfoWrapper wrapServer(RegisteredServer server) {
