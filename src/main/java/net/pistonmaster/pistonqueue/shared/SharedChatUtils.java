@@ -21,7 +21,7 @@ package net.pistonmaster.pistonqueue.shared;
 
 import java.time.Duration;
 
-public class SharedChatUtils {
+public final class SharedChatUtils {
     private SharedChatUtils() {
     }
 

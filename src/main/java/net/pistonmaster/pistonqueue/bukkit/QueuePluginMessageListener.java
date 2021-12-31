@@ -28,7 +28,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
 @RequiredArgsConstructor
-public class QueuePluginMessageListener implements PluginMessageListener {
+public final class QueuePluginMessageListener implements PluginMessageListener {
     private final PistonQueueBukkit plugin;
 
     @SuppressWarnings("UnstableApiUsage")

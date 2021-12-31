@@ -30,7 +30,7 @@ import net.pistonmaster.pistonqueue.shared.TextDecorationWrapper;
 
 @Getter
 @RequiredArgsConstructor
-public class VelocityComponentWrapperImpl implements ComponentWrapper {
+public final class VelocityComponentWrapperImpl implements ComponentWrapper {
     private final Component mainComponent;
 
     @Override

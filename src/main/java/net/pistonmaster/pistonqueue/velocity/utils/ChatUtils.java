@@ -28,7 +28,7 @@ import net.pistonmaster.pistonqueue.shared.utils.MessageType;
 
 import java.util.List;
 
-public class ChatUtils {
+public final class ChatUtils {
     private ChatUtils() {
     }
 

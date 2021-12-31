@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 
 @Plugin(id = "pistonqueue", name = PluginData.NAME, version = PluginData.VERSION,
         url = PluginData.URL, description = PluginData.DESCRIPTION, authors = {"AlexProgrammerDE"})
-public class PistonQueueVelocity implements PistonQueuePlugin {
+public final class PistonQueueVelocity implements PistonQueuePlugin {
     @Getter
     private final File dataDirectory;
     @Getter

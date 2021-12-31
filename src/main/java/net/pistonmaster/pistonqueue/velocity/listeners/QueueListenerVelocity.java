@@ -37,7 +37,7 @@ import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 
 import java.util.Optional;
 
-public class QueueListenerVelocity extends QueueListenerShared {
+public final class QueueListenerVelocity extends QueueListenerShared {
     private final PistonQueueVelocity plugin;
 
     public QueueListenerVelocity(PistonQueueVelocity plugin) {

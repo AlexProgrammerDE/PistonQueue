@@ -29,7 +29,7 @@ import net.pistonmaster.pistonqueue.shared.TextDecorationWrapper;
 
 @Getter
 @RequiredArgsConstructor
-public class BungeeComponentWrapperImpl implements ComponentWrapper {
+public final class BungeeComponentWrapperImpl implements ComponentWrapper {
     private final ComponentBuilder mainComponent;
 
     @Override
