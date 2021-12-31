@@ -101,6 +101,12 @@
                     </extraExtensions>
                     <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
                     <useJavaNoReformatCommentStartTag>false</useJavaNoReformatCommentStartTag>
+                    <licenseName>apache_v2</licenseName>
+                    <roots>
+                        <root>src/main/java/net/pistonmaster</root>
+                    </roots>
+                    <organizationName>AlexProgrammerDE</organizationName>
+                    <inceptionYear>2021</inceptionYear>
                 </configuration>
                 <executions>
                     <execution>
@@ -109,14 +115,6 @@
                             <goal>update-file-header</goal>
                         </goals>
                         <phase>process-sources</phase>
-                        <configuration>
-                            <licenseName>apache_v2</licenseName>
-                            <roots>
-                                <root>src/main/java/net/pistonmaster</root>
-                            </roots>
-                            <organizationName>AlexProgrammerDE</organizationName>
-                            <inceptionYear>2021</inceptionYear>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
