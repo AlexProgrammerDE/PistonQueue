@@ -318,7 +318,7 @@ public interface PistonQueuePlugin {
                 String value = "";
 
                 for (String str : text) {
-                    if (str.toLowerCase().startsWith(PistonQueueVelocity.class.getPackage().getName().toLowerCase())) {
+                    if (str.toLowerCase().startsWith(Config.class.getPackage().getName().toLowerCase())) {
                         value = str;
                     }
                 }
