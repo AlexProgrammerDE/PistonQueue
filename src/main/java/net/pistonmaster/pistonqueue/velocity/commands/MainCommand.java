@@ -228,9 +228,6 @@ public final class MainCommand implements SimpleCommand, MainCommandShared {
 
     @Override
     public List<String> suggest(Invocation invocation) {
-        String[] args = invocation.arguments();
-        CommandSource sender = invocation.source();
-
-        return onTab(args, sender::hasPermission, plugin);
+        return onTab(invocation.arguments(), invocation.source()::hasPermission, plugin);
     }
 }
