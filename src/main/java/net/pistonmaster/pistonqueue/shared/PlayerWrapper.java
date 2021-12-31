@@ -40,6 +40,8 @@ public interface PlayerWrapper {
 
     void sendPlayerListHeaderAndFooter(List<String> header, List<String> footer);
 
+    String getName();
+
     UUID getUniqueId();
 
     void disconnect(String message);

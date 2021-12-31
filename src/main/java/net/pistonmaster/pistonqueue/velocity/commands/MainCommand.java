@@ -22,25 +22,18 @@ package net.pistonmaster.pistonqueue.velocity.commands;
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.proxy.Player;
+import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.pistonmaster.pistonqueue.shared.Config;
-import net.pistonmaster.pistonqueue.shared.QueueAPI;
-import net.pistonmaster.pistonqueue.shared.QueueType;
-import net.pistonmaster.pistonqueue.shared.StorageTool;
+import net.pistonmaster.pistonqueue.shared.*;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 
 import java.util.*;
 
-public final class MainCommand implements SimpleCommand {
-    private static final String[] commands = {"help", "version", "stats"};
-    private static final String[] adminCommands = {"slotstats", "reload", "shadowban", "unshadowban"};
+@RequiredArgsConstructor
+public final class MainCommand implements SimpleCommand, MainCommandShared {
     private final PistonQueueVelocity plugin;
-
-    public MainCommand(PistonQueueVelocity plugin) {
-        this.plugin = plugin;
-    }
 
     private void noPermission(CommandSource sender) {
         sendLine(sender);
@@ -87,13 +80,6 @@ public final class MainCommand implements SimpleCommand {
 
     private void sendLine(CommandSource sender) {
         sender.sendMessage(Component.text("----------------").color(NamedTextColor.DARK_BLUE));
-    }
-
-    private void addPlayers(List<String> completions, String[] args) {
-        for (Player player : plugin.getProxyServer().getAllPlayers()) {
-            if (player.getUsername().toLowerCase().startsWith(args[1].toLowerCase()))
-                completions.add(player.getUsername());
-        }
     }
 
     @Override
@@ -245,32 +231,6 @@ public final class MainCommand implements SimpleCommand {
         String[] args = invocation.arguments();
         CommandSource sender = invocation.source();
 
-        if (Config.REGISTER_TAB) {
-            final List<String> completions = new ArrayList<>();
-
-            if (args.length == 1) {
-                for (String string : commands) {
-                    if (string.toLowerCase().startsWith(args[0].toLowerCase()))
-                        completions.add(string);
-                }
-
-                if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
-                    for (String string : adminCommands) {
-                        if (string.toLowerCase().startsWith(args[0].toLowerCase()))
-                            completions.add(string);
-                    }
-                }
-            } else if (sender.hasPermission(Config.ADMIN_PERMISSION)
-                    && args.length == 2
-                    && (args[0].equalsIgnoreCase("shadowban") || args[0].equalsIgnoreCase("unshadowban"))) {
-                addPlayers(completions, args);
-            }
-
-            Collections.sort(completions);
-
-            return completions;
-        } else {
-            return null;
-        }
+        return onTab(args, sender::hasPermission, plugin);
     }
 }

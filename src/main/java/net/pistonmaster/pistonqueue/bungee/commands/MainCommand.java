@@ -26,16 +26,11 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
-import net.pistonmaster.pistonqueue.shared.Config;
-import net.pistonmaster.pistonqueue.shared.QueueAPI;
-import net.pistonmaster.pistonqueue.shared.QueueType;
-import net.pistonmaster.pistonqueue.shared.StorageTool;
+import net.pistonmaster.pistonqueue.shared.*;
 
 import java.util.*;
 
-public final class MainCommand extends Command implements TabExecutor {
-    private static final String[] commands = {"help", "version", "stats"};
-    private static final String[] adminCommands = {"slotstats", "reload", "shadowban", "unshadowban"};
+public final class MainCommand extends Command implements TabExecutor, MainCommandShared {
     private final PistonQueueBungee plugin;
 
     public MainCommand(PistonQueueBungee plugin) {
@@ -233,39 +228,6 @@ public final class MainCommand extends Command implements TabExecutor {
 
     @Override
     public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        if (Config.REGISTER_TAB) {
-            final List<String> completions = new ArrayList<>();
-
-            if (args.length == 1) {
-                for (String string : commands) {
-                    if (string.toLowerCase().startsWith(args[0].toLowerCase()))
-                        completions.add(string);
-                }
-
-                if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
-                    for (String string : adminCommands) {
-                        if (string.toLowerCase().startsWith(args[0].toLowerCase()))
-                            completions.add(string);
-                    }
-                }
-            } else if (sender.hasPermission(Config.ADMIN_PERMISSION)
-                    && args.length == 2
-                    && (args[0].equalsIgnoreCase("shadowban") || args[0].equalsIgnoreCase("unshadowban"))) {
-                addPlayers(completions, args);
-            }
-
-            Collections.sort(completions);
-
-            return completions;
-        } else {
-            return null;
-        }
-    }
-
-    private void addPlayers(List<String> completions, String[] args) {
-        for (ProxiedPlayer player : plugin.getProxy().getPlayers()) {
-            if (player.getName().toLowerCase().startsWith(args[1].toLowerCase()))
-                completions.add(player.getName());
-        }
+        return onTab(args, sender::hasPermission, plugin);
     }
 }

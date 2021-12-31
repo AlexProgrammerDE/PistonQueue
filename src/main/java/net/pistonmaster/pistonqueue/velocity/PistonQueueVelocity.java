@@ -232,6 +232,11 @@ public class PistonQueueVelocity implements PistonQueueProxy {
             }
 
             @Override
+            public String getName() {
+                return player.getUsername();
+            }
+
+            @Override
             public UUID getUniqueId() {
                 return player.getUniqueId();
             }

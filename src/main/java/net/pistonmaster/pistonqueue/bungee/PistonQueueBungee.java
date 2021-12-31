@@ -198,6 +198,11 @@ public final class PistonQueueBungee extends Plugin implements PistonQueueProxy 
             }
 
             @Override
+            public String getName() {
+                return player.getName();
+            }
+
+            @Override
             public UUID getUniqueId() {
                 return player.getUniqueId();
             }
