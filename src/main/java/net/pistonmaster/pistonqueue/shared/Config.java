@@ -23,9 +23,6 @@ import net.pistonmaster.pistonqueue.shared.utils.BanType;
 
 import java.util.List;
 
-/**
- * Config
- */
 public final class Config {
     public static String SERVER_NAME, SERVER_IS_FULL_MESSAGE, QUEUE_POSITION, JOINING_MAIN_SERVER,
             QUEUE_BYPASS_PERMISSION, QUEUE_SERVER, QUEUE_PRIORITY_PERMISSION, REGEX,

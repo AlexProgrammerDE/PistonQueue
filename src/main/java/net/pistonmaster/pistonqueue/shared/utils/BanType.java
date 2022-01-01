@@ -20,7 +20,7 @@
 package net.pistonmaster.pistonqueue.shared.utils;
 
 /**
- * How shadowbanned people should be punished.
+ * How shadow-banned people should be punished.
  */
 public enum BanType {
     /**

@@ -23,7 +23,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.pistonmaster.pistonqueue.shared.utils.ConfigOutdatedException;
 import net.pistonmaster.pistonqueue.shared.utils.MessageType;
-import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
@@ -284,7 +283,7 @@ public interface PistonQueuePlugin {
 
             if (!file.exists()) {
                 try {
-                    Files.copy(Objects.requireNonNull(PistonQueueVelocity.class.getClassLoader().getResourceAsStream("proxyconfig.yml")), file.toPath());
+                    Files.copy(Objects.requireNonNull(PistonQueuePlugin.class.getClassLoader().getResourceAsStream("proxyconfig.yml")), file.toPath());
                     loadConfig(dataDirectory);
                     return;
                 } catch (IOException ie) {
