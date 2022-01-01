@@ -48,7 +48,7 @@ public final class MainCommand implements SimpleCommand, MainCommandShared {
 
             @Override
             public boolean hasPermission(String node) {
-                return false;
+                return sender.hasPermission(node);
             }
         }, args, plugin);
     }
