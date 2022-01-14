@@ -164,39 +164,28 @@ public interface PistonQueuePlugin {
 
     default void sendMessage(QueueType queue, boolean bool, MessageType type) {
         if (bool) {
-            int position = 0;
+            AtomicInteger position = new AtomicInteger();
 
             for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-                Optional<PlayerWrapper> player = getPlayer(entry.getKey());
-                if (!player.isPresent()) {
-                    continue;
-                }
-
-                position++;
-
-                player.get().sendMessage(type, Config.QUEUE_POSITION
-                        .replace("%position%", String.valueOf(position))
-                        .replace("%total%", String.valueOf(queue.getQueueMap().size())));
+                getPlayer(entry.getKey()).ifPresent(player ->
+                        player.sendMessage(type, Config.QUEUE_POSITION
+                                .replace("%position%", String.valueOf(position.incrementAndGet()))
+                                .replace("%total%", String.valueOf(queue.getQueueMap().size()))));
             }
         }
     }
 
     default void updateTab(QueueType queue, List<String> header, List<String> footer) {
-        int position = 0;
+        AtomicInteger position = new AtomicInteger();
 
         for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-            Optional<PlayerWrapper> player = getPlayer(entry.getKey());
-            if (!player.isPresent()) {
-                continue;
-            }
+            getPlayer(entry.getKey()).ifPresent(player -> {
+                int incrementedPosition = position.incrementAndGet();
 
-            position++;
-
-            int finalPosition = position;
-            header = header.stream().map(str -> replacePosition(str, finalPosition, queue)).collect(Collectors.toList());
-            footer = footer.stream().map(str -> replacePosition(str, finalPosition, queue)).collect(Collectors.toList());
-
-            player.get().sendPlayerListHeaderAndFooter(header, footer);
+                player.sendPlayerListHeaderAndFooter(
+                        header.stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()),
+                        footer.stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()));
+            });
         }
     }
 
