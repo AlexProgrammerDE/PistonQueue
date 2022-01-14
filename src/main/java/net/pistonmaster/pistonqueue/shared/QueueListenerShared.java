@@ -254,9 +254,6 @@ public abstract class QueueListenerShared {
 
             type.getQueueMap().remove(entry.getKey());
 
-            if (Config.SEND_XP_SOUND)
-                sendXPSoundToQueueType(type);
-
             player.get().sendMessage(Config.JOINING_MAIN_SERVER);
             player.get().sendPlayerListHeaderAndFooter(null, null);
 
@@ -280,6 +277,8 @@ public abstract class QueueListenerShared {
 
             player.get().connect(entry.getValue());
         }
+        if (Config.SEND_XP_SOUND)
+            sendXPSoundToQueueType(type);
     }
 
     protected void sendXPSoundToQueueType(QueueType type) {
@@ -290,11 +289,12 @@ public abstract class QueueListenerShared {
         AtomicInteger counter = new AtomicInteger(0);
         type.getQueueMap().forEach((uuid, server) -> {
             if (counter.incrementAndGet() <= 5) {
-                plugin.getPlayer(uuid).flatMap(playerWrapper ->
-                        playerWrapper.getCurrentServer().flatMap(plugin::getServer)).ifPresent(serverWrapper ->
-                        serverWrapper.sendPluginMessage("piston:queue", out.toByteArray()));
+                out.writeUTF(uuid.toString());
             }
         });
+
+        plugin.getServer(Config.QUEUE_SERVER).ifPresent(server ->
+                server.sendPluginMessage("piston:queue", out.toByteArray()));
     }
 
     protected void indexPositionTime() {

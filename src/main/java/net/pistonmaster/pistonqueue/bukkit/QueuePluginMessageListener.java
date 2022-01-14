@@ -27,12 +27,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 @RequiredArgsConstructor
 public final class QueuePluginMessageListener implements PluginMessageListener {
     private final PistonQueueBukkit plugin;
 
-    @SuppressWarnings("UnstableApiUsage")
     @Override
+    @SuppressWarnings("UnstableApiUsage")
     public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] message) {
         if (!channel.equals("piston:queue")) return;
 
@@ -40,7 +44,23 @@ public final class QueuePluginMessageListener implements PluginMessageListener {
         String subChannel = in.readUTF();
 
         if (plugin.isPlayXP() && subChannel.equals("xp")) {
-            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 100.0F, 1.0F);
+            List<String> uuids = new ArrayList<>();
+            while (true) {
+                try {
+                    uuids.add(in.readUTF());
+                } catch (Exception e) {
+                    break;
+                }
+            }
+
+            for (String uuid : uuids) {
+                Player p = plugin.getServer().getPlayer(UUID.fromString(uuid));
+
+                if (p == null)
+                    continue;
+
+                p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 100.0F, 1.0F);
+            }
         }
     }
 }

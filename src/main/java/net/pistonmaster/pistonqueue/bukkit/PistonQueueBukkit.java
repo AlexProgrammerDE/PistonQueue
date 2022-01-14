@@ -103,4 +103,9 @@ public final class PistonQueueBukkit extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ServerListener(this), this);
         getServer().getMessenger().registerIncomingPluginChannel(this, "piston:queue", new QueuePluginMessageListener(this));
     }
+
+    @Override
+    public void onDisable() {
+        this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+    }
 }
