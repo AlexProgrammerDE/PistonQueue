@@ -143,14 +143,14 @@
     <pluginRepositories>
         <pluginRepository>
             <id>maven-snapshots</id>
-            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <url>https://repository.apache.org/content/repositories/snapshots</url>
         </pluginRepository>
     </pluginRepositories>
 
     <repositories>
         <repository>
             <id>spigotmc</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
         </repository>
         <repository>
             <id>bungeecord</id>
@@ -158,15 +158,23 @@
         </repository>
         <repository>
             <id>dmulloy2</id>
-            <url>https://repo.dmulloy2.net/nexus/repository/public/</url>
+            <url>https://repo.dmulloy2.net/nexus/repository/public</url>
         </repository>
         <repository>
-            <id>codemc</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
+            <id>codemc-releases</id>
+            <url>https://repo.codemc.org/repository/maven-releases</url>
+        </repository>
+        <repository>
+            <id>codemc-snapshots</id>
+            <url>https://repo.codemc.org/repository/maven-snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
         </repository>
         <repository>
             <id>velocity</id>
-            <url>https://nexus.velocitypowered.com/repository/maven-public/</url>
+            <url>https://nexus.velocitypowered.com/repository/maven-public</url>
         </repository>
     </repositories>
 
