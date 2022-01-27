@@ -248,19 +248,33 @@ public interface PistonQueuePlugin {
             return;
         }
 
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        ByteArrayDataOutput outOnlineQueue = ByteStreams.newDataOutput();
 
-        out.writeUTF("size");
-        out.writeInt(QueueType.REGULAR.getQueueMap().size());
-        out.writeInt(QueueType.PRIORITY.getQueueMap().size());
-        out.writeInt(QueueType.VETERAN.getQueueMap().size());
+        outOnlineQueue.writeUTF("onlineQueue");
+        outOnlineQueue.writeInt(QueueType.REGULAR.getQueueMap().size());
+        outOnlineQueue.writeInt(QueueType.PRIORITY.getQueueMap().size());
+        outOnlineQueue.writeInt(QueueType.VETERAN.getQueueMap().size());
 
+        ByteArrayDataOutput outOnlineMain = ByteStreams.newDataOutput();
+
+        outOnlineQueue.writeUTF("onlineMain");
+        outOnlineQueue.writeInt(QueueType.REGULAR.getPlayersWithTypeInMain().get());
+        outOnlineQueue.writeInt(QueueType.PRIORITY.getPlayersWithTypeInMain().get());
+        outOnlineQueue.writeInt(QueueType.VETERAN.getPlayersWithTypeInMain().get());
+
+        Set<String> servers = new HashSet<>();
         networkPlayers.forEach(player -> {
             if (player.getCurrentServer().isPresent()) {
-                getServer(player.getCurrentServer().get()).ifPresent(serverInfoWrapper ->
-                        serverInfoWrapper.sendPluginMessage("piston:queue", out.toByteArray()));
+                servers.add(player.getCurrentServer().get());
             }
         });
+
+        for (String server : servers) {
+            getServer(server).ifPresent(serverInfoWrapper ->
+                    serverInfoWrapper.sendPluginMessage("piston:queue", outOnlineQueue.toByteArray()));
+            getServer(server).ifPresent(serverInfoWrapper ->
+                    serverInfoWrapper.sendPluginMessage("piston:queue", outOnlineMain.toByteArray()));
+        }
     }
 
     default void processConfig(File dataDirectory) {
