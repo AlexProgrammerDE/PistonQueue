@@ -221,8 +221,15 @@
         <dependency>
             <groupId>net.pistonmaster</groupId>
             <artifactId>pistonmotd-api</artifactId>
-            <version>4.3.2</version>
+            <version>5.0.0</version>
             <scope>provided</scope>
+            <classifier>unshaded</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
