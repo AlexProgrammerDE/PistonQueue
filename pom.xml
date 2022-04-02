@@ -220,7 +220,7 @@
         <dependency>
             <groupId>net.pistonmaster</groupId>
             <artifactId>pistonmotd-api</artifactId>
-            <version>5.0.0</version>
+            <version>5.0.1</version>
             <scope>provided</scope>
             <classifier>unshaded</classifier>
             <exclusions>
