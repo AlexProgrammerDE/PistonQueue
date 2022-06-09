@@ -27,7 +27,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 public enum QueueType {
     REGULAR,
@@ -46,10 +46,10 @@ public enum QueueType {
     @Getter
     private final AtomicInteger playersWithTypeInMain = new AtomicInteger();
 
-    public static QueueType getQueueType(Function<String, Boolean> player) {
-        if (player.apply(Config.QUEUE_VETERAN_PERMISSION)) {
+    public static QueueType getQueueType(Predicate<String> player) {
+        if (player.test(Config.QUEUE_VETERAN_PERMISSION)) {
             return VETERAN;
-        } else if (player.apply(Config.QUEUE_PRIORITY_PERMISSION)) {
+        } else if (player.test(Config.QUEUE_PRIORITY_PERMISSION)) {
             return PRIORITY;
         } else {
             return REGULAR;

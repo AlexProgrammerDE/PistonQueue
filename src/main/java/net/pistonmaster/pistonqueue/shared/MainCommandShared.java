@@ -73,8 +73,9 @@ public interface MainCommandShared {
                 case "shadowban":
                     if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         if (args.length > 1) {
-                            if (plugin.getPlayer(args[1]).isPresent()) {
-                                PlayerWrapper player = plugin.getPlayer(args[1]).get();
+                            Optional<PlayerWrapper> optionalPlayer = plugin.getPlayer(args[1]);
+                            if (optionalPlayer.isPresent()) {
+                                PlayerWrapper player = optionalPlayer.get();
 
                                 if (args.length > 2) {
                                     Calendar calendar = Calendar.getInstance();
@@ -131,8 +132,9 @@ public interface MainCommandShared {
                 case "unshadowban":
                     if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         if (args.length > 1) {
-                            if (plugin.getPlayer(args[1]).isPresent()) {
-                                PlayerWrapper player = plugin.getPlayer(args[1]).get();
+                            Optional<PlayerWrapper> optionalPlayer = plugin.getPlayer(args[1]);
+                            if (optionalPlayer.isPresent()) {
+                                PlayerWrapper player = optionalPlayer.get();
 
                                 if (StorageTool.unShadowBanPlayer(player.getUniqueId())) {
                                     sendLine(sender);
@@ -238,7 +240,7 @@ public interface MainCommandShared {
 
             return completions;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 
