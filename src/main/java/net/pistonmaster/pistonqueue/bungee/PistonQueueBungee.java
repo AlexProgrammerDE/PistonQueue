@@ -26,8 +26,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
-import net.pistonmaster.pistonqueue.bungee.listeners.RegexListener;
 import net.pistonmaster.pistonqueue.bungee.listeners.QueueListenerBungee;
+import net.pistonmaster.pistonqueue.bungee.listeners.RegexListener;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.PistonQueuePlugin;
@@ -39,12 +39,11 @@ import net.pistonmaster.pistonqueue.shared.utils.UpdateChecker;
 import org.bstats.bungeecord.Metrics;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.Socket;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -159,19 +158,11 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
                 return serverInfo.getPlayers().stream().map(reference::wrapPlayer).collect(Collectors.toList());
             }
 
-            @SuppressWarnings("deprecation")
             @Override
             public boolean isOnline() {
-                try {
-                    Socket s = new Socket(
-                            serverInfo.getAddress().getAddress(),
-                            serverInfo.getAddress().getPort());
-
-                    s.close();
-                    return true;
-                } catch (IOException e) {
-                    return false;
-                }
+                CompletableFuture<Boolean> future = new CompletableFuture<>();
+                serverInfo.ping((result, error) -> future.complete(error == null && result != null));
+                return future.join();
             }
 
             @Override

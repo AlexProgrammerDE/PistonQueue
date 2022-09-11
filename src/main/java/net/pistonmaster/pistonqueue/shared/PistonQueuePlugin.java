@@ -196,18 +196,16 @@ public interface PistonQueuePlugin {
 
             return SharedChatUtils.formatDuration(text, duration, position);
         } else {
-            AtomicInteger biggestPositionAtomic = new AtomicInteger();
-            AtomicReference<Duration> bestDurationAtomic = new AtomicReference<>(Duration.ZERO);
+            int biggestPosition = 0;
+            Duration biggestDuration = Duration.ZERO;
 
-            type.getDurationToPosition().forEach((integer, instant) -> {
-                if (integer > biggestPositionAtomic.get()) {
-                    biggestPositionAtomic.set(integer);
-                    bestDurationAtomic.set(instant);
+            for (Map.Entry<Integer, Duration> entry : type.getDurationToPosition().entrySet()) {
+                int positionOfDuration = entry.getKey();
+                if (positionOfDuration > biggestPosition) {
+                    biggestPosition = positionOfDuration;
+                    biggestDuration = entry.getValue();
                 }
-            });
-
-            int biggestPosition = biggestPositionAtomic.get();
-            Duration biggestDuration = bestDurationAtomic.get();
+            }
 
             int difference = position - biggestPosition;
 
@@ -235,9 +233,7 @@ public interface PistonQueuePlugin {
                 }
             }
 
-            for (Map.Entry<QueueType, AtomicInteger> entry : map.entrySet()) {
-                entry.getKey().getPlayersWithTypeInMain().set(entry.getValue().get());
-            }
+            map.forEach((type, count) -> type.getPlayersWithTypeInMain().set(count.get()));
         }, 0, 1, TimeUnit.SECONDS);
     }
 
