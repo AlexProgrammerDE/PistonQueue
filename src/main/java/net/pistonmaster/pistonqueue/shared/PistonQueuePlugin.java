@@ -105,6 +105,7 @@ public interface PistonQueuePlugin {
         // Moves the queue when someone logs off the main server on an interval set in the config.yml
         schedule(queueListener::moveQueue, Config.QUEUE_MOVE_DELAY, Config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
 
+        String message = "%s \"%s\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up";
         AtomicBoolean isFirstRun = new AtomicBoolean(true);
         // Checks the status of all the servers
         schedule(() -> {
@@ -123,7 +124,7 @@ public interface PistonQueuePlugin {
                 }
                 isFirstRun.set(false);
             } else {
-                warning("Main Server \"" + Config.MAIN_SERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+                warning(String.format(message, "Main Server", Config.MAIN_SERVER));
             }
         }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
 
@@ -138,7 +139,7 @@ public interface PistonQueuePlugin {
                     queueListener.setQueueOnline(false);
                 }
             } else {
-                warning("Queue Server \"" + Config.QUEUE_SERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+                warning(String.format(message, "Queue Server", Config.QUEUE_SERVER));
             }
         }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
 
@@ -154,7 +155,7 @@ public interface PistonQueuePlugin {
                         queueListener.setAuthOnline(false);
                     }
                 } else {
-                    warning("Auth Server \"" + Config.AUTH_SERVER + "\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up");
+                    warning(String.format(message, "Auth Server", Config.AUTH_SERVER));
                 }
             } else {
                 queueListener.setAuthOnline(true);
@@ -257,17 +258,13 @@ public interface PistonQueuePlugin {
 
         ByteArrayDataOutput outOnlineMain = ByteStreams.newDataOutput();
 
-        outOnlineQueue.writeUTF("onlineMain");
-        outOnlineQueue.writeInt(QueueType.REGULAR.getPlayersWithTypeInMain().get());
-        outOnlineQueue.writeInt(QueueType.PRIORITY.getPlayersWithTypeInMain().get());
-        outOnlineQueue.writeInt(QueueType.VETERAN.getPlayersWithTypeInMain().get());
+        outOnlineMain.writeUTF("onlineMain");
+        outOnlineMain.writeInt(QueueType.REGULAR.getPlayersWithTypeInMain().get());
+        outOnlineMain.writeInt(QueueType.PRIORITY.getPlayersWithTypeInMain().get());
+        outOnlineMain.writeInt(QueueType.VETERAN.getPlayersWithTypeInMain().get());
 
         Set<String> servers = new HashSet<>();
-        networkPlayers.forEach(player -> {
-            if (player.getCurrentServer().isPresent()) {
-                servers.add(player.getCurrentServer().get());
-            }
-        });
+        networkPlayers.forEach(player -> player.getCurrentServer().ifPresent(servers::add));
 
         for (String server : servers) {
             getServer(server).ifPresent(serverInfoWrapper ->
