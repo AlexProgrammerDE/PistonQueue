@@ -28,7 +28,6 @@ import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerConnectedEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 import net.pistonmaster.pistonqueue.shared.utils.BanType;
-import net.pistonmaster.pistonqueue.shared.utils.Pair;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -278,9 +277,10 @@ public abstract class QueueListenerShared {
 
             indexPositionTime();
 
-            List<Pair<Integer, Instant>> cache = type.getPositionCache().get(entry.getKey());
+            Map<Integer, Instant> cache = type.getPositionCache().get(entry.getKey());
             if (cache != null) {
-                cache.forEach(pair -> type.getDurationToPosition().put(pair.getLeft(), Duration.between(pair.getRight(), Instant.now())));
+                cache.forEach((position, instant) ->
+                        type.getDurationToPosition().put(position, Duration.between(instant, Instant.now())));
             }
 
             player.get().connect(entry.getValue());
@@ -309,24 +309,15 @@ public abstract class QueueListenerShared {
         for (QueueType type : QueueType.values()) {
             int position = 0;
 
-            for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-                Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
-                if (!player.isPresent()) {
-                    continue;
-                }
-
+            for (UUID uuid : new LinkedHashMap<>(type.getQueueMap()).keySet()) {
                 position++;
-
-                if (type.getPositionCache().containsKey(player.get().getUniqueId())) {
-                    List<Pair<Integer, Instant>> list = type.getPositionCache().get(player.get().getUniqueId());
-                    int finalPosition = position;
-                    if (list.stream().map(Pair::getLeft).noneMatch(integer -> integer == finalPosition)) {
-                        list.add(new Pair<>(position, Instant.now()));
-                    }
+                Map<Integer, Instant> list = type.getPositionCache().get(uuid);
+                if (list == null) {
+                    type.getPositionCache().put(uuid, new HashMap<>(Collections.singletonMap(position, Instant.now())));
                 } else {
-                    List<Pair<Integer, Instant>> list = new ArrayList<>();
-                    list.add(new Pair<>(position, Instant.now()));
-                    type.getPositionCache().put(player.get().getUniqueId(), list);
+                    if (!list.containsKey(position)) {
+                        list.put(position, Instant.now());
+                    }
                 }
             }
         }

@@ -41,7 +41,7 @@ public enum QueueType {
     private final Map<Integer, Duration> durationToPosition = Collections.synchronizedMap(new LinkedHashMap<>());
 
     @Getter
-    private final Map<UUID, List<Pair<Integer, Instant>>> positionCache = new ConcurrentHashMap<>();
+    private final Map<UUID, Map<Integer, Instant>> positionCache = new ConcurrentHashMap<>();
 
     @Getter
     private final AtomicInteger playersWithTypeInMain = new AtomicInteger();
