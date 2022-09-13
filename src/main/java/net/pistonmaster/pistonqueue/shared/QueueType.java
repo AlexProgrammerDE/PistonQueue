@@ -20,7 +20,6 @@
 package net.pistonmaster.pistonqueue.shared;
 
 import lombok.Getter;
-import net.pistonmaster.pistonqueue.shared.utils.Pair;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -29,22 +28,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-public enum QueueType {
-    REGULAR,
-    PRIORITY,
-    VETERAN;
-
+public class QueueType {
+    public static final QueueType REGULAR = new QueueType();
+    public static final QueueType PRIORITY = new QueueType();
+    public static final QueueType VETERAN = new QueueType();
     @Getter
     private final Map<UUID, String> queueMap = Collections.synchronizedMap(new LinkedHashMap<>());
-
     @Getter
     private final Map<Integer, Duration> durationToPosition = Collections.synchronizedMap(new LinkedHashMap<>());
-
     @Getter
     private final Map<UUID, Map<Integer, Instant>> positionCache = new ConcurrentHashMap<>();
-
     @Getter
     private final AtomicInteger playersWithTypeInMain = new AtomicInteger();
+
+    public static QueueType[] values() {
+        return new QueueType[]{REGULAR, PRIORITY, VETERAN};
+    }
 
     public static QueueType getQueueType(Predicate<String> player) {
         if (player.test(Config.QUEUE_VETERAN_PERMISSION)) {
@@ -57,35 +56,29 @@ public enum QueueType {
     }
 
     public List<String> getHeader() {
-        switch (this) {
-            case VETERAN:
-                return Config.HEADER_VETERAN;
-            case PRIORITY:
-                return Config.HEADER_PRIORITY;
-            default:
-                return Config.HEADER;
+        if (VETERAN.equals(this)) {
+            return Config.HEADER_VETERAN;
+        } else if (PRIORITY.equals(this)) {
+            return Config.HEADER_PRIORITY;
         }
+        return Config.HEADER;
     }
 
     public List<String> getFooter() {
-        switch (this) {
-            case VETERAN:
-                return Config.FOOTER_VETERAN;
-            case PRIORITY:
-                return Config.FOOTER_PRIORITY;
-            default:
-                return Config.FOOTER;
+        if (VETERAN.equals(this)) {
+            return Config.FOOTER_VETERAN;
+        } else if (PRIORITY.equals(this)) {
+            return Config.FOOTER_PRIORITY;
         }
+        return Config.FOOTER;
     }
 
     public int getReservedSlots() {
-        switch (this) {
-            case VETERAN:
-                return Config.VETERAN_SLOTS;
-            case PRIORITY:
-                return Config.PRIORITY_SLOTS;
-            default:
-                return Config.REGULAR_SLOTS;
+        if (VETERAN.equals(this)) {
+            return Config.VETERAN_SLOTS;
+        } else if (PRIORITY.equals(this)) {
+            return Config.PRIORITY_SLOTS;
         }
+        return Config.REGULAR_SLOTS;
     }
 }

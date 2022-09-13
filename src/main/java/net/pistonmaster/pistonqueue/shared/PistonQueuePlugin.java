@@ -37,7 +37,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public interface PistonQueuePlugin {
@@ -221,7 +220,7 @@ public interface PistonQueuePlugin {
             if (!mainServer.isPresent())
                 return;
 
-            Map<QueueType, AtomicInteger> map = new EnumMap<>(QueueType.class);
+            Map<QueueType, AtomicInteger> map = new HashMap<>();
 
             for (PlayerWrapper player : mainServer.get().getConnectedPlayers()) {
                 QueueType playerType = QueueType.getQueueType(player::hasPermission);

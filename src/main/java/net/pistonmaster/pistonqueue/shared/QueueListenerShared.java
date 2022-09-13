@@ -178,12 +178,8 @@ public abstract class QueueListenerShared {
         return type.getReservedSlots() - type.getPlayersWithTypeInMain().get();
     }
 
-    protected boolean isSlotsFull(int slots) {
-        return slots <= 0;
-    }
-
     protected boolean isMainFull(QueueType type) {
-        return isSlotsFull(getFreeSlots(type));
+        return getFreeSlots(type) <= 0;
     }
 
     protected boolean isAnyoneQueuedOfType(PlayerWrapper player) {
@@ -242,33 +238,34 @@ public abstract class QueueListenerShared {
     protected void connectPlayer(QueueType type) {
         int freeSlots = getFreeSlots(type);
 
-        if (isSlotsFull(freeSlots))
+        if (freeSlots <= 0)
             return;
 
         if (freeSlots > Config.MAX_PLAYERS_PER_MOVE)
             freeSlots = Config.MAX_PLAYERS_PER_MOVE;
 
         for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-            if (isSlotsFull(freeSlots))
+            if (freeSlots <= 0)
                 break;
 
-            Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
-            if (!player.isPresent()) {
+            Optional<PlayerWrapper> optional = plugin.getPlayer(entry.getKey());
+            if (!optional.isPresent()) {
                 continue;
             }
+            PlayerWrapper player = optional.get();
 
             freeSlots--;
 
             type.getQueueMap().remove(entry.getKey());
 
-            player.get().sendMessage(Config.JOINING_MAIN_SERVER);
-            player.get().sendPlayerListHeaderAndFooter(null, null);
+            player.sendMessage(Config.JOINING_MAIN_SERVER);
+            player.sendPlayerListHeaderAndFooter(null, null);
 
-            if (StorageTool.isShadowBanned(player.get().getUniqueId())
+            if (StorageTool.isShadowBanned(player.getUniqueId())
                     && (Config.SHADOW_BAN_TYPE == BanType.LOOP
                     || (Config.SHADOW_BAN_TYPE == BanType.TEN_PERCENT && ThreadLocalRandom.current().nextInt(100) >= 10)
                     || (Config.SHADOW_BAN_TYPE == BanType.CUSTOM_PERCENT && ThreadLocalRandom.current().nextInt(100) >= Config.CUSTOM_PERCENT_PERCENTAGE))) {
-                player.get().sendMessage(Config.SHADOW_BAN_MESSAGE);
+                player.sendMessage(Config.SHADOW_BAN_MESSAGE);
 
                 type.getQueueMap().put(entry.getKey(), entry.getValue());
 
@@ -283,8 +280,9 @@ public abstract class QueueListenerShared {
                         type.getDurationToPosition().put(position, Duration.between(instant, Instant.now())));
             }
 
-            player.get().connect(entry.getValue());
+            player.connect(entry.getValue());
         }
+
         if (Config.SEND_XP_SOUND)
             sendXPSoundToQueueType(type);
     }

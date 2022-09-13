@@ -129,68 +129,68 @@ SHADOWBANMESSAGE: "&6You have lost connection to the server"
 
 # Permissions
 QUEUEBYPASSPERMISSION: "queue.bypass"
-QUEUEPRIORITYPERMISSION: "queue.priority"
-QUEUEVETERANPERMISSION: "queue.veteran"
 ADMINPERMISSION: "queue.admin"
 
-# Queue server tab list configuration use %position% to show the current position of the player
-# and use %wait% to show the estimated wait time of the player (not very accurate yet)
-# this only shows when your in the queue waiting to join use a separate plugin for your main server
-HEADER:
-  - ""
-  - " %server% "
-  - ""
-  - " %server% &bis full "
-  - " Position in queue: &l%position% "
-  - " &6Estimated time: &l%wait% "
-  - ""
-
-FOOTER:
-  - ""
-  - " &6You can now donate to receive priority queue status, please visit donate.SERVERNAME.org "
-  - ""
-  - " &7contact: someone@example.com "
-  - " discussion: https://discord.example.com "
-  - " website: https://www.example.com "
-  - " These are the only official SERVERNAME websites and contacts "
-  - ""
-
-# Configs for priority queue tab list
-HEADERPRIORITY:
-  - ""
-  - " %server%"
-  - ""
-  - " %server% &bis full "
-  - " Position in queue: &l%position% "
-  - " &6Estimated time: &l%wait% "
-  - ""
-
-FOOTERPRIORITY:
-  - ""
-  - " &6You have priority queue status please wait for an available slot on the server "
-  - ""
-  - " &7contact: someone@example.com "
-  - " discussion: https://discord.example.com "
-  - " website: https://www.example.com "
-  - " These are the only official SERVERNAME websites and contacts "
-  - ""
-
-# Configs for veteran queue tab list
-HEADERVETERAN:
-  - ""
-  - " %server% "
-  - ""
-  - " %server% &bis full "
-  - " Position in queue: &l%position% "
-  - " &6Estimated time: &l%wait% "
-  - ""
-
-FOOTERVETERAN:
-  - ""
-  - " &6You have veteran queue status please wait for an available slot on the server "
-  - ""
-  - " &7contact: someone@example.com "
-  - " discussion: https://discord.example.com "
-  - " website: https://www.example.com "
-  - " These are the only official SERVERNAME websites and contacts "
-  - ""
+QUEUES:
+  NORMAL:
+    PERMISSION: "default"
+    # Queue server tab list configuration use %position% to show the current position of the player
+    # and use %wait% to show the estimated wait time of the player (not very accurate yet)
+    # this only shows when your in the queue waiting to join use a separate plugin for your main server
+    HEADER:
+      - ""
+      - " %server% "
+      - ""
+      - " %server% &bis full "
+      - " Position in queue: &l%position% "
+      - " &6Estimated time: &l%wait% "
+      - ""
+    FOOTER:
+      - ""
+      - " &6You can now donate to receive priority queue status, please visit donate.SERVERNAME.org "
+      - ""
+      - " &7contact: someone@example.com "
+      - " discussion: https://discord.example.com "
+      - " website: https://www.example.com "
+      - " These are the only official SERVERNAME websites and contacts "
+      - ""
+  PRIORITY:
+    PERMISSION: "queue.priority"
+    # Configs for priority queue tab list
+    HEADER:
+      - ""
+      - " %server%"
+      - ""
+      - " %server% &bis full "
+      - " Position in queue: &l%position% "
+      - " &6Estimated time: &l%wait% "
+      - ""
+    FOOTER:
+      - ""
+      - " &6You have priority queue status please wait for an available slot on the server "
+      - ""
+      - " &7contact: someone@example.com "
+      - " discussion: https://discord.example.com "
+      - " website: https://www.example.com "
+      - " These are the only official SERVERNAME websites and contacts "
+      - ""
+  VETERAN:
+    PERMISSION: "queue.veteran"
+    # Configs for veteran queue tab list
+    HEADER:
+      - ""
+      - " %server% "
+      - ""
+      - " %server% &bis full "
+      - " Position in queue: &l%position% "
+      - " &6Estimated time: &l%wait% "
+      - ""
+    FOOTER:
+      - ""
+      - " &6You have veteran queue status please wait for an available slot on the server "
+      - ""
+      - " &7contact: someone@example.com "
+      - " discussion: https://discord.example.com "
+      - " website: https://www.example.com "
+      - " These are the only official SERVERNAME websites and contacts "
+      - ""
