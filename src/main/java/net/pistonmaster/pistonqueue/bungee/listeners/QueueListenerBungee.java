@@ -51,11 +51,6 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
     }
 
     @EventHandler
-    public void onKick(ServerKickEvent event) {
-        onKick(wrap(event));
-    }
-
-    @EventHandler
     public void onSend(ServerConnectEvent event) {
         onPreConnect(wrap(event));
     }
@@ -63,6 +58,10 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
     @EventHandler
     public void onQueueSend(ServerSwitchEvent event) {
         onConnected(wrap(event));
+    }
+    @EventHandler
+    public void onKick(ServerKickEvent event) {
+        onKick(wrap(event));
     }
 
     private PQServerConnectedEvent wrap(ServerSwitchEvent event) {

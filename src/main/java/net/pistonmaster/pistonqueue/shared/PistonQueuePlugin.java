@@ -299,7 +299,7 @@ public interface PistonQueuePlugin {
             try {
                 it.setAccessible(true);
 
-                String fieldName = it.getName().replace("_", "");
+                String fieldName = it.getName();
                 if (List.class.isAssignableFrom(it.getType())) {
                     it.set(Config.class, config.node(fieldName).getList(String.class));
                 } else {
