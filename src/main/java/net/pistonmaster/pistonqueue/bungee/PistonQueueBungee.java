@@ -38,7 +38,7 @@ import net.pistonmaster.pistonqueue.shared.utils.MessageType;
 import net.pistonmaster.pistonqueue.shared.utils.UpdateChecker;
 import org.bstats.bungeecord.Metrics;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -56,9 +56,9 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
         PluginManager manager = getProxy().getPluginManager();
 
         info(ChatColor.BLUE + "Loading config");
-        processConfig(getDataFolder());
+        processConfig(getDataDirectory());
 
-        StorageTool.setupTool(getDataFolder());
+        StorageTool.setupTool(getDataDirectory());
         initializeReservationSlots();
 
         info(ChatColor.BLUE + "Looking for hooks");
@@ -146,8 +146,8 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
     }
 
     @Override
-    public File getDataDirectory() {
-        return getDataFolder();
+    public Path getDataDirectory() {
+        return getDataFolder().toPath();
     }
 
     private ServerInfoWrapper wrapServer(ServerInfo serverInfo) {

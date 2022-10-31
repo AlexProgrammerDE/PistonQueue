@@ -110,7 +110,7 @@ public abstract class QueueListenerShared {
         }
     }
 
-    protected void putQueue(PlayerWrapper player, PQServerPreConnectEvent event) {
+    private void putQueue(PlayerWrapper player, PQServerPreConnectEvent event) {
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
         preQueueAdding(player, type.getHeader(), type.getFooter());
@@ -159,40 +159,40 @@ public abstract class QueueListenerShared {
         type.getQueueMap().put(player.getUniqueId(), Config.MAIN_SERVER);
     }
 
-    protected void preQueueAdding(PlayerWrapper player, List<String> header, List<String> footer) {
+    private void preQueueAdding(PlayerWrapper player, List<String> header, List<String> footer) {
         player.sendPlayerListHeaderAndFooter(header, footer);
 
         if (isServerFull(player))
             player.sendMessage(Config.SERVER_IS_FULL_MESSAGE);
     }
 
-    protected boolean isServerFull(PlayerWrapper player) {
+    private boolean isServerFull(PlayerWrapper player) {
         return isPlayerMainFull(player) || isAnyoneQueuedOfType(player);
     }
 
-    protected boolean isPlayerMainFull(PlayerWrapper player) {
+    private boolean isPlayerMainFull(PlayerWrapper player) {
         return isMainFull(QueueType.getQueueType(player::hasPermission));
     }
 
-    protected int getFreeSlots(QueueType type) {
+    private int getFreeSlots(QueueType type) {
         return type.getReservedSlots() - type.getPlayersWithTypeInMain().get();
     }
 
-    protected boolean isMainFull(QueueType type) {
+    private boolean isMainFull(QueueType type) {
         return getFreeSlots(type) <= 0;
     }
 
-    protected boolean isAnyoneQueuedOfType(PlayerWrapper player) {
+    private boolean isAnyoneQueuedOfType(PlayerWrapper player) {
         return !QueueType.getQueueType(player::hasPermission).getQueueMap().isEmpty();
     }
 
-    protected boolean isAuthToQueue(PQServerConnectedEvent event) {
+    private boolean isAuthToQueue(PQServerConnectedEvent event) {
         Optional<String> previousServer = event.getPreviousServer();
         return previousServer.isPresent() && previousServer.get().equals(Config.AUTH_SERVER) && event.getServer().equals(Config.QUEUE_SERVER);
     }
 
     public void moveQueue() {
-        for (QueueType type : QueueType.values()) {
+        for (QueueType type : Config.QUEUE_TYPES) {
             for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
                 Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
 
@@ -221,10 +221,10 @@ public abstract class QueueListenerShared {
             }
         }
 
-        Arrays.stream(QueueType.values()).forEachOrdered(this::connectPlayer);
+        Arrays.stream(Config.QUEUE_TYPES).forEachOrdered(this::connectPlayer);
     }
 
-    protected void doRecovery(PlayerWrapper player) {
+    private void doRecovery(PlayerWrapper player) {
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
         Optional<String> currentServer = player.getCurrentServer();
@@ -235,7 +235,7 @@ public abstract class QueueListenerShared {
         }
     }
 
-    protected void connectPlayer(QueueType type) {
+    private void connectPlayer(QueueType type) {
         int freeSlots = getFreeSlots(type);
 
         if (freeSlots <= 0)
@@ -287,7 +287,7 @@ public abstract class QueueListenerShared {
             sendXPSoundToQueueType(type);
     }
 
-    protected void sendXPSoundToQueueType(QueueType type) {
+    private void sendXPSoundToQueueType(QueueType type) {
         @SuppressWarnings("UnstableApiUsage")
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("xp");
@@ -303,8 +303,8 @@ public abstract class QueueListenerShared {
                 server.sendPluginMessage("piston:queue", out.toByteArray()));
     }
 
-    protected void indexPositionTime() {
-        for (QueueType type : QueueType.values()) {
+    private void indexPositionTime() {
+        for (QueueType type : Config.QUEUE_TYPES) {
             int position = 0;
 
             for (UUID uuid : new LinkedHashMap<>(type.getQueueMap()).keySet()) {

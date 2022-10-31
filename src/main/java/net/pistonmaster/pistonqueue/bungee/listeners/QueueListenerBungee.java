@@ -59,6 +59,7 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
     public void onQueueSend(ServerSwitchEvent event) {
         onConnected(wrap(event));
     }
+
     @EventHandler
     public void onKick(ServerKickEvent event) {
         onKick(wrap(event));

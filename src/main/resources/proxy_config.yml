@@ -87,11 +87,6 @@ ALLOW_AUTH_SKIP: true
 # Connecting to server message
 JOINING_MAIN_SERVER: "&6Connecting to the server..."
 
-# Max players per queue type allowed on the main server
-REGULAR_SLOTS: 50
-PRIORITY_SLOTS: 30
-VETERAN_SLOTS: 20
-
 # Whether you want to set the main server as your target or just want to have BungeeCord to decide.
 FORCE_MAIN_SERVER: false
 
@@ -131,8 +126,14 @@ SHADOW_BAN_MESSAGE: "&6You have lost connection to the server"
 QUEUE_BYPASS_PERMISSION: "queue.bypass"
 ADMIN_PERMISSION: "queue.admin"
 
-QUEUES:
-  NORMAL:
+# Adding or removing queue types requires a full restart!!!
+# The order number is checked from first to last.
+QUEUE_TYPES:
+  REGULAR:
+    ORDER: 3
+    # Max players of this type allowed on the main server
+    SLOTS: 50
+    # Special permission for the default queue type
     PERMISSION: "default"
     # Queue server tab list configuration use %position% to show the current position of the player
     # and use %wait% to show the estimated wait time of the player (not very accurate yet)
@@ -155,6 +156,8 @@ QUEUES:
       - " These are the only official SERVERNAME websites and contacts "
       - ""
   PRIORITY:
+    ORDER: 2
+    SLOTS: 30
     PERMISSION: "queue.priority"
     # Configs for priority queue tab list
     HEADER:
@@ -175,6 +178,8 @@ QUEUES:
       - " These are the only official SERVERNAME websites and contacts "
       - ""
   VETERAN:
+    ORDER: 1
+    SLOTS: 20
     PERMISSION: "queue.veteran"
     # Configs for veteran queue tab list
     HEADER:

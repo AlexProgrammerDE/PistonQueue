@@ -46,7 +46,6 @@ import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +59,7 @@ import java.util.stream.Collectors;
         url = PluginData.URL, description = PluginData.DESCRIPTION, authors = {"AlexProgrammerDE"})
 public final class PistonQueueVelocity implements PistonQueuePlugin {
     @Getter
-    private final File dataDirectory;
+    private final Path dataDirectory;
     @Getter
     private final ProxyServer proxyServer;
     @Getter
@@ -75,7 +74,7 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
     public PistonQueueVelocity(ProxyServer proxyServer, Logger logger, @DataDirectory Path dataDirectory, PluginContainer pluginContainer, Metrics.Factory metricsFactory) {
         this.proxyServer = proxyServer;
         this.logger = logger;
-        this.dataDirectory = dataDirectory.toFile();
+        this.dataDirectory = dataDirectory;
         this.pluginContainer = pluginContainer;
         this.metricsFactory = metricsFactory;
     }
