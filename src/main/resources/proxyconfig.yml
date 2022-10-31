@@ -11,9 +11,9 @@
 SERVERNAME: "SERVERNAME"
 
 # Username regex
-ENABLE_REGEX: true
-REGEX: "[a-zA-Z0-9_]*"
-REGEX_MESSAGE: "&6[PQ] Invalid username please use: %regex%"
+ENABLE_USERNAME_REGEX: true
+USERNAME_REGEX: "[a-zA-Z0-9_]*"
+USERNAME_REGEX_MESSAGE: "&6[PQ] Invalid username please use: %regex%"
 
 # Tab auto completion
 REGISTER_TAB: true

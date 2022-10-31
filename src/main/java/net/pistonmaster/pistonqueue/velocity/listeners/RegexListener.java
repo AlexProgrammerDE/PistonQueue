@@ -30,8 +30,8 @@ public final class RegexListener {
         if (ple.getResult() != PreLoginEvent.PreLoginComponentResult.allowed())
             return;
 
-        if (Config.ENABLE_REGEX && !ple.getUsername().matches(Config.REGEX)) {
-            ple.setResult(PreLoginEvent.PreLoginComponentResult.denied(ChatUtils.parseToComponent(Config.REGEX_MESSAGE.replace("%regex%", Config.REGEX))));
+        if (Config.ENABLE_USERNAME_REGEX && !ple.getUsername().matches(Config.USERNAME_REGEX)) {
+            ple.setResult(PreLoginEvent.PreLoginComponentResult.denied(ChatUtils.parseToComponent(Config.USERNAME_REGEX_MESSAGE.replace("%regex%", Config.USERNAME_REGEX))));
         }
     }
 }

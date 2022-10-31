@@ -31,8 +31,8 @@ public final class RegexListener implements Listener {
         if (ple.isCancelled())
             return;
 
-        if (Config.ENABLE_REGEX && !ple.getConnection().getName().matches(Config.REGEX)) {
-            ple.setCancelReason(ChatUtils.parseToComponent(Config.REGEX_MESSAGE.replace("%regex%", Config.REGEX)));
+        if (Config.ENABLE_USERNAME_REGEX && !ple.getConnection().getName().matches(Config.USERNAME_REGEX)) {
+            ple.setCancelReason(ChatUtils.parseToComponent(Config.USERNAME_REGEX_MESSAGE.replace("%regex%", Config.USERNAME_REGEX)));
             ple.setCancelled(true);
         }
     }
