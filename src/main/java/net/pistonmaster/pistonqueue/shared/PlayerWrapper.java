@@ -36,7 +36,9 @@ public interface PlayerWrapper extends PermissibleWrapper {
 
     void sendMessage(MessageType type, String message);
 
-    void sendPlayerListHeaderAndFooter(List<String> header, List<String> footer);
+    void sendPlayerList(List<String> header, List<String> footer);
+
+    void resetPlayerList();
 
     String getName();
 

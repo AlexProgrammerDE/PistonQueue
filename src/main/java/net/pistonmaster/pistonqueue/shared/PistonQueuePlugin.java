@@ -186,7 +186,7 @@ public interface PistonQueuePlugin {
             getPlayer(entry.getKey()).ifPresent(player -> {
                 int incrementedPosition = position.incrementAndGet();
 
-                player.sendPlayerListHeaderAndFooter(
+                player.sendPlayerList(
                         queue.getHeader().stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()),
                         queue.getFooter().stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()));
             });

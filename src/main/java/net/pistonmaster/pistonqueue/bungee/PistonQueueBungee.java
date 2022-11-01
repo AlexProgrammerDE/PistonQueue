@@ -149,11 +149,10 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
     }
 
     private ServerInfoWrapper wrapServer(ServerInfo serverInfo) {
-        PistonQueueBungee reference = this;
         return new ServerInfoWrapper() {
             @Override
             public List<PlayerWrapper> getConnectedPlayers() {
-                return serverInfo.getPlayers().stream().map(reference::wrapPlayer).collect(Collectors.toList());
+                return serverInfo.getPlayers().stream().map(PistonQueueBungee.this::wrapPlayer).collect(Collectors.toList());
             }
 
             @Override
@@ -200,12 +199,13 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
             }
 
             @Override
-            public void sendPlayerListHeaderAndFooter(List<String> header, List<String> footer) {
-                if (header == null || footer == null) {
-                    player.resetTabHeader();
-                } else {
-                    player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
-                }
+            public void sendPlayerList(List<String> header, List<String> footer) {
+                player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+            }
+
+            @Override
+            public void resetPlayerList() {
+                player.resetTabHeader();
             }
 
             @Override

@@ -170,11 +170,10 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
     }
 
     private ServerInfoWrapper wrapServer(RegisteredServer server) {
-        PistonQueueVelocity reference = this;
         return new ServerInfoWrapper() {
             @Override
             public List<PlayerWrapper> getConnectedPlayers() {
-                return server.getPlayersConnected().stream().map(reference::wrapPlayer).collect(Collectors.toList());
+                return server.getPlayersConnected().stream().map(PistonQueueVelocity.this::wrapPlayer).collect(Collectors.toList());
             }
 
             @Override
@@ -235,12 +234,13 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
             }
 
             @Override
-            public void sendPlayerListHeaderAndFooter(List<String> header, List<String> footer) {
-                if (header == null || footer == null) {
-                    player.sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
-                } else {
-                    player.sendPlayerListHeaderAndFooter(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
-                }
+            public void sendPlayerList(List<String> header, List<String> footer) {
+                player.sendPlayerListHeaderAndFooter(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+            }
+
+            @Override
+            public void resetPlayerList() {
+                player.sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
             }
 
             @Override

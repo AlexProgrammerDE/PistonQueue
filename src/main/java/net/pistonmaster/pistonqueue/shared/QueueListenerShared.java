@@ -88,7 +88,6 @@ public abstract class QueueListenerShared {
 
     protected void onPreConnect(PQServerPreConnectEvent event) {
         PlayerWrapper player = event.getPlayer();
-        QueueType type = QueueType.getQueueType(player::hasPermission);
 
         if (player.getCurrentServer().isPresent() && (!Config.AUTH_FIRST || !isAuthToMain(event))) {
             return;
@@ -99,18 +98,18 @@ public abstract class QueueListenerShared {
             return;
         }
 
+        QueueType type = QueueType.getQueueType(player::hasPermission);
+
         if (Config.ALWAYS_QUEUE || isServerFull(type)) {
             if (player.hasPermission(Config.QUEUE_BYPASS_PERMISSION)) {
                 event.setTarget(Config.MAIN_SERVER);
             } else {
-                putQueue(player, event);
+                putQueue(player, type, event);
             }
         }
     }
 
-    private void putQueue(PlayerWrapper player, PQServerPreConnectEvent event) {
-        QueueType type = QueueType.getQueueType(player::hasPermission);
-
+    private void putQueue(PlayerWrapper player, QueueType type, PQServerPreConnectEvent event) {
         preQueueAdding(player, type);
 
         // Redirect the player to the queue.
@@ -129,7 +128,7 @@ public abstract class QueueListenerShared {
     }
 
     private void preQueueAdding(PlayerWrapper player, QueueType type) {
-        player.sendPlayerListHeaderAndFooter(type.getHeader(), type.getFooter());
+        player.sendPlayerList(type.getHeader(), type.getFooter());
 
         if (isServerFull(type)) {
             player.sendMessage(Config.SERVER_IS_FULL_MESSAGE);
@@ -221,7 +220,7 @@ public abstract class QueueListenerShared {
             type.getQueueMap().remove(entry.getKey());
 
             player.sendMessage(Config.JOINING_MAIN_SERVER);
-            player.sendPlayerListHeaderAndFooter(null, null);
+            player.resetPlayerList();
 
             if (StorageTool.isShadowBanned(player.getUniqueId())
                     && (Config.SHADOW_BAN_TYPE == BanType.LOOP
