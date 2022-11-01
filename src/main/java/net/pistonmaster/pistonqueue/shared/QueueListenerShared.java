@@ -255,16 +255,11 @@ public abstract class QueueListenerShared {
             freeSlots = Config.MAX_PLAYERS_PER_MOVE;
 
         for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-            if (freeSlots <= 0)
-                break;
-
             Optional<PlayerWrapper> optional = plugin.getPlayer(entry.getKey());
             if (!optional.isPresent()) {
                 continue;
             }
             PlayerWrapper player = optional.get();
-
-            freeSlots--;
 
             type.getQueueMap().remove(entry.getKey());
 
@@ -291,6 +286,9 @@ public abstract class QueueListenerShared {
             }
 
             player.connect(entry.getValue());
+
+            if (--freeSlots <= 0)
+                break;
         }
 
         if (Config.SEND_XP_SOUND) {
