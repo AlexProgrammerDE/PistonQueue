@@ -27,7 +27,7 @@ SERVER_ONLINE_CHECK_DELAY: 500
 
 # Where to send the queue position message and what to send.
 POSITION_MESSAGE_CHAT: true
-POSITION_MESSAGE_HOTBAR: false
+POSITION_MESSAGE_HOT_BAR: false
 QUEUE_POSITION: "&6Position in queue: &l%position%"
 POSITION_MESSAGE_DELAY: 10000
 

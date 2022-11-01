@@ -285,13 +285,7 @@ public interface PistonQueuePlugin {
             Path file = dataDirectory.resolve("config.yml");
 
             if (!Files.exists(file)) {
-                try {
-                    Files.copy(Objects.requireNonNull(PistonQueuePlugin.class.getClassLoader().getResourceAsStream("proxy_config.yml")), file);
-                    loadConfig(dataDirectory);
-                    return;
-                } catch (IOException ie) {
-                    ie.printStackTrace();
-                }
+                Files.copy(Objects.requireNonNull(PistonQueuePlugin.class.getClassLoader().getResourceAsStream("proxy_config.yml")), file);
             }
 
             loadConfig(file);
@@ -310,7 +304,7 @@ public interface PistonQueuePlugin {
                 String fieldName = it.getName();
                 if (List.class.isAssignableFrom(it.getType())) {
                     it.set(Config.class, config.node(fieldName).getList(String.class));
-                } else if (QueueType.class.isAssignableFrom(it.getType())) {
+                } else if (fieldName.equals("QUEUE_TYPES")) {
                     if (it.get(Config.class) == null) { // We will never replace on reload
                         val queueTypes = config.node("QUEUE_TYPES").childrenMap();
                         val array = new QueueType[queueTypes.size()];
