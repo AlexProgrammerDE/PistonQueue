@@ -5,6 +5,8 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+
 @RequiredArgsConstructor
 public final class PAPIExpansion extends PlaceholderExpansion {
     private final PistonQueuePlaceholder plugin;
@@ -31,28 +33,16 @@ public final class PAPIExpansion extends PlaceholderExpansion {
 
     @Override
     public String onRequest(OfflinePlayer player, String identifier) {
-        if (identifier.equals("online_queue_regular")) {
-            return String.valueOf(plugin.getOnlineQueueRegular());
+        for (Map.Entry<String, Integer> entry : plugin.getOnlineQueue().entrySet()) {
+            if (identifier.equalsIgnoreCase("online_queue_" + entry.getKey())) {
+                return String.valueOf(entry.getValue());
+            }
         }
 
-        if (identifier.equals("online_queue_priority")) {
-            return String.valueOf(plugin.getOnlineQueuePriority());
-        }
-
-        if (identifier.equals("online_queue_veteran")) {
-            return String.valueOf(plugin.getOnlineQueueVeteran());
-        }
-
-        if (identifier.equals("online_main_regular")) {
-            return String.valueOf(plugin.getOnlineMainRegular());
-        }
-
-        if (identifier.equals("online_main_priority")) {
-            return String.valueOf(plugin.getOnlineMainPriority());
-        }
-
-        if (identifier.equals("online_main_veteran")) {
-            return String.valueOf(plugin.getOnlineMainVeteran());
+        for (Map.Entry<String, Integer> entry : plugin.getOnlineMain().entrySet()) {
+            if (identifier.equalsIgnoreCase("online_main_" + entry.getKey())) {
+                return String.valueOf(entry.getValue());
+            }
         }
 
         return null;

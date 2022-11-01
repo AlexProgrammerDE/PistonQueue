@@ -21,15 +21,16 @@ package net.pistonmaster.pistonqueue.shared;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import lombok.val;
 import net.pistonmaster.pistonqueue.shared.utils.ConfigOutdatedException;
 import net.pistonmaster.pistonqueue.shared.utils.MessageType;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -37,7 +38,6 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public interface PistonQueuePlugin {
@@ -61,7 +61,7 @@ public interface PistonQueuePlugin {
 
     String getVersion();
 
-    File getDataDirectory();
+    Path getDataDirectory();
 
     default void scheduleTasks(QueueListenerShared queueListener) {
         // Sends the position message and updates tab on an interval in chat
@@ -69,7 +69,7 @@ public interface PistonQueuePlugin {
             if (!queueListener.isMainOnline())
                 return;
 
-            for (QueueType type : QueueType.values()) {
+            for (QueueType type : Config.QUEUE_TYPES) {
                 sendMessage(type, Config.POSITION_MESSAGE_CHAT, MessageType.CHAT);
             }
         }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
@@ -79,23 +79,26 @@ public interface PistonQueuePlugin {
             if (!queueListener.isMainOnline())
                 return;
 
-            for (QueueType type : QueueType.values()) {
+            for (QueueType type : Config.QUEUE_TYPES) {
                 sendMessage(type, Config.POSITION_MESSAGE_HOT_BAR, MessageType.ACTION_BAR);
             }
         }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
 
         // Updates the tab
         schedule(() -> {
-            updateTab(QueueType.VETERAN, Config.HEADER_VETERAN, Config.FOOTER_VETERAN);
-            updateTab(QueueType.PRIORITY, Config.HEADER_PRIORITY, Config.FOOTER_PRIORITY);
-            updateTab(QueueType.REGULAR, Config.HEADER, Config.FOOTER);
+            for (QueueType type : Config.QUEUE_TYPES) {
+                updateTab(type);
+            }
         }, Config.QUEUE_MOVE_DELAY, Config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
 
         schedule(() -> {
-            if (Config.PAUSE_QUEUE_IF_MAIN_DOWN && !queueListener.isMainOnline()) {
-                QueueType.VETERAN.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
-                QueueType.PRIORITY.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
-                QueueType.REGULAR.getQueueMap().forEach((UUID id, String str) -> getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
+            if (!Config.PAUSE_QUEUE_IF_MAIN_DOWN || queueListener.isMainOnline()) {
+                return;
+            }
+
+            for (QueueType type : Config.QUEUE_TYPES) {
+                type.getQueueMap().forEach((UUID id, String str) ->
+                        getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
             }
         }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
 
@@ -176,7 +179,7 @@ public interface PistonQueuePlugin {
         }
     }
 
-    default void updateTab(QueueType queue, List<String> header, List<String> footer) {
+    default void updateTab(QueueType queue) {
         AtomicInteger position = new AtomicInteger();
 
         for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
@@ -184,8 +187,8 @@ public interface PistonQueuePlugin {
                 int incrementedPosition = position.incrementAndGet();
 
                 player.sendPlayerListHeaderAndFooter(
-                        header.stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()),
-                        footer.stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()));
+                        queue.getHeader().stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()),
+                        queue.getFooter().stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()));
             });
         }
     }
@@ -221,7 +224,7 @@ public interface PistonQueuePlugin {
             if (!mainServer.isPresent())
                 return;
 
-            Map<QueueType, AtomicInteger> map = new EnumMap<>(QueueType.class);
+            Map<QueueType, AtomicInteger> map = new HashMap<>();
 
             for (PlayerWrapper player : mainServer.get().getConnectedPlayers()) {
                 QueueType playerType = QueueType.getQueueType(player::hasPermission);
@@ -248,16 +251,19 @@ public interface PistonQueuePlugin {
         ByteArrayDataOutput outOnlineQueue = ByteStreams.newDataOutput();
 
         outOnlineQueue.writeUTF("onlineQueue");
-        outOnlineQueue.writeInt(QueueType.REGULAR.getQueueMap().size());
-        outOnlineQueue.writeInt(QueueType.PRIORITY.getQueueMap().size());
-        outOnlineQueue.writeInt(QueueType.VETERAN.getQueueMap().size());
+        outOnlineQueue.writeInt(Config.QUEUE_TYPES.length);
+        for (QueueType queueType : Config.QUEUE_TYPES) {
+            outOnlineQueue.writeUTF(queueType.getName().toLowerCase());
+            outOnlineQueue.writeInt(queueType.getQueueMap().size());
+        }
 
         ByteArrayDataOutput outOnlineMain = ByteStreams.newDataOutput();
 
         outOnlineMain.writeUTF("onlineMain");
-        outOnlineMain.writeInt(QueueType.REGULAR.getPlayersWithTypeInMain().get());
-        outOnlineMain.writeInt(QueueType.PRIORITY.getPlayersWithTypeInMain().get());
-        outOnlineMain.writeInt(QueueType.VETERAN.getPlayersWithTypeInMain().get());
+        outOnlineQueue.writeInt(Config.QUEUE_TYPES.length);
+        for (QueueType queueType : Config.QUEUE_TYPES) {
+            outOnlineQueue.writeInt(queueType.getPlayersWithTypeInMain().get());
+        }
 
         Set<String> servers = new HashSet<>();
         networkPlayers.forEach(player -> player.getCurrentServer().ifPresent(servers::add));
@@ -270,39 +276,66 @@ public interface PistonQueuePlugin {
         }
     }
 
-    default void processConfig(File dataDirectory) {
+    default void processConfig(Path dataDirectory) {
         try {
-            if (!dataDirectory.exists() && !dataDirectory.mkdir())
-                return;
-
-            File file = new File(dataDirectory, "config.yml");
-
-            if (!file.exists()) {
-                try {
-                    Files.copy(Objects.requireNonNull(PistonQueuePlugin.class.getClassLoader().getResourceAsStream("proxyconfig.yml")), file.toPath());
-                    loadConfig(dataDirectory);
-                    return;
-                } catch (IOException ie) {
-                    ie.printStackTrace();
-                }
+            if (!Files.exists(dataDirectory)) {
+                Files.createDirectories(dataDirectory);
             }
 
-            loadConfig(dataDirectory);
+            Path file = dataDirectory.resolve("config.yml");
+
+            if (!Files.exists(file)) {
+                Files.copy(Objects.requireNonNull(PistonQueuePlugin.class.getClassLoader().getResourceAsStream("proxy_config.yml")), file);
+            }
+
+            loadConfig(file);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    default void loadConfig(File dataDirectory) throws IOException {
-        ConfigurationNode config = YamlConfigurationLoader.builder().path(new File(dataDirectory, "config.yml").toPath()).build().load();
+    default void loadConfig(Path file) throws IOException {
+        ConfigurationNode config = YamlConfigurationLoader.builder().path(file).build().load();
 
         Arrays.asList(Config.class.getDeclaredFields()).forEach(it -> {
             try {
                 it.setAccessible(true);
 
-                String fieldName = it.getName().replace("_", "");
+                String fieldName = it.getName();
                 if (List.class.isAssignableFrom(it.getType())) {
                     it.set(Config.class, config.node(fieldName).getList(String.class));
+                } else if (fieldName.equals("QUEUE_TYPES")) {
+                    if (it.get(Config.class) == null) { // We will never replace on reload
+                        val queueTypes = config.node("QUEUE_TYPES").childrenMap();
+                        val array = new QueueType[queueTypes.size()];
+                        int i = 0;
+                        for (val entry : queueTypes.entrySet()) {
+                            Object key = entry.getKey();
+                            ConfigurationNode typeData = entry.getValue();
+                            QueueType queueType = new QueueType(
+                                    key.toString(),
+                                    typeData.node("ORDER").getInt(),
+                                    typeData.node("PERMISSION").getString(),
+                                    typeData.node("SLOTS").getInt(),
+                                    typeData.node("HEADER").getList(String.class),
+                                    typeData.node("FOOTER").getList(String.class));
+
+                            array[i] = queueType;
+                            i++;
+                        }
+                        Arrays.sort(array, Comparator.comparingInt(QueueType::getOrder));
+                        it.set(Config.class, array);
+                    } else { // Modify existing
+                        QueueType[] queueType = (QueueType[]) it.get(Config.class);
+                        for (QueueType type : queueType) {
+                            ConfigurationNode typeData = config.node("QUEUE_TYPES").node(type.getName());
+                            type.setOrder(typeData.node("ORDER").getInt());
+                            type.setPermission(typeData.node("PERMISSION").getString());
+                            type.setReservedSlots(typeData.node("SLOTS").getInt());
+                            type.setHeader(typeData.node("HEADER").getList(String.class));
+                            type.setFooter(typeData.node("FOOTER").getList(String.class));
+                        }
+                    }
                 } else {
                     it.set(Config.class, config.node(fieldName).get(it.getType()));
                 }

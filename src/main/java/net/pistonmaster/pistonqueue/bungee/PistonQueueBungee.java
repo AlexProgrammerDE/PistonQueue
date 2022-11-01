@@ -27,7 +27,6 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
 import net.pistonmaster.pistonqueue.bungee.listeners.QueueListenerBungee;
-import net.pistonmaster.pistonqueue.bungee.listeners.RegexListener;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.PistonQueuePlugin;
@@ -38,7 +37,7 @@ import net.pistonmaster.pistonqueue.shared.utils.MessageType;
 import net.pistonmaster.pistonqueue.shared.utils.UpdateChecker;
 import org.bstats.bungeecord.Metrics;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -56,9 +55,9 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
         PluginManager manager = getProxy().getPluginManager();
 
         info(ChatColor.BLUE + "Loading config");
-        processConfig(getDataFolder());
+        processConfig(getDataDirectory());
 
-        StorageTool.setupTool(getDataFolder());
+        StorageTool.setupTool(getDataDirectory());
         initializeReservationSlots();
 
         info(ChatColor.BLUE + "Looking for hooks");
@@ -75,7 +74,6 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
 
         info(ChatColor.BLUE + "Registering listeners");
         manager.registerListener(this, queueListenerBungee);
-        manager.registerListener(this, new RegexListener());
 
         info(ChatColor.BLUE + "Loading Metrics");
         new Metrics(this, 8755);
@@ -146,8 +144,8 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
     }
 
     @Override
-    public File getDataDirectory() {
-        return getDataFolder();
+    public Path getDataDirectory() {
+        return getDataFolder().toPath();
     }
 
     private ServerInfoWrapper wrapServer(ServerInfo serverInfo) {

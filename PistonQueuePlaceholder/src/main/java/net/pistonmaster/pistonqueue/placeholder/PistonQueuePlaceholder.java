@@ -10,16 +10,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 @Getter
 public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMessageListener {
-    private int onlineQueueRegular = 0;
-    private int onlineQueuePriority = 0;
-    private int onlineQueueVeteran = 0;
-    private int onlineMainRegular = 0;
-    private int onlineMainPriority = 0;
-    private int onlineMainVeteran = 0;
+    private final Map<String, Integer> onlineQueue = new ConcurrentHashMap<>();
+    private final Map<String, Integer> onlineMain = new ConcurrentHashMap<>();
 
     @Override
     public void onEnable() {
@@ -47,13 +45,23 @@ public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMe
         String subChannel = in.readUTF();
 
         if (subChannel.equalsIgnoreCase("onlineQueue")) {
-            onlineQueueRegular = in.readInt();
-            onlineQueuePriority = in.readInt();
-            onlineQueueVeteran = in.readInt();
+            int count = in.readInt();
+
+            for (int i = 0; i < count; i++) {
+                String queue = in.readUTF();
+                int online = in.readInt();
+
+                onlineQueue.put(queue, online);
+            }
         } else if (subChannel.equalsIgnoreCase("onlineMain")) {
-            onlineMainRegular = in.readInt();
-            onlineMainPriority = in.readInt();
-            onlineMainVeteran = in.readInt();
+            int count = in.readInt();
+
+            for (int i = 0; i < count; i++) {
+                String queue = in.readUTF();
+                int online = in.readInt();
+
+                onlineMain.put(queue, online);
+            }
         }
     }
 

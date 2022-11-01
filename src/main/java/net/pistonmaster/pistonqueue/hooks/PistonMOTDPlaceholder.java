@@ -21,7 +21,8 @@ package net.pistonmaster.pistonqueue.hooks;
 
 import net.pistonmaster.pistonmotd.api.PlaceholderParser;
 import net.pistonmaster.pistonmotd.api.PlaceholderUtil;
-import net.pistonmaster.pistonqueue.shared.QueueAPI;
+import net.pistonmaster.pistonqueue.shared.Config;
+import net.pistonmaster.pistonqueue.shared.QueueType;
 
 public final class PistonMOTDPlaceholder implements PlaceholderParser {
     public PistonMOTDPlaceholder() {
@@ -30,8 +31,9 @@ public final class PistonMOTDPlaceholder implements PlaceholderParser {
 
     @Override
     public String parseString(String s) {
-        return s.replace("%pistonqueue_regular%", String.valueOf(QueueAPI.getRegularSize()))
-                .replace("%pistonqueue_priority%", String.valueOf(QueueAPI.getPrioritySize()))
-                .replace("%pistonqueue_veteran%", String.valueOf(QueueAPI.getVeteranSize()));
+        for (QueueType type : Config.QUEUE_TYPES) {
+            s = s.replace("%pistonqueue_" + type.getName().toLowerCase() + "%", String.valueOf(type.getQueueMap().size()));
+        }
+        return s;
     }
 }

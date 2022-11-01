@@ -19,8 +19,9 @@
  */
 package net.pistonmaster.pistonqueue.shared;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.pistonmaster.pistonqueue.shared.utils.Pair;
+import lombok.Setter;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -29,63 +30,31 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-public enum QueueType {
-    REGULAR,
-    PRIORITY,
-    VETERAN;
-
-    @Getter
+@Getter
+@AllArgsConstructor
+public class QueueType {
     private final Map<UUID, String> queueMap = Collections.synchronizedMap(new LinkedHashMap<>());
-
-    @Getter
     private final Map<Integer, Duration> durationToPosition = Collections.synchronizedMap(new LinkedHashMap<>());
-
-    @Getter
     private final Map<UUID, Map<Integer, Instant>> positionCache = new ConcurrentHashMap<>();
-
-    @Getter
     private final AtomicInteger playersWithTypeInMain = new AtomicInteger();
+    private final String name;
+    @Setter
+    private int order;
+    @Setter
+    private String permission;
+    @Setter
+    private int reservedSlots;
+    @Setter
+    private List<String> header;
+    @Setter
+    private List<String> footer;
 
     public static QueueType getQueueType(Predicate<String> player) {
-        if (player.test(Config.QUEUE_VETERAN_PERMISSION)) {
-            return VETERAN;
-        } else if (player.test(Config.QUEUE_PRIORITY_PERMISSION)) {
-            return PRIORITY;
-        } else {
-            return REGULAR;
+        for (QueueType type : Config.QUEUE_TYPES) {
+            if (type.getPermission().equals("default") || player.test(type.getPermission())) {
+                return type;
+            }
         }
-    }
-
-    public List<String> getHeader() {
-        switch (this) {
-            case VETERAN:
-                return Config.HEADER_VETERAN;
-            case PRIORITY:
-                return Config.HEADER_PRIORITY;
-            default:
-                return Config.HEADER;
-        }
-    }
-
-    public List<String> getFooter() {
-        switch (this) {
-            case VETERAN:
-                return Config.FOOTER_VETERAN;
-            case PRIORITY:
-                return Config.FOOTER_PRIORITY;
-            default:
-                return Config.FOOTER;
-        }
-    }
-
-    public int getReservedSlots() {
-        switch (this) {
-            case VETERAN:
-                return Config.VETERAN_SLOTS;
-            case PRIORITY:
-                return Config.PRIORITY_SLOTS;
-            default:
-                return Config.REGULAR_SLOTS;
-        }
+        throw new RuntimeException("No queue type found for player! (There is no default queue type)");
     }
 }
