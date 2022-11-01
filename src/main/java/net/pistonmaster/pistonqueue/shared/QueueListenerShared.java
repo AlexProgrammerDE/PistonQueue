@@ -89,17 +89,19 @@ public abstract class QueueListenerShared {
 
     protected void onPreConnect(PQServerPreConnectEvent event) {
         PlayerWrapper player = event.getPlayer();
+        QueueType type = QueueType.getQueueType(player::hasPermission);
 
         if (Config.AUTH_FIRST) {
             if (Config.ALWAYS_QUEUE)
                 return;
 
-            if (isAnyoneQueuedOfType(player))
+            if (isAnyoneQueuedOfType(type))
                 return;
 
             Optional<String> optionalTarget = event.getTarget();
-            if (!isPlayerMainFull(player) && optionalTarget.isPresent() && optionalTarget.get().equals(Config.QUEUE_SERVER))
+            if (!isMainFull(type) && optionalTarget.isPresent() && optionalTarget.get().equals(Config.QUEUE_SERVER)) {
                 event.setTarget(Config.MAIN_SERVER);
+            }
         } else {
             if (player.getCurrentServer().isPresent())
                 return;
@@ -109,7 +111,7 @@ public abstract class QueueListenerShared {
                 return;
             }
 
-            if (Config.ALWAYS_QUEUE || isServerFull(player)) {
+            if (Config.ALWAYS_QUEUE || isServerFull(type)) {
                 if (player.hasPermission(Config.QUEUE_BYPASS_PERMISSION)) {
                     event.setTarget(Config.MAIN_SERVER);
                 } else {
@@ -122,7 +124,7 @@ public abstract class QueueListenerShared {
     private void putQueue(PlayerWrapper player, PQServerPreConnectEvent event) {
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
-        preQueueAdding(player, type.getHeader(), type.getFooter());
+        preQueueAdding(player, type);
 
         // Redirect the player to the queue.
         Optional<String> originalTarget = event.getTarget();
@@ -162,25 +164,22 @@ public abstract class QueueListenerShared {
     public void putQueueAuthFirst(PlayerWrapper player) {
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
-        preQueueAdding(player, type.getHeader(), type.getFooter());
+        preQueueAdding(player, type);
 
         // Store the data concerning the player's original destination
         type.getQueueMap().put(player.getUniqueId(), Config.MAIN_SERVER);
     }
 
-    private void preQueueAdding(PlayerWrapper player, List<String> header, List<String> footer) {
-        player.sendPlayerListHeaderAndFooter(header, footer);
+    private void preQueueAdding(PlayerWrapper player, QueueType type) {
+        player.sendPlayerListHeaderAndFooter(type.getHeader(), type.getFooter());
 
-        if (isServerFull(player))
+        if (isServerFull(type)) {
             player.sendMessage(Config.SERVER_IS_FULL_MESSAGE);
+        }
     }
 
-    private boolean isServerFull(PlayerWrapper player) {
-        return isPlayerMainFull(player) || isAnyoneQueuedOfType(player);
-    }
-
-    private boolean isPlayerMainFull(PlayerWrapper player) {
-        return isMainFull(QueueType.getQueueType(player::hasPermission));
+    private boolean isServerFull(QueueType type) {
+        return isMainFull(type) || isAnyoneQueuedOfType(type);
     }
 
     private int getFreeSlots(QueueType type) {
@@ -191,8 +190,8 @@ public abstract class QueueListenerShared {
         return getFreeSlots(type) <= 0;
     }
 
-    private boolean isAnyoneQueuedOfType(PlayerWrapper player) {
-        return !QueueType.getQueueType(player::hasPermission).getQueueMap().isEmpty();
+    private boolean isAnyoneQueuedOfType(QueueType type) {
+        return !type.getQueueMap().isEmpty();
     }
 
     private boolean isAuthToQueue(PQServerConnectedEvent event) {
