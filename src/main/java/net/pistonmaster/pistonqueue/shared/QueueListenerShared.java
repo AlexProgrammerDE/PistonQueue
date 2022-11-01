@@ -276,7 +276,7 @@ public abstract class QueueListenerShared {
                 continue;
             }
 
-            indexPositionTime();
+            indexPositionTime(type);
 
             Map<Integer, Instant> cache = type.getPositionCache().get(entry.getKey());
             if (cache != null) {
@@ -313,19 +313,17 @@ public abstract class QueueListenerShared {
                 server.sendPluginMessage("piston:queue", out.toByteArray()));
     }
 
-    private void indexPositionTime() {
-        for (QueueType type : Config.QUEUE_TYPES) {
-            int position = 0;
+    private void indexPositionTime(QueueType type) {
+        int position = 0;
 
-            for (UUID uuid : new LinkedHashMap<>(type.getQueueMap()).keySet()) {
-                position++;
-                Map<Integer, Instant> list = type.getPositionCache().get(uuid);
-                if (list == null) {
-                    type.getPositionCache().put(uuid, new HashMap<>(Collections.singletonMap(position, Instant.now())));
-                } else {
-                    if (!list.containsKey(position)) {
-                        list.put(position, Instant.now());
-                    }
+        for (UUID uuid : new LinkedHashMap<>(type.getQueueMap()).keySet()) {
+            position++;
+            Map<Integer, Instant> list = type.getPositionCache().get(uuid);
+            if (list == null) {
+                type.getPositionCache().put(uuid, new HashMap<>(Collections.singletonMap(position, Instant.now())));
+            } else {
+                if (!list.containsKey(position)) {
+                    list.put(position, Instant.now());
                 }
             }
         }
