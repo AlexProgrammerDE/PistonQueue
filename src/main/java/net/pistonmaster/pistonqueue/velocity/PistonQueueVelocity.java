@@ -41,7 +41,6 @@ import net.pistonmaster.pistonqueue.shared.utils.MessageType;
 import net.pistonmaster.pistonqueue.shared.utils.UpdateChecker;
 import net.pistonmaster.pistonqueue.velocity.commands.MainCommand;
 import net.pistonmaster.pistonqueue.velocity.listeners.QueueListenerVelocity;
-import net.pistonmaster.pistonqueue.velocity.listeners.RegexListener;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
@@ -100,7 +99,6 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
         proxyServer.getCommandManager().register("pistonqueue", new MainCommand(this), "pq");
 
         info("Registering listeners");
-        proxyServer.getEventManager().register(this, new RegexListener());
         proxyServer.getEventManager().register(this, queueListenerVelocity);
 
         info("Loading Metrics");

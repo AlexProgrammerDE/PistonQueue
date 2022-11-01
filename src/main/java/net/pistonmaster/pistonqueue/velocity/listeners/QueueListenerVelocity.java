@@ -21,6 +21,7 @@ package net.pistonmaster.pistonqueue.velocity.listeners;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
 import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
@@ -30,6 +31,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
 import net.pistonmaster.pistonqueue.shared.QueueListenerShared;
 import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
+import net.pistonmaster.pistonqueue.shared.events.PQPreLoginEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerConnectedEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
@@ -43,6 +45,11 @@ public final class QueueListenerVelocity extends QueueListenerShared {
     public QueueListenerVelocity(PistonQueueVelocity plugin) {
         super(plugin);
         this.plugin = plugin;
+    }
+
+    @Subscribe
+    public void onPreLogin(PreLoginEvent event) {
+        onPreLogin(wrap(event));
     }
 
     @Subscribe
@@ -131,6 +138,25 @@ public final class QueueListenerVelocity extends QueueListenerShared {
             @Override
             public Optional<String> getKickReason() {
                 return event.getServerKickReason().map(LegacyComponentSerializer.legacySection()::serialize);
+            }
+        };
+    }
+
+    private PQPreLoginEvent wrap(PreLoginEvent event) {
+        return new PQPreLoginEvent() {
+            @Override
+            public boolean isCancelled() {
+                return event.getResult() != PreLoginEvent.PreLoginComponentResult.allowed();
+            }
+
+            @Override
+            public void setCancelled(String reason) {
+                event.setResult(PreLoginEvent.PreLoginComponentResult.denied(ChatUtils.parseToComponent(reason)));
+            }
+
+            @Override
+            public String getUsername() {
+                return event.getUsername();
             }
         };
     }

@@ -25,6 +25,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
+import net.pistonmaster.pistonqueue.shared.events.PQPreLoginEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerConnectedEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 import net.pistonmaster.pistonqueue.shared.utils.BanType;
@@ -47,6 +48,15 @@ public abstract class QueueListenerShared {
     protected boolean authOnline = false;
     @Setter
     protected Instant onlineSince = null;
+
+    protected void onPreLogin(PQPreLoginEvent event) {
+        if (event.isCancelled())
+            return;
+
+        if (Config.ENABLE_USERNAME_REGEX && !event.getUsername().matches(Config.USERNAME_REGEX)) {
+            event.setCancelled(Config.USERNAME_REGEX_MESSAGE.replace("%regex%", Config.USERNAME_REGEX));
+        }
+    }
 
     protected void onPostLogin(PlayerWrapper player) {
         if (StorageTool.isShadowBanned(player.getUniqueId()) && Config.SHADOW_BAN_TYPE == BanType.KICK) {
@@ -269,7 +279,7 @@ public abstract class QueueListenerShared {
 
                 type.getQueueMap().put(entry.getKey(), entry.getValue());
 
-                return;
+                continue;
             }
 
             indexPositionTime();
@@ -283,8 +293,9 @@ public abstract class QueueListenerShared {
             player.connect(entry.getValue());
         }
 
-        if (Config.SEND_XP_SOUND)
+        if (Config.SEND_XP_SOUND) {
             sendXPSoundToQueueType(type);
+        }
     }
 
     private void sendXPSoundToQueueType(QueueType type) {
