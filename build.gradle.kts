@@ -17,7 +17,6 @@ tasks.create("outputVersion") {
 val platforms = setOf(
     projects.pistonqueueBukkit,
     projects.pistonqueueBungee,
-    projects.pistonqueueSponge,
     projects.pistonqueueVelocity
 ).map { it.dependencyProject }
 
