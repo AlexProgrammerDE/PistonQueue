@@ -29,4 +29,5 @@ fun ShadowJar.configureRelocations() {
     relocate("org.checkerframework", "net.pistonmaster.pistonqueue.shadow.checkerframework")
     relocate("org.yaml.snakeyaml", "net.pistonmaster.pistonqueue.shadow.snakeyaml")
     relocate("com.google.errorprone", "net.pistonmaster.pistonqueue.shadow.google.errorprone")
+    relocate("org.intellij.lang.annotations", "net.pistonmaster.pistonmotd.shadow.annotations.intellij")
 }

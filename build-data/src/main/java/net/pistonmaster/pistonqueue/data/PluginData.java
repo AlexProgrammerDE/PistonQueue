@@ -1,4 +1,4 @@
-package net.pistonmaster.pistonmotd.data;
+package net.pistonmaster.pistonqueue.data;
 
 public class PluginData {
     public static final String NAME = "PistonMOTD";

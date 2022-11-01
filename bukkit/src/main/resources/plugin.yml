@@ -1,5 +1,5 @@
 name: PistonQueueBukkit
-version: ${project.version}
+version: ${version}
 api-version: 1.13
 main: net.pistonmaster.pistonqueue.bukkit.PistonQueueBukkit
 author: AlexProgrammerDE
