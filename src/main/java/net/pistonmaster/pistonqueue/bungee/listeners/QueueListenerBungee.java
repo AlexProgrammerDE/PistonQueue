@@ -20,7 +20,6 @@
 package net.pistonmaster.pistonqueue.bungee.listeners;
 
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.event.*;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -30,7 +29,6 @@ import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
 import net.pistonmaster.pistonqueue.shared.QueueListenerShared;
 import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQPreLoginEvent;
-import net.pistonmaster.pistonqueue.shared.events.PQServerConnectedEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 
 import java.util.Optional;
@@ -59,32 +57,8 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
     }
 
     @EventHandler
-    public void onQueueSend(ServerSwitchEvent event) {
-        onConnected(wrap(event));
-    }
-
-    @EventHandler
     public void onKick(ServerKickEvent event) {
         onKick(wrap(event));
-    }
-
-    private PQServerConnectedEvent wrap(ServerSwitchEvent event) {
-        return new PQServerConnectedEvent() {
-            @Override
-            public PlayerWrapper getPlayer() {
-                return plugin.wrapPlayer(event.getPlayer());
-            }
-
-            @Override
-            public Optional<String> getPreviousServer() {
-                return Optional.ofNullable(event.getFrom()).map(ServerInfo::getName);
-            }
-
-            @Override
-            public String getServer() {
-                return event.getPlayer().getServer().getInfo().getName();
-            }
-        };
     }
 
     private PQServerPreConnectEvent wrap(ServerConnectEvent event) {

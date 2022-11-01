@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQPreLoginEvent;
-import net.pistonmaster.pistonqueue.shared.events.PQServerConnectedEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 import net.pistonmaster.pistonqueue.shared.utils.BanType;
 
@@ -91,32 +90,20 @@ public abstract class QueueListenerShared {
         PlayerWrapper player = event.getPlayer();
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
-        if (Config.AUTH_FIRST) {
-            if (Config.ALWAYS_QUEUE)
-                return;
+        if (player.getCurrentServer().isPresent() && (!Config.AUTH_FIRST || !isAuthToMain(event))) {
+            return;
+        }
 
-            if (isAnyoneQueuedOfType(type))
-                return;
+        if ((Config.KICK_WHEN_DOWN && !mainOnline) || !queueOnline || !authOnline) { // authOnline is always true if auth is not enabled
+            player.disconnect(Config.SERVER_DOWN_KICK_MESSAGE);
+            return;
+        }
 
-            Optional<String> optionalTarget = event.getTarget();
-            if (!isMainFull(type) && optionalTarget.isPresent() && optionalTarget.get().equals(Config.QUEUE_SERVER)) {
+        if (Config.ALWAYS_QUEUE || isServerFull(type)) {
+            if (player.hasPermission(Config.QUEUE_BYPASS_PERMISSION)) {
                 event.setTarget(Config.MAIN_SERVER);
-            }
-        } else {
-            if (player.getCurrentServer().isPresent())
-                return;
-
-            if ((Config.KICK_WHEN_DOWN && !mainOnline) || !queueOnline || !authOnline) { // authOnline is always true if auth is not enabled
-                player.disconnect(Config.SERVER_DOWN_KICK_MESSAGE);
-                return;
-            }
-
-            if (Config.ALWAYS_QUEUE || isServerFull(type)) {
-                if (player.hasPermission(Config.QUEUE_BYPASS_PERMISSION)) {
-                    event.setTarget(Config.MAIN_SERVER);
-                } else {
-                    putQueue(player, event);
-                }
+            } else {
+                putQueue(player, event);
             }
         }
     }
@@ -139,35 +126,6 @@ public abstract class QueueListenerShared {
         } else {
             queueMap.put(player.getUniqueId(), originalTarget.get());
         }
-    }
-
-    protected void onConnected(PQServerConnectedEvent event) {
-        PlayerWrapper player = event.getPlayer();
-
-        if (Config.AUTH_FIRST) {
-            if (isAuthToQueue(event) && player.hasPermission(Config.QUEUE_BYPASS_PERMISSION)) {
-                player.connect(Config.MAIN_SERVER);
-                return;
-            }
-
-            // It's not present when joining!
-            Optional<String> currentServer = player.getCurrentServer();
-            if (!event.getPreviousServer().isPresent() && currentServer.isPresent() && currentServer.get().equals(Config.QUEUE_SERVER)) {
-                if (Config.ALLOW_AUTH_SKIP)
-                    putQueueAuthFirst(player);
-            } else if (isAuthToQueue(event)) {
-                putQueueAuthFirst(player);
-            }
-        }
-    }
-
-    public void putQueueAuthFirst(PlayerWrapper player) {
-        QueueType type = QueueType.getQueueType(player::hasPermission);
-
-        preQueueAdding(player, type);
-
-        // Store the data concerning the player's original destination
-        type.getQueueMap().put(player.getUniqueId(), Config.MAIN_SERVER);
     }
 
     private void preQueueAdding(PlayerWrapper player, QueueType type) {
@@ -194,9 +152,10 @@ public abstract class QueueListenerShared {
         return !type.getQueueMap().isEmpty();
     }
 
-    private boolean isAuthToQueue(PQServerConnectedEvent event) {
-        Optional<String> previousServer = event.getPreviousServer();
-        return previousServer.isPresent() && previousServer.get().equals(Config.AUTH_SERVER) && event.getServer().equals(Config.QUEUE_SERVER);
+    private boolean isAuthToMain(PQServerPreConnectEvent event) {
+        Optional<String> previousServer = event.getPlayer().getCurrentServer();
+        return previousServer.isPresent() && previousServer.get().equals(Config.AUTH_SERVER)
+                && event.getTarget().isPresent() && event.getTarget().get().equals(Config.MAIN_SERVER);
     }
 
     public void moveQueue() {
