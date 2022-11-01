@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.pistonmotdShared)
-    compileOnly(projects.pistonmotdBuildData)
+    implementation(projects.pistonqueueShared)
+    compileOnly(projects.pistonqueueBuildData)
 
     implementation("org.bstats:bstats-velocity:3.0.0")
 

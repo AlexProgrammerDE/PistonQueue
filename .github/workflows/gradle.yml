@@ -1,27 +1,31 @@
 name: Build and upload jar
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [ push, pull_request ]
 
 jobs:
   build:
+    # Only run on PRs if the source branch is on someone else's repo
+    if: "${{ github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name }}"
 
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 1.8
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
+          java-version: 17
           distribution: 'temurin'
-          java-version: '8'
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       - name: Build with Gradle
-        run: |
-          chmod +x gradlew
-          ./gradlew build
+        run: ./gradlew build
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.1
         with:
