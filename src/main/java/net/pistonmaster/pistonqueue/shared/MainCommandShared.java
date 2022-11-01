@@ -41,18 +41,18 @@ public interface MainCommandShared {
                 case "stats":
                     sendLine(sender);
                     sender.sendMessage(getWrapperFactory().text("Queue stats").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(getWrapperFactory().text("Regular: ").color(TextColorWrapper.GOLD).append(getWrapperFactory().text(String.valueOf(QueueAPI.getRegularSize())).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
-                    sender.sendMessage(getWrapperFactory().text("Priority: ").color(TextColorWrapper.GOLD).append(getWrapperFactory().text(String.valueOf(QueueAPI.getPrioritySize())).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
-                    sender.sendMessage(getWrapperFactory().text("Veteran: ").color(TextColorWrapper.GOLD).append(getWrapperFactory().text(String.valueOf(QueueAPI.getVeteranSize())).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+                    for (QueueType type : Config.QUEUE_TYPES) {
+                        sender.sendMessage(getWrapperFactory().text(type.getName() + ": ").color(TextColorWrapper.GOLD).append(getWrapperFactory().text(String.valueOf(type.getQueueMap().size())).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+                    }
                     sendLine(sender);
                     break;
                 case "slotstats":
                     if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         sendLine(sender);
                         sender.sendMessage(getWrapperFactory().text("Main slot stats").color(TextColorWrapper.GOLD));
-                        sender.sendMessage(getWrapperFactory().text("Regular: ").color(TextColorWrapper.GOLD).append(getWrapperFactory().text(QueueType.REGULAR.getPlayersWithTypeInMain().get() + "/" + QueueType.REGULAR.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
-                        sender.sendMessage(getWrapperFactory().text("Priority: ").color(TextColorWrapper.GOLD).append(getWrapperFactory().text(QueueType.PRIORITY.getPlayersWithTypeInMain().get() + "/" + QueueType.PRIORITY.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
-                        sender.sendMessage(getWrapperFactory().text("Veteran: ").color(TextColorWrapper.GOLD).append(getWrapperFactory().text(QueueType.VETERAN.getPlayersWithTypeInMain().get() + "/" + QueueType.VETERAN.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+                        for (QueueType type : Config.QUEUE_TYPES) {
+                            sender.sendMessage(getWrapperFactory().text(type.getName() + ": ").color(TextColorWrapper.GOLD).append(getWrapperFactory().text(type.getPlayersWithTypeInMain().get() + " / " + type.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+                        }
                         sendLine(sender);
                     } else {
                         noPermission(sender);
@@ -73,8 +73,9 @@ public interface MainCommandShared {
                 case "shadowban":
                     if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         if (args.length > 1) {
-                            if (plugin.getPlayer(args[1]).isPresent()) {
-                                PlayerWrapper player = plugin.getPlayer(args[1]).get();
+                            Optional<PlayerWrapper> optionalPlayer = plugin.getPlayer(args[1]);
+                            if (optionalPlayer.isPresent()) {
+                                PlayerWrapper player = optionalPlayer.get();
 
                                 if (args.length > 2) {
                                     Calendar calendar = Calendar.getInstance();
@@ -131,8 +132,9 @@ public interface MainCommandShared {
                 case "unshadowban":
                     if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         if (args.length > 1) {
-                            if (plugin.getPlayer(args[1]).isPresent()) {
-                                PlayerWrapper player = plugin.getPlayer(args[1]).get();
+                            Optional<PlayerWrapper> optionalPlayer = plugin.getPlayer(args[1]);
+                            if (optionalPlayer.isPresent()) {
+                                PlayerWrapper player = optionalPlayer.get();
 
                                 if (StorageTool.unShadowBanPlayer(player.getUniqueId())) {
                                     sendLine(sender);
@@ -238,7 +240,7 @@ public interface MainCommandShared {
 
             return completions;
         } else {
-            return null;
+            return Collections.emptyList();
         }
     }
 

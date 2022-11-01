@@ -35,10 +35,10 @@ public final class SharedChatUtils {
     }
 
     public static String parseText(String text) {
-        text = text.replace("%server%", Config.SERVER_NAME);
-        text = text.replace("%veteran%", String.valueOf(QueueAPI.getVeteranSize()));
-        text = text.replace("%priority%", String.valueOf(QueueAPI.getPrioritySize()));
-        text = text.replace("%regular%", String.valueOf(QueueAPI.getRegularSize()));
+        text = text.replace("%server_name%", Config.SERVER_NAME);
+        for (QueueType type : Config.QUEUE_TYPES) {
+            text = text.replace("%" + type.getName().toLowerCase() + "%", String.valueOf(type.getQueueMap().size()));
+        }
         text = text.replace("%position%", "None");
         text = text.replace("%wait%", "None");
 

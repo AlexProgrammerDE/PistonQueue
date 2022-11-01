@@ -21,8 +21,8 @@ package net.pistonmaster.pistonqueue.velocity.listeners;
 
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.event.connection.PreLoginEvent;
 import com.velocitypowered.api.event.player.KickedFromServerEvent;
-import com.velocitypowered.api.event.player.ServerConnectedEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
@@ -30,7 +30,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
 import net.pistonmaster.pistonqueue.shared.QueueListenerShared;
 import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
-import net.pistonmaster.pistonqueue.shared.events.PQServerConnectedEvent;
+import net.pistonmaster.pistonqueue.shared.events.PQPreLoginEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
@@ -46,6 +46,11 @@ public final class QueueListenerVelocity extends QueueListenerShared {
     }
 
     @Subscribe
+    public void onPreLogin(PreLoginEvent event) {
+        onPreLogin(wrap(event));
+    }
+
+    @Subscribe
     public void onPostLogin(PostLoginEvent event) {
         onPostLogin(plugin.wrapPlayer(event.getPlayer()));
     }
@@ -58,30 +63,6 @@ public final class QueueListenerVelocity extends QueueListenerShared {
     @Subscribe
     public void onSend(ServerPreConnectEvent event) {
         onPreConnect(wrap(event));
-    }
-
-    @Subscribe
-    public void onQueueSend(ServerConnectedEvent event) {
-        onConnected(wrap(event));
-    }
-
-    private PQServerConnectedEvent wrap(ServerConnectedEvent event) {
-        return new PQServerConnectedEvent() {
-            @Override
-            public PlayerWrapper getPlayer() {
-                return plugin.wrapPlayer(event.getPlayer());
-            }
-
-            @Override
-            public Optional<String> getPreviousServer() {
-                return event.getPreviousServer().map(RegisteredServer::getServerInfo).map(ServerInfo::getName);
-            }
-
-            @Override
-            public String getServer() {
-                return event.getServer().getServerInfo().getName();
-            }
-        };
     }
 
     private PQServerPreConnectEvent wrap(ServerPreConnectEvent event) {
@@ -131,6 +112,25 @@ public final class QueueListenerVelocity extends QueueListenerShared {
             @Override
             public Optional<String> getKickReason() {
                 return event.getServerKickReason().map(LegacyComponentSerializer.legacySection()::serialize);
+            }
+        };
+    }
+
+    private PQPreLoginEvent wrap(PreLoginEvent event) {
+        return new PQPreLoginEvent() {
+            @Override
+            public boolean isCancelled() {
+                return event.getResult() != PreLoginEvent.PreLoginComponentResult.allowed();
+            }
+
+            @Override
+            public void setCancelled(String reason) {
+                event.setResult(PreLoginEvent.PreLoginComponentResult.denied(ChatUtils.parseToComponent(reason)));
+            }
+
+            @Override
+            public String getUsername() {
+                return event.getUsername();
             }
         };
     }

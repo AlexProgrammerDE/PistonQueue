@@ -26,7 +26,6 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
-import net.pistonmaster.pistonqueue.bungee.listeners.RegexListener;
 import net.pistonmaster.pistonqueue.bungee.listeners.QueueListenerBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.hooks.PistonMOTDPlaceholder;
@@ -38,13 +37,12 @@ import net.pistonmaster.pistonqueue.shared.utils.MessageType;
 import net.pistonmaster.pistonqueue.shared.utils.UpdateChecker;
 import org.bstats.bungeecord.Metrics;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.Socket;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -57,9 +55,9 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
         PluginManager manager = getProxy().getPluginManager();
 
         info(ChatColor.BLUE + "Loading config");
-        processConfig(getDataFolder());
+        processConfig(getDataDirectory());
 
-        StorageTool.setupTool(getDataFolder());
+        StorageTool.setupTool(getDataDirectory());
         initializeReservationSlots();
 
         info(ChatColor.BLUE + "Looking for hooks");
@@ -76,7 +74,6 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
 
         info(ChatColor.BLUE + "Registering listeners");
         manager.registerListener(this, queueListenerBungee);
-        manager.registerListener(this, new RegexListener());
 
         info(ChatColor.BLUE + "Loading Metrics");
         new Metrics(this, 8755);
@@ -147,31 +144,22 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
     }
 
     @Override
-    public File getDataDirectory() {
-        return getDataFolder();
+    public Path getDataDirectory() {
+        return getDataFolder().toPath();
     }
 
     private ServerInfoWrapper wrapServer(ServerInfo serverInfo) {
-        PistonQueueBungee reference = this;
         return new ServerInfoWrapper() {
             @Override
             public List<PlayerWrapper> getConnectedPlayers() {
-                return serverInfo.getPlayers().stream().map(reference::wrapPlayer).collect(Collectors.toList());
+                return serverInfo.getPlayers().stream().map(PistonQueueBungee.this::wrapPlayer).collect(Collectors.toList());
             }
 
-            @SuppressWarnings("deprecation")
             @Override
             public boolean isOnline() {
-                try {
-                    Socket s = new Socket(
-                            serverInfo.getAddress().getAddress(),
-                            serverInfo.getAddress().getPort());
-
-                    s.close();
-                    return true;
-                } catch (IOException e) {
-                    return false;
-                }
+                CompletableFuture<Boolean> future = new CompletableFuture<>();
+                serverInfo.ping((result, error) -> future.complete(error == null && result != null));
+                return future.join();
             }
 
             @Override
@@ -211,12 +199,13 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
             }
 
             @Override
-            public void sendPlayerListHeaderAndFooter(List<String> header, List<String> footer) {
-                if (header == null || footer == null) {
-                    player.resetTabHeader();
-                } else {
-                    player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
-                }
+            public void sendPlayerList(List<String> header, List<String> footer) {
+                player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+            }
+
+            @Override
+            public void resetPlayerList() {
+                player.resetTabHeader();
             }
 
             @Override

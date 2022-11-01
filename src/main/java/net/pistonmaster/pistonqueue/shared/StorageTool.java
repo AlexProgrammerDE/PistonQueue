@@ -23,8 +23,9 @@ import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,9 +33,9 @@ import java.util.Locale;
 import java.util.UUID;
 
 public final class StorageTool {
-    private static File dataDirectory;
+    private static Path dataDirectory;
     private static ConfigurationNode dataConfig;
-    private static File dataFile;
+    private static Path dataFile;
 
     private StorageTool() {
     }
@@ -114,7 +115,7 @@ public final class StorageTool {
         generateFile();
 
         try {
-            dataConfig = YamlConfigurationLoader.builder().path(dataFile.toPath()).build().load();
+            dataConfig = YamlConfigurationLoader.builder().path(dataFile).build().load();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -124,29 +125,29 @@ public final class StorageTool {
         generateFile();
 
         try {
-            YamlConfigurationLoader.builder().path(dataFile.toPath()).build().save(dataConfig);
+            YamlConfigurationLoader.builder().path(dataFile).build().save(dataConfig);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     private static void generateFile() {
-        if (!dataDirectory.exists() && !dataDirectory.mkdir())
-            return;
-
-        if (!dataFile.exists()) {
-            try {
-                if (!dataFile.createNewFile())
-                    throw new IOException("Couldn't create file " + dataFile.getPath());
-            } catch (IOException e) {
-                e.printStackTrace();
+        try {
+            if (!Files.exists(dataDirectory)) {
+                Files.createDirectories(dataDirectory);
             }
+
+            if (!Files.exists(dataFile)) {
+                Files.createFile(dataFile);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public static void setupTool(File dataDirectory) {
+    public static void setupTool(Path dataDirectory) {
         StorageTool.dataDirectory = dataDirectory;
-        StorageTool.dataFile = new File(dataDirectory, "data.yml");
+        StorageTool.dataFile = dataDirectory.resolve("data.yml");
 
         loadData();
     }

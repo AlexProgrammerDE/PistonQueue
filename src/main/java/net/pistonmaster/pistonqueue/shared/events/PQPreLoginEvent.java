@@ -2,7 +2,7 @@
  * #%L
  * PistonQueue
  * %%
- * Copyright (C) 2021 AlexProgrammerDE
+ * Copyright (C) 2022 AlexProgrammerDE
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,22 +17,12 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.events;
 
-@SuppressWarnings({"unused"})
-public final class QueueAPI {
-    private QueueAPI() {
-    }
+public interface PQPreLoginEvent {
+    boolean isCancelled();
 
-    public static int getVeteranSize() {
-        return QueueType.VETERAN.getQueueMap().size();
-    }
+    void setCancelled(String reason);
 
-    public static int getPrioritySize() {
-        return QueueType.PRIORITY.getQueueMap().size();
-    }
-
-    public static int getRegularSize() {
-        return QueueType.REGULAR.getQueueMap().size();
-    }
+    String getUsername();
 }

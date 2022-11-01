@@ -19,6 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.bukkit;
 
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -34,12 +35,9 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.logging.Level;
 
+@RequiredArgsConstructor
 public final class ServerListener implements Listener {
     private final PistonQueueBukkit plugin;
-
-    public ServerListener(PistonQueueBukkit plugin) {
-        this.plugin = plugin;
-    }
 
     @EventHandler
     public void onPlayerJoin1(PlayerJoinEvent e) {
@@ -66,7 +64,7 @@ public final class ServerListener implements Listener {
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
             Team team = scoreboard.registerNewTeam(plugin.getTeamName()
-                    .replace("%playername%", player.getName())
+                    .replace("%player_name%", player.getName())
                     .replace("%random%", String.valueOf(getRandomNumberUsingNextInt(-9999, 9999))));
             team.setCanSeeFriendlyInvisibles(false);
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);

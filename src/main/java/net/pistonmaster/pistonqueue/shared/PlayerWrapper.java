@@ -25,9 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface PlayerWrapper {
-    boolean hasPermission(String node);
-
+public interface PlayerWrapper extends PermissibleWrapper {
     void connect(String server);
 
     Optional<String> getCurrentServer();
@@ -38,7 +36,9 @@ public interface PlayerWrapper {
 
     void sendMessage(MessageType type, String message);
 
-    void sendPlayerListHeaderAndFooter(List<String> header, List<String> footer);
+    void sendPlayerList(List<String> header, List<String> footer);
+
+    void resetPlayerList();
 
     String getName();
 
