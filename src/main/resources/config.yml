@@ -15,7 +15,7 @@ disableChat: true # Don't allow players to chat.
 disableCmd: true # Don't allow commands.
 
 team: false # Show a players own name to himself in spectator menu.
-teamName: "%playername%" # The team name the user sees. (Valid placeholders: %playername%, %random%)
+teamName: "%player_name%" # The team name the user sees. (Valid placeholders: %player_name%, %random%)
 
 playXP: true # Plays an XP sound when the proxy sends a plugin message.
 
