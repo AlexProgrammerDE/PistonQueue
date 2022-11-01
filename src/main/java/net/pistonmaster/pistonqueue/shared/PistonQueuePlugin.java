@@ -315,7 +315,7 @@ public interface PistonQueuePlugin {
                         val queueTypes = config.node("QUEUE_TYPES").childrenMap();
                         val array = new QueueType[queueTypes.size()];
                         int i = 0;
-                        for (Map.Entry<Object, ? extends ConfigurationNode> entry : queueTypes.entrySet()) {
+                        for (val entry : queueTypes.entrySet()) {
                             Object key = entry.getKey();
                             ConfigurationNode typeData = entry.getValue();
                             QueueType queueType = new QueueType(
@@ -331,6 +331,16 @@ public interface PistonQueuePlugin {
                         }
                         Arrays.sort(array, Comparator.comparingInt(QueueType::getOrder));
                         it.set(Config.class, array);
+                    } else { // Modify existing
+                        QueueType[] queueType = (QueueType[]) it.get(Config.class);
+                        for (QueueType type : queueType) {
+                            ConfigurationNode typeData = config.node("QUEUE_TYPES").node(type.getName());
+                            type.setOrder(typeData.node("ORDER").getInt());
+                            type.setPermission(typeData.node("PERMISSION").getString());
+                            type.setReservedSlots(typeData.node("SLOTS").getInt());
+                            type.setHeader(typeData.node("HEADER").getList(String.class));
+                            type.setFooter(typeData.node("FOOTER").getList(String.class));
+                        }
                     }
                 } else {
                     it.set(Config.class, config.node(fieldName).get(it.getType()));

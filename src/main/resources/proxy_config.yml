@@ -8,7 +8,8 @@
 # If both PistonQueue and PistonMOTD are installed on your proxy, the following placeholders will be available in the PistonMOTD config:
 # %pistonqueue_regular%, %pistonqueue_priority%, %pistonqueue_veteran%
 
-SERVERNAME: "SERVERNAME"
+# Placeholder for %server_name%
+SERVER_NAME: "&cexample.org"
 
 # Username regex
 ENABLE_USERNAME_REGEX: true
@@ -19,7 +20,7 @@ USERNAME_REGEX_MESSAGE: "&6[PQ] Invalid username please use: %regex%"
 REGISTER_TAB: true
 
 # Server is full message
-SERVER_IS_FULL_MESSAGE: "%server% &6is full"
+SERVER_IS_FULL_MESSAGE: "%server_name% &6is full"
 
 # It is not recommended decreasing this number (milliseconds)
 SERVER_ONLINE_CHECK_DELAY: 500
@@ -43,7 +44,7 @@ START_TIME: 30
 
 # When the main server is down should you kick the player from the queue?
 KICK_WHEN_DOWN: false
-SERVER_DOWN_KICK_MESSAGE: "%server% &6is down please try again later :("
+SERVER_DOWN_KICK_MESSAGE: "%server_name% &6is down please try again later :("
 
 # If a player gets kicked from the main server (it goes down/crashes), he gets sent into queue and waits.
 IF_MAIN_DOWN_SEND_TO_QUEUE: true
@@ -116,7 +117,7 @@ SEND_XP_SOUND: true
 # KICK: You will be kicked from the queue server on joining it.
 SHADOW_BAN_TYPE: "LOOP"
 
-# Custom percentage for the shadow-ban type. Only used when SHADOWBANTYPE is set to CUSTOM_PERCENT.
+# Custom percentage for the shadow-ban type. Only used when SHADOW_BAN_TYPE is set to CUSTOM_PERCENT.
 CUSTOM_PERCENT_PERCENTAGE: 20
 
 # LOOP: When you're shadow-banned you will be put in queue, but before joining it "fails" and you start all over again.
@@ -140,20 +141,20 @@ QUEUE_TYPES:
     # this only shows when your in the queue waiting to join use a separate plugin for your main server
     HEADER:
       - ""
-      - " %server% "
+      - " %server_name% "
       - ""
-      - " %server% &bis full "
+      - " %server_name% &bis full "
       - " Position in queue: &l%position% "
       - " &6Estimated time: &l%wait% "
       - ""
     FOOTER:
       - ""
-      - " &6You can now donate to receive priority queue status, please visit donate.SERVERNAME.org "
+      - " &6You can now donate to receive priority queue status, please visit donate.example.com "
       - ""
-      - " &7contact: someone@example.com "
+      - " &7contact: contact@example.com "
       - " discussion: https://discord.example.com "
       - " website: https://www.example.com "
-      - " These are the only official SERVERNAME websites and contacts "
+      - " These are the only official %server_name% websites and contacts "
       - ""
   PRIORITY:
     ORDER: 2
@@ -162,9 +163,9 @@ QUEUE_TYPES:
     # Configs for priority queue tab list
     HEADER:
       - ""
-      - " %server%"
+      - " %server_name%"
       - ""
-      - " %server% &bis full "
+      - " %server_name% &bis full "
       - " Position in queue: &l%position% "
       - " &6Estimated time: &l%wait% "
       - ""
@@ -172,10 +173,10 @@ QUEUE_TYPES:
       - ""
       - " &6You have priority queue status please wait for an available slot on the server "
       - ""
-      - " &7contact: someone@example.com "
+      - " &7contact: contact@example.com "
       - " discussion: https://discord.example.com "
       - " website: https://www.example.com "
-      - " These are the only official SERVERNAME websites and contacts "
+      - " These are the only official %server_name% websites and contacts "
       - ""
   VETERAN:
     ORDER: 1
@@ -184,9 +185,9 @@ QUEUE_TYPES:
     # Configs for veteran queue tab list
     HEADER:
       - ""
-      - " %server% "
+      - " %server_name% "
       - ""
-      - " %server% &bis full "
+      - " %server_name% &bis full "
       - " Position in queue: &l%position% "
       - " &6Estimated time: &l%wait% "
       - ""
@@ -194,8 +195,8 @@ QUEUE_TYPES:
       - ""
       - " &6You have veteran queue status please wait for an available slot on the server "
       - ""
-      - " &7contact: someone@example.com "
+      - " &7contact: contact@example.com "
       - " discussion: https://discord.example.com "
       - " website: https://www.example.com "
-      - " These are the only official SERVERNAME websites and contacts "
+      - " These are the only official %server_name% websites and contacts "
       - ""
