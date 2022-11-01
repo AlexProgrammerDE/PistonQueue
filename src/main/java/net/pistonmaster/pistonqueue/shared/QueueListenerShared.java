@@ -34,7 +34,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @RequiredArgsConstructor
 public abstract class QueueListenerShared {
@@ -296,17 +295,19 @@ public abstract class QueueListenerShared {
         }
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     private void sendXPSoundToQueueType(QueueType type) {
-        @SuppressWarnings("UnstableApiUsage")
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("xp");
 
-        AtomicInteger counter = new AtomicInteger(0);
-        type.getQueueMap().forEach((uuid, server) -> {
-            if (counter.incrementAndGet() <= 5) {
-                out.writeUTF(uuid.toString());
+        int counter = 0;
+        for (UUID uuid : type.getQueueMap().keySet()) {
+            if (++counter > 5) {
+                break;
             }
-        });
+
+            out.writeUTF(uuid.toString());
+        }
 
         plugin.getServer(Config.QUEUE_SERVER).ifPresent(server ->
                 server.sendPluginMessage("piston:queue", out.toByteArray()));
