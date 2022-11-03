@@ -81,10 +81,6 @@ AUTH_SERVER: "auth"
 # We will not provide support for this feature!!!
 AUTH_FIRST: false
 
-# Do you want people to join directly to the queue server to be able to get queued?
-# Makes sense when having auth first and the plugin redirecting you instantly to the queue.
-ALLOW_AUTH_SKIP: true
-
 # Connecting to server message
 JOINING_MAIN_SERVER: "&6Connecting to the server..."
 
