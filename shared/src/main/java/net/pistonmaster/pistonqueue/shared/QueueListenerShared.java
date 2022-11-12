@@ -23,7 +23,6 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQPreLoginEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
@@ -212,7 +211,7 @@ public abstract class QueueListenerShared {
 
             if (StorageTool.isShadowBanned(player.getUniqueId())
                     && (Config.SHADOW_BAN_TYPE == BanType.LOOP
-                    || (Config.SHADOW_BAN_TYPE == BanType.PERCENT && ThreadLocalRandom.current().nextInt(100) >= Config.PERCENT_PERCENTAGE))) {
+                    || (Config.SHADOW_BAN_TYPE == BanType.PERCENT && ThreadLocalRandom.current().nextInt(100) >= Config.PERCENT))) {
                 player.sendMessage(Config.SHADOW_BAN_MESSAGE);
 
                 type.getQueueMap().put(entry.getKey(), entry.getValue());

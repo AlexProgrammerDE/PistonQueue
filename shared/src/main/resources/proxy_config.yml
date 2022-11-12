@@ -59,7 +59,7 @@ DOWN_WORD_LIST:
   - "closed"
   - "went down"
 
-# If something went wrong while queue -> main happens should the player be sent back into queue?
+# If something went wrong while queue -> target happens should the player be sent back into queue?
 RECOVERY: true
 RECOVERY_MESSAGE: "&cOops something went wrong... Putting you back in queue."
 
@@ -109,7 +109,7 @@ SEND_XP_SOUND: true
 SHADOW_BAN_TYPE: "LOOP"
 
 # Custom percentage for the shadow-ban type. Only used when SHADOW_BAN_TYPE is set to PERCENT.
-PERCENT_PERCENTAGE: 10
+PERCENT: 10
 
 # LOOP: When you're shadow-banned you will be put in queue, but before joining it "fails" and you start all over again.
 SHADOW_BAN_MESSAGE: "&6You have lost connection to the server"

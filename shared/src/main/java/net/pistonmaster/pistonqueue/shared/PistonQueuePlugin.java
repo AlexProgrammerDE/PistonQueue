@@ -314,5 +314,16 @@ public interface PistonQueuePlugin {
                 new ConfigOutdatedException(packageSplit[packageSplit.length - 1]).printStackTrace();
             }
         });
+        int i = 0;
+        for (String text : Config.KICK_WHEN_DOWN_SERVERS) {
+            Config.KICK_WHEN_DOWN_SERVERS.set(i, text
+                    .replace("%TARGET_SERVER%", Config.TARGET_SERVER)
+                    .replace("%QUEUE_SERVER%", Config.QUEUE_SERVER)
+                    .replace("%SOURCE_SERVER%", Config.SOURCE_SERVER));
+            i++;
+        }
+        if (!Config.KICK_WHEN_DOWN_SERVERS.contains(Config.TARGET_SERVER)) {
+            Config.KICK_WHEN_DOWN_SERVERS.add(Config.TARGET_SERVER);
+        }
     }
 }

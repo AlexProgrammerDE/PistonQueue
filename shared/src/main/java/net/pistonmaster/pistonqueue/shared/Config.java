@@ -36,7 +36,7 @@ public final class Config {
             IF_TARGET_DOWN_SEND_TO_QUEUE, RECOVERY, ENABLE_USERNAME_REGEX, SEND_XP_SOUND;
 
     public static int QUEUE_MOVE_DELAY, SERVER_ONLINE_CHECK_DELAY, POSITION_MESSAGE_DELAY,
-            PERCENT_PERCENTAGE, MAX_PLAYERS_PER_MOVE;
+            PERCENT, MAX_PLAYERS_PER_MOVE;
 
     public static List<String> DOWN_WORD_LIST, KICK_WHEN_DOWN_SERVERS;
     public static QueueType[] QUEUE_TYPES; // Not allowed to be resized due to data corruption
