@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 @Getter
 public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMessageListener {
     private final Map<String, Integer> onlineQueue = new ConcurrentHashMap<>();
-    private final Map<String, Integer> onlineMain = new ConcurrentHashMap<>();
+    private final Map<String, Integer> onlineTarget = new ConcurrentHashMap<>();
 
     @Override
     public void onEnable() {
@@ -53,14 +53,14 @@ public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMe
 
                 onlineQueue.put(queue, online);
             }
-        } else if (subChannel.equalsIgnoreCase("onlineMain")) {
+        } else if (subChannel.equalsIgnoreCase("onlineTarget")) {
             int count = in.readInt();
 
             for (int i = 0; i < count; i++) {
                 String queue = in.readUTF();
                 int online = in.readInt();
 
-                onlineMain.put(queue, online);
+                onlineTarget.put(queue, online);
             }
         }
     }

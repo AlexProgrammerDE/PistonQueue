@@ -49,9 +49,9 @@ public interface MainCommandShared {
                 case "slotstats":
                     if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
                         sendLine(sender);
-                        sender.sendMessage(getWrapperFactory().text("Main slot stats").color(TextColorWrapper.GOLD));
+                        sender.sendMessage(getWrapperFactory().text("Target slot stats").color(TextColorWrapper.GOLD));
                         for (QueueType type : Config.QUEUE_TYPES) {
-                            sender.sendMessage(getWrapperFactory().text(type.getName() + ": ").color(TextColorWrapper.GOLD).append(getWrapperFactory().text(type.getPlayersWithTypeInMain().get() + " / " + type.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+                            sender.sendMessage(getWrapperFactory().text(type.getName() + ": ").color(TextColorWrapper.GOLD).append(getWrapperFactory().text(type.getPlayersWithTypeInTarget().get() + " / " + type.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
                         }
                         sendLine(sender);
                     } else {

@@ -34,9 +34,9 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public class QueueType {
     private final Map<UUID, String> queueMap = Collections.synchronizedMap(new LinkedHashMap<>());
-    private final Map<Integer, Duration> durationToPosition = Collections.synchronizedMap(new LinkedHashMap<>());
+    private final Map<Integer, Duration> durationFromPosition = Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<UUID, Map<Integer, Instant>> positionCache = new ConcurrentHashMap<>();
-    private final AtomicInteger playersWithTypeInMain = new AtomicInteger();
+    private final AtomicInteger playersWithTypeInTarget = new AtomicInteger();
     private final String name;
     @Setter
     private int order;

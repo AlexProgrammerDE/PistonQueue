@@ -29,14 +29,9 @@ public enum BanType {
     LOOP,
 
     /**
-     * Have a 10% chance of getting into the server!
-     */
-    TEN_PERCENT,
-
-    /**
      * Have a custom chance of getting into the server!
      */
-    CUSTOM_PERCENT,
+    PERCENT,
 
     /**
      * Kick a player while joining!

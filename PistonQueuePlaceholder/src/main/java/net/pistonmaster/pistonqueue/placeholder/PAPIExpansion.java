@@ -39,8 +39,8 @@ public final class PAPIExpansion extends PlaceholderExpansion {
             }
         }
 
-        for (Map.Entry<String, Integer> entry : plugin.getOnlineMain().entrySet()) {
-            if (identifier.equalsIgnoreCase("online_main_" + entry.getKey())) {
+        for (Map.Entry<String, Integer> entry : plugin.getOnlineTarget().entrySet()) {
+            if (identifier.equalsIgnoreCase("online_target_" + entry.getKey())) {
                 return String.valueOf(entry.getValue());
             }
         }

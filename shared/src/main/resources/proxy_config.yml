@@ -1,5 +1,5 @@
 # PistonQueue V${version}
-# Make the main server the default one you log in to
+# Make the target server the default one you log in to
 # READ ME: all colours are orange by default just add & and colour
 # to change the colours to your liking
 # Please don't forget to replace SERVERNAME
@@ -36,19 +36,22 @@ ENABLE_KICK_MESSAGE: false
 KICK_MESSAGE: "&6You have lost connection to the server"
 
 # Failure protection for the queue
-PAUSE_QUEUE_IF_MAIN_DOWN: true
-PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE: "&6The main server is down. We will be back soon!"
+PAUSE_QUEUE_IF_TARGET_DOWN: true
+PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE: "&6The main server is down. We will be back soon!"
 
-# Time to wait for the server to come back up after it binding to the port again. (Seconds)
-START_TIME: 30
-
-# When the main server is down should you kick the player from the queue?
+# When the servers are down should we prevent new players from joining the proxy?
 KICK_WHEN_DOWN: false
 SERVER_DOWN_KICK_MESSAGE: "%server_name% &6is down please try again later :("
+# %TARGET_SERVER%, %QUEUE_SERVER% and %SOURCE_SERVER% are placeholders for the server names
+KICK_WHEN_DOWN_SERVERS:
+  - "%TARGET_SERVER%"
+  - "%QUEUE_SERVER%"
+  # - "%SOURCE_SERVER%"
+  # - "other-server"
 
-# If a player gets kicked from the main server (it goes down/crashes), he gets sent into queue and waits.
-IF_MAIN_DOWN_SEND_TO_QUEUE: true
-IF_MAIN_DOWN_SEND_TO_QUEUE_MESSAGE: "&cThe main server is offline now! You have been sent to queue while it goes back online."
+# If a player gets kicked from the target server (it goes down/crashes), he gets sent into queue and waits.
+IF_TARGET_DOWN_SEND_TO_QUEUE: true
+IF_TARGET_DOWN_SEND_TO_QUEUE_MESSAGE: "&cThe target server is offline now! You have been sent to queue while it goes back online."
 
 # Only send players back to queue if the kick message has these words. (lowercase)
 DOWN_WORD_LIST:
@@ -60,32 +63,25 @@ DOWN_WORD_LIST:
 RECOVERY: true
 RECOVERY_MESSAGE: "&cOops something went wrong... Putting you back in queue."
 
-# Set the queue servers name that is in the bungee config.yml
-# Note that the main server is always the one you log in to first
-# The main server is the one that has a queue to protect it
-# Make sure you set the default server in bungee config.yml correctly
+# Set the queue servers name that is in the proxy config file.
+# Note that the target server is always the one you log in to first.
+# The target server is the one that has a queue to protect it.
+# Make sure you set the default server in proxy config correctly.
 QUEUE_SERVER: "queue"
-MAIN_SERVER: "main"
+TARGET_SERVER: "main"
 
-# Set this to true if you're a cracked/offline mode server.
-# It is recommended to have the AuthServer first option enabled otherwise people will go into the queue first
-# then Auth and main.
-ENABLE_AUTH_SERVER: false
-AUTH_SERVER: "auth"
-
-# Have the auth server go first instead of the default settings which are Queue -> Auth -> and main
-# This option will let you have the auth server go first then queue and the main server.
-# You need to additionally set up your auth server to send you to the queue server after login
-# DISCLAIMER: This feature is experimental and may cause some issues!
-# It might also cause more issues because then the players aren't queued to join the auth server. It might overload.
-# We will not provide support for this feature!!!
-AUTH_FIRST: false
+# Set this to true if you're a lobby or cracked/offline mode server.
+# This option is required for those setups to work. Make your proxy sends source -> target.
+# PistonQueue will redirect the player with source -> queue automatically if target is full.
+# The player will be sent to the original target server after the queue.
+ENABLE_SOURCE_SERVER: false
+SOURCE_SERVER: "lobby"
 
 # Connecting to server message
-JOINING_MAIN_SERVER: "&6Connecting to the server..."
+JOINING_TARGET_SERVER: "&6Connecting to the server..."
 
-# Whether you want to set the main server as your target or just want to have BungeeCord to decide.
-FORCE_MAIN_SERVER: false
+# Whether you want to set the target server as your target or just want to have the proxy decide based on original target.
+FORCE_TARGET_SERVER: false
 
 # Total people allowed to be connected to the queue network
 # Make sure you set the BungeeCord/Velocity slots higher than the amount
@@ -96,11 +92,11 @@ QUEUE_SERVER_SLOTS: 9000
 # please note this only guaranteed to not have issues 1000ms and higher
 QUEUE_MOVE_DELAY: 1000
 
-# Max players allowed to be moved into the main server at once.
+# Max players allowed to be moved into the target server at once with one queue move.
 MAX_PLAYERS_PER_MOVE: 10
 
-# Should the queue be always active or only when the main server is full?
-# When activated you will always be sent into the queue server and then the main server.
+# Should the queue be always active or only when the target server is full?
+# When activated you will always be sent into the queue server and then the target server.
 ALWAYS_QUEUE: true
 
 # Send an XP sound to every player who gets to position 5 or below in the queue
@@ -108,13 +104,12 @@ SEND_XP_SOUND: true
 
 # The way shadow-bans should work on your server. Valid types are: LOOP, TEN_PERCENT
 # LOOP: When reaching the end of the queue you will get put in front of it again.
-# TEN_PERCENT: Loop, but you have a ten percent chance of getting in.
-# CUSTOM_PERCENT: Loop, but you have a custom chance of getting in.
+# PERCENT: Loop, but you have a custom chance of getting in.
 # KICK: You will be kicked from the queue server on joining it.
 SHADOW_BAN_TYPE: "LOOP"
 
-# Custom percentage for the shadow-ban type. Only used when SHADOW_BAN_TYPE is set to CUSTOM_PERCENT.
-CUSTOM_PERCENT_PERCENTAGE: 20
+# Custom percentage for the shadow-ban type. Only used when SHADOW_BAN_TYPE is set to PERCENT.
+PERCENT_PERCENTAGE: 10
 
 # LOOP: When you're shadow-banned you will be put in queue, but before joining it "fails" and you start all over again.
 SHADOW_BAN_MESSAGE: "&6You have lost connection to the server"
@@ -128,13 +123,13 @@ ADMIN_PERMISSION: "queue.admin"
 QUEUE_TYPES:
   REGULAR:
     ORDER: 3
-    # Max players of this type allowed on the main server
+    # Max players of this type allowed on the target server
     SLOTS: 50
     # Special permission for the default queue type
     PERMISSION: "default"
     # Queue server tab list configuration use %position% to show the current position of the player
     # and use %wait% to show the estimated wait time of the player (not very accurate yet)
-    # this only shows when your in the queue waiting to join use a separate plugin for your main server
+    # this only shows when your in the queue waiting to join use a separate plugin for your target server
     HEADER:
       - ""
       - " %server_name% "

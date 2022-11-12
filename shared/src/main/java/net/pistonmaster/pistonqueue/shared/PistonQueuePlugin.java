@@ -29,14 +29,15 @@ import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -66,21 +67,20 @@ public interface PistonQueuePlugin {
     default void scheduleTasks(QueueListenerShared queueListener) {
         // Sends the position message and updates tab on an interval in chat
         schedule(() -> {
-            if (!queueListener.isMainOnline())
-                return;
-
-            for (QueueType type : Config.QUEUE_TYPES) {
-                sendMessage(type, Config.POSITION_MESSAGE_CHAT, MessageType.CHAT);
-            }
-        }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
-
-        // Sends the position message and updates tab on an interval on hot bar
-        schedule(() -> {
-            if (!queueListener.isMainOnline())
-                return;
-
-            for (QueueType type : Config.QUEUE_TYPES) {
-                sendMessage(type, Config.POSITION_MESSAGE_HOT_BAR, MessageType.ACTION_BAR);
+            if (queueListener.getOnlineServers().contains(Config.TARGET_SERVER)) {
+                for (QueueType type : Config.QUEUE_TYPES) {
+                    if (Config.POSITION_MESSAGE_CHAT) {
+                        sendMessage(type, MessageType.CHAT);
+                    }
+                    if (Config.POSITION_MESSAGE_HOT_BAR) {
+                        sendMessage(type, MessageType.ACTION_BAR);
+                    }
+                }
+            } else if (Config.PAUSE_QUEUE_IF_TARGET_DOWN) {
+                for (QueueType type : Config.QUEUE_TYPES) {
+                    type.getQueueMap().forEach((UUID id, String str) ->
+                            getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE)));
+                }
             }
         }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
 
@@ -91,91 +91,52 @@ public interface PistonQueuePlugin {
             }
         }, Config.QUEUE_MOVE_DELAY, Config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
 
-        schedule(() -> {
-            if (!Config.PAUSE_QUEUE_IF_MAIN_DOWN || queueListener.isMainOnline()) {
-                return;
-            }
-
-            for (QueueType type : Config.QUEUE_TYPES) {
-                type.getQueueMap().forEach((UUID id, String str) ->
-                        getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_MAIN_DOWN_MESSAGE)));
-            }
-        }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
-
         // Send plugin message
         schedule(this::sendCustomData, Config.QUEUE_MOVE_DELAY, Config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
 
-        // Moves the queue when someone logs off the main server on an interval set in the config.yml
+        // Moves the queue when someone logs off the target server on an interval set in the config.yml
         schedule(queueListener::moveQueue, Config.QUEUE_MOVE_DELAY, Config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
 
-        String message = "%s \"%s\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up";
-        AtomicBoolean isFirstRun = new AtomicBoolean(true);
         // Checks the status of all the servers
         schedule(() -> {
-            Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.MAIN_SERVER);
+            List<String> servers = new ArrayList<>(Config.KICK_WHEN_DOWN_SERVERS);
+            CountDownLatch latch = new CountDownLatch(servers.size());
+            for (String server : servers) {
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        Optional<ServerInfoWrapper> serverInfoWrapper = getServer(server);
 
-            if (serverInfoWrapper.isPresent()) {
-                if (serverInfoWrapper.get().isOnline()) {
-                    if (!isFirstRun.get() && !queueListener.isMainOnline()) {
-                        queueListener.setOnlineSince(Instant.now());
+                        if (serverInfoWrapper.isPresent()) {
+                            if (serverInfoWrapper.get().isOnline()) {
+                                queueListener.getOnlineServers().add(server);
+                            } else {
+                                warning(String.format("Server %s is down!!!", server));
+                                queueListener.getOnlineServers().remove(server);
+                            }
+                        } else {
+                            warning(String.format("Server \"%s\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up", server));
+                        }
+                    } finally {
+                        latch.countDown();
                     }
-
-                    queueListener.setMainOnline(true);
-                } else {
-                    warning("Main Server is down!!!");
-                    queueListener.setMainOnline(false);
-                }
-                isFirstRun.set(false);
-            } else {
-                warning(String.format(message, "Main Server", Config.MAIN_SERVER));
+                });
             }
-        }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
-
-        schedule(() -> {
-            Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.QUEUE_SERVER);
-
-            if (serverInfoWrapper.isPresent()) {
-                if (serverInfoWrapper.get().isOnline()) {
-                    queueListener.setQueueOnline(true);
-                } else {
-                    warning("Queue Server is down!!!");
-                    queueListener.setQueueOnline(false);
-                }
-            } else {
-                warning(String.format(message, "Queue Server", Config.QUEUE_SERVER));
-            }
-        }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
-
-        schedule(() -> {
-            if (Config.ENABLE_AUTH_SERVER) {
-                Optional<ServerInfoWrapper> serverInfoWrapper = getServer(Config.AUTH_SERVER);
-
-                if (serverInfoWrapper.isPresent()) {
-                    if (serverInfoWrapper.get().isOnline()) {
-                        queueListener.setAuthOnline(true);
-                    } else {
-                        warning("Auth Server is down!!!");
-                        queueListener.setAuthOnline(false);
-                    }
-                } else {
-                    warning(String.format(message, "Auth Server", Config.AUTH_SERVER));
-                }
-            } else {
-                queueListener.setAuthOnline(true);
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }, 500, Config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
     }
 
-    default void sendMessage(QueueType queue, boolean bool, MessageType type) {
-        if (bool) {
-            AtomicInteger position = new AtomicInteger();
+    default void sendMessage(QueueType queue, MessageType type) {
+        AtomicInteger position = new AtomicInteger();
 
-            for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-                getPlayer(entry.getKey()).ifPresent(player ->
-                        player.sendMessage(type, Config.QUEUE_POSITION
-                                .replace("%position%", String.valueOf(position.incrementAndGet()))
-                                .replace("%total%", String.valueOf(queue.getQueueMap().size()))));
-            }
+        for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
+            getPlayer(entry.getKey()).ifPresent(player ->
+                    player.sendMessage(type, Config.QUEUE_POSITION
+                            .replace("%position%", String.valueOf(position.incrementAndGet()))
+                            .replace("%total%", String.valueOf(queue.getQueueMap().size()))));
         }
     }
 
@@ -194,39 +155,36 @@ public interface PistonQueuePlugin {
     }
 
     default String replacePosition(String text, int position, QueueType type) {
-        if (type.getDurationToPosition().containsKey(position)) {
-            Duration duration = type.getDurationToPosition().get(position);
+        if (type.getDurationFromPosition().containsKey(position)) {
+            Duration duration = type.getDurationFromPosition().get(position);
 
             return SharedChatUtils.formatDuration(text, duration, position);
         } else {
-            int biggestPosition = 0;
-            Duration biggestDuration = Duration.ZERO;
+            Map.Entry<Integer, Duration> biggestEntry = null;
 
-            for (Map.Entry<Integer, Duration> entry : type.getDurationToPosition().entrySet()) {
-                int positionOfDuration = entry.getKey();
-                if (positionOfDuration > biggestPosition) {
-                    biggestPosition = positionOfDuration;
-                    biggestDuration = entry.getValue();
+            for (Map.Entry<Integer, Duration> entry : type.getDurationFromPosition().entrySet()) {
+                if (biggestEntry == null || entry.getKey() > biggestEntry.getKey()) {
+                    biggestEntry = entry;
                 }
             }
 
-            int difference = position - biggestPosition;
+            Duration predictedDuration = biggestEntry == null ?
+                    Duration.of(position, ChronoUnit.MINUTES) :
+                    biggestEntry.getValue().plus(position - biggestEntry.getKey(), ChronoUnit.MINUTES);
 
-            Duration imaginaryDuration = biggestDuration.plus(difference, ChronoUnit.MINUTES);
-
-            return SharedChatUtils.formatDuration(text, imaginaryDuration, position);
+            return SharedChatUtils.formatDuration(text, predictedDuration, position);
         }
     }
 
     default void initializeReservationSlots() {
         schedule(() -> {
-            Optional<ServerInfoWrapper> mainServer = getServer(Config.MAIN_SERVER);
-            if (!mainServer.isPresent())
+            Optional<ServerInfoWrapper> targetServer = getServer(Config.TARGET_SERVER);
+            if (!targetServer.isPresent())
                 return;
 
             Map<QueueType, AtomicInteger> map = new HashMap<>();
 
-            for (PlayerWrapper player : mainServer.get().getConnectedPlayers()) {
+            for (PlayerWrapper player : targetServer.get().getConnectedPlayers()) {
                 QueueType playerType = QueueType.getQueueType(player::hasPermission);
 
                 if (map.containsKey(playerType)) {
@@ -236,7 +194,7 @@ public interface PistonQueuePlugin {
                 }
             }
 
-            map.forEach((type, count) -> type.getPlayersWithTypeInMain().set(count.get()));
+            map.forEach((type, count) -> type.getPlayersWithTypeInTarget().set(count.get()));
         }, 0, 1, TimeUnit.SECONDS);
     }
 
@@ -257,12 +215,12 @@ public interface PistonQueuePlugin {
             outOnlineQueue.writeInt(queueType.getQueueMap().size());
         }
 
-        ByteArrayDataOutput outOnlineMain = ByteStreams.newDataOutput();
+        ByteArrayDataOutput outOnlineTarget = ByteStreams.newDataOutput();
 
-        outOnlineMain.writeUTF("onlineMain");
+        outOnlineTarget.writeUTF("onlineTarget");
         outOnlineQueue.writeInt(Config.QUEUE_TYPES.length);
         for (QueueType queueType : Config.QUEUE_TYPES) {
-            outOnlineQueue.writeInt(queueType.getPlayersWithTypeInMain().get());
+            outOnlineQueue.writeInt(queueType.getPlayersWithTypeInTarget().get());
         }
 
         Set<String> servers = new HashSet<>();
@@ -272,7 +230,7 @@ public interface PistonQueuePlugin {
             getServer(server).ifPresent(serverInfoWrapper ->
                     serverInfoWrapper.sendPluginMessage("piston:queue", outOnlineQueue.toByteArray()));
             getServer(server).ifPresent(serverInfoWrapper ->
-                    serverInfoWrapper.sendPluginMessage("piston:queue", outOnlineMain.toByteArray()));
+                    serverInfoWrapper.sendPluginMessage("piston:queue", outOnlineTarget.toByteArray()));
         }
     }
 
