@@ -80,9 +80,6 @@ SOURCE_SERVER: "lobby"
 # Connecting to server message
 JOINING_TARGET_SERVER: "&6Connecting to the server..."
 
-# Whether you want to set the target server as your target or just want to have the proxy decide based on original target.
-FORCE_TARGET_SERVER: false
-
 # Total people allowed to be connected to the queue network
 # Make sure you set the BungeeCord/Velocity slots higher than the amount
 # of people you get regularly for example 9000 and 9000 on the queue server
@@ -97,7 +94,7 @@ MAX_PLAYERS_PER_MOVE: 10
 
 # Should the queue be always active or only when the target server is full?
 # When activated you will always be sent into the queue server and then the target server.
-ALWAYS_QUEUE: true
+ALWAYS_QUEUE: false
 
 # Send an XP sound to every player who gets to position 5 or below in the queue
 SEND_XP_SOUND: true
