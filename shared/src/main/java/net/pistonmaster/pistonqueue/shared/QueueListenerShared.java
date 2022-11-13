@@ -136,12 +136,12 @@ public abstract class QueueListenerShared {
         return isTargetFull(type) || isAnyoneQueuedOfType(type);
     }
 
-    private int getFreeSlots(QueueType type) {
-        return type.getReservedSlots() - type.getPlayersWithTypeInTarget().get();
-    }
-
     private boolean isTargetFull(QueueType type) {
         return getFreeSlots(type) <= 0;
+    }
+
+    private int getFreeSlots(QueueType type) {
+        return type.getReservedSlots() - type.getPlayersWithTypeInTarget().get();
     }
 
     private boolean isAnyoneQueuedOfType(QueueType type) {

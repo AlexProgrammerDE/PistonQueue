@@ -187,11 +187,14 @@ public interface PistonQueuePlugin {
             for (PlayerWrapper player : targetServer.get().getConnectedPlayers()) {
                 QueueType playerType = QueueType.getQueueType(player::hasPermission);
 
-                if (map.containsKey(playerType)) {
-                    map.get(playerType).incrementAndGet();
-                } else {
-                    map.put(playerType, new AtomicInteger(1));
-                }
+                map.compute(playerType, (queueType, integer) -> {
+                    if (integer == null) {
+                        return new AtomicInteger(1);
+                    } else {
+                        integer.incrementAndGet();
+                        return integer;
+                    }
+                });
             }
 
             map.forEach((type, count) -> type.getPlayersWithTypeInTarget().set(count.get()));
