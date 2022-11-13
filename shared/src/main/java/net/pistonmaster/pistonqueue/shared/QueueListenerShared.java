@@ -81,7 +81,11 @@ public abstract class QueueListenerShared {
     protected void onPreConnect(PQServerPreConnectEvent event) {
         PlayerWrapper player = event.getPlayer();
 
-        if (player.getCurrentServer().isPresent() && (!Config.ENABLE_SOURCE_SERVER || !isSourceToTarget(event))) {
+        if (Config.ENABLE_SOURCE_SERVER && !isSourceToTarget(event)) {
+            return;
+        }
+
+        if (!Config.ENABLE_SOURCE_SERVER && player.getCurrentServer().isPresent()) {
             return;
         }
 
