@@ -91,27 +91,31 @@ public abstract class QueueListenerShared {
 
         if (Config.KICK_WHEN_DOWN) {
             for (String server : Config.KICK_WHEN_DOWN_SERVERS) {
-                if (onlineServers.contains(server))
-                    continue;
-
-                player.disconnect(Config.SERVER_DOWN_KICK_MESSAGE);
-                return;
+                if (!onlineServers.contains(server)) {
+                    player.disconnect(Config.SERVER_DOWN_KICK_MESSAGE);
+                    return;
+                }
             }
         }
 
         QueueType type = QueueType.getQueueType(player::hasPermission);
 
-        if (Config.ALWAYS_QUEUE || isServerFull(type)) {
+        boolean serverFull = false;
+        if (Config.ALWAYS_QUEUE || (serverFull = isServerFull(type))) {
             if (player.hasPermission(Config.QUEUE_BYPASS_PERMISSION)) {
                 event.setTarget(Config.TARGET_SERVER);
             } else {
-                putQueue(player, type, event);
+                putQueue(player, type, event, serverFull);
             }
         }
     }
 
-    private void putQueue(PlayerWrapper player, QueueType type, PQServerPreConnectEvent event) {
-        preQueueAdding(player, type);
+    private void putQueue(PlayerWrapper player, QueueType type, PQServerPreConnectEvent event, boolean serverFull) {
+        player.sendPlayerList(type.getHeader(), type.getFooter());
+
+        if (serverFull) {
+            player.sendMessage(Config.SERVER_IS_FULL_MESSAGE);
+        }
 
         // Redirect the player to the queue.
         Optional<String> originalTarget = event.getTarget();
@@ -125,14 +129,6 @@ public abstract class QueueListenerShared {
             queueMap.put(player.getUniqueId(), Config.TARGET_SERVER);
         } else {
             queueMap.put(player.getUniqueId(), originalTarget.get());
-        }
-    }
-
-    private void preQueueAdding(PlayerWrapper player, QueueType type) {
-        player.sendPlayerList(type.getHeader(), type.getFooter());
-
-        if (isServerFull(type)) {
-            player.sendMessage(Config.SERVER_IS_FULL_MESSAGE);
         }
     }
 
