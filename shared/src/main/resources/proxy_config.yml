@@ -42,6 +42,7 @@ PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE: "&6The main server is down. We will be back 
 # When the servers are down should we prevent new players from joining the proxy?
 KICK_WHEN_DOWN: false
 SERVER_DOWN_KICK_MESSAGE: "%server_name% &6is down please try again later :("
+
 # %TARGET_SERVER%, %QUEUE_SERVER% and %SOURCE_SERVER% are placeholders for the server names
 KICK_WHEN_DOWN_SERVERS:
   - "%TARGET_SERVER%"
@@ -69,6 +70,8 @@ RECOVERY_MESSAGE: "&cOops something went wrong... Putting you back in queue."
 # Make sure you set the default server in proxy config correctly.
 QUEUE_SERVER: "queue"
 TARGET_SERVER: "main"
+
+FORCE_TARGET_SERVER: false
 
 # Set this to true if you're a lobby or cracked/offline mode server.
 # This option is required for those setups to work. Make your proxy sends source -> target.
