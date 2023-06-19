@@ -43,11 +43,7 @@ public final class ProtocolLibWrapper {
 
         packet.getBytes().write(0, (byte) 22);
 
-        try {
-            manager.sendServerPacket(player, packet);
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        manager.sendServerPacket(player, packet);
     }
 
     public static void setupProtocolLib(PistonQueueBukkit plugin) {
