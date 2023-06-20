@@ -221,9 +221,9 @@ public interface PistonQueuePlugin {
         ByteArrayDataOutput outOnlineTarget = ByteStreams.newDataOutput();
 
         outOnlineTarget.writeUTF("onlineTarget");
-        outOnlineQueue.writeInt(Config.QUEUE_TYPES.length);
+        outOnlineTarget.writeInt(Config.QUEUE_TYPES.length);
         for (QueueType queueType : Config.QUEUE_TYPES) {
-            outOnlineQueue.writeInt(queueType.getPlayersWithTypeInTarget().get());
+            outOnlineTarget.writeInt(queueType.getPlayersWithTypeInTarget().get());
         }
 
         Set<String> servers = new HashSet<>();
