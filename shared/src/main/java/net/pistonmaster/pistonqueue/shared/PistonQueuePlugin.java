@@ -29,7 +29,6 @@ import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -201,7 +200,6 @@ public interface PistonQueuePlugin {
         }, 0, 1, TimeUnit.SECONDS);
     }
 
-    @SuppressWarnings({"UnstableApiUsage"})
     default void sendCustomData() {
         List<PlayerWrapper> networkPlayers = getPlayers();
 
@@ -223,6 +221,7 @@ public interface PistonQueuePlugin {
         outOnlineTarget.writeUTF("onlineTarget");
         outOnlineTarget.writeInt(Config.QUEUE_TYPES.length);
         for (QueueType queueType : Config.QUEUE_TYPES) {
+            outOnlineTarget.writeUTF(queueType.getName().toLowerCase());
             outOnlineTarget.writeInt(queueType.getPlayersWithTypeInTarget().get());
         }
 
