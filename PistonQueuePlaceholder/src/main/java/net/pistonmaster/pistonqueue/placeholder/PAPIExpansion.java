@@ -23,7 +23,7 @@ public final class PAPIExpansion extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getIdentifier() {
-        return "PistonQueue";
+        return "pistonqueue";
     }
 
     @Override
