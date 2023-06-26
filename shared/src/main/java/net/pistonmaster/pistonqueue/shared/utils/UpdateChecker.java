@@ -21,6 +21,7 @@ package net.pistonmaster.pistonqueue.shared.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 import java.util.function.Consumer;
@@ -35,7 +36,17 @@ public final class UpdateChecker {
     }
 
     public void getVersion(final Consumer<String> consumer) {
-        try (InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId + "/").openStream(); Scanner scanner = new Scanner(inputStream)) {
+        try {
+            URL url = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId + "/");
+            HttpURLConnection huc = (HttpURLConnection) url.openConnection();
+            HttpURLConnection.setFollowRedirects(false);
+            huc.setConnectTimeout(5 * 1000);
+            huc.setReadTimeout(5 * 1000);
+            huc.setRequestMethod("GET");
+            huc.connect();
+
+            InputStream input = huc.getInputStream();
+            Scanner scanner = new Scanner(input);
             if (scanner.hasNext()) {
                 consumer.accept(scanner.next());
             }
