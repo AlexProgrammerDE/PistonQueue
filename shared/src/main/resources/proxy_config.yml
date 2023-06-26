@@ -31,6 +31,9 @@ POSITION_MESSAGE_HOT_BAR: false
 QUEUE_POSITION: "&6Position in queue: &l%position%"
 POSITION_MESSAGE_DELAY: 10000
 
+# Whether to show a custom player list header and footer (tab) with the queue position.
+POSITION_PLAYER_LIST: true
+
 # This is a message to hide the actual reason of why you are getting kicked from the server.
 ENABLE_KICK_MESSAGE: false
 KICK_MESSAGE: "&6You have lost connection to the server"

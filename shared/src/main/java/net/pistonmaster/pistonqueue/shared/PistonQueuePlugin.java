@@ -85,6 +85,10 @@ public interface PistonQueuePlugin {
 
         // Updates the tab
         schedule(() -> {
+            if (!Config.POSITION_PLAYER_LIST) {
+                return;
+            }
+
             for (QueueType type : Config.QUEUE_TYPES) {
                 updateTab(type);
             }

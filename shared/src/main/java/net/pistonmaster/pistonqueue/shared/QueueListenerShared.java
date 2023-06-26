@@ -238,7 +238,6 @@ public abstract class QueueListenerShared {
         }
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     private void sendXPSoundToQueueType(QueueType type) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("xp");
