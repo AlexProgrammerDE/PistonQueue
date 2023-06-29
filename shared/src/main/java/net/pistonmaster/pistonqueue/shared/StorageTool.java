@@ -100,7 +100,7 @@ public final class StorageTool {
             SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", new Locale("us"));
 
             try {
-                Date date = sdf.parse(dataConfig.getString(player.toString()));
+                Date date = sdf.parse(dataConfig.node(player.toString()).getString());
 
                 if (now.after(date) || (now.equals(date))) {
                     unShadowBanPlayer(player);
