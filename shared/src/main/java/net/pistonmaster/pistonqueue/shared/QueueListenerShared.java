@@ -49,7 +49,7 @@ public abstract class QueueListenerShared {
     }
 
     protected void onPostLogin(PlayerWrapper player) {
-        if (StorageTool.isShadowBanned(player.getUniqueId()) && Config.SHADOW_BAN_TYPE == BanType.KICK) {
+        if (StorageTool.isShadowBanned(player.getName()) && Config.SHADOW_BAN_TYPE == BanType.KICK) {
             player.disconnect(Config.SERVER_DOWN_KICK_MESSAGE);
         }
     }
@@ -209,7 +209,7 @@ public abstract class QueueListenerShared {
             player.sendMessage(Config.JOINING_TARGET_SERVER);
             player.resetPlayerList();
 
-            if (StorageTool.isShadowBanned(player.getUniqueId())
+            if (StorageTool.isShadowBanned(player.getName())
                     && (Config.SHADOW_BAN_TYPE == BanType.LOOP
                     || (Config.SHADOW_BAN_TYPE == BanType.PERCENT && ThreadLocalRandom.current().nextInt(100) >= Config.PERCENT))) {
                 player.sendMessage(Config.SHADOW_BAN_MESSAGE);

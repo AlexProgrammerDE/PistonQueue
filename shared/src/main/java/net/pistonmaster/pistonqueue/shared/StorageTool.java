@@ -30,7 +30,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.UUID;
 
 public final class StorageTool {
     private static Path dataDirectory;
@@ -43,16 +42,17 @@ public final class StorageTool {
     /**
      * Shadow-ban a player!
      *
-     * @param player The player to shadow-ban.
-     * @param date   The date when he will be unbanned.
+     * @param playerName The player to shadow-ban.
+     * @param date       The date when he will be unbanned.
      * @return true if player got shadow-banned and if already shadow-banned false.
      */
-    public static boolean shadowBanPlayer(UUID player, Date date) {
-        manageBan(player);
+    public static boolean shadowBanPlayer(String playerName, Date date) {
+        playerName = playerName.toLowerCase(Locale.ENGLISH);
+        manageBan(playerName);
 
-        if (dataConfig.node(player.toString()).virtual()) {
+        if (dataConfig.node(playerName).virtual()) {
             try {
-                dataConfig.node(player.toString()).set(date.toString());
+                dataConfig.node(playerName).set(date.toString());
             } catch (SerializationException e) {
                 e.printStackTrace();
             }
@@ -68,13 +68,14 @@ public final class StorageTool {
     /**
      * Un-shadow-ban a player!
      *
-     * @param player The player to un-shadow-ban.
+     * @param playerName The player to un-shadow-ban.
      * @return true if a player got un-shadow-banned and false if he wasn't shadow-banned.
      */
-    public static boolean unShadowBanPlayer(UUID player) {
-        if (!dataConfig.node(player.toString()).virtual()) {
+    public static boolean unShadowBanPlayer(String playerName) {
+        playerName = playerName.toLowerCase(Locale.ENGLISH);
+        if (!dataConfig.node(playerName).virtual()) {
             try {
-                dataConfig.node(player.toString()).set(null);
+                dataConfig.node(playerName).set(null);
             } catch (SerializationException e) {
                 e.printStackTrace();
             }
@@ -87,23 +88,25 @@ public final class StorageTool {
         }
     }
 
-    public static boolean isShadowBanned(UUID player) {
-        manageBan(player);
+    public static boolean isShadowBanned(String playerName) {
+        playerName = playerName.toLowerCase(Locale.ENGLISH);
+        manageBan(playerName);
 
-        return !dataConfig.node(player.toString()).virtual();
+        return !dataConfig.node(playerName).virtual();
     }
 
-    private static void manageBan(UUID player) {
+    private static void manageBan(String playerName) {
+        playerName = playerName.toLowerCase(Locale.ENGLISH);
         Date now = new Date();
 
-        if (!dataConfig.node(player.toString()).virtual()) {
+        if (!dataConfig.node(playerName).virtual()) {
             SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", new Locale("us"));
 
             try {
-                Date date = sdf.parse(dataConfig.node(player.toString()).getString());
+                Date date = sdf.parse(dataConfig.node(playerName).getString());
 
                 if (now.after(date) || (now.equals(date))) {
-                    unShadowBanPlayer(player);
+                    unShadowBanPlayer(playerName);
                 }
             } catch (ParseException e) {
                 e.printStackTrace();

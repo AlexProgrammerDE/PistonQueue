@@ -85,17 +85,6 @@ public interface MainCommandShared {
                     return;
                 }
 
-                Optional<PlayerWrapper> optionalBanPlayer = plugin.getPlayer(args[1]);
-                if (!optionalBanPlayer.isPresent()) {
-                    sendLine(sender);
-                    sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(getWrapperFactory().text("The player " + args[1] + " was not found!").color(TextColorWrapper.GOLD));
-                    sendLine(sender);
-                    return;
-                }
-
-                PlayerWrapper banPlayer = optionalBanPlayer.get();
-
                 if (args.length == 2) {
                     sendBanHelp(sender);
                     return;
@@ -125,15 +114,16 @@ public interface MainCommandShared {
                     return;
                 }
 
-                if (StorageTool.shadowBanPlayer(banPlayer.getUniqueId(), calendar.getTime())) {
+                String banPlayerName = args[1];
+                if (StorageTool.shadowBanPlayer(banPlayerName, calendar.getTime())) {
                     sendLine(sender);
                     sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(getWrapperFactory().text("Successfully shadowbanned " + banPlayer.getName() + "!").color(TextColorWrapper.GREEN));
+                    sender.sendMessage(getWrapperFactory().text("Successfully shadowbanned " + banPlayerName + "!").color(TextColorWrapper.GREEN));
                     sendLine(sender);
                 } else {
                     sendLine(sender);
                     sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(getWrapperFactory().text(banPlayer.getName() + " is already shadowbanned!").color(TextColorWrapper.RED));
+                    sender.sendMessage(getWrapperFactory().text(banPlayerName + " is already shadowbanned!").color(TextColorWrapper.RED));
                     sendLine(sender);
                 }
 
@@ -149,33 +139,22 @@ public interface MainCommandShared {
                     return;
                 }
 
-                Optional<PlayerWrapper> optionalUnBanPlayer = plugin.getPlayer(args[1]);
-                if (!optionalUnBanPlayer.isPresent()) {
+                String unBanPlayerName = args[1];
+                if (StorageTool.unShadowBanPlayer(unBanPlayerName)) {
                     sendLine(sender);
                     sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(getWrapperFactory().text("The player " + args[1] + " was not found!").color(TextColorWrapper.GOLD));
-                    sendLine(sender);
-                    return;
-                }
-
-                PlayerWrapper unBanPlayer = optionalUnBanPlayer.get();
-
-                if (StorageTool.unShadowBanPlayer(unBanPlayer.getUniqueId())) {
-                    sendLine(sender);
-                    sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(getWrapperFactory().text("Successfully unshadowbanned " + unBanPlayer.getName() + "!").color(TextColorWrapper.GREEN));
+                    sender.sendMessage(getWrapperFactory().text("Successfully unshadowbanned " + unBanPlayerName + "!").color(TextColorWrapper.GREEN));
                     sendLine(sender);
                 } else {
                     sendLine(sender);
                     sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(getWrapperFactory().text(unBanPlayer.getName() + " is already shadowbanned!").color(TextColorWrapper.RED));
+                    sender.sendMessage(getWrapperFactory().text(unBanPlayerName + " is not shadowbanned!").color(TextColorWrapper.RED));
                     sendLine(sender);
                 }
 
                 return;
             default: {
                 help(sender);
-                return;
             }
         }
     }
