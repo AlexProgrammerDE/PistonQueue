@@ -3,8 +3,10 @@ plugins {
     id("net.kyori.blossom")
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
 blossom {
     replaceToken("{version}", version)

@@ -19,11 +19,15 @@ teamName: "%player_name%" # The team name the user sees. (Valid placeholders: %p
 
 playXP: true # Plays an XP sound when the proxy sends a plugin message.
 
+preventExperience: true # Prevents players from gaining experience.
+preventDamage: true # Prevents players from getting damage.
+preventHunger: true # Prevents players from gaining hunger.
+
 # ProtocolLib only
 disableDebug: true # Doesn't show the clients position on F3.
-noChunk: true # Do not send chunk data packets.
-noTime: true # Do not send time packets.
-noHealth: true # Do not send health packets.
-noAdvancements: true # Do not send advancement packets.
-noExperience: true # Do not send experience packets.
-showHead: true # Does not send entity metadata anymore, causing that the entire player head is shown while in spectator.
+noChunkPackets: true # Do not send chunk data packets.
+noTimePackets: true # Do not send time packets.
+noHealthPackets: true # Do not send health packets.
+noAdvancementPackets: true # Do not send advancement packets.
+noExperiencePackets: true # Do not send experience packets.
+showHeadPacket: true # Does not send entity metadata anymore, causing that the entire player head is shown while in spectator.

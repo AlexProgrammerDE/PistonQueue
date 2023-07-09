@@ -1,7 +1,3 @@
-plugins {
-    id("pq.platform-conventions")
-}
-
 dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.2")
 

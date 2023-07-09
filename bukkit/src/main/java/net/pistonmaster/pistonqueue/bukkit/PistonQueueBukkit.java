@@ -39,16 +39,24 @@ public final class PistonQueueBukkit extends JavaPlugin {
     private boolean restrictMovement;
     private boolean forceGamemode;
     private String forcedGamemode;
-    private boolean protocolLib;
-    private boolean disableDebug;
+
     private boolean team;
     private String teamName;
-    private boolean noChunk;
-    private boolean noTime;
-    private boolean noHealth;
-    private boolean noAdvancements;
-    private boolean noExperience;
-    private boolean showHead;
+
+    private boolean preventExperience;
+    private boolean preventDamage;
+    private boolean preventHunger;
+
+    private boolean protocolLib;
+    private boolean disableDebug;
+
+    private boolean noChunkPackets;
+    private boolean noTimePackets;
+    private boolean noHealthPackets;
+    private boolean noAdvancementPackets;
+    private boolean noExperiencePackets;
+    private boolean showHeadPacket;
+
     private boolean playXP;
 
     @Override
@@ -69,15 +77,22 @@ public final class PistonQueueBukkit extends JavaPlugin {
         disableChat = getConfig().getBoolean("disableChat");
         disableCmd = getConfig().getBoolean("disableCmd");
         forcedGamemode = getConfig().getString("forcedGamemode");
-        disableDebug = getConfig().getBoolean("disableDebug");
         team = getConfig().getBoolean("team");
         teamName = getConfig().getString("teamName");
-        noChunk = getConfig().getBoolean("noChunk");
-        noTime = getConfig().getBoolean("noTime");
-        noHealth = getConfig().getBoolean("noHealth");
-        noAdvancements = getConfig().getBoolean("noAdvancements");
-        noExperience = getConfig().getBoolean("noExperience");
-        showHead = getConfig().getBoolean("showHead");
+
+        preventExperience = getConfig().getBoolean("preventExperience");
+        preventDamage = getConfig().getBoolean("preventDamage");
+        preventHunger = getConfig().getBoolean("preventHunger");
+
+        disableDebug = getConfig().getBoolean("disableDebug");
+
+        noChunkPackets = getConfig().getBoolean("noChunkPackets");
+        noTimePackets = getConfig().getBoolean("noTimePackets");
+        noHealthPackets = getConfig().getBoolean("noHealthPackets");
+        noAdvancementPackets = getConfig().getBoolean("noAdvancementPackets");
+        noExperiencePackets = getConfig().getBoolean("noExperiencePackets");
+        showHeadPacket = getConfig().getBoolean("showHeadPacket");
+
         playXP = getConfig().getBoolean("playXP");
 
         getLogger().info(ChatColor.BLUE + "Preparing server");

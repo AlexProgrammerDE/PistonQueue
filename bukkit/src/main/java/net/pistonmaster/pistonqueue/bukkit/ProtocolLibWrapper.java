@@ -28,8 +28,6 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.InvocationTargetException;
-
 public final class ProtocolLibWrapper {
     private ProtocolLibWrapper() {
     }
@@ -49,52 +47,58 @@ public final class ProtocolLibWrapper {
     public static void setupProtocolLib(PistonQueueBukkit plugin) {
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
-        if (plugin.isNoChunk())
+        if (plugin.isNoChunkPackets()){
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.MAP_CHUNK) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
                     event.setCancelled(true);
                 }
             });
+        }
 
-        if (plugin.isNoTime())
+        if (plugin.isNoTimePackets()) {
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_TIME) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
                     event.setCancelled(true);
                 }
             });
+        }
 
-        if (plugin.isNoHealth())
+        if (plugin.isNoHealthPackets()) {
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_HEALTH) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
                     event.setCancelled(true);
                 }
             });
+        }
 
-        if (plugin.isNoAdvancements())
+        if (plugin.isNoAdvancementPackets()) {
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ADVANCEMENTS) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
                     event.setCancelled(true);
                 }
             });
+        }
 
-        if (plugin.isNoExperience())
+        if (plugin.isNoExperiencePackets()) {
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.EXPERIENCE) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
                     event.setCancelled(true);
                 }
             });
+        }
 
-        if (plugin.isShowHead())
+        if (plugin.isShowHeadPacket()) {
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
                 @Override
                 public void onPacketSending(PacketEvent event) {
                     event.setCancelled(true);
                 }
             });
+        }
     }
 }

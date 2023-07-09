@@ -5,8 +5,14 @@ plugins {
     id("net.kyori.indra.publishing")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 dependencies {
     implementation("org.jetbrains:annotations:24.0.1")
+
     compileOnly("org.projectlombok:lombok:1.18.28")
     annotationProcessor("org.projectlombok:lombok:1.18.28")
 }
@@ -17,10 +23,7 @@ tasks {
     }
 }
 
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
-
-tasks.withType<JavaCompile>() {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     options.compilerArgs.add("-Xlint:all,-serial,-processing")
 }
@@ -49,11 +52,6 @@ indra {
                     url.set("https://pistonmaster.net")
                 }
             }
-        }
-
-        versionMapping {
-            usage(Usage.JAVA_API) { fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME) }
-            usage(Usage.JAVA_RUNTIME) { fromResolutionResult() }
         }
     }
 }

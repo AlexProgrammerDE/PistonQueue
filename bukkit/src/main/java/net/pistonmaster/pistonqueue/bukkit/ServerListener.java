@@ -24,9 +24,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByBlockEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
@@ -39,26 +44,28 @@ import java.util.logging.Level;
 public final class ServerListener implements Listener {
     private final PistonQueueBukkit plugin;
 
-    @EventHandler
-    public void onPlayerJoin1(PlayerJoinEvent e) {
-        Player player = e.getPlayer();
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
 
         if (isExcluded(player)) {
-            player.sendMessage(ChatColor.GOLD + "Due to your permissions, you've been excluded from the queue movement and gamemode restrictions.");
+            player.sendMessage(ChatColor.GOLD + "Due to your permissions, you've been excluded from the queue restrictions.");
 
             return;
         }
 
-        if (plugin.isForceGamemode())
+        if (plugin.isForceGamemode()) {
             player.setGameMode(GameMode.valueOf(plugin.getForcedGamemode().toUpperCase()));
+        }
 
-        if (plugin.isHidePlayers())
+        if (plugin.isHidePlayers()) {
             plugin.getServer().getOnlinePlayers().forEach(onlinePlayer -> {
                 player.hidePlayer(plugin, onlinePlayer);
-                onlinePlayer.hidePlayer(plugin, e.getPlayer());
+                onlinePlayer.hidePlayer(plugin, event.getPlayer());
 
-                e.setJoinMessage(null);
+                event.setJoinMessage(null);
             });
+        }
 
         if (plugin.isTeam()) {
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -74,47 +81,99 @@ public final class ServerListener implements Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> team.addEntry(player.getName()), 20L);
         }
 
-        if (plugin.isForceLocation())
+        if (plugin.isForceLocation()) {
             player.teleport(Objects.requireNonNull(generateForcedLocation()));
-    }
+        }
 
-    @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent e) {
-        if (plugin.isHidePlayers())
-            e.setQuitMessage(null);
-    }
-
-    @EventHandler
-    public void onPlayerSpawn(PlayerRespawnEvent e) {
-        if (plugin.isForceLocation() && !isExcluded(e.getPlayer()))
-            e.setRespawnLocation(Objects.requireNonNull(generateForcedLocation()));
-    }
-
-    @EventHandler
-    public void onChat(AsyncPlayerChatEvent e) {
-        if (plugin.isDisableChat()) e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onCmd(PlayerCommandPreprocessEvent e) {
-        if (plugin.isDisableCmd()) e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onMove(PlayerMoveEvent e) {
-        if (plugin.isRestrictMovement() && !isExcluded(e.getPlayer()))
-            e.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
         if (plugin.isProtocolLib() && plugin.isDisableDebug()) {
-            ProtocolLibWrapper.removeDebug(e.getPlayer());
+            ProtocolLibWrapper.removeDebug(player);
         }
     }
 
-    private boolean isExcluded(Player player) {
-        return (player.isOp() || player.hasPermission("queue.admin"));
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        if (plugin.isHidePlayers()) {
+            event.setQuitMessage(null);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        if (plugin.isForceLocation() && !isExcluded(event.getPlayer())) {
+            event.setRespawnLocation(Objects.requireNonNull(generateForcedLocation()));
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerHunger(FoodLevelChangeEvent event) {
+        if (plugin.isPreventHunger() && !isExcluded(event.getEntity())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerHunger(PlayerExpChangeEvent event) {
+        if (plugin.isPreventHunger() && !isExcluded(event.getPlayer())) {
+            event.setAmount(0);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+
+        if (plugin.isPreventDamage() && !isExcluded(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerDamage(EntityDamageByBlockEvent event) {
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+
+        if (plugin.isPreventDamage() && !isExcluded(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player player)) {
+            return;
+        }
+
+        if (plugin.isPreventDamage() && !isExcluded(player)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onChat(AsyncPlayerChatEvent event) {
+        if (plugin.isDisableChat()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onCmd(PlayerCommandPreprocessEvent event) {
+        if (plugin.isDisableCmd()) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onMove(PlayerMoveEvent event) {
+        if (plugin.isRestrictMovement() && !isExcluded(event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    private boolean isExcluded(HumanEntity player) {
+        return player.hasPermission("queue.admin");
     }
 
     private Location generateForcedLocation() {
