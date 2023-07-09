@@ -95,8 +95,7 @@ public final class QueueListenerVelocity extends QueueListenerShared {
 
             @Override
             public void setKickMessage(String message) {
-                if (event.getResult() instanceof KickedFromServerEvent.DisconnectPlayer)
-                    event.setResult(KickedFromServerEvent.DisconnectPlayer.create(ChatUtils.parseToComponent(message)));
+                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(ChatUtils.parseToComponent(message)));
             }
 
             @Override
@@ -112,6 +111,11 @@ public final class QueueListenerVelocity extends QueueListenerShared {
             @Override
             public Optional<String> getKickReason() {
                 return event.getServerKickReason().map(LegacyComponentSerializer.legacySection()::serialize);
+            }
+
+            @Override
+            public boolean willDisconnect() {
+                return event.getResult().isAllowed();
             }
         };
     }

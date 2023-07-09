@@ -58,22 +58,27 @@ public abstract class QueueListenerShared {
         if (Config.IF_TARGET_DOWN_SEND_TO_QUEUE && event.getKickedFrom().equals(Config.TARGET_SERVER)) {
             Optional<String> optionalKickReason = event.getKickReason();
 
-            if (optionalKickReason.isPresent()) {
-                for (String str : Config.DOWN_WORD_LIST) {
-                    if (!optionalKickReason.get().toLowerCase().contains(str))
-                        continue;
-
-                    event.setCancelServer(Config.QUEUE_SERVER);
-
-                    event.getPlayer().sendMessage(Config.IF_TARGET_DOWN_SEND_TO_QUEUE_MESSAGE);
-
-                    QueueType.getQueueType(event.getPlayer()::hasPermission).getQueueMap().put(event.getPlayer().getUniqueId(), event.getKickedFrom());
-                    break;
-                }
+            if (!optionalKickReason.isPresent()) {
+                return;
             }
+
+            String kickReason = optionalKickReason.get().toLowerCase(Locale.ENGLISH);
+
+            Config.DOWN_WORD_LIST.stream()
+                    .filter(word -> kickReason.contains(word.toLowerCase(Locale.ENGLISH)))
+                    .findFirst()
+                    .ifPresent(word -> {
+                        event.setCancelServer(Config.QUEUE_SERVER);
+
+                        event.getPlayer().sendMessage(Config.IF_TARGET_DOWN_SEND_TO_QUEUE_MESSAGE);
+
+                        QueueType.getQueueType(event.getPlayer()::hasPermission)
+                                .getQueueMap()
+                                .put(event.getPlayer().getUniqueId(), event.getKickedFrom());
+                    });
         }
 
-        if (Config.ENABLE_KICK_MESSAGE) {
+        if (Config.ENABLE_KICK_MESSAGE && event.willDisconnect()) {
             event.setKickMessage(Config.KICK_MESSAGE);
         }
     }

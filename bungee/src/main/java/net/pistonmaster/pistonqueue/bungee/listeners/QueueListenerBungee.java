@@ -110,6 +110,11 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
             public Optional<String> getKickReason() {
                 return Optional.ofNullable(event.getKickReasonComponent()).map(TextComponent::toLegacyText);
             }
+
+            @Override
+            public boolean willDisconnect() {
+                return !event.isCancelled();
+            }
         };
     }
 
