@@ -62,6 +62,7 @@ DOWN_WORD_LIST:
   - "restarting"
   - "closed"
   - "went down"
+  - "unknown reason" # This is the default message when no message is sent.
 
 # If something went wrong while queue -> target happens should the player be sent back into queue?
 RECOVERY: true

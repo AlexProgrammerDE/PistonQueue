@@ -56,13 +56,9 @@ public abstract class QueueListenerShared {
 
     protected void onKick(PQKickedFromServerEvent event) {
         if (Config.IF_TARGET_DOWN_SEND_TO_QUEUE && event.getKickedFrom().equals(Config.TARGET_SERVER)) {
-            Optional<String> optionalKickReason = event.getKickReason();
-
-            if (!optionalKickReason.isPresent()) {
-                return;
-            }
-
-            String kickReason = optionalKickReason.get().toLowerCase(Locale.ENGLISH);
+            String kickReason = event.getKickReason()
+                    .map(s -> s.toLowerCase(Locale.ENGLISH))
+                    .orElse("unknown reason");
 
             Config.DOWN_WORD_LIST.stream()
                     .filter(word -> kickReason.contains(word.toLowerCase(Locale.ENGLISH)))
