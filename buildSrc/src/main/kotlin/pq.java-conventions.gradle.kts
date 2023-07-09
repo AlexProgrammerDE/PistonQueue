@@ -54,6 +54,13 @@ indra {
             }
         }
     }
+
+    javaVersions {
+        target(17)
+        strictVersions()
+        testWith(17)
+        minimumToolchain(17)
+    }
 }
 
 val repoName = if (version.toString().endsWith("SNAPSHOT")) "maven-snapshots" else "maven-releases"
