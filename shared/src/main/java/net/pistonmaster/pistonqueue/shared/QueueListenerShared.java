@@ -32,6 +32,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public abstract class QueueListenerShared {
@@ -192,8 +193,9 @@ public abstract class QueueListenerShared {
     private void connectPlayer(QueueType type) {
         int freeSlots = getFreeSlots(type);
 
-        if (freeSlots <= 0)
+        if (freeSlots <= 0) {
             return;
+        }
 
         if (freeSlots > Config.MAX_PLAYERS_PER_MOVE)
             freeSlots = Config.MAX_PLAYERS_PER_MOVE;
@@ -230,8 +232,9 @@ public abstract class QueueListenerShared {
 
             player.connect(entry.getValue());
 
-            if (--freeSlots <= 0)
+            if (--freeSlots <= 0) {
                 break;
+            }
         }
 
         if (Config.SEND_XP_SOUND) {
@@ -241,16 +244,15 @@ public abstract class QueueListenerShared {
 
     private void sendXPSoundToQueueType(QueueType type) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("xp");
+        out.writeUTF("xpV2");
 
-        int counter = 0;
-        for (UUID uuid : type.getQueueMap().keySet()) {
-            out.writeUTF(uuid.toString());
+        List<UUID> uuids = type.getQueueMap().keySet()
+                .stream()
+                .limit(5)
+                .collect(Collectors.toList());
 
-            if (++counter >= 5) {
-                break;
-            }
-        }
+        out.writeInt(uuids.size());
+        uuids.forEach(id -> out.writeUTF(id.toString()));
 
         plugin.getServer(Config.QUEUE_SERVER).ifPresent(server ->
                 server.sendPluginMessage("piston:queue", out.toByteArray()));

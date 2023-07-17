@@ -37,29 +37,27 @@ public final class QueuePluginMessageListener implements PluginMessageListener {
 
     @Override
     @SuppressWarnings("UnstableApiUsage")
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player player, byte[] message) {
+    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player messagePlayer, byte[] message) {
         if (!channel.equals("piston:queue")) return;
 
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subChannel = in.readUTF();
 
-        if (plugin.isPlayXP() && subChannel.equals("xp")) {
-            List<String> uuids = new ArrayList<>();
-            while (true) {
-                try {
-                    uuids.add(in.readUTF());
-                } catch (Exception e) {
-                    break;
-                }
+        if (plugin.isPlayXP() && subChannel.equals("xpV2")) {
+            List<UUID> uuids = new ArrayList<>();
+            int count = in.readInt();
+            for (int i = 0; i < count; i++) {
+                uuids.add(UUID.fromString(in.readUTF()));
             }
 
-            for (String uuid : uuids) {
-                Player p = plugin.getServer().getPlayer(UUID.fromString(uuid));
+            for (UUID uuid : uuids) {
+                Player target = plugin.getServer().getPlayer(uuid);
 
-                if (p == null)
+                if (target == null) {
                     continue;
+                }
 
-                p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 100.0F, 1.0F);
+                target.playSound(target.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 100.0F, 1.0F);
             }
         }
     }
