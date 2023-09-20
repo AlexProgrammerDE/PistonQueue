@@ -21,12 +21,15 @@ This fork aims at providing more features and a more stable queue system.
 
 ## Setup
 
-[Wiki](https://github.com/AlexProgrammerDE/PistonQueue/wiki)
-Check out the wiki for a tutorial on how to set up PistonQueue.
+Check out the [wiki](https://github.com/AlexProgrammerDE/PistonQueue/wiki) for a tutorial on how to set up PistonQueue.
 
-[![PistonDev Discord](https://discord.com/api/guilds/739784741124833301/widget.png?style=banner2)](https://discord.gg/CDrcxzH)
+## 🌈 Community
 
-If you find any bugs or ways to improve the plugin open an issue on GitHub.
+Feel free to join our Discord community server:
+
+[![Discord Banner](https://discord.com/api/guilds/739784741124833301/widget.png?style=banner2)](https://discord.gg/CDrcxzH)
+
+If you find any bugs or want to request new features, open a issue on GitHub.
 
 ## License
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue?ref=badge_large)
