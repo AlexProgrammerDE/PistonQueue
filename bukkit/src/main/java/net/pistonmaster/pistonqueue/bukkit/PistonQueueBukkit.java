@@ -59,6 +59,7 @@ public final class PistonQueueBukkit extends JavaPlugin {
 
     private boolean playXP;
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onEnable() {
         getLogger().info(ChatColor.BLUE + "PistonQueue V" + getDescription().getVersion());

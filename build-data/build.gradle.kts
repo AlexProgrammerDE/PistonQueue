@@ -8,8 +8,14 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-blossom {
-    replaceToken("{version}", version)
-    replaceToken("{description}", rootProject.description)
-    replaceToken("{url}", "https://pistonmaster.net/PistonQueue")
+sourceSets {
+    main {
+        blossom {
+            javaSources {
+                property("version", project.version.toString())
+                property("description", rootProject.description)
+                property("url", "https://pistonmaster.net/PistonQueue")
+            }
+        }
+    }
 }
