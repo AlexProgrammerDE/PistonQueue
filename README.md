@@ -29,7 +29,4 @@ Feel free to join our Discord community server:
 
 [![Discord Banner](https://discord.com/api/guilds/739784741124833301/widget.png?style=banner2)](https://discord.gg/CDrcxzH)
 
-This project is in active development, so if you have any feature requests or issues please submit them here on GitHub. PRs are welcome, too. :octocat:
-
-## License
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue?ref=badge_large)
+This project is in active development, so if you have any feature requests or issues please submit them here on GitHub. PRs are welcome, too. :octocat
