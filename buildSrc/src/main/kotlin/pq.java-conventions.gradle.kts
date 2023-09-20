@@ -13,8 +13,8 @@ java {
 dependencies {
     implementation("org.jetbrains:annotations:24.0.1")
 
-    compileOnly("org.projectlombok:lombok:1.18.28")
-    annotationProcessor("org.projectlombok:lombok:1.18.28")
+    compileOnly("org.projectlombok:lombok:1.18.30")
+    annotationProcessor("org.projectlombok:lombok:1.18.30")
 }
 
 tasks {
