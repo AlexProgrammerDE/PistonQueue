@@ -2,7 +2,6 @@ package net.pistonmaster.pistonqueue.placeholder;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-import io.papermc.lib.PaperLib;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -66,10 +65,19 @@ public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMe
     }
 
     private void checkIfBungee() {
-        if (!PaperLib.isSpigot()) {
-            getLogger().severe(ChatColor.RED + "You probably run CraftBukkit. Update at least to spigot for this plugin to work!");
+        if (!isSpigot()) {
+            getLogger().severe(ChatColor.RED + "You probably run CraftBukkit. Update at least to Spigot for this plugin to work!");
             getLogger().severe(ChatColor.RED + "Plugin disabled!");
             getServer().getPluginManager().disablePlugin(this);
+        }
+    }
+
+    private boolean isSpigot() {
+        try {
+            Class.forName("org.spigotmc.SpigotConfig");
+            return true;
+        } catch (ClassNotFoundException e) {
+            return false;
         }
     }
 }

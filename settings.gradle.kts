@@ -38,6 +38,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "PistonQueue"
 
+includeBuild("PistonQueuePlaceholder")
+
 setOf(
     "build-data",
     "shared",

@@ -32,7 +32,7 @@ public final class PAPIExpansion extends PlaceholderExpansion {
     }
 
     @Override
-    public String onRequest(OfflinePlayer player, String identifier) {
+    public String onRequest(OfflinePlayer player, @NotNull String identifier) {
         for (Map.Entry<String, Integer> entry : plugin.getOnlineQueue().entrySet()) {
             if (identifier.equalsIgnoreCase("online_queue_" + entry.getKey())) {
                 return String.valueOf(entry.getValue());
