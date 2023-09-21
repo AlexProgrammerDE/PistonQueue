@@ -1,6 +1,6 @@
 # PistonQueue
 
-[![PistonDev Discord](https://discord.com/api/guilds/739784741124833301/embed.png)](https://discord.gg/CDrcxzH)
+[![PistonDev Discord](https://discord.com/api/guilds/739784741124833301/embed.png)](https://discord.gg/J9bmJNuTJm)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue?ref=badge_shield)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://github.com/AlexProgrammerDE/PistonQueue)
 
@@ -27,6 +27,6 @@ Check out the [wiki](https://github.com/AlexProgrammerDE/PistonQueue/wiki) for a
 
 Feel free to join our Discord community server:
 
-[![Discord Banner](https://discord.com/api/guilds/739784741124833301/widget.png?style=banner2)](https://discord.gg/CDrcxzH)
+[![Discord Banner](https://discord.com/api/guilds/739784741124833301/widget.png?style=banner2)](https://discord.gg/J9bmJNuTJm)
 
 This project is in active development, so if you have any feature requests or issues please submit them here on GitHub. PRs are welcome, too. :octocat
