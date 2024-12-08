@@ -7,7 +7,7 @@
 ## About
 
 PistonQueue is a basic and easy to use queue plugin designed for anarchy and survival servers. 
-This plugin is a fork of LeeesBungeeQueue, which is very bulky and does lack many features. 
+This plugin is a fork of LeeesBungeeQueue, which is outdated. 
 This fork aims at providing more features and a more stable queue system.
 
 ## Features
