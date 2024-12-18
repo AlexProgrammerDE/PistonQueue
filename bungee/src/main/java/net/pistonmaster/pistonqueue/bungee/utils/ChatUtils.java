@@ -34,19 +34,11 @@ public final class ChatUtils {
     private ChatUtils() {
     }
 
-    public static void sendMessage(ProxiedPlayer p, String str) {
-        sendMessage(MessageType.CHAT, p, str);
-    }
-
     public static void sendMessage(MessageType type, ProxiedPlayer p, String str) {
         if (!str.equalsIgnoreCase("/")) {
             switch (type) {
-                case CHAT:
-                    p.sendMessage(ChatMessageType.CHAT, parseToComponent(str));
-                    break;
-                case ACTION_BAR:
-                    p.sendMessage(ChatMessageType.ACTION_BAR, parseToComponent(str));
-                    break;
+                case CHAT -> p.sendMessage(ChatMessageType.CHAT, parseToComponent(str));
+                case ACTION_BAR -> p.sendMessage(ChatMessageType.ACTION_BAR, parseToComponent(str));
             }
         }
     }

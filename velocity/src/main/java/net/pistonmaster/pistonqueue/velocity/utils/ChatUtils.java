@@ -32,19 +32,11 @@ public final class ChatUtils {
     private ChatUtils() {
     }
 
-    public static void sendMessage(Player p, String str) {
-        sendMessage(MessageType.CHAT, p, str);
-    }
-
     public static void sendMessage(MessageType type, Player p, String str) {
         if (!str.equalsIgnoreCase("/")) {
             switch (type) {
-                case CHAT:
-                    p.sendMessage(parseToComponent(str));
-                    break;
-                case ACTION_BAR:
-                    p.sendActionBar(parseToComponent(str));
-                    break;
+                case CHAT -> p.sendMessage(parseToComponent(str));
+                case ACTION_BAR -> p.sendActionBar(parseToComponent(str));
             }
         }
     }

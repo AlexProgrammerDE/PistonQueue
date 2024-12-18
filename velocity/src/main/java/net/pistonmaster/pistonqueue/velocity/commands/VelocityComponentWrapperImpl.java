@@ -19,8 +19,6 @@
  */
 package net.pistonmaster.pistonqueue.velocity.commands;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -28,11 +26,7 @@ import net.pistonmaster.pistonqueue.shared.ComponentWrapper;
 import net.pistonmaster.pistonqueue.shared.TextColorWrapper;
 import net.pistonmaster.pistonqueue.shared.TextDecorationWrapper;
 
-@Getter
-@RequiredArgsConstructor
-public final class VelocityComponentWrapperImpl implements ComponentWrapper {
-    private final Component mainComponent;
-
+public record VelocityComponentWrapperImpl(Component mainComponent) implements ComponentWrapper {
     @Override
     public ComponentWrapper append(String text) {
         return new VelocityComponentWrapperImpl(mainComponent.append(Component.text(text)));
@@ -40,27 +34,17 @@ public final class VelocityComponentWrapperImpl implements ComponentWrapper {
 
     @Override
     public ComponentWrapper append(ComponentWrapper component) {
-        return new VelocityComponentWrapperImpl(mainComponent.append(((VelocityComponentWrapperImpl) component).getMainComponent()));
+        return new VelocityComponentWrapperImpl(mainComponent.append(((VelocityComponentWrapperImpl) component).mainComponent()));
     }
 
     @Override
     public ComponentWrapper color(TextColorWrapper color) {
-        NamedTextColor namedTextColor = null;
-
-        switch (color) {
-            case GOLD:
-                namedTextColor = NamedTextColor.GOLD;
-                break;
-            case RED:
-                namedTextColor = NamedTextColor.RED;
-                break;
-            case DARK_BLUE:
-                namedTextColor = NamedTextColor.DARK_BLUE;
-                break;
-            case GREEN:
-                namedTextColor = NamedTextColor.GREEN;
-                break;
-        }
+        NamedTextColor namedTextColor = switch (color) {
+            case GOLD -> NamedTextColor.GOLD;
+            case RED -> NamedTextColor.RED;
+            case DARK_BLUE -> NamedTextColor.DARK_BLUE;
+            case GREEN -> NamedTextColor.GREEN;
+        };
 
         return new VelocityComponentWrapperImpl(mainComponent.color(namedTextColor));
     }

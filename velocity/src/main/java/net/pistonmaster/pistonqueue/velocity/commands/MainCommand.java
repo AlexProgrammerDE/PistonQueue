@@ -43,7 +43,7 @@ public final class MainCommand implements SimpleCommand, MainCommandShared {
         onCommand(new CommandSourceWrapper() {
             @Override
             public void sendMessage(ComponentWrapper component) {
-                sender.sendMessage(((VelocityComponentWrapperImpl) component).getMainComponent());
+                sender.sendMessage(((VelocityComponentWrapperImpl) component).mainComponent());
             }
 
             @Override
