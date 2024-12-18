@@ -46,8 +46,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@Getter
 public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin {
-    @Getter
     private final QueueListenerBungee queueListenerBungee = new QueueListenerBungee(this);
 
     @Override

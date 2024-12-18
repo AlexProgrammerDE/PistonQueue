@@ -34,6 +34,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
 import java.util.Objects;
@@ -67,8 +68,9 @@ public final class ServerListener implements Listener {
             });
         }
 
-        if (plugin.isTeam()) {
-            Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        ScoreboardManager manager = Bukkit.getScoreboardManager();
+        if (plugin.isTeam() && manager != null) {
+            Scoreboard scoreboard = manager.getNewScoreboard();
 
             Team team = scoreboard.registerNewTeam(plugin.getTeamName()
                     .replace("%player_name%", player.getName())
