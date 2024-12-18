@@ -4,16 +4,10 @@ plugins {
 }
 
 repositories {
-    maven {
-        url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    }
-    maven {
-        url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-    }
-    maven {
-        url = uri("https://papermc.io/repo/repository/maven-public/")
-    }
     mavenCentral()
+    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://papermc.io/repo/repository/maven-public/")
 }
 
 dependencies {
@@ -27,8 +21,12 @@ dependencies {
 group = "net.pistonmaster"
 version = "3.0.0-SNAPSHOT"
 description = "PistonQueuePlaceholder"
-java.sourceCompatibility = JavaVersion.VERSION_1_8
-java.targetCompatibility = JavaVersion.VERSION_1_8
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
