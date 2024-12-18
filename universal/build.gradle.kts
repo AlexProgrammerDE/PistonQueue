@@ -1,5 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
+plugins {
+    id("pq.java-conventions")
+}
+
 val platforms = setOf(
     rootProject.projects.pistonqueueBukkit,
     rootProject.projects.pistonqueueBungee,

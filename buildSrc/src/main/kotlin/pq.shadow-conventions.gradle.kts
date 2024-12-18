@@ -5,11 +5,6 @@ plugins {
     id("com.github.johnrengelman.shadow")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
 tasks {
     jar {
         archiveClassifier.set("unshaded")

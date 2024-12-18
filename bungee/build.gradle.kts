@@ -1,3 +1,7 @@
+plugins {
+    id("pq.platform-conventions")
+}
+
 dependencies {
     implementation(projects.pistonqueueShared)
 

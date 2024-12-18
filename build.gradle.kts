@@ -13,21 +13,3 @@ tasks.create("outputVersion") {
         println(project.version)
     }
 }
-
-val platforms = setOf(
-    projects.pistonqueueBukkit,
-    projects.pistonqueueBungee,
-    projects.pistonqueueVelocity
-).map { it.dependencyProject }
-
-val special = setOf(
-    projects.pistonqueueUniversal,
-    projects.pistonqueueShared
-).map { it.dependencyProject }
-
-subprojects {
-    when (this) {
-        in platforms -> plugins.apply("pq.platform-conventions")
-        in special -> plugins.apply("pq.java-conventions")
-    }
-}

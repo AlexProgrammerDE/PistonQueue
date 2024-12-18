@@ -6,8 +6,9 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
 
 dependencies {
@@ -56,10 +57,10 @@ indra {
     }
 
     javaVersions {
-        target(17)
+        target(21)
         strictVersions()
-        testWith(17)
-        minimumToolchain(17)
+        testWith(21)
+        minimumToolchain(21)
     }
 }
 
