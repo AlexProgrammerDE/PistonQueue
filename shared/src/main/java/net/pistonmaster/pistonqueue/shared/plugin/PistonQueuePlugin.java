@@ -239,10 +239,10 @@ public interface PistonQueuePlugin {
         networkPlayers.forEach(player -> player.getCurrentServer().ifPresent(servers::add));
 
         for (String server : servers) {
-            getServer(server).ifPresent(serverInfoWrapper ->
-                    serverInfoWrapper.sendPluginMessage("piston:queue", outOnlineQueue.toByteArray()));
-            getServer(server).ifPresent(serverInfoWrapper ->
-                    serverInfoWrapper.sendPluginMessage("piston:queue", outOnlineTarget.toByteArray()));
+            getServer(server).ifPresent(serverInfoWrapper -> {
+                serverInfoWrapper.sendPluginMessage("piston:queue", outOnlineQueue.toByteArray());
+                serverInfoWrapper.sendPluginMessage("piston:queue", outOnlineTarget.toByteArray());
+            });
         }
     }
 
