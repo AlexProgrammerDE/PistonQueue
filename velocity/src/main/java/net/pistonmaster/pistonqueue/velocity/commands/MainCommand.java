@@ -59,7 +59,7 @@ public final class MainCommand implements SimpleCommand, MainCommandShared {
     }
 
     @Override
-    public ComponentWrapperFactory getWrapperFactory() {
+    public ComponentWrapperFactory component() {
         return text -> new VelocityComponentWrapperImpl(Component.text(text));
     }
 }

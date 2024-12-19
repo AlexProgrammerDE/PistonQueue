@@ -58,7 +58,7 @@ public final class MainCommand extends Command implements TabExecutor, MainComma
     }
 
     @Override
-    public ComponentWrapperFactory getWrapperFactory() {
+    public ComponentWrapperFactory component() {
         return text -> new BungeeComponentWrapperImpl(new ComponentBuilder(text));
     }
 }

@@ -34,17 +34,17 @@ public interface MainCommandShared {
         switch (args[0].toLowerCase()) {
             case "version":
                 sendLine(sender);
-                sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                sender.sendMessage(getWrapperFactory().text("Version " + plugin.getVersion() + " by").color(TextColorWrapper.GOLD));
-                sender.sendMessage(getWrapperFactory().text(String.join(", ", plugin.getAuthors())).color(TextColorWrapper.GOLD));
+                sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+                sender.sendMessage(component().text("Version " + plugin.getVersion() + " by").color(TextColorWrapper.GOLD));
+                sender.sendMessage(component().text(String.join(", ", plugin.getAuthors())).color(TextColorWrapper.GOLD));
                 sendLine(sender);
                 return;
             case "stats":
                 sendLine(sender);
-                sender.sendMessage(getWrapperFactory().text("Queue stats").color(TextColorWrapper.GOLD));
+                sender.sendMessage(component().text("Queue stats").color(TextColorWrapper.GOLD));
                 for (QueueType type : Config.QUEUE_TYPES) {
-                    sender.sendMessage(getWrapperFactory().text(type.getName() + ": ").color(TextColorWrapper.GOLD)
-                            .append(getWrapperFactory().text(String.valueOf(type.getQueueMap().size())).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+                    sender.sendMessage(component().text(type.getName() + ": ").color(TextColorWrapper.GOLD)
+                            .append(component().text(String.valueOf(type.getQueueMap().size())).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
                 }
                 sendLine(sender);
                 return;
@@ -55,9 +55,9 @@ public interface MainCommandShared {
                 }
 
                 sendLine(sender);
-                sender.sendMessage(getWrapperFactory().text("Target slot stats").color(TextColorWrapper.GOLD));
+                sender.sendMessage(component().text("Target slot stats").color(TextColorWrapper.GOLD));
                 for (QueueType type : Config.QUEUE_TYPES) {
-                    sender.sendMessage(getWrapperFactory().text(type.getName() + ": ").color(TextColorWrapper.GOLD).append(getWrapperFactory().text(type.getPlayersWithTypeInTarget().get() + " / " + type.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+                    sender.sendMessage(component().text(type.getName() + ": ").color(TextColorWrapper.GOLD).append(component().text(type.getPlayersWithTypeInTarget().get() + " / " + type.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
                 }
                 sendLine(sender);
                 return;
@@ -70,8 +70,8 @@ public interface MainCommandShared {
                 plugin.processConfig(plugin.getDataDirectory());
 
                 sendLine(sender);
-                sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                sender.sendMessage(getWrapperFactory().text("Config reloaded").color(TextColorWrapper.GREEN));
+                sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+                sender.sendMessage(component().text("Config reloaded").color(TextColorWrapper.GREEN));
                 sendLine(sender);
                 return;
             case "shadowban":
@@ -117,13 +117,13 @@ public interface MainCommandShared {
                 String banPlayerName = args[1];
                 if (StorageTool.shadowBanPlayer(banPlayerName, calendar.getTime())) {
                     sendLine(sender);
-                    sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(getWrapperFactory().text("Successfully shadowbanned " + banPlayerName + "!").color(TextColorWrapper.GREEN));
+                    sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+                    sender.sendMessage(component().text("Successfully shadowbanned " + banPlayerName + "!").color(TextColorWrapper.GREEN));
                     sendLine(sender);
                 } else {
                     sendLine(sender);
-                    sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(getWrapperFactory().text(banPlayerName + " is already shadowbanned!").color(TextColorWrapper.RED));
+                    sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+                    sender.sendMessage(component().text(banPlayerName + " is already shadowbanned!").color(TextColorWrapper.RED));
                     sendLine(sender);
                 }
 
@@ -142,13 +142,13 @@ public interface MainCommandShared {
                 String unBanPlayerName = args[1];
                 if (StorageTool.unShadowBanPlayer(unBanPlayerName)) {
                     sendLine(sender);
-                    sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(getWrapperFactory().text("Successfully unshadowbanned " + unBanPlayerName + "!").color(TextColorWrapper.GREEN));
+                    sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+                    sender.sendMessage(component().text("Successfully unshadowbanned " + unBanPlayerName + "!").color(TextColorWrapper.GREEN));
                     sendLine(sender);
                 } else {
                     sendLine(sender);
-                    sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(getWrapperFactory().text(unBanPlayerName + " is not shadowbanned!").color(TextColorWrapper.RED));
+                    sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+                    sender.sendMessage(component().text(unBanPlayerName + " is not shadowbanned!").color(TextColorWrapper.RED));
                     sendLine(sender);
                 }
 
@@ -161,24 +161,24 @@ public interface MainCommandShared {
 
     default void noPermission(CommandSourceWrapper sender) {
         sendLine(sender);
-        sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-        sender.sendMessage(getWrapperFactory().text("You do not").color(TextColorWrapper.RED));
-        sender.sendMessage(getWrapperFactory().text("have permission").color(TextColorWrapper.RED));
+        sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("You do not").color(TextColorWrapper.RED));
+        sender.sendMessage(component().text("have permission").color(TextColorWrapper.RED));
         sendLine(sender);
     }
 
     default void help(CommandSourceWrapper sender) {
         sendLine(sender);
-        sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-        sender.sendMessage(getWrapperFactory().text("/pq help").color(TextColorWrapper.GOLD));
-        sender.sendMessage(getWrapperFactory().text("/pq version").color(TextColorWrapper.GOLD));
-        sender.sendMessage(getWrapperFactory().text("/pq stats").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("/pq help").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("/pq version").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("/pq stats").color(TextColorWrapper.GOLD));
 
         if (sender.hasPermission(Config.ADMIN_PERMISSION)) {
-            sender.sendMessage(getWrapperFactory().text("/pq slotstats").color(TextColorWrapper.GOLD));
-            sender.sendMessage(getWrapperFactory().text("/pq reload").color(TextColorWrapper.GOLD));
-            sender.sendMessage(getWrapperFactory().text("/pq shadowban").color(TextColorWrapper.GOLD));
-            sender.sendMessage(getWrapperFactory().text("/pq unshadowban").color(TextColorWrapper.GOLD));
+            sender.sendMessage(component().text("/pq slotstats").color(TextColorWrapper.GOLD));
+            sender.sendMessage(component().text("/pq reload").color(TextColorWrapper.GOLD));
+            sender.sendMessage(component().text("/pq shadowban").color(TextColorWrapper.GOLD));
+            sender.sendMessage(component().text("/pq unshadowban").color(TextColorWrapper.GOLD));
         }
 
         sendLine(sender);
@@ -186,24 +186,24 @@ public interface MainCommandShared {
 
     default void sendBanHelp(CommandSourceWrapper sender) {
         sendLine(sender);
-        sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-        sender.sendMessage(getWrapperFactory().text("/pq shadowban player <d|h|m|s>").color(TextColorWrapper.GOLD));
-        sender.sendMessage(getWrapperFactory().text("Example:").color(TextColorWrapper.GOLD));
-        sender.sendMessage(getWrapperFactory().text("/pq shadowban Pistonmaster 2d").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("/pq shadowban player <d|h|m|s>").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("Example:").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("/pq shadowban Pistonmaster 2d").color(TextColorWrapper.GOLD));
         sendLine(sender);
     }
 
     default void sendUnBanHelp(CommandSourceWrapper sender) {
         sendLine(sender);
-        sender.sendMessage(getWrapperFactory().text("PistonQueue").color(TextColorWrapper.GOLD));
-        sender.sendMessage(getWrapperFactory().text("/pq unshadowban player").color(TextColorWrapper.GOLD));
-        sender.sendMessage(getWrapperFactory().text("Example:").color(TextColorWrapper.GOLD));
-        sender.sendMessage(getWrapperFactory().text("/pq unshadowban Pistonmaster").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("/pq unshadowban player").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("Example:").color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("/pq unshadowban Pistonmaster").color(TextColorWrapper.GOLD));
         sendLine(sender);
     }
 
     default void sendLine(CommandSourceWrapper sender) {
-        sender.sendMessage(getWrapperFactory().text("----------------").color(TextColorWrapper.DARK_BLUE));
+        sender.sendMessage(component().text("----------------").color(TextColorWrapper.DARK_BLUE));
     }
 
     default List<String> onTab(String[] args, PermissibleWrapper wrapper, PistonQueuePlugin plugin) {
@@ -243,5 +243,5 @@ public interface MainCommandShared {
         }
     }
 
-    ComponentWrapperFactory getWrapperFactory();
+    ComponentWrapperFactory component();
 }

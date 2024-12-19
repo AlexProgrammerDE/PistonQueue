@@ -38,21 +38,18 @@ public record BungeeComponentWrapperImpl(ComponentBuilder mainComponent) impleme
 
     @Override
     public ComponentWrapper color(TextColorWrapper color) {
-        ChatColor chatColor = switch (color) {
+        return new BungeeComponentWrapperImpl(mainComponent.color(switch (color) {
             case GOLD -> ChatColor.GOLD;
             case RED -> ChatColor.RED;
             case DARK_BLUE -> ChatColor.DARK_BLUE;
             case GREEN -> ChatColor.GREEN;
-        };
-
-        return new BungeeComponentWrapperImpl(mainComponent.color(chatColor));
+        }));
     }
 
     @Override
     public ComponentWrapper decorate(TextDecorationWrapper decoration) {
-        if (decoration == TextDecorationWrapper.BOLD) {
-            return new BungeeComponentWrapperImpl(mainComponent.bold(true));
-        }
-        throw new IllegalStateException("Unexpected value: " + decoration);
+        return new BungeeComponentWrapperImpl(switch (decoration) {
+            case BOLD -> mainComponent.bold(true);
+        });
     }
 }

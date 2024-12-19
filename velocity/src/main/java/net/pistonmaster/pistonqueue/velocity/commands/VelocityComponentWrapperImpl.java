@@ -39,26 +39,18 @@ public record VelocityComponentWrapperImpl(Component mainComponent) implements C
 
     @Override
     public ComponentWrapper color(TextColorWrapper color) {
-        NamedTextColor namedTextColor = switch (color) {
+        return new VelocityComponentWrapperImpl(mainComponent.color(switch (color) {
             case GOLD -> NamedTextColor.GOLD;
             case RED -> NamedTextColor.RED;
             case DARK_BLUE -> NamedTextColor.DARK_BLUE;
             case GREEN -> NamedTextColor.GREEN;
-        };
-
-        return new VelocityComponentWrapperImpl(mainComponent.color(namedTextColor));
+        }));
     }
 
     @Override
     public ComponentWrapper decorate(TextDecorationWrapper decoration) {
-        TextDecoration textDecoration;
-
-        if (decoration == TextDecorationWrapper.BOLD) {
-            textDecoration = TextDecoration.BOLD;
-        } else {
-            throw new IllegalStateException("Unexpected value: " + decoration);
-        }
-
-        return new VelocityComponentWrapperImpl(mainComponent.decorate(textDecoration));
+        return new VelocityComponentWrapperImpl(mainComponent.decorate(switch (decoration) {
+            case BOLD -> TextDecoration.BOLD;
+        }));
     }
 }
