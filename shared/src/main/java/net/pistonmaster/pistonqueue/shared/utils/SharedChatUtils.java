@@ -23,6 +23,7 @@ import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 
 import java.time.Duration;
+import java.util.Locale;
 
 public final class SharedChatUtils {
     private SharedChatUtils() {
@@ -39,7 +40,7 @@ public final class SharedChatUtils {
     public static String parseText(String text) {
         text = text.replace("%server_name%", Config.SERVER_NAME);
         for (QueueType type : Config.QUEUE_TYPES) {
-            text = text.replace("%" + type.getName().toLowerCase() + "%", String.valueOf(type.getQueueMap().size()));
+            text = text.replace("%" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(type.getQueueMap().size()));
         }
         text = text.replace("%position%", "None");
         text = text.replace("%wait%", "None");

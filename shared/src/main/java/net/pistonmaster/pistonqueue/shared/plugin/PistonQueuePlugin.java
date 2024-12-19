@@ -222,7 +222,7 @@ public interface PistonQueuePlugin {
         outOnlineQueue.writeUTF("onlineQueue");
         outOnlineQueue.writeInt(Config.QUEUE_TYPES.length);
         for (QueueType queueType : Config.QUEUE_TYPES) {
-            outOnlineQueue.writeUTF(queueType.getName().toLowerCase());
+            outOnlineQueue.writeUTF(queueType.getName().toLowerCase(Locale.ROOT));
             outOnlineQueue.writeInt(queueType.getQueueMap().size());
         }
 
@@ -231,7 +231,7 @@ public interface PistonQueuePlugin {
         outOnlineTarget.writeUTF("onlineTarget");
         outOnlineTarget.writeInt(Config.QUEUE_TYPES.length);
         for (QueueType queueType : Config.QUEUE_TYPES) {
-            outOnlineTarget.writeUTF(queueType.getName().toLowerCase());
+            outOnlineTarget.writeUTF(queueType.getName().toLowerCase(Locale.ROOT));
             outOnlineTarget.writeInt(queueType.getPlayersWithTypeInTarget().get());
         }
 
@@ -316,7 +316,7 @@ public interface PistonQueuePlugin {
                 String value = "";
 
                 for (String str : text) {
-                    if (str.toLowerCase().startsWith(Config.class.getPackage().getName().toLowerCase())) {
+                    if (str.toLowerCase(Locale.ROOT).startsWith(Config.class.getPackage().getName().toLowerCase(Locale.ROOT))) {
                         value = str;
                     }
                 }

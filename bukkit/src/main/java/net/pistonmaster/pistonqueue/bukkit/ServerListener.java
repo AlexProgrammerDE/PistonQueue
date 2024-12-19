@@ -37,6 +37,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.ScoreboardManager;
 import org.bukkit.scoreboard.Team;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.logging.Level;
@@ -56,7 +57,7 @@ public final class ServerListener implements Listener {
         }
 
         if (plugin.isForceGamemode()) {
-            player.setGameMode(GameMode.valueOf(plugin.getForcedGamemode().toUpperCase()));
+            player.setGameMode(GameMode.valueOf(plugin.getForcedGamemode().toUpperCase(Locale.ROOT)));
         }
 
         if (plugin.isHidePlayers()) {

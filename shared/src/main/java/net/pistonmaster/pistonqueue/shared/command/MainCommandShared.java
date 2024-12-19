@@ -42,7 +42,7 @@ public interface MainCommandShared {
             return;
         }
 
-        switch (args[0].toLowerCase()) {
+        switch (args[0].toLowerCase(Locale.ROOT)) {
             case "version":
                 sendLine(sender);
                 sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
@@ -104,20 +104,20 @@ public interface MainCommandShared {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(new Date());
 
-                if (args[2].toLowerCase().endsWith("d")) {
-                    int d = Integer.parseInt(args[2].toLowerCase().replace("d", ""));
+                if (args[2].toLowerCase(Locale.ROOT).endsWith("d")) {
+                    int d = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("d", ""));
 
                     calendar.add(Calendar.DAY_OF_WEEK, d);
-                } else if (args[2].toLowerCase().endsWith("h")) {
-                    int h = Integer.parseInt(args[2].toLowerCase().replace("h", ""));
+                } else if (args[2].toLowerCase(Locale.ROOT).endsWith("h")) {
+                    int h = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("h", ""));
 
                     calendar.add(Calendar.HOUR_OF_DAY, h);
-                } else if (args[2].toLowerCase().endsWith("m")) {
-                    int m = Integer.parseInt(args[2].toLowerCase().replace("m", ""));
+                } else if (args[2].toLowerCase(Locale.ROOT).endsWith("m")) {
+                    int m = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("m", ""));
 
                     calendar.add(Calendar.MINUTE, m);
-                } else if (args[2].toLowerCase().endsWith("s")) {
-                    int s = Integer.parseInt(args[2].toLowerCase().replace("s", ""));
+                } else if (args[2].toLowerCase(Locale.ROOT).endsWith("s")) {
+                    int s = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("s", ""));
 
                     calendar.add(Calendar.SECOND, s);
                 } else {
@@ -223,13 +223,13 @@ public interface MainCommandShared {
 
             if (args.length == 1) {
                 for (String string : commands) {
-                    if (string.toLowerCase().startsWith(args[0].toLowerCase()))
+                    if (string.toLowerCase(Locale.ROOT).startsWith(args[0].toLowerCase(Locale.ROOT)))
                         completions.add(string);
                 }
 
                 if (wrapper.hasPermission(Config.ADMIN_PERMISSION)) {
                     for (String string : adminCommands) {
-                        if (string.toLowerCase().startsWith(args[0].toLowerCase()))
+                        if (string.toLowerCase(Locale.ROOT).startsWith(args[0].toLowerCase(Locale.ROOT)))
                             completions.add(string);
                     }
                 }
@@ -249,7 +249,7 @@ public interface MainCommandShared {
 
     default void addPlayers(List<String> completions, String[] args, PistonQueuePlugin proxy) {
         for (PlayerWrapper player : proxy.getPlayers()) {
-            if (player.getName().toLowerCase().startsWith(args[1].toLowerCase()))
+            if (player.getName().toLowerCase(Locale.ROOT).startsWith(args[1].toLowerCase(Locale.ROOT)))
                 completions.add(player.getName());
         }
     }

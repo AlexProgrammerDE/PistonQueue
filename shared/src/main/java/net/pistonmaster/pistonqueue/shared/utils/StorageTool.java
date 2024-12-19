@@ -47,7 +47,7 @@ public final class StorageTool {
      * @return true if player got shadow-banned and if already shadow-banned false.
      */
     public static boolean shadowBanPlayer(String playerName, Date date) {
-        playerName = playerName.toLowerCase(Locale.ENGLISH);
+        playerName = playerName.toLowerCase(Locale.ROOT);
         manageBan(playerName);
 
         if (dataConfig.node(playerName).virtual()) {
@@ -72,7 +72,7 @@ public final class StorageTool {
      * @return true if a player got un-shadow-banned and false if he wasn't shadow-banned.
      */
     public static boolean unShadowBanPlayer(String playerName) {
-        playerName = playerName.toLowerCase(Locale.ENGLISH);
+        playerName = playerName.toLowerCase(Locale.ROOT);
         if (!dataConfig.node(playerName).virtual()) {
             try {
                 dataConfig.node(playerName).set(null);
@@ -89,18 +89,18 @@ public final class StorageTool {
     }
 
     public static boolean isShadowBanned(String playerName) {
-        playerName = playerName.toLowerCase(Locale.ENGLISH);
+        playerName = playerName.toLowerCase(Locale.ROOT);
         manageBan(playerName);
 
         return !dataConfig.node(playerName).virtual();
     }
 
     private static void manageBan(String playerName) {
-        playerName = playerName.toLowerCase(Locale.ENGLISH);
+        playerName = playerName.toLowerCase(Locale.ROOT);
         Date now = new Date();
 
         if (!dataConfig.node(playerName).virtual()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", new Locale("us"));
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.of("en"));
 
             try {
                 Date date = sdf.parse(dataConfig.node(playerName).getString());
