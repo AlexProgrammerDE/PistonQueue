@@ -23,13 +23,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.pistonmaster.pistonqueue.shared.config.Config;
+import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Predicate;
 
 @Getter
 @AllArgsConstructor
@@ -50,9 +50,9 @@ public class QueueType {
     @Setter
     private List<String> footer;
 
-    public static QueueType getQueueType(Predicate<String> player) {
+    public static QueueType getQueueType(PlayerWrapper player) {
         for (QueueType type : Config.QUEUE_TYPES) {
-            if (type.getPermission().equals("default") || player.test(type.getPermission())) {
+            if (type.getPermission().equals("default") || player.hasPermission(type.getPermission())) {
                 return type;
             }
         }

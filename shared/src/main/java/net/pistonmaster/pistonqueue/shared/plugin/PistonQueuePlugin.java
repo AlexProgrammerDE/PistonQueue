@@ -188,13 +188,13 @@ public interface PistonQueuePlugin {
     default void initializeReservationSlots() {
         schedule(() -> {
             Optional<ServerInfoWrapper> targetServer = getServer(Config.TARGET_SERVER);
-            if (!targetServer.isPresent())
+            if (targetServer.isEmpty())
                 return;
 
             Map<QueueType, AtomicInteger> map = new HashMap<>();
 
             for (PlayerWrapper player : targetServer.get().getConnectedPlayers()) {
-                QueueType playerType = QueueType.getQueueType(player::hasPermission);
+                QueueType playerType = QueueType.getQueueType(player);
 
                 map.compute(playerType, (queueType, integer) -> {
                     if (integer == null) {
