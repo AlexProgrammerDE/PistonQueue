@@ -22,6 +22,7 @@ package net.pistonmaster.pistonqueue.shared.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.util.Scanner;
 import java.util.function.Consumer;
@@ -37,7 +38,7 @@ public final class UpdateChecker {
 
     public void getVersion(final Consumer<String> consumer) {
         try {
-            URL url = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId + "/");
+            URL url = URI.create("https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId + "/").toURL();
             HttpURLConnection huc = (HttpURLConnection) url.openConnection();
             HttpURLConnection.setFollowRedirects(false);
             huc.setConnectTimeout(5 * 1000);

@@ -17,8 +17,9 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.chat;
 
-public interface ComponentWrapperFactory {
-    ComponentWrapper text(String text);
+public enum MessageType {
+    CHAT,
+    ACTION_BAR
 }

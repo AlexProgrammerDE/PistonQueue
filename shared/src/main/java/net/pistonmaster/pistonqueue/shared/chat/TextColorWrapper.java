@@ -17,10 +17,11 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared.utils;
+package net.pistonmaster.pistonqueue.shared.chat;
 
-public final class ConfigOutdatedException extends Exception {
-    public ConfigOutdatedException(String message) {
-        super(message + " is missing in the config. Please remove the old config and restart the proxy to get the newest one.");
-    }
+public enum TextColorWrapper {
+    GOLD,
+    RED,
+    DARK_BLUE,
+    GREEN,
 }

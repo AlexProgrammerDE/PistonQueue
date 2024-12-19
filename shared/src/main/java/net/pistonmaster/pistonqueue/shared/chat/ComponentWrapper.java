@@ -17,14 +17,14 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.chat;
 
-import java.util.List;
+public interface ComponentWrapper {
+    ComponentWrapper append(String text);
 
-public interface ServerInfoWrapper {
-    List<PlayerWrapper> getConnectedPlayers();
+    ComponentWrapper append(ComponentWrapper component);
 
-    boolean isOnline();
+    ComponentWrapper color(TextColorWrapper color);
 
-    void sendPluginMessage(String channel, byte[] data);
+    ComponentWrapper decorate(TextDecorationWrapper decoration);
 }

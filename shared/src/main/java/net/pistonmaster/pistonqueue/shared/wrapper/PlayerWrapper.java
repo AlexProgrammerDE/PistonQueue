@@ -17,9 +17,9 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.wrapper;
 
-import net.pistonmaster.pistonqueue.shared.utils.MessageType;
+import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 
 import java.util.List;
 import java.util.Optional;

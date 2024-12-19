@@ -17,7 +17,18 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.command;
+
+import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapperFactory;
+import net.pistonmaster.pistonqueue.shared.chat.TextColorWrapper;
+import net.pistonmaster.pistonqueue.shared.chat.TextDecorationWrapper;
+import net.pistonmaster.pistonqueue.shared.config.Config;
+import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
+import net.pistonmaster.pistonqueue.shared.queue.QueueType;
+import net.pistonmaster.pistonqueue.shared.utils.StorageTool;
+import net.pistonmaster.pistonqueue.shared.wrapper.CommandSourceWrapper;
+import net.pistonmaster.pistonqueue.shared.wrapper.PermissibleWrapper;
+import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
 import java.util.*;
 

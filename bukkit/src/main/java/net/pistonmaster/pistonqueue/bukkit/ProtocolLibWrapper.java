@@ -47,7 +47,7 @@ public final class ProtocolLibWrapper {
     public static void setupProtocolLib(PistonQueueBukkit plugin) {
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
 
-        if (plugin.isNoChunkPackets()){
+        if (plugin.isNoChunkPackets()) {
             manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.MAP_CHUNK) {
                 @Override
                 public void onPacketSending(PacketEvent event) {

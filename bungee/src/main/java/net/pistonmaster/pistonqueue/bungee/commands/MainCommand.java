@@ -24,10 +24,10 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.TabExecutor;
 import net.pistonmaster.pistonqueue.bungee.PistonQueueBungee;
-import net.pistonmaster.pistonqueue.shared.CommandSourceWrapper;
-import net.pistonmaster.pistonqueue.shared.ComponentWrapper;
-import net.pistonmaster.pistonqueue.shared.ComponentWrapperFactory;
-import net.pistonmaster.pistonqueue.shared.MainCommandShared;
+import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapper;
+import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapperFactory;
+import net.pistonmaster.pistonqueue.shared.command.MainCommandShared;
+import net.pistonmaster.pistonqueue.shared.wrapper.CommandSourceWrapper;
 
 public final class MainCommand extends Command implements TabExecutor, MainCommandShared {
     private final PistonQueueBungee plugin;

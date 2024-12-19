@@ -17,11 +17,24 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.queue;
 
-public enum TextColorWrapper {
-    GOLD,
-    RED,
-    DARK_BLUE,
-    GREEN,
+/**
+ * How shadow-banned people should be punished.
+ */
+public enum BanType {
+    /**
+     * Loop forever in queue!
+     */
+    LOOP,
+
+    /**
+     * Have a custom chance of getting into the server!
+     */
+    PERCENT,
+
+    /**
+     * Kick a player while joining!
+     */
+    KICK
 }

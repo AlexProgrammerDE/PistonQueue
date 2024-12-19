@@ -17,14 +17,8 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.chat;
 
-public interface ComponentWrapper {
-    ComponentWrapper append(String text);
-
-    ComponentWrapper append(ComponentWrapper component);
-
-    ComponentWrapper color(TextColorWrapper color);
-
-    ComponentWrapper decorate(TextDecorationWrapper decoration);
+public enum TextDecorationWrapper {
+    BOLD,
 }

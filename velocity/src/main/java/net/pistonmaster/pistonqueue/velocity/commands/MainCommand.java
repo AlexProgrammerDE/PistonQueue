@@ -23,10 +23,10 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import lombok.RequiredArgsConstructor;
 import net.kyori.adventure.text.Component;
-import net.pistonmaster.pistonqueue.shared.CommandSourceWrapper;
-import net.pistonmaster.pistonqueue.shared.ComponentWrapper;
-import net.pistonmaster.pistonqueue.shared.ComponentWrapperFactory;
-import net.pistonmaster.pistonqueue.shared.MainCommandShared;
+import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapper;
+import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapperFactory;
+import net.pistonmaster.pistonqueue.shared.command.MainCommandShared;
+import net.pistonmaster.pistonqueue.shared.wrapper.CommandSourceWrapper;
 import net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity;
 
 import java.util.List;

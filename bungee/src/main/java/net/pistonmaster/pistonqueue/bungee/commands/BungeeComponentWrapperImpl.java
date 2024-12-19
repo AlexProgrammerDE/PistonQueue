@@ -21,9 +21,9 @@ package net.pistonmaster.pistonqueue.bungee.commands;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.pistonmaster.pistonqueue.shared.ComponentWrapper;
-import net.pistonmaster.pistonqueue.shared.TextColorWrapper;
-import net.pistonmaster.pistonqueue.shared.TextDecorationWrapper;
+import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapper;
+import net.pistonmaster.pistonqueue.shared.chat.TextColorWrapper;
+import net.pistonmaster.pistonqueue.shared.chat.TextDecorationWrapper;
 
 public record BungeeComponentWrapperImpl(ComponentBuilder mainComponent) implements ComponentWrapper {
     @Override

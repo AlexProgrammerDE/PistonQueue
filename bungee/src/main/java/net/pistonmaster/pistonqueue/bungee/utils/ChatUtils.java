@@ -25,8 +25,8 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.pistonmaster.pistonqueue.shared.SharedChatUtils;
-import net.pistonmaster.pistonqueue.shared.utils.MessageType;
+import net.pistonmaster.pistonqueue.shared.chat.MessageType;
+import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
 
 import java.util.List;
 

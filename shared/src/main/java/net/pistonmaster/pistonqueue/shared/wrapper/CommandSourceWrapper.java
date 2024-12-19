@@ -17,8 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.wrapper;
 
-public interface PermissibleWrapper {
-    boolean hasPermission(String node);
+import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapper;
+
+public interface CommandSourceWrapper extends PermissibleWrapper {
+    void sendMessage(ComponentWrapper component);
 }

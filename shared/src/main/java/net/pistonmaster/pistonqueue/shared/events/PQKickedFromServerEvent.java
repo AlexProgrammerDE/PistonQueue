@@ -19,7 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.shared.events;
 
-import net.pistonmaster.pistonqueue.shared.PlayerWrapper;
+import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
 import java.util.Optional;
 

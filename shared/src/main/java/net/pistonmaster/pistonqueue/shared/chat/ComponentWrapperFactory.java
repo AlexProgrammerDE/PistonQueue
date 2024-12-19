@@ -17,24 +17,8 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared.utils;
+package net.pistonmaster.pistonqueue.shared.chat;
 
-/**
- * How shadow-banned people should be punished.
- */
-public enum BanType {
-    /**
-     * Loop forever in queue!
-     */
-    LOOP,
-
-    /**
-     * Have a custom chance of getting into the server!
-     */
-    PERCENT,
-
-    /**
-     * Kick a player while joining!
-     */
-    KICK
+public interface ComponentWrapperFactory {
+    ComponentWrapper text(String text);
 }

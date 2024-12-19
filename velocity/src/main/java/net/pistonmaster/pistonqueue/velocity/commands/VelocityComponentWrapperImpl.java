@@ -22,9 +22,9 @@ package net.pistonmaster.pistonqueue.velocity.commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.pistonmaster.pistonqueue.shared.ComponentWrapper;
-import net.pistonmaster.pistonqueue.shared.TextColorWrapper;
-import net.pistonmaster.pistonqueue.shared.TextDecorationWrapper;
+import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapper;
+import net.pistonmaster.pistonqueue.shared.chat.TextColorWrapper;
+import net.pistonmaster.pistonqueue.shared.chat.TextDecorationWrapper;
 
 public record VelocityComponentWrapperImpl(Component mainComponent) implements ComponentWrapper {
     @Override

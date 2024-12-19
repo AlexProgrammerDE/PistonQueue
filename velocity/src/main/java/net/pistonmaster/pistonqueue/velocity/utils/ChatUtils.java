@@ -23,8 +23,8 @@ import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.pistonmaster.pistonqueue.shared.SharedChatUtils;
-import net.pistonmaster.pistonqueue.shared.utils.MessageType;
+import net.pistonmaster.pistonqueue.shared.chat.MessageType;
+import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
 
 import java.util.List;
 

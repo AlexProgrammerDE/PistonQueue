@@ -17,9 +17,10 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.config;
 
-import net.pistonmaster.pistonqueue.shared.utils.BanType;
+import net.pistonmaster.pistonqueue.shared.queue.BanType;
+import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 
 import java.util.List;
 

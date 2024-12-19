@@ -17,8 +17,8 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.wrapper;
 
-public interface CommandSourceWrapper extends PermissibleWrapper {
-    void sendMessage(ComponentWrapper component);
+public interface PermissibleWrapper {
+    boolean hasPermission(String node);
 }

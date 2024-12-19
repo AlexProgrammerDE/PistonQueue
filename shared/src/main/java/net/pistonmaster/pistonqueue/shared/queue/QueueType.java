@@ -17,11 +17,12 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.queue;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import net.pistonmaster.pistonqueue.shared.config.Config;
 
 import java.time.Duration;
 import java.time.Instant;

@@ -17,12 +17,12 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.hooks;
+package net.pistonmaster.pistonqueue.shared.hooks;
 
 import net.pistonmaster.pistonmotd.api.PlaceholderParser;
 import net.pistonmaster.pistonmotd.api.PlaceholderUtil;
-import net.pistonmaster.pistonqueue.shared.Config;
-import net.pistonmaster.pistonqueue.shared.QueueType;
+import net.pistonmaster.pistonqueue.shared.config.Config;
+import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 
 public final class PistonMOTDPlaceholder implements PlaceholderParser {
     public PistonMOTDPlaceholder() {

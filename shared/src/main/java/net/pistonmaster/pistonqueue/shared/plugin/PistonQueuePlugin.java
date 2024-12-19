@@ -17,13 +17,19 @@
  * limitations under the License.
  * #L%
  */
-package net.pistonmaster.pistonqueue.shared;
+package net.pistonmaster.pistonqueue.shared.plugin;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.val;
-import net.pistonmaster.pistonqueue.shared.utils.ConfigOutdatedException;
-import net.pistonmaster.pistonqueue.shared.utils.MessageType;
+import net.pistonmaster.pistonqueue.shared.chat.MessageType;
+import net.pistonmaster.pistonqueue.shared.config.Config;
+import net.pistonmaster.pistonqueue.shared.config.ConfigOutdatedException;
+import net.pistonmaster.pistonqueue.shared.queue.QueueListenerShared;
+import net.pistonmaster.pistonqueue.shared.queue.QueueType;
+import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
+import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
+import net.pistonmaster.pistonqueue.shared.wrapper.ServerInfoWrapper;
 import org.spongepowered.configurate.ConfigurationNode;
 import org.spongepowered.configurate.serialize.SerializationException;
 import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
