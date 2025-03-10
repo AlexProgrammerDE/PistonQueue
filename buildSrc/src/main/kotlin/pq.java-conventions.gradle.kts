@@ -14,11 +14,22 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:1.18.36")
     annotationProcessor("org.projectlombok:lombok:1.18.36")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.12.0")
+    testImplementation("org.mockito:mockito-core:5.16.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.16.0")
 }
 
 tasks {
     processResources {
         expand("version" to version, "description" to description, "url" to "https://pistonmaster.net/PistonQueue")
+    }
+    test {
+        reports.junitXml.required = true
+        reports.html.required = true
+        useJUnitPlatform()
+        maxParallelForks = Runtime.getRuntime().availableProcessors().div(2).coerceAtLeast(1)
     }
 }
 
