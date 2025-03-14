@@ -16,7 +16,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.36")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.12.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.12.1")
     testImplementation("org.mockito:mockito-core:5.16.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.16.0")
 }
