@@ -21,8 +21,13 @@ package net.pistonmaster.pistonqueue.bukkit;
 
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
+import net.pistonmaster.pistonutils.update.GitHubUpdateChecker;
+import net.pistonmaster.pistonutils.update.SemanticVersion;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.IOException;
+import java.util.logging.Logger;
 
 @Getter
 public final class PistonQueueBukkit extends JavaPlugin {
@@ -62,9 +67,10 @@ public final class PistonQueueBukkit extends JavaPlugin {
     @SuppressWarnings("deprecation")
     @Override
     public void onEnable() {
-        getLogger().info(ChatColor.BLUE + "PistonQueue V" + getDescription().getVersion());
+        Logger log = getLogger();
+        log.info(ChatColor.BLUE + "PistonQueue V" + getDescription().getVersion());
 
-        getLogger().info(ChatColor.BLUE + "Loading config");
+        log.info(ChatColor.BLUE + "Loading config");
         saveDefaultConfig();
 
         forceLocation = getConfig().getBoolean("forceLocation");
@@ -96,28 +102,47 @@ public final class PistonQueueBukkit extends JavaPlugin {
 
         playXP = getConfig().getBoolean("playXP");
 
-        getLogger().info(ChatColor.BLUE + "Preparing server");
+        log.info(ChatColor.BLUE + "Preparing server");
         if (hidePlayers) {
             for (World world : getServer().getWorlds()) {
                 world.setGameRuleValue("announceAdvancements", "false");
             }
 
-            getLogger().info(ChatColor.BLUE + "Game-rule announceAdvancements was set to false because hidePlayers was true.");
+            log.info(ChatColor.BLUE + "Game-rule announceAdvancements was set to false because hidePlayers was true.");
         }
 
-        getLogger().info(ChatColor.BLUE + "Looking for hooks");
+        log.info(ChatColor.BLUE + "Looking for hooks");
         if (getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
-            getLogger().info(ChatColor.BLUE + "Hooked into ProtocolLib");
+            log.info(ChatColor.BLUE + "Hooked into ProtocolLib");
             protocolLib = true;
 
             ProtocolLibWrapper.setupProtocolLib(this);
         } else {
-            getLogger().info(ChatColor.YELLOW + "It is recommended to install ProtocolLib");
+            log.info(ChatColor.YELLOW + "It is recommended to install ProtocolLib");
         }
 
-        getLogger().info(ChatColor.BLUE + "Registering listeners");
+        log.info(ChatColor.BLUE + "Registering listeners");
         getServer().getPluginManager().registerEvents(new ServerListener(this), this);
         getServer().getMessenger().registerIncomingPluginChannel(this, "piston:queue", new QueuePluginMessageListener(this));
+
+        log.info(ChatColor.BLUE + "Checking for a newer version");
+        try {
+            String currentVersionString = this.getDescription().getVersion();
+            SemanticVersion gitHubVersion = new GitHubUpdateChecker()
+                .getVersion("https://api.github.com/repos/AlexProgrammerDE/PistonQueue/releases/latest");
+            SemanticVersion currentVersion = SemanticVersion.fromString(currentVersionString);
+
+            if (gitHubVersion.isNewerThan(currentVersion)) {
+                log.info(ChatColor.BLUE + "You're up to date!");
+            } else {
+                log.info(ChatColor.RED + "There is an update available!");
+                log.info(ChatColor.RED + "Current version: " + currentVersionString + " New version: " + gitHubVersion);
+                log.info(ChatColor.RED + "Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
+            }
+        } catch (IOException e) {
+            log.severe("Could not check for updates!");
+            e.printStackTrace();
+        }
     }
 
     @Override

@@ -3,12 +3,15 @@ package net.pistonmaster.pistonqueue.placeholder;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
+import net.pistonmaster.pistonutils.update.GitHubUpdateChecker;
+import net.pistonmaster.pistonutils.update.SemanticVersion;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -29,6 +32,25 @@ public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMe
 
         log.info(ChatColor.BLUE + "Registering PAPI expansion");
         new PAPIExpansion(this).register();
+
+        log.info(ChatColor.BLUE + "Checking for a newer version");
+        try {
+            String currentVersionString = this.getDescription().getVersion();
+            SemanticVersion gitHubVersion = new GitHubUpdateChecker()
+                .getVersion("https://api.github.com/repos/AlexProgrammerDE/PistonQueue/releases/latest");
+            SemanticVersion currentVersion = SemanticVersion.fromString(currentVersionString);
+
+            if (gitHubVersion.isNewerThan(currentVersion)) {
+                log.info(ChatColor.BLUE + "You're up to date!");
+            } else {
+                log.info(ChatColor.RED + "There is an update available!");
+                log.info(ChatColor.RED + "Current version: " + currentVersionString + " New version: " + gitHubVersion);
+                log.info(ChatColor.RED + "Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
+            }
+        } catch (IOException e) {
+            log.severe("Could not check for updates!");
+            e.printStackTrace();
+        }
 
         log.info(ChatColor.BLUE + "Successfully enabled!");
     }

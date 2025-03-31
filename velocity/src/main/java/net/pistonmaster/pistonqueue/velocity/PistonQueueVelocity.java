@@ -36,15 +36,17 @@ import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
 import net.pistonmaster.pistonqueue.shared.utils.StorageTool;
-import net.pistonmaster.pistonqueue.shared.utils.UpdateChecker;
 import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 import net.pistonmaster.pistonqueue.shared.wrapper.ServerInfoWrapper;
 import net.pistonmaster.pistonqueue.velocity.commands.MainCommand;
 import net.pistonmaster.pistonqueue.velocity.listeners.QueueListenerVelocity;
 import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
+import net.pistonmaster.pistonutils.update.GitHubUpdateChecker;
+import net.pistonmaster.pistonutils.update.SemanticVersion;
 import org.bstats.velocity.Metrics;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -105,15 +107,23 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
         metricsFactory.make(this, 12389);
 
         info("Checking for update");
-        new UpdateChecker(this::info, 83541).getVersion(version -> {
-            if (pluginContainer.getDescription().getVersion().orElse("unknown").equalsIgnoreCase(version)) {
-                info("Your up to date!");
+        try {
+            String currentVersionString = pluginContainer.getDescription().getVersion().orElse("unknown");
+            SemanticVersion gitHubVersion = new GitHubUpdateChecker()
+                .getVersion("https://api.github.com/repos/AlexProgrammerDE/PistonQueue/releases/latest");
+            SemanticVersion currentVersion = SemanticVersion.fromString(currentVersionString);
+
+            if (gitHubVersion.isNewerThan(currentVersion)) {
+                info("You're up to date!");
             } else {
-                info("There is a update available.");
-                info("Current version: " + pluginContainer.getDescription().getVersion().orElse("unknown") + " New version: " + version);
-                info("Download it at: https://www.spigotmc.org/resources/83541");
+                info("There is an update available!");
+                info("Current version: " + currentVersionString + " New version: " + gitHubVersion);
+                info("Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
             }
-        });
+        } catch (IOException e) {
+            error("Could not check for updates!");
+            e.printStackTrace();
+        }
 
         info("Scheduling tasks");
         scheduleTasks(queueListenerVelocity);

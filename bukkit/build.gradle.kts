@@ -3,6 +3,7 @@ plugins {
 }
 
 dependencies {
+    implementation("net.pistonmaster:PistonUtils:1.4.0")
     implementation("org.bstats:bstats-bukkit:3.1.0")
 
     compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")

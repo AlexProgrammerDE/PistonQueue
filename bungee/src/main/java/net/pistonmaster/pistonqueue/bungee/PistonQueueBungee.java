@@ -32,11 +32,13 @@ import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
 import net.pistonmaster.pistonqueue.shared.utils.StorageTool;
-import net.pistonmaster.pistonqueue.shared.utils.UpdateChecker;
 import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 import net.pistonmaster.pistonqueue.shared.wrapper.ServerInfoWrapper;
+import net.pistonmaster.pistonutils.update.GitHubUpdateChecker;
+import net.pistonmaster.pistonutils.update.SemanticVersion;
 import org.bstats.bungeecord.Metrics;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -79,15 +81,23 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
         new Metrics(this, 8755);
 
         info(ChatColor.BLUE + "Checking for update");
-        new UpdateChecker(this::info, 83541).getVersion(version -> {
-            if (this.getDescription().getVersion().equalsIgnoreCase(version)) {
-                info(ChatColor.BLUE + "Your up to date!");
+        try {
+            String currentVersionString = this.getDescription().getVersion();
+            SemanticVersion gitHubVersion = new GitHubUpdateChecker()
+                .getVersion("https://api.github.com/repos/AlexProgrammerDE/PistonQueue/releases/latest");
+            SemanticVersion currentVersion = SemanticVersion.fromString(currentVersionString);
+
+            if (gitHubVersion.isNewerThan(currentVersion)) {
+                info(ChatColor.BLUE + "You're up to date!");
             } else {
-                info(ChatColor.RED + "There is a update available.");
-                info(ChatColor.RED + "Current version: " + this.getDescription().getVersion() + " New version: " + version);
-                info(ChatColor.RED + "Download it at: https://www.spigotmc.org/resources/83541");
+                info(ChatColor.RED + "There is an update available!");
+                info(ChatColor.RED + "Current version: " + currentVersionString + " New version: " + gitHubVersion);
+                info(ChatColor.RED + "Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
             }
-        });
+        } catch (IOException e) {
+            error("Could not check for updates!");
+            e.printStackTrace();
+        }
 
         info(ChatColor.BLUE + "Scheduling tasks");
         scheduleTasks(queueListenerBungee);

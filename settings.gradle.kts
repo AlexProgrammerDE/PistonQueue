@@ -33,15 +33,17 @@ dependencyResolutionManagement {
         maven("https://repo.dmulloy2.net/nexus/repository/public") {
             name = "dmulloy2"
         }
+        maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
+            name = "PlaceholderAPI"
+        }
     }
 }
 
 rootProject.name = "PistonQueue"
 
-includeBuild("PistonQueuePlaceholder")
-
 setOf(
     "build-data",
+    "placeholder",
     "shared",
     "bukkit",
     "bungee",
