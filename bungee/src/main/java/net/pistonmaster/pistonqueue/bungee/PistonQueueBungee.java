@@ -21,6 +21,7 @@ package net.pistonmaster.pistonqueue.bungee;
 
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -190,7 +191,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
             public void connect(String server) {
                 Optional<ServerInfo> optional = Optional.ofNullable(getProxy().getServerInfo(server));
 
-                if (!optional.isPresent()) {
+                if (optional.isEmpty()) {
                     error("Server" + server + " not found!!!");
                     return;
                 }
@@ -205,7 +206,14 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
 
             @Override
             public void sendMessage(MessageType type, String message) {
-                ChatUtils.sendMessage(type, player, message);
+                if (message.equalsIgnoreCase("/") || message.isBlank()) {
+                    return;
+                }
+
+                switch (type) {
+                    case CHAT -> player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(message));
+                    case ACTION_BAR -> player.sendMessage(ChatMessageType.ACTION_BAR, ChatUtils.parseToComponent(message));
+                }
             }
 
             @Override

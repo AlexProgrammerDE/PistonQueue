@@ -42,132 +42,130 @@ public interface MainCommandShared {
             return;
         }
 
-        switch (args[0].toLowerCase(Locale.ROOT)) {
-            case "version":
-                sendLine(sender);
-                sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
-                sender.sendMessage(component().text("Version " + plugin.getVersion() + " by").color(TextColorWrapper.GOLD));
-                sender.sendMessage(component().text(String.join(", ", plugin.getAuthors())).color(TextColorWrapper.GOLD));
-                sendLine(sender);
-                return;
-            case "stats":
-                sendLine(sender);
-                sender.sendMessage(component().text("Queue stats").color(TextColorWrapper.GOLD));
-                for (QueueType type : Config.QUEUE_TYPES) {
-                    sender.sendMessage(component().text(type.getName() + ": ").color(TextColorWrapper.GOLD)
-                            .append(component().text(String.valueOf(type.getQueueMap().size())).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
-                }
-                sendLine(sender);
-                return;
-            case "slotstats":
-                if (!sender.hasPermission(Config.ADMIN_PERMISSION)) {
-                    noPermission(sender);
-                    return;
-                }
-
-                sendLine(sender);
-                sender.sendMessage(component().text("Target slot stats").color(TextColorWrapper.GOLD));
-                for (QueueType type : Config.QUEUE_TYPES) {
-                    sender.sendMessage(component().text(type.getName() + ": ").color(TextColorWrapper.GOLD).append(component().text(type.getPlayersWithTypeInTarget().get() + " / " + type.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
-                }
-                sendLine(sender);
-                return;
-            case "reload":
-                if (!sender.hasPermission(Config.ADMIN_PERMISSION)) {
-                    noPermission(sender);
-                    return;
-                }
-
-                plugin.processConfig(plugin.getDataDirectory());
-
-                sendLine(sender);
-                sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
-                sender.sendMessage(component().text("Config reloaded").color(TextColorWrapper.GREEN));
-                sendLine(sender);
-                return;
-            case "shadowban":
-                if (!sender.hasPermission(Config.ADMIN_PERMISSION)) {
-                    noPermission(sender);
-                    return;
-                }
-
-                if (args.length == 1) {
-                    sendBanHelp(sender);
-                    return;
-                }
-
-                if (args.length == 2) {
-                    sendBanHelp(sender);
-                    return;
-                }
-
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(new Date());
-
-                if (args[2].toLowerCase(Locale.ROOT).endsWith("d")) {
-                    int d = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("d", ""));
-
-                    calendar.add(Calendar.DAY_OF_WEEK, d);
-                } else if (args[2].toLowerCase(Locale.ROOT).endsWith("h")) {
-                    int h = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("h", ""));
-
-                    calendar.add(Calendar.HOUR_OF_DAY, h);
-                } else if (args[2].toLowerCase(Locale.ROOT).endsWith("m")) {
-                    int m = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("m", ""));
-
-                    calendar.add(Calendar.MINUTE, m);
-                } else if (args[2].toLowerCase(Locale.ROOT).endsWith("s")) {
-                    int s = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("s", ""));
-
-                    calendar.add(Calendar.SECOND, s);
-                } else {
-                    sendBanHelp(sender);
-                    return;
-                }
-
-                String banPlayerName = args[1];
-                if (StorageTool.shadowBanPlayer(banPlayerName, calendar.getTime())) {
-                    sendLine(sender);
-                    sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(component().text("Successfully shadowbanned " + banPlayerName + "!").color(TextColorWrapper.GREEN));
-                    sendLine(sender);
-                } else {
-                    sendLine(sender);
-                    sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(component().text(banPlayerName + " is already shadowbanned!").color(TextColorWrapper.RED));
-                    sendLine(sender);
-                }
-
-                return;
-            case "unshadowban":
-                if (!sender.hasPermission(Config.ADMIN_PERMISSION)) {
-                    noPermission(sender);
-                    return;
-                }
-
-                if (args.length == 1) {
-                    sendUnBanHelp(sender);
-                    return;
-                }
-
-                String unBanPlayerName = args[1];
-                if (StorageTool.unShadowBanPlayer(unBanPlayerName)) {
-                    sendLine(sender);
-                    sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(component().text("Successfully unshadowbanned " + unBanPlayerName + "!").color(TextColorWrapper.GREEN));
-                    sendLine(sender);
-                } else {
-                    sendLine(sender);
-                    sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
-                    sender.sendMessage(component().text(unBanPlayerName + " is not shadowbanned!").color(TextColorWrapper.RED));
-                    sendLine(sender);
-                }
-
-                return;
-            default: {
-                help(sender);
-            }
+      switch (args[0].toLowerCase(Locale.ROOT)) {
+        case "version" -> {
+          sendLine(sender);
+          sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+          sender.sendMessage(component().text("Version " + plugin.getVersion() + " by").color(TextColorWrapper.GOLD));
+          sender.sendMessage(component().text(String.join(", ", plugin.getAuthors())).color(TextColorWrapper.GOLD));
+          sendLine(sender);
         }
+        case "stats" -> {
+          sendLine(sender);
+          sender.sendMessage(component().text("Queue stats").color(TextColorWrapper.GOLD));
+          for (QueueType type : Config.QUEUE_TYPES) {
+            sender.sendMessage(component().text(type.getName() + ": ").color(TextColorWrapper.GOLD)
+                .append(component().text(String.valueOf(type.getQueueMap().size())).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+          }
+          sendLine(sender);
+        }
+        case "slotstats" -> {
+          if (!sender.hasPermission(Config.ADMIN_PERMISSION)) {
+            noPermission(sender);
+            return;
+          }
+
+          sendLine(sender);
+          sender.sendMessage(component().text("Target slot stats").color(TextColorWrapper.GOLD));
+          for (QueueType type : Config.QUEUE_TYPES) {
+            sender.sendMessage(component().text(type.getName() + ": ").color(TextColorWrapper.GOLD).append(component().text(type.getPlayersWithTypeInTarget().get() + " / " + type.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+          }
+          sendLine(sender);
+        }
+        case "reload" -> {
+          if (!sender.hasPermission(Config.ADMIN_PERMISSION)) {
+            noPermission(sender);
+            return;
+          }
+
+          plugin.processConfig(plugin.getDataDirectory());
+
+          sendLine(sender);
+          sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+          sender.sendMessage(component().text("Config reloaded").color(TextColorWrapper.GREEN));
+          sendLine(sender);
+        }
+        case "shadowban" -> {
+          if (!sender.hasPermission(Config.ADMIN_PERMISSION)) {
+            noPermission(sender);
+            return;
+          }
+
+          if (args.length == 1) {
+            sendBanHelp(sender);
+            return;
+          }
+
+          if (args.length == 2) {
+            sendBanHelp(sender);
+            return;
+          }
+
+          Calendar calendar = Calendar.getInstance();
+          calendar.setTime(new Date());
+
+          if (args[2].toLowerCase(Locale.ROOT).endsWith("d")) {
+            int d = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("d", ""));
+
+            calendar.add(Calendar.DAY_OF_WEEK, d);
+          } else if (args[2].toLowerCase(Locale.ROOT).endsWith("h")) {
+            int h = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("h", ""));
+
+            calendar.add(Calendar.HOUR_OF_DAY, h);
+          } else if (args[2].toLowerCase(Locale.ROOT).endsWith("m")) {
+            int m = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("m", ""));
+
+            calendar.add(Calendar.MINUTE, m);
+          } else if (args[2].toLowerCase(Locale.ROOT).endsWith("s")) {
+            int s = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("s", ""));
+
+            calendar.add(Calendar.SECOND, s);
+          } else {
+            sendBanHelp(sender);
+            return;
+          }
+
+          String banPlayerName = args[1];
+          if (StorageTool.shadowBanPlayer(banPlayerName, calendar.getTime())) {
+            sendLine(sender);
+            sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+            sender.sendMessage(component().text("Successfully shadowbanned " + banPlayerName + "!").color(TextColorWrapper.GREEN));
+            sendLine(sender);
+          } else {
+            sendLine(sender);
+            sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+            sender.sendMessage(component().text(banPlayerName + " is already shadowbanned!").color(TextColorWrapper.RED));
+            sendLine(sender);
+          }
+
+        }
+        case "unshadowban" -> {
+          if (!sender.hasPermission(Config.ADMIN_PERMISSION)) {
+            noPermission(sender);
+            return;
+          }
+
+          if (args.length == 1) {
+            sendUnBanHelp(sender);
+            return;
+          }
+
+          String unBanPlayerName = args[1];
+          if (StorageTool.unShadowBanPlayer(unBanPlayerName)) {
+            sendLine(sender);
+            sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+            sender.sendMessage(component().text("Successfully unshadowbanned " + unBanPlayerName + "!").color(TextColorWrapper.GREEN));
+            sendLine(sender);
+          } else {
+            sendLine(sender);
+            sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
+            sender.sendMessage(component().text(unBanPlayerName + " is not shadowbanned!").color(TextColorWrapper.RED));
+            sendLine(sender);
+          }
+
+        }
+        default -> help(sender);
+      }
     }
 
     default void noPermission(CommandSourceWrapper sender) {

@@ -20,27 +20,15 @@
 package net.pistonmaster.pistonqueue.bungee.utils;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
 
 import java.util.List;
 
 public final class ChatUtils {
     private ChatUtils() {
-    }
-
-    public static void sendMessage(MessageType type, ProxiedPlayer p, String str) {
-        if (!str.equalsIgnoreCase("/")) {
-            switch (type) {
-                case CHAT -> p.sendMessage(ChatMessageType.CHAT, parseToComponent(str));
-                case ACTION_BAR -> p.sendMessage(ChatMessageType.ACTION_BAR, parseToComponent(str));
-            }
-        }
     }
 
     public static String parseToString(String str) {

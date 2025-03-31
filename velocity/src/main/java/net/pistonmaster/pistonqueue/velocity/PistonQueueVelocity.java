@@ -214,7 +214,7 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
             public void connect(String server) {
                 Optional<RegisteredServer> optional = proxyServer.getServer(server);
 
-                if (!optional.isPresent()) {
+                if (optional.isEmpty()) {
                     error("Server" + server + " not found!!!");
                     return;
                 }
@@ -233,13 +233,13 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
 
             @Override
             public void sendMessage(MessageType type, String message) {
+                if (message.equalsIgnoreCase("/") || message.isBlank()) {
+                    return;
+                }
+
                 switch (type) {
-                    case CHAT:
-                        ChatUtils.sendMessage(MessageType.CHAT, player, message);
-                        break;
-                    case ACTION_BAR:
-                        ChatUtils.sendMessage(MessageType.ACTION_BAR, player, message);
-                        break;
+                    case CHAT -> player.sendMessage(ChatUtils.parseToComponent(message));
+                    case ACTION_BAR -> player.sendActionBar(ChatUtils.parseToComponent(message));
                 }
             }
 

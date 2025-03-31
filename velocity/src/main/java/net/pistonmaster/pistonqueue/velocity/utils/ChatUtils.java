@@ -19,26 +19,15 @@
  */
 package net.pistonmaster.pistonqueue.velocity.utils;
 
-import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
 
 import java.util.List;
 
 public final class ChatUtils {
     private ChatUtils() {
-    }
-
-    public static void sendMessage(MessageType type, Player p, String str) {
-        if (!str.equalsIgnoreCase("/")) {
-            switch (type) {
-                case CHAT -> p.sendMessage(parseToComponent(str));
-                case ACTION_BAR -> p.sendActionBar(parseToComponent(str));
-            }
-        }
     }
 
     public static TextComponent parseToComponent(String str) {
