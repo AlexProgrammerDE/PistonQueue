@@ -140,12 +140,17 @@ public interface PistonQueuePlugin {
 
     default void sendMessage(QueueType queue, MessageType type) {
         AtomicInteger position = new AtomicInteger();
-
         for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-            getPlayer(entry.getKey()).ifPresent(player ->
-                    player.sendMessage(type, Config.QUEUE_POSITION
-                            .replace("%position%", String.valueOf(position.incrementAndGet()))
-                            .replace("%total%", String.valueOf(queue.getQueueMap().size()))));
+            Optional<PlayerWrapper> player = getPlayer(entry.getKey());
+            if (player.isEmpty()) {
+                continue;
+            }
+
+            String chatMessage = Config.QUEUE_POSITION
+                .replace("%position%", String.valueOf(position.incrementAndGet()))
+                .replace("%total%", String.valueOf(queue.getQueueMap().size()));
+
+            player.get().sendMessage(type, chatMessage);
         }
     }
 

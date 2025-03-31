@@ -113,13 +113,13 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
                 .getVersion("https://api.github.com/repos/AlexProgrammerDE/PistonQueue/releases/latest");
             SemanticVersion currentVersion = SemanticVersion.fromString(currentVersionString);
 
-            if (gitHubVersion.isNewerThan(currentVersion)) {
-                info("You're up to date!");
-            } else {
-                info("There is an update available!");
-                info("Current version: " + currentVersionString + " New version: " + gitHubVersion);
-                info("Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
-            }
+          if (gitHubVersion.isNewerThan(currentVersion)) {
+              info("There is an update available!");
+              info("Current version: " + currentVersionString + " New version: " + gitHubVersion);
+              info("Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
+          } else {
+              info("You're up to date!");
+          }
         } catch (IOException e) {
             error("Could not check for updates!");
             e.printStackTrace();

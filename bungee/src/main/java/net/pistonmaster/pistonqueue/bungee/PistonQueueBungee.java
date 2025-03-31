@@ -88,13 +88,13 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
                 .getVersion("https://api.github.com/repos/AlexProgrammerDE/PistonQueue/releases/latest");
             SemanticVersion currentVersion = SemanticVersion.fromString(currentVersionString);
 
-            if (gitHubVersion.isNewerThan(currentVersion)) {
-                info(ChatColor.BLUE + "You're up to date!");
-            } else {
-                info(ChatColor.RED + "There is an update available!");
-                info(ChatColor.RED + "Current version: " + currentVersionString + " New version: " + gitHubVersion);
-                info(ChatColor.RED + "Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
-            }
+          if (gitHubVersion.isNewerThan(currentVersion)) {
+              info(ChatColor.RED + "There is an update available!");
+              info(ChatColor.RED + "Current version: " + currentVersionString + " New version: " + gitHubVersion);
+              info(ChatColor.RED + "Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
+          } else {
+              info(ChatColor.BLUE + "You're up to date!");
+          }
         } catch (IOException e) {
             error("Could not check for updates!");
             e.printStackTrace();

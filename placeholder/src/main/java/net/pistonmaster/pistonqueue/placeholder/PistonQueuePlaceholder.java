@@ -40,13 +40,13 @@ public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMe
                 .getVersion("https://api.github.com/repos/AlexProgrammerDE/PistonQueue/releases/latest");
             SemanticVersion currentVersion = SemanticVersion.fromString(currentVersionString);
 
-            if (gitHubVersion.isNewerThan(currentVersion)) {
-                log.info(ChatColor.BLUE + "You're up to date!");
-            } else {
-                log.info(ChatColor.RED + "There is an update available!");
-                log.info(ChatColor.RED + "Current version: " + currentVersionString + " New version: " + gitHubVersion);
-                log.info(ChatColor.RED + "Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
-            }
+          if (gitHubVersion.isNewerThan(currentVersion)) {
+              log.info(ChatColor.RED + "There is an update available!");
+              log.info(ChatColor.RED + "Current version: " + currentVersionString + " New version: " + gitHubVersion);
+              log.info(ChatColor.RED + "Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
+          } else {
+              log.info(ChatColor.BLUE + "You're up to date!");
+          }
         } catch (IOException e) {
             log.severe("Could not check for updates!");
             e.printStackTrace();
