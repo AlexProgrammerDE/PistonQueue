@@ -8,7 +8,7 @@ allprojects {
     description = "Best queue plugin out there!"
 }
 
-tasks.create("outputVersion") {
+tasks.register("outputVersion") {
     doLast {
         println(project.version)
     }

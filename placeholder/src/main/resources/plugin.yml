@@ -1,5 +1,5 @@
 name: PistonQueuePlaceholder
-version: ${project.version}
+version: ${version}
 main: net.pistonmaster.pistonqueue.placeholder.PistonQueuePlaceholder
 api-version: 1.13
 authors: [ AlexProgrammerDE ]
