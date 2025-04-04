@@ -49,8 +49,6 @@ import java.util.stream.Collectors;
 public interface PistonQueuePlugin {
     Optional<PlayerWrapper> getPlayer(UUID uuid);
 
-    Optional<PlayerWrapper> getPlayer(String name);
-
     List<PlayerWrapper> getPlayers();
 
     Optional<ServerInfoWrapper> getServer(String name);

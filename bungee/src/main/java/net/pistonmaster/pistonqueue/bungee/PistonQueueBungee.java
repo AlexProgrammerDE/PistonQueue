@@ -110,11 +110,6 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
     }
 
     @Override
-    public Optional<PlayerWrapper> getPlayer(String name) {
-        return Optional.ofNullable(getProxy().getPlayer(name)).map(this::wrapPlayer);
-    }
-
-    @Override
     public List<PlayerWrapper> getPlayers() {
         return getProxy().getPlayers().stream().map(this::wrapPlayer).collect(Collectors.toList());
     }

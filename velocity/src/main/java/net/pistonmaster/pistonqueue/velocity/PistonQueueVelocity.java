@@ -135,11 +135,6 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
     }
 
     @Override
-    public Optional<PlayerWrapper> getPlayer(String name) {
-        return proxyServer.getPlayer(name).map(this::wrapPlayer);
-    }
-
-    @Override
     public List<PlayerWrapper> getPlayers() {
         return proxyServer.getAllPlayers().stream().map(this::wrapPlayer).collect(Collectors.toList());
     }
