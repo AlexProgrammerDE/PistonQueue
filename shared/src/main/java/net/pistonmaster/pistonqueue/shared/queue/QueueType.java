@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 @AllArgsConstructor
 public class QueueType {
-    private final Map<UUID, String> queueMap = Collections.synchronizedMap(new LinkedHashMap<>());
+    private final Map<UUID, QueuedPlayer> queueMap = Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<Integer, Duration> durationFromPosition = Collections.synchronizedMap(new LinkedHashMap<>());
     private final Map<UUID, Map<Integer, Instant>> positionCache = new ConcurrentHashMap<>();
     private final AtomicInteger playersWithTypeInTarget = new AtomicInteger();
@@ -57,5 +57,16 @@ public class QueueType {
             }
         }
         throw new RuntimeException("No queue type found for player! (There is no default queue type)");
+    }
+
+    public record QueuedPlayer(
+        String targetServer,
+        QueueReason queueReason
+    ) {}
+
+    public enum QueueReason {
+        SERVER_FULL,
+        SERVER_DOWN,
+        RECOVERY
     }
 }

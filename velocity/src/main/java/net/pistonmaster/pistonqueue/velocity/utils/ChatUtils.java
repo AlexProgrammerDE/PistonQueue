@@ -19,12 +19,12 @@
  */
 package net.pistonmaster.pistonqueue.velocity.utils;
 
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class ChatUtils {
     private ChatUtils() {
@@ -39,19 +39,10 @@ public final class ChatUtils {
     }
 
     public static TextComponent parseTab(List<String> tab) {
-        if (tab == null)
-            return Component.empty();
-
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < tab.size(); i++) {
-            builder.append(parseToString(tab.get(i)));
-
-            if (i != (tab.size() - 1)) {
-                builder.append("\n");
-            }
-        }
-
-        return LegacyComponentSerializer.legacySection().deserialize(builder.toString());
+        return parseToComponent(
+            tab.stream()
+                .map(ChatUtils::parseToString)
+                .collect(Collectors.joining("\n"))
+        );
     }
 }

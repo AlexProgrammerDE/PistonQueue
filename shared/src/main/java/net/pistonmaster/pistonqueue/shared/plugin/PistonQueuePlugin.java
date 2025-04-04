@@ -83,7 +83,7 @@ public interface PistonQueuePlugin {
                 }
             } else if (Config.PAUSE_QUEUE_IF_TARGET_DOWN) {
                 for (QueueType type : Config.QUEUE_TYPES) {
-                    type.getQueueMap().forEach((UUID id, String str) ->
+                    type.getQueueMap().forEach((id, queuedPlayer) ->
                             getPlayer(id).ifPresent(value -> value.sendMessage(Config.PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE)));
                 }
             }
@@ -140,7 +140,7 @@ public interface PistonQueuePlugin {
 
     default void sendMessage(QueueType queue, MessageType type) {
         AtomicInteger position = new AtomicInteger();
-        for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
+        for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
             Optional<PlayerWrapper> player = getPlayer(entry.getKey());
             if (player.isEmpty()) {
                 continue;
@@ -157,7 +157,7 @@ public interface PistonQueuePlugin {
     default void updateTab(QueueType queue) {
         AtomicInteger position = new AtomicInteger();
 
-        for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
+        for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
             getPlayer(entry.getKey()).ifPresent(player -> {
                 int incrementedPosition = position.incrementAndGet();
 

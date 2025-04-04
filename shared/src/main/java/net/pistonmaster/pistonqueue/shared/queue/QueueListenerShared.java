@@ -73,7 +73,7 @@ public abstract class QueueListenerShared {
 
                         QueueType.getQueueType(event.getPlayer())
                                 .getQueueMap()
-                                .put(event.getPlayer().getUniqueId(), event.getKickedFrom());
+                                .put(event.getPlayer().getUniqueId(), new QueueType.QueuedPlayer(event.getKickedFrom(), QueueType.QueueReason.SERVER_DOWN));
                     });
         }
 
@@ -126,14 +126,17 @@ public abstract class QueueListenerShared {
 
         event.setTarget(Config.QUEUE_SERVER);
 
-        Map<UUID, String> queueMap = type.getQueueMap();
+        Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
 
+        String queueTarget;
         // Store the data concerning the player's original destination
         if (Config.FORCE_TARGET_SERVER || originalTarget.isEmpty()) {
-            queueMap.put(player.getUniqueId(), Config.TARGET_SERVER);
+            queueTarget = Config.TARGET_SERVER;
         } else {
-            queueMap.put(player.getUniqueId(), originalTarget.get());
+            queueTarget = originalTarget.get();
         }
+
+        queueMap.put(player.getUniqueId(), new QueueType.QueuedPlayer(queueTarget, QueueType.QueueReason.SERVER_FULL));
     }
 
     private boolean isServerFull(QueueType type) {
@@ -160,7 +163,7 @@ public abstract class QueueListenerShared {
 
     public void moveQueue() {
         for (QueueType type : Config.QUEUE_TYPES) {
-            for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
+            for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
                 Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
 
                 Optional<String> optionalTarget = player.flatMap(PlayerWrapper::getCurrentServer);
@@ -186,7 +189,7 @@ public abstract class QueueListenerShared {
 
         Optional<String> currentServer = player.getCurrentServer();
         if (!type.getQueueMap().containsKey(player.getUniqueId()) && currentServer.isPresent() && currentServer.get().equals(Config.QUEUE_SERVER)) {
-            type.getQueueMap().putIfAbsent(player.getUniqueId(), Config.TARGET_SERVER);
+            type.getQueueMap().putIfAbsent(player.getUniqueId(), new QueueType.QueuedPlayer(Config.TARGET_SERVER, QueueType.QueueReason.RECOVERY));
 
             player.sendMessage(Config.RECOVERY_MESSAGE);
         }
@@ -202,7 +205,7 @@ public abstract class QueueListenerShared {
         if (freeSlots > Config.MAX_PLAYERS_PER_MOVE)
             freeSlots = Config.MAX_PLAYERS_PER_MOVE;
 
-        for (Map.Entry<UUID, String> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
+        for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
             Optional<PlayerWrapper> optional = plugin.getPlayer(entry.getKey());
             if (optional.isEmpty()) {
                 continue;
@@ -232,7 +235,7 @@ public abstract class QueueListenerShared {
                         type.getDurationFromPosition().put(position, Duration.between(instant, Instant.now())));
             }
 
-            player.connect(entry.getValue());
+            player.connect(entry.getValue().targetServer());
 
             if (--freeSlots <= 0) {
                 break;

@@ -21,11 +21,11 @@ package net.pistonmaster.pistonqueue.bungee.utils;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class ChatUtils {
     private ChatUtils() {
@@ -35,21 +35,13 @@ public final class ChatUtils {
         return ChatColor.translateAlternateColorCodes('&', SharedChatUtils.parseText(str));
     }
 
-    public static BaseComponent[] parseToComponent(String str) {
-        return TextComponent.fromLegacyText(parseToString(str));
+    public static BaseComponent parseToComponent(String str) {
+        return TextComponent.fromLegacy(parseToString(str));
     }
 
-    public static BaseComponent[] parseTab(List<String> tab) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < tab.size(); i++) {
-            builder.append(ChatUtils.parseToString(tab.get(i)));
-
-            if (i != (tab.size() - 1)) {
-                builder.append("\n");
-            }
-        }
-
-        return new ComponentBuilder(builder.toString()).create();
+    public static BaseComponent parseTab(List<String> tab) {
+        return parseToComponent(tab.stream()
+            .map(ChatUtils::parseToString)
+            .collect(Collectors.joining("\n")));
     }
 }
