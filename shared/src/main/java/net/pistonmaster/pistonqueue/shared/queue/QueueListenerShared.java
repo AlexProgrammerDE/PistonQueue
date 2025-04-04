@@ -117,7 +117,7 @@ public abstract class QueueListenerShared {
     private void putQueue(PlayerWrapper player, QueueType type, PQServerPreConnectEvent event, boolean serverFull) {
         player.sendPlayerList(type.getHeader(), type.getFooter());
 
-        if (serverFull) {
+        if (serverFull && !type.getQueueMap().containsKey(player.getUniqueId())) {
             player.sendMessage(Config.SERVER_IS_FULL_MESSAGE);
         }
 
@@ -136,7 +136,7 @@ public abstract class QueueListenerShared {
             queueTarget = originalTarget.get();
         }
 
-        queueMap.put(player.getUniqueId(), new QueueType.QueuedPlayer(queueTarget, QueueType.QueueReason.SERVER_FULL));
+        queueMap.putIfAbsent(player.getUniqueId(), new QueueType.QueuedPlayer(queueTarget, QueueType.QueueReason.SERVER_FULL));
     }
 
     private boolean isServerFull(QueueType type) {
