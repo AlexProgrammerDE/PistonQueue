@@ -12,13 +12,13 @@ java {
 dependencies {
     implementation("org.jetbrains:annotations:26.0.2")
 
-    compileOnly("org.projectlombok:lombok:1.18.36")
-    annotationProcessor("org.projectlombok:lombok:1.18.36")
+    compileOnly("org.projectlombok:lombok:1.18.38")
+    annotationProcessor("org.projectlombok:lombok:1.18.38")
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.12.0")
-    testImplementation("org.mockito:mockito-core:5.16.0")
-    testImplementation("org.mockito:mockito-junit-jupiter:5.16.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.12.1")
+    testImplementation("org.mockito:mockito-core:5.17.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.17.0")
 }
 
 tasks {
