@@ -4,6 +4,12 @@
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
+    },
+    {
+      "matchPackageNames": [
+        "**"
+      ],
+      "allowedVersions": "!/\\-SNAPSHOT$/"
     }
   ]
 }
