@@ -43,7 +43,7 @@ public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMe
           if (gitHubVersion.isNewerThan(currentVersion)) {
               log.info(ChatColor.RED + "There is an update available!");
               log.info(ChatColor.RED + "Current version: " + currentVersionString + " New version: " + gitHubVersion);
-              log.info(ChatColor.RED + "Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
+              log.info(ChatColor.RED + "Download it at: https://modrinth.com/plugin/pistonqueue");
           } else {
               log.info(ChatColor.BLUE + "You're up to date!");
           }

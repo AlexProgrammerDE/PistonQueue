@@ -116,7 +116,7 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
           if (gitHubVersion.isNewerThan(currentVersion)) {
               info("There is an update available!");
               info("Current version: " + currentVersionString + " New version: " + gitHubVersion);
-              info("Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
+              info("Download it at: https://modrinth.com/plugin/pistonqueue");
           } else {
               info("You're up to date!");
           }

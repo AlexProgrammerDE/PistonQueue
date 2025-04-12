@@ -91,7 +91,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
           if (gitHubVersion.isNewerThan(currentVersion)) {
               info(ChatColor.RED + "There is an update available!");
               info(ChatColor.RED + "Current version: " + currentVersionString + " New version: " + gitHubVersion);
-              info(ChatColor.RED + "Download it at: https://github.com/AlexProgrammerDE/PistonQueue/releases");
+              info(ChatColor.RED + "Download it at: https://modrinth.com/plugin/pistonqueue");
           } else {
               info(ChatColor.BLUE + "You're up to date!");
           }
