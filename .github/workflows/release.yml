@@ -112,10 +112,10 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
 
         files: |
-          build/libs/PistonQueue-${{ inputs.version }}-Velocity.jar
-          build/libs/PistonQueue-${{ inputs.version }}-Bukkit.jar
-          build/libs/PistonQueue-${{ inputs.version }}-Bungee.jar
-          build/libs/PistonQueue-${{ inputs.version }}-Placeholder.jar
+          build/libs/PistonQueue-Velocity-${{ inputs.version }}.jar
+          build/libs/PistonQueue-Bukkit-${{ inputs.version }}.jar
+          build/libs/PistonQueue-Bungee-${{ inputs.version }}.jar
+          build/libs/PistonQueue-Placeholder-${{ inputs.version }}.jar
 
         name: PistonQueue ${{ inputs.version }}
         version: ${{ inputs.version }}
