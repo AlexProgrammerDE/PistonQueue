@@ -4,7 +4,7 @@ plugins {
 
 allprojects {
     group = "net.pistonmaster"
-    version = "3.0.1-SNAPSHOT"
+    version = property("maven_version")!!
     description = "Best queue plugin out there!"
 }
 

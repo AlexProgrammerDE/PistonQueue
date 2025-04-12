@@ -1,0 +1,159 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release'
+        required: true
+      after-version:
+        description: 'Snapshot version after release'
+        required: true
+
+jobs:
+  set-release-version:
+    uses: AlexProgrammerDE/PistonQueue/.github/workflows/set-version.yml@main
+    with:
+      version: ${{ inputs.version }}
+    secrets: inherit
+
+  build:
+    needs: set-release-version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.ref }}
+    - name: Validate Gradle wrapper
+      uses: gradle/actions/wrapper-validation@v4
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4
+    - name: Build with Gradle
+      run: ./gradlew build test --stacktrace --scan
+
+    - name: Build Changelog
+      id: github_release
+      uses: mikepenz/release-changelog-builder-action@v5
+      with:
+        mode: COMMIT
+        toTag: ${{ github.ref }}
+        configurationJson: |
+          {
+            "template": "#{{CHANGELOG}}",
+            "categories": [
+              {
+                  "title": "## Feature",
+                  "labels": ["feat", "feature"]
+              },
+              {
+                  "title": "## Fix",
+                  "labels": ["fix", "bug"]
+              },
+              {
+                  "title": "## Performance",
+                  "labels": ["perf"]
+              },
+              {
+                  "title": "## Refactor",
+                  "labels": ["refactor"]
+              },
+              {
+                  "title": "## Documentation",
+                  "labels": ["docs"]
+              },
+              {
+                  "title": "## Build",
+                  "labels": ["build", "chore", "ci"]
+              },
+              {
+                  "title": "## Style",
+                  "labels": ["style"]
+              },
+              {
+                  "title": "## Test",
+                  "labels": ["test"]
+              },
+              {
+                  "title": "## Other",
+                  "labels": []
+              }
+            ],
+            "label_extractor": [
+              {
+                "pattern": "^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test){1}(\\([\\w\\-\\.]+\\))?(!)?: ([\\w ])+([\\s\\S]*)",
+                "on_property": "title",
+                "target": "$1"
+              }
+            ]
+          }
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - uses: Kir-Antipov/mc-publish@v3.3
+      with:
+        modrinth-id: pistonqueue
+        modrinth-featured: true
+        modrinth-unfeature-mode: subset
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+        github-tag: ${{ inputs.version }}
+        github-generate-changelog: false
+        github-draft: false
+        github-prerelease: false
+        github-commitish: main
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+        files: |
+          build/libs/PistonQueue-${{ inputs.version }}-Velocity.jar
+          build/libs/PistonQueue-${{ inputs.version }}-Bukkit.jar
+          build/libs/PistonQueue-${{ inputs.version }}-Bungee.jar
+          build/libs/PistonQueue-${{ inputs.version }}-Placeholder.jar
+
+        name: PistonQueue ${{ inputs.version }}
+        version: ${{ inputs.version }}
+        version-type: release
+        changelog: ${{ steps.github_release.outputs.changelog }}
+
+        loaders: |
+          bukkit
+          bungeecord
+          folia
+          paper
+          purpur
+          spigot
+          velocity
+          waterfall
+        game-versions: |
+          >=1.8.0
+        game-version-filter: releases
+        java: |
+          21
+
+        retry-attempts: 2
+        retry-delay: 10000
+        fail-mode: fail
+
+    - name: Discord Webhook Action
+      uses: tsickert/discord-webhook@v7.0.0
+      with:
+        webhook-url: ${{ secrets.WEBHOOK_URL }}
+        content: <@&850705047938793503> New PistonQueue version released!
+        embed-title: PistonQueue ${{ inputs.version }}
+        embed-description: PistonQueue ${{ inputs.version }} has been released! Changelog and download can be found at https://modrinth.com/plugin/pistonqueue/version/${{ inputs.version }}
+        embed-color: 16641028
+        embed-thumbnail-url: https://raw.githubusercontent.com/AlexProgrammerDE/PistonQueue/refs/heads/main/images/logo.png
+
+  set-after-version:
+    needs: build
+    uses: AlexProgrammerDE/PistonQueue/.github/workflows/set-version.yml@main
+    with:
+      version: ${{ inputs.after-version }}
+    secrets: inherit
