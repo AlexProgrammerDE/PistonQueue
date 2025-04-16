@@ -29,5 +29,7 @@ fun ShadowJar.configureRelocations() {
     relocate("org.checkerframework", "net.pistonmaster.pistonqueue.shadow.checkerframework")
     relocate("org.yaml.snakeyaml", "net.pistonmaster.pistonqueue.shadow.snakeyaml")
     relocate("com.google.errorprone", "net.pistonmaster.pistonqueue.shadow.google.errorprone")
+    relocate("com.google.gson", "net.pistonmaster.pistonqueue.shadow.gson")
     relocate("org.jetbrains.annotations", "net.pistonmaster.pistonqueue.shadow.annotations.jetbrains")
+    relocate("net.kyori.option", "net.pistonmaster.pistonqueue.shadow.kyori.option")
 }
