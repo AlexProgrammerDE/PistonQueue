@@ -32,4 +32,5 @@ fun ShadowJar.configureRelocations() {
     relocate("com.google.gson", "net.pistonmaster.pistonqueue.shadow.gson")
     relocate("org.jetbrains.annotations", "net.pistonmaster.pistonqueue.shadow.annotations.jetbrains")
     relocate("net.kyori.option", "net.pistonmaster.pistonqueue.shadow.kyori.option")
+    relocate("net.pistonmaster.pistonutils", "net.pistonmaster.pistonqueue.shadow.pistonutils")
 }
