@@ -1,7 +1,6 @@
 # PistonQueue
 
 [![PistonDev Discord](https://discord.com/api/guilds/739784741124833301/embed.png)](https://discord.gg/J9bmJNuTJm)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FAlexProgrammerDE%2FPistonQueue?ref=badge_shield)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://github.com/AlexProgrammerDE/PistonQueue)
 
 ## About
