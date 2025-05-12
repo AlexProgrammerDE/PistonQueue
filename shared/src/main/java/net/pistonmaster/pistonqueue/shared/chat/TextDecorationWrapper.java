@@ -20,5 +20,5 @@
 package net.pistonmaster.pistonqueue.shared.chat;
 
 public enum TextDecorationWrapper {
-    BOLD,
+  BOLD,
 }

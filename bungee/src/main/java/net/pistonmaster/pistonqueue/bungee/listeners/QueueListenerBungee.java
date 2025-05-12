@@ -37,104 +37,104 @@ import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 import java.util.Optional;
 
 public final class QueueListenerBungee extends QueueListenerShared implements Listener {
-    private final PistonQueueBungee plugin;
+  private final PistonQueueBungee plugin;
 
-    public QueueListenerBungee(PistonQueueBungee plugin) {
-        super(plugin);
-        this.plugin = plugin;
-    }
+  public QueueListenerBungee(PistonQueueBungee plugin) {
+    super(plugin);
+    this.plugin = plugin;
+  }
 
-    @EventHandler
-    public void onPreLogin(PreLoginEvent event) {
-        onPreLogin(wrap(event));
-    }
+  @EventHandler
+  public void onPreLogin(PreLoginEvent event) {
+    onPreLogin(wrap(event));
+  }
 
-    @EventHandler
-    public void onPostLogin(PostLoginEvent event) {
-        onPostLogin(plugin.wrapPlayer(event.getPlayer()));
-    }
+  @EventHandler
+  public void onPostLogin(PostLoginEvent event) {
+    onPostLogin(plugin.wrapPlayer(event.getPlayer()));
+  }
 
-    @EventHandler
-    public void onSend(ServerConnectEvent event) {
-        onPreConnect(wrap(event));
-    }
+  @EventHandler
+  public void onSend(ServerConnectEvent event) {
+    onPreConnect(wrap(event));
+  }
 
-    @EventHandler
-    public void onKick(ServerKickEvent event) {
-        onKick(wrap(event));
-    }
+  @EventHandler
+  public void onKick(ServerKickEvent event) {
+    onKick(wrap(event));
+  }
 
-    private PQServerPreConnectEvent wrap(ServerConnectEvent event) {
-        return new PQServerPreConnectEvent() {
-            @Override
-            public PlayerWrapper getPlayer() {
-                return plugin.wrapPlayer(event.getPlayer());
-            }
+  private PQServerPreConnectEvent wrap(ServerConnectEvent event) {
+    return new PQServerPreConnectEvent() {
+      @Override
+      public PlayerWrapper getPlayer() {
+        return plugin.wrapPlayer(event.getPlayer());
+      }
 
-            @Override
-            public Optional<String> getTarget() {
-                return Optional.of(event.getTarget().getName());
-            }
+      @Override
+      public Optional<String> getTarget() {
+        return Optional.of(event.getTarget().getName());
+      }
 
-            @Override
-            public void setTarget(String server) {
-                event.setTarget(plugin.getProxy().getServerInfo(server));
-            }
-        };
-    }
+      @Override
+      public void setTarget(String server) {
+        event.setTarget(plugin.getProxy().getServerInfo(server));
+      }
+    };
+  }
 
-    private PQKickedFromServerEvent wrap(ServerKickEvent event) {
-        return new PQKickedFromServerEvent() {
-            @Override
-            public void setCancelServer(String server) {
-                event.setCancelServer(plugin.getProxy().getServerInfo(server));
-                event.setCancelled(true);
-            }
+  private PQKickedFromServerEvent wrap(ServerKickEvent event) {
+    return new PQKickedFromServerEvent() {
+      @Override
+      public void setCancelServer(String server) {
+        event.setCancelServer(plugin.getProxy().getServerInfo(server));
+        event.setCancelled(true);
+      }
 
-            @Override
-            public void setKickMessage(String message) {
-                event.setReason(ChatUtils.parseToComponent(message));
-            }
+      @Override
+      public void setKickMessage(String message) {
+        event.setReason(ChatUtils.parseToComponent(message));
+      }
 
-            @Override
-            public PlayerWrapper getPlayer() {
-                return plugin.wrapPlayer(event.getPlayer());
-            }
+      @Override
+      public PlayerWrapper getPlayer() {
+        return plugin.wrapPlayer(event.getPlayer());
+      }
 
-            @Override
-            public String getKickedFrom() {
-                return event.getKickedFrom().getName();
-            }
+      @Override
+      public String getKickedFrom() {
+        return event.getKickedFrom().getName();
+      }
 
-            @Override
-            public Optional<String> getKickReason() {
-                return Optional.ofNullable(event.getReason()).map(TextComponent::toLegacyText);
-            }
+      @Override
+      public Optional<String> getKickReason() {
+        return Optional.ofNullable(event.getReason()).map(TextComponent::toLegacyText);
+      }
 
-            @Override
-            public boolean willDisconnect() {
-                return !event.isCancelled();
-            }
-        };
-    }
+      @Override
+      public boolean willDisconnect() {
+        return !event.isCancelled();
+      }
+    };
+  }
 
-    private PQPreLoginEvent wrap(PreLoginEvent event) {
-        return new PQPreLoginEvent() {
-            @Override
-            public boolean isCancelled() {
-                return event.isCancelled();
-            }
+  private PQPreLoginEvent wrap(PreLoginEvent event) {
+    return new PQPreLoginEvent() {
+      @Override
+      public boolean isCancelled() {
+        return event.isCancelled();
+      }
 
-            @Override
-            public void setCancelled(String reason) {
-                event.setReason(ChatUtils.parseToComponent(reason));
-                event.setCancelled(true);
-            }
+      @Override
+      public void setCancelled(String reason) {
+        event.setReason(ChatUtils.parseToComponent(reason));
+        event.setCancelled(true);
+      }
 
-            @Override
-            public String getUsername() {
-                return event.getConnection().getName();
-            }
-        };
-    }
+      @Override
+      public String getUsername() {
+        return event.getConnection().getName();
+      }
+    };
+  }
 }

@@ -26,30 +26,30 @@ import net.pistonmaster.pistonqueue.shared.chat.TextColorWrapper;
 import net.pistonmaster.pistonqueue.shared.chat.TextDecorationWrapper;
 
 public record BungeeComponentWrapperImpl(ComponentBuilder mainComponent) implements ComponentWrapper {
-    @Override
-    public ComponentWrapper append(String text) {
-        return new BungeeComponentWrapperImpl(mainComponent.append(text));
-    }
+  @Override
+  public ComponentWrapper append(String text) {
+    return new BungeeComponentWrapperImpl(mainComponent.append(text));
+  }
 
-    @Override
-    public ComponentWrapper append(ComponentWrapper component) {
-        return new BungeeComponentWrapperImpl(mainComponent.append(((BungeeComponentWrapperImpl) component).mainComponent().create()));
-    }
+  @Override
+  public ComponentWrapper append(ComponentWrapper component) {
+    return new BungeeComponentWrapperImpl(mainComponent.append(((BungeeComponentWrapperImpl) component).mainComponent().create()));
+  }
 
-    @Override
-    public ComponentWrapper color(TextColorWrapper color) {
-        return new BungeeComponentWrapperImpl(mainComponent.color(switch (color) {
-            case GOLD -> ChatColor.GOLD;
-            case RED -> ChatColor.RED;
-            case DARK_BLUE -> ChatColor.DARK_BLUE;
-            case GREEN -> ChatColor.GREEN;
-        }));
-    }
+  @Override
+  public ComponentWrapper color(TextColorWrapper color) {
+    return new BungeeComponentWrapperImpl(mainComponent.color(switch (color) {
+      case GOLD -> ChatColor.GOLD;
+      case RED -> ChatColor.RED;
+      case DARK_BLUE -> ChatColor.DARK_BLUE;
+      case GREEN -> ChatColor.GREEN;
+    }));
+  }
 
-    @Override
-    public ComponentWrapper decorate(TextDecorationWrapper decoration) {
-        return new BungeeComponentWrapperImpl(switch (decoration) {
-            case BOLD -> mainComponent.bold(true);
-        });
-    }
+  @Override
+  public ComponentWrapper decorate(TextDecorationWrapper decoration) {
+    return new BungeeComponentWrapperImpl(switch (decoration) {
+      case BOLD -> mainComponent.bold(true);
+    });
+  }
 }

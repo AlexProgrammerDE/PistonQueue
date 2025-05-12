@@ -9,42 +9,42 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public final class PAPIExpansion extends PlaceholderExpansion {
-    private final PistonQueuePlaceholder plugin;
+  private final PistonQueuePlaceholder plugin;
 
-    @Override
-    public boolean canRegister() {
-        return true;
+  @Override
+  public boolean canRegister() {
+    return true;
+  }
+
+  @Override
+  public @NotNull String getAuthor() {
+    return "AlexProgrammerDE";
+  }
+
+  @Override
+  public @NotNull String getIdentifier() {
+    return "pistonqueue";
+  }
+
+  @Override
+  public @NotNull String getVersion() {
+    return plugin.getDescription().getVersion();
+  }
+
+  @Override
+  public String onRequest(OfflinePlayer player, @NotNull String identifier) {
+    for (Map.Entry<String, Integer> entry : plugin.getOnlineQueue().entrySet()) {
+      if (identifier.equalsIgnoreCase("online_queue_" + entry.getKey())) {
+        return String.valueOf(entry.getValue());
+      }
     }
 
-    @Override
-    public @NotNull String getAuthor() {
-        return "AlexProgrammerDE";
+    for (Map.Entry<String, Integer> entry : plugin.getOnlineTarget().entrySet()) {
+      if (identifier.equalsIgnoreCase("online_target_" + entry.getKey())) {
+        return String.valueOf(entry.getValue());
+      }
     }
 
-    @Override
-    public @NotNull String getIdentifier() {
-        return "pistonqueue";
-    }
-
-    @Override
-    public @NotNull String getVersion() {
-        return plugin.getDescription().getVersion();
-    }
-
-    @Override
-    public String onRequest(OfflinePlayer player, @NotNull String identifier) {
-        for (Map.Entry<String, Integer> entry : plugin.getOnlineQueue().entrySet()) {
-            if (identifier.equalsIgnoreCase("online_queue_" + entry.getKey())) {
-                return String.valueOf(entry.getValue());
-            }
-        }
-
-        for (Map.Entry<String, Integer> entry : plugin.getOnlineTarget().entrySet()) {
-            if (identifier.equalsIgnoreCase("online_target_" + entry.getKey())) {
-                return String.valueOf(entry.getValue());
-            }
-        }
-
-        return null;
-    }
+    return null;
+  }
 }

@@ -22,5 +22,5 @@ package net.pistonmaster.pistonqueue.shared.wrapper;
 import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapper;
 
 public interface CommandSourceWrapper extends PermissibleWrapper {
-    void sendMessage(ComponentWrapper component);
+  void sendMessage(ComponentWrapper component);
 }

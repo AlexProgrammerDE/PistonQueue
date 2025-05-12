@@ -27,9 +27,9 @@ import java.util.Optional;
  * Event for trying to connect to a server that allows us to intercept the connection and redirect the player.
  */
 public interface PQServerPreConnectEvent {
-    PlayerWrapper getPlayer();
+  PlayerWrapper getPlayer();
 
-    Optional<String> getTarget();
+  Optional<String> getTarget();
 
-    void setTarget(String server);
+  void setTarget(String server);
 }

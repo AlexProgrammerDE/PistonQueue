@@ -44,152 +44,152 @@ import java.util.logging.Level;
 
 @RequiredArgsConstructor
 public final class ServerListener implements Listener {
-    private final PistonQueueBukkit plugin;
+  private final PistonQueueBukkit plugin;
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        Player player = event.getPlayer();
+  @EventHandler(ignoreCancelled = true)
+  public void onPlayerJoin(PlayerJoinEvent event) {
+    Player player = event.getPlayer();
 
-        if (isExcluded(player)) {
-            player.sendMessage(ChatColor.GOLD + "Due to your permissions, you've been excluded from the queue restrictions.");
+    if (isExcluded(player)) {
+      player.sendMessage(ChatColor.GOLD + "Due to your permissions, you've been excluded from the queue restrictions.");
 
-            return;
-        }
-
-        if (plugin.isForceGamemode()) {
-            player.setGameMode(GameMode.valueOf(plugin.getForcedGamemode().toUpperCase(Locale.ROOT)));
-        }
-
-        if (plugin.isHidePlayers()) {
-            plugin.getServer().getOnlinePlayers().forEach(onlinePlayer -> {
-                player.hidePlayer(plugin, onlinePlayer);
-                onlinePlayer.hidePlayer(plugin, event.getPlayer());
-
-                event.setJoinMessage(null);
-            });
-        }
-
-        ScoreboardManager manager = Bukkit.getScoreboardManager();
-        if (plugin.isTeam() && manager != null) {
-            Scoreboard scoreboard = manager.getNewScoreboard();
-
-            Team team = scoreboard.registerNewTeam(plugin.getTeamName()
-                    .replace("%player_name%", player.getName())
-                    .replace("%random%", String.valueOf(getRandomNumberUsingNextInt(-9999, 9999))));
-            team.setCanSeeFriendlyInvisibles(false);
-            team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
-
-            player.setScoreboard(scoreboard);
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> team.addEntry(player.getName()), 20L);
-        }
-
-        if (plugin.isForceLocation()) {
-            player.teleport(Objects.requireNonNull(generateForcedLocation()));
-        }
-
-        if (plugin.isProtocolLib() && plugin.isDisableDebug()) {
-            ProtocolLibWrapper.removeDebug(player);
-        }
+      return;
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        if (plugin.isHidePlayers()) {
-            event.setQuitMessage(null);
-        }
+    if (plugin.isForceGamemode()) {
+      player.setGameMode(GameMode.valueOf(plugin.getForcedGamemode().toUpperCase(Locale.ROOT)));
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerRespawn(PlayerRespawnEvent event) {
-        if (plugin.isForceLocation() && !isExcluded(event.getPlayer())) {
-            event.setRespawnLocation(Objects.requireNonNull(generateForcedLocation()));
-        }
+    if (plugin.isHidePlayers()) {
+      plugin.getServer().getOnlinePlayers().forEach(onlinePlayer -> {
+        player.hidePlayer(plugin, onlinePlayer);
+        onlinePlayer.hidePlayer(plugin, event.getPlayer());
+
+        event.setJoinMessage(null);
+      });
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerHunger(FoodLevelChangeEvent event) {
-        if (plugin.isPreventHunger() && !isExcluded(event.getEntity())) {
-            event.setCancelled(true);
-        }
+    ScoreboardManager manager = Bukkit.getScoreboardManager();
+    if (plugin.isTeam() && manager != null) {
+      Scoreboard scoreboard = manager.getNewScoreboard();
+
+      Team team = scoreboard.registerNewTeam(plugin.getTeamName()
+        .replace("%player_name%", player.getName())
+        .replace("%random%", String.valueOf(getRandomNumberUsingNextInt(-9999, 9999))));
+      team.setCanSeeFriendlyInvisibles(false);
+      team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+
+      player.setScoreboard(scoreboard);
+
+      Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> team.addEntry(player.getName()), 20L);
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerHunger(PlayerExpChangeEvent event) {
-        if (plugin.isPreventHunger() && !isExcluded(event.getPlayer())) {
-            event.setAmount(0);
-        }
+    if (plugin.isForceLocation()) {
+      player.teleport(Objects.requireNonNull(generateForcedLocation()));
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerDamage(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player player)) {
-            return;
-        }
+    if (plugin.isProtocolLib() && plugin.isDisableDebug()) {
+      ProtocolLibWrapper.removeDebug(player);
+    }
+  }
 
-        if (plugin.isPreventDamage() && !isExcluded(player)) {
-            event.setCancelled(true);
-        }
+  @EventHandler(ignoreCancelled = true)
+  public void onPlayerQuit(PlayerQuitEvent event) {
+    if (plugin.isHidePlayers()) {
+      event.setQuitMessage(null);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onPlayerRespawn(PlayerRespawnEvent event) {
+    if (plugin.isForceLocation() && !isExcluded(event.getPlayer())) {
+      event.setRespawnLocation(Objects.requireNonNull(generateForcedLocation()));
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onPlayerHunger(FoodLevelChangeEvent event) {
+    if (plugin.isPreventHunger() && !isExcluded(event.getEntity())) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onPlayerHunger(PlayerExpChangeEvent event) {
+    if (plugin.isPreventHunger() && !isExcluded(event.getPlayer())) {
+      event.setAmount(0);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onPlayerDamage(EntityDamageEvent event) {
+    if (!(event.getEntity() instanceof Player player)) {
+      return;
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerDamage(EntityDamageByBlockEvent event) {
-        if (!(event.getEntity() instanceof Player player)) {
-            return;
-        }
+    if (plugin.isPreventDamage() && !isExcluded(player)) {
+      event.setCancelled(true);
+    }
+  }
 
-        if (plugin.isPreventDamage() && !isExcluded(player)) {
-            event.setCancelled(true);
-        }
+  @EventHandler(ignoreCancelled = true)
+  public void onPlayerDamage(EntityDamageByBlockEvent event) {
+    if (!(event.getEntity() instanceof Player player)) {
+      return;
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerDamage(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player player)) {
-            return;
-        }
+    if (plugin.isPreventDamage() && !isExcluded(player)) {
+      event.setCancelled(true);
+    }
+  }
 
-        if (plugin.isPreventDamage() && !isExcluded(player)) {
-            event.setCancelled(true);
-        }
+  @EventHandler(ignoreCancelled = true)
+  public void onPlayerDamage(EntityDamageByEntityEvent event) {
+    if (!(event.getEntity() instanceof Player player)) {
+      return;
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onChat(AsyncPlayerChatEvent event) {
-        if (plugin.isDisableChat()) {
-            event.setCancelled(true);
-        }
+    if (plugin.isPreventDamage() && !isExcluded(player)) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onChat(AsyncPlayerChatEvent event) {
+    if (plugin.isDisableChat()) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onCmd(PlayerCommandPreprocessEvent event) {
+    if (plugin.isDisableCmd()) {
+      event.setCancelled(true);
+    }
+  }
+
+  @EventHandler(ignoreCancelled = true)
+  public void onMove(PlayerMoveEvent event) {
+    if (plugin.isRestrictMovement() && !isExcluded(event.getPlayer())) {
+      event.setCancelled(true);
+    }
+  }
+
+  private boolean isExcluded(HumanEntity player) {
+    return player.hasPermission("queue.admin");
+  }
+
+  private Location generateForcedLocation() {
+    if (plugin.getServer().getWorld(plugin.getForcedWorldName()) == null) {
+      plugin.getLogger().log(Level.SEVERE, "Invalid forcedWorldName!! Check the configuration.");
+
+      return null;
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onCmd(PlayerCommandPreprocessEvent event) {
-        if (plugin.isDisableCmd()) {
-            event.setCancelled(true);
-        }
-    }
+    return new Location(plugin.getServer().getWorld(plugin.getForcedWorldName()), plugin.getForcedX(), plugin.getForcedY(), plugin.getForcedZ());
+  }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onMove(PlayerMoveEvent event) {
-        if (plugin.isRestrictMovement() && !isExcluded(event.getPlayer())) {
-            event.setCancelled(true);
-        }
-    }
-
-    private boolean isExcluded(HumanEntity player) {
-        return player.hasPermission("queue.admin");
-    }
-
-    private Location generateForcedLocation() {
-        if (plugin.getServer().getWorld(plugin.getForcedWorldName()) == null) {
-            plugin.getLogger().log(Level.SEVERE, "Invalid forcedWorldName!! Check the configuration.");
-
-            return null;
-        }
-
-        return new Location(plugin.getServer().getWorld(plugin.getForcedWorldName()), plugin.getForcedX(), plugin.getForcedY(), plugin.getForcedZ());
-    }
-
-    public int getRandomNumberUsingNextInt(int min, int max) {
-        return new Random().nextInt(max - min) + min;
-    }
+  public int getRandomNumberUsingNextInt(int min, int max) {
+    return new Random().nextInt(max - min) + min;
+  }
 }

@@ -27,22 +27,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class ChatUtils {
-    private ChatUtils() {
-    }
+  private ChatUtils() {
+  }
 
-    public static TextComponent parseToComponent(String str) {
-        return LegacyComponentSerializer.legacySection().deserialize(parseToString(str));
-    }
+  public static TextComponent parseToComponent(String str) {
+    return LegacyComponentSerializer.legacySection().deserialize(parseToString(str));
+  }
 
-    public static String parseToString(String str) {
-        return LegacyComponentSerializer.legacySection().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(SharedChatUtils.parseText(str)));
-    }
+  public static String parseToString(String str) {
+    return LegacyComponentSerializer.legacySection().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(SharedChatUtils.parseText(str)));
+  }
 
-    public static TextComponent parseTab(List<String> tab) {
-        return parseToComponent(
-            tab.stream()
-                .map(ChatUtils::parseToString)
-                .collect(Collectors.joining("\n"))
-        );
-    }
+  public static TextComponent parseTab(List<String> tab) {
+    return parseToComponent(
+      tab.stream()
+        .map(ChatUtils::parseToString)
+        .collect(Collectors.joining("\n"))
+    );
+  }
 }

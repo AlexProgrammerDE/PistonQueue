@@ -20,11 +20,11 @@
 package net.pistonmaster.pistonqueue.shared.chat;
 
 public interface ComponentWrapper {
-    ComponentWrapper append(String text);
+  ComponentWrapper append(String text);
 
-    ComponentWrapper append(ComponentWrapper component);
+  ComponentWrapper append(ComponentWrapper component);
 
-    ComponentWrapper color(TextColorWrapper color);
+  ComponentWrapper color(TextColorWrapper color);
 
-    ComponentWrapper decorate(TextDecorationWrapper decoration);
+  ComponentWrapper decorate(TextDecorationWrapper decoration);
 }

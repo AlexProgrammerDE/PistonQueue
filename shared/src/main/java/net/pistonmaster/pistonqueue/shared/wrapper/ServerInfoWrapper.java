@@ -22,9 +22,9 @@ package net.pistonmaster.pistonqueue.shared.wrapper;
 import java.util.List;
 
 public interface ServerInfoWrapper {
-    List<PlayerWrapper> getConnectedPlayers();
+  List<PlayerWrapper> getConnectedPlayers();
 
-    boolean isOnline();
+  boolean isOnline();
 
-    void sendPluginMessage(String channel, byte[] data);
+  void sendPluginMessage(String channel, byte[] data);
 }

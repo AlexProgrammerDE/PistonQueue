@@ -20,5 +20,5 @@
 package net.pistonmaster.pistonqueue.shared.wrapper;
 
 public interface PermissibleWrapper {
-    boolean hasPermission(String node);
+  boolean hasPermission(String node);
 }

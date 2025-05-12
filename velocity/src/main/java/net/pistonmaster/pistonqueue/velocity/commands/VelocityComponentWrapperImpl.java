@@ -27,30 +27,30 @@ import net.pistonmaster.pistonqueue.shared.chat.TextColorWrapper;
 import net.pistonmaster.pistonqueue.shared.chat.TextDecorationWrapper;
 
 public record VelocityComponentWrapperImpl(Component mainComponent) implements ComponentWrapper {
-    @Override
-    public ComponentWrapper append(String text) {
-        return new VelocityComponentWrapperImpl(mainComponent.append(Component.text(text)));
-    }
+  @Override
+  public ComponentWrapper append(String text) {
+    return new VelocityComponentWrapperImpl(mainComponent.append(Component.text(text)));
+  }
 
-    @Override
-    public ComponentWrapper append(ComponentWrapper component) {
-        return new VelocityComponentWrapperImpl(mainComponent.append(((VelocityComponentWrapperImpl) component).mainComponent()));
-    }
+  @Override
+  public ComponentWrapper append(ComponentWrapper component) {
+    return new VelocityComponentWrapperImpl(mainComponent.append(((VelocityComponentWrapperImpl) component).mainComponent()));
+  }
 
-    @Override
-    public ComponentWrapper color(TextColorWrapper color) {
-        return new VelocityComponentWrapperImpl(mainComponent.color(switch (color) {
-            case GOLD -> NamedTextColor.GOLD;
-            case RED -> NamedTextColor.RED;
-            case DARK_BLUE -> NamedTextColor.DARK_BLUE;
-            case GREEN -> NamedTextColor.GREEN;
-        }));
-    }
+  @Override
+  public ComponentWrapper color(TextColorWrapper color) {
+    return new VelocityComponentWrapperImpl(mainComponent.color(switch (color) {
+      case GOLD -> NamedTextColor.GOLD;
+      case RED -> NamedTextColor.RED;
+      case DARK_BLUE -> NamedTextColor.DARK_BLUE;
+      case GREEN -> NamedTextColor.GREEN;
+    }));
+  }
 
-    @Override
-    public ComponentWrapper decorate(TextDecorationWrapper decoration) {
-        return new VelocityComponentWrapperImpl(mainComponent.decorate(switch (decoration) {
-            case BOLD -> TextDecoration.BOLD;
-        }));
-    }
+  @Override
+  public ComponentWrapper decorate(TextDecorationWrapper decoration) {
+    return new VelocityComponentWrapperImpl(mainComponent.decorate(switch (decoration) {
+      case BOLD -> TextDecoration.BOLD;
+    }));
+  }
 }

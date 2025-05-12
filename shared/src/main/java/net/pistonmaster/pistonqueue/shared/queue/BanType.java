@@ -23,18 +23,18 @@ package net.pistonmaster.pistonqueue.shared.queue;
  * How shadow-banned people should be punished.
  */
 public enum BanType {
-    /**
-     * Loop forever in queue!
-     */
-    LOOP,
+  /**
+   * Loop forever in queue!
+   */
+  LOOP,
 
-    /**
-     * Have a custom chance of getting into the server!
-     */
-    PERCENT,
+  /**
+   * Have a custom chance of getting into the server!
+   */
+  PERCENT,
 
-    /**
-     * Kick a player while joining!
-     */
-    KICK
+  /**
+   * Kick a player while joining!
+   */
+  KICK
 }

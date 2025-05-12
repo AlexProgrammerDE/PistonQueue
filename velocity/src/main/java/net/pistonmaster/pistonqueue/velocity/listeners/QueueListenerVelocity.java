@@ -38,104 +38,104 @@ import net.pistonmaster.pistonqueue.velocity.utils.ChatUtils;
 import java.util.Optional;
 
 public final class QueueListenerVelocity extends QueueListenerShared {
-    private final PistonQueueVelocity plugin;
+  private final PistonQueueVelocity plugin;
 
-    public QueueListenerVelocity(PistonQueueVelocity plugin) {
-        super(plugin);
-        this.plugin = plugin;
-    }
+  public QueueListenerVelocity(PistonQueueVelocity plugin) {
+    super(plugin);
+    this.plugin = plugin;
+  }
 
-    @Subscribe
-    public void onPreLogin(PreLoginEvent event) {
-        onPreLogin(wrap(event));
-    }
+  @Subscribe
+  public void onPreLogin(PreLoginEvent event) {
+    onPreLogin(wrap(event));
+  }
 
-    @Subscribe
-    public void onPostLogin(PostLoginEvent event) {
-        onPostLogin(plugin.wrapPlayer(event.getPlayer()));
-    }
+  @Subscribe
+  public void onPostLogin(PostLoginEvent event) {
+    onPostLogin(plugin.wrapPlayer(event.getPlayer()));
+  }
 
-    @Subscribe
-    public void onKick(KickedFromServerEvent event) {
-        onKick(wrap(event));
-    }
+  @Subscribe
+  public void onKick(KickedFromServerEvent event) {
+    onKick(wrap(event));
+  }
 
-    @Subscribe
-    public void onSend(ServerPreConnectEvent event) {
-        onPreConnect(wrap(event));
-    }
+  @Subscribe
+  public void onSend(ServerPreConnectEvent event) {
+    onPreConnect(wrap(event));
+  }
 
-    private PQServerPreConnectEvent wrap(ServerPreConnectEvent event) {
-        return new PQServerPreConnectEvent() {
-            @Override
-            public PlayerWrapper getPlayer() {
-                return plugin.wrapPlayer(event.getPlayer());
-            }
+  private PQServerPreConnectEvent wrap(ServerPreConnectEvent event) {
+    return new PQServerPreConnectEvent() {
+      @Override
+      public PlayerWrapper getPlayer() {
+        return plugin.wrapPlayer(event.getPlayer());
+      }
 
-            @Override
-            public Optional<String> getTarget() {
-                return event.getResult().getServer().map(RegisteredServer::getServerInfo).map(ServerInfo::getName);
-            }
+      @Override
+      public Optional<String> getTarget() {
+        return event.getResult().getServer().map(RegisteredServer::getServerInfo).map(ServerInfo::getName);
+      }
 
-            @Override
-            public void setTarget(String server) {
-                event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(server).orElseThrow(() ->
-                        new IllegalArgumentException(String.format("Server %s not found", server)))));
-            }
-        };
-    }
+      @Override
+      public void setTarget(String server) {
+        event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(server).orElseThrow(() ->
+          new IllegalArgumentException(String.format("Server %s not found", server)))));
+      }
+    };
+  }
 
-    private PQKickedFromServerEvent wrap(KickedFromServerEvent event) {
-        return new PQKickedFromServerEvent() {
-            @Override
-            public void setCancelServer(String server) {
-                event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(server).orElseThrow(() ->
-                        new IllegalArgumentException(String.format("Server %s not found", server)))));
-            }
+  private PQKickedFromServerEvent wrap(KickedFromServerEvent event) {
+    return new PQKickedFromServerEvent() {
+      @Override
+      public void setCancelServer(String server) {
+        event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(server).orElseThrow(() ->
+          new IllegalArgumentException(String.format("Server %s not found", server)))));
+      }
 
-            @Override
-            public void setKickMessage(String message) {
-                event.setResult(KickedFromServerEvent.DisconnectPlayer.create(ChatUtils.parseToComponent(message)));
-            }
+      @Override
+      public void setKickMessage(String message) {
+        event.setResult(KickedFromServerEvent.DisconnectPlayer.create(ChatUtils.parseToComponent(message)));
+      }
 
-            @Override
-            public PlayerWrapper getPlayer() {
-                return plugin.wrapPlayer(event.getPlayer());
-            }
+      @Override
+      public PlayerWrapper getPlayer() {
+        return plugin.wrapPlayer(event.getPlayer());
+      }
 
-            @Override
-            public String getKickedFrom() {
-                return event.getServer().getServerInfo().getName();
-            }
+      @Override
+      public String getKickedFrom() {
+        return event.getServer().getServerInfo().getName();
+      }
 
-            @Override
-            public Optional<String> getKickReason() {
-                return event.getServerKickReason().map(LegacyComponentSerializer.legacySection()::serialize);
-            }
+      @Override
+      public Optional<String> getKickReason() {
+        return event.getServerKickReason().map(LegacyComponentSerializer.legacySection()::serialize);
+      }
 
-            @Override
-            public boolean willDisconnect() {
-                return event.getResult().isAllowed();
-            }
-        };
-    }
+      @Override
+      public boolean willDisconnect() {
+        return event.getResult().isAllowed();
+      }
+    };
+  }
 
-    private PQPreLoginEvent wrap(PreLoginEvent event) {
-        return new PQPreLoginEvent() {
-            @Override
-            public boolean isCancelled() {
-                return event.getResult() != PreLoginEvent.PreLoginComponentResult.allowed();
-            }
+  private PQPreLoginEvent wrap(PreLoginEvent event) {
+    return new PQPreLoginEvent() {
+      @Override
+      public boolean isCancelled() {
+        return event.getResult() != PreLoginEvent.PreLoginComponentResult.allowed();
+      }
 
-            @Override
-            public void setCancelled(String reason) {
-                event.setResult(PreLoginEvent.PreLoginComponentResult.denied(ChatUtils.parseToComponent(reason)));
-            }
+      @Override
+      public void setCancelled(String reason) {
+        event.setResult(PreLoginEvent.PreLoginComponentResult.denied(ChatUtils.parseToComponent(reason)));
+      }
 
-            @Override
-            public String getUsername() {
-                return event.getUsername();
-            }
-        };
-    }
+      @Override
+      public String getUsername() {
+        return event.getUsername();
+      }
+    };
+  }
 }

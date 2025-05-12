@@ -30,35 +30,35 @@ import net.pistonmaster.pistonqueue.shared.command.MainCommandShared;
 import net.pistonmaster.pistonqueue.shared.wrapper.CommandSourceWrapper;
 
 public final class MainCommand extends Command implements TabExecutor, MainCommandShared {
-    private final PistonQueueBungee plugin;
+  private final PistonQueueBungee plugin;
 
-    public MainCommand(PistonQueueBungee plugin) {
-        super("pistonqueue", null, "pq");
-        this.plugin = plugin;
-    }
+  public MainCommand(PistonQueueBungee plugin) {
+    super("pistonqueue", null, "pq");
+    this.plugin = plugin;
+  }
 
-    @Override
-    public void execute(CommandSender sender, String[] args) {
-        onCommand(new CommandSourceWrapper() {
-            @Override
-            public void sendMessage(ComponentWrapper component) {
-                sender.sendMessage(((BungeeComponentWrapperImpl) component).mainComponent().create());
-            }
+  @Override
+  public void execute(CommandSender sender, String[] args) {
+    onCommand(new CommandSourceWrapper() {
+      @Override
+      public void sendMessage(ComponentWrapper component) {
+        sender.sendMessage(((BungeeComponentWrapperImpl) component).mainComponent().create());
+      }
 
-            @Override
-            public boolean hasPermission(String node) {
-                return sender.hasPermission(node);
-            }
-        }, args, plugin);
-    }
+      @Override
+      public boolean hasPermission(String node) {
+        return sender.hasPermission(node);
+      }
+    }, args, plugin);
+  }
 
-    @Override
-    public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
-        return onTab(args, sender::hasPermission, plugin);
-    }
+  @Override
+  public Iterable<String> onTabComplete(CommandSender sender, String[] args) {
+    return onTab(args, sender::hasPermission, plugin);
+  }
 
-    @Override
-    public ComponentWrapperFactory component() {
-        return text -> new BungeeComponentWrapperImpl(new ComponentBuilder(text));
-    }
+  @Override
+  public ComponentWrapperFactory component() {
+    return text -> new BungeeComponentWrapperImpl(new ComponentBuilder(text));
+  }
 }

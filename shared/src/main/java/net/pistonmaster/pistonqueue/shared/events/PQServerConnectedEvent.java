@@ -27,9 +27,9 @@ import java.util.Optional;
  * Event for when a player has successfully moved to another server on the proxy.
  */
 public interface PQServerConnectedEvent {
-    PlayerWrapper getPlayer();
+  PlayerWrapper getPlayer();
 
-    Optional<String> getPreviousServer();
+  Optional<String> getPreviousServer();
 
-    String getServer();
+  String getServer();
 }

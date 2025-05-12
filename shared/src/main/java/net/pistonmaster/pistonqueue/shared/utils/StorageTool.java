@@ -32,126 +32,126 @@ import java.util.Date;
 import java.util.Locale;
 
 public final class StorageTool {
-    private static Path dataDirectory;
-    private static ConfigurationNode dataConfig;
-    private static Path dataFile;
+  private static Path dataDirectory;
+  private static ConfigurationNode dataConfig;
+  private static Path dataFile;
 
-    private StorageTool() {
+  private StorageTool() {
+  }
+
+  /**
+   * Shadow-ban a player!
+   *
+   * @param playerName The player to shadow-ban.
+   * @param date       The date when he will be unbanned.
+   * @return true if player got shadow-banned and if already shadow-banned false.
+   */
+  public static boolean shadowBanPlayer(String playerName, Date date) {
+    playerName = playerName.toLowerCase(Locale.ROOT);
+    manageBan(playerName);
+
+    if (dataConfig.node(playerName).virtual()) {
+      try {
+        dataConfig.node(playerName).set(date.toString());
+      } catch (SerializationException e) {
+        e.printStackTrace();
+      }
+
+      saveData();
+
+      return true;
+    } else {
+      return false;
     }
+  }
 
-    /**
-     * Shadow-ban a player!
-     *
-     * @param playerName The player to shadow-ban.
-     * @param date       The date when he will be unbanned.
-     * @return true if player got shadow-banned and if already shadow-banned false.
-     */
-    public static boolean shadowBanPlayer(String playerName, Date date) {
-        playerName = playerName.toLowerCase(Locale.ROOT);
-        manageBan(playerName);
+  /**
+   * Un-shadow-ban a player!
+   *
+   * @param playerName The player to un-shadow-ban.
+   * @return true if a player got un-shadow-banned and false if he wasn't shadow-banned.
+   */
+  public static boolean unShadowBanPlayer(String playerName) {
+    playerName = playerName.toLowerCase(Locale.ROOT);
+    if (!dataConfig.node(playerName).virtual()) {
+      try {
+        dataConfig.node(playerName).set(null);
+      } catch (SerializationException e) {
+        e.printStackTrace();
+      }
 
-        if (dataConfig.node(playerName).virtual()) {
-            try {
-                dataConfig.node(playerName).set(date.toString());
-            } catch (SerializationException e) {
-                e.printStackTrace();
-            }
+      saveData();
 
-            saveData();
+      return true;
+    } else {
+      return false;
+    }
+  }
 
-            return true;
-        } else {
-            return false;
+  public static boolean isShadowBanned(String playerName) {
+    playerName = playerName.toLowerCase(Locale.ROOT);
+    manageBan(playerName);
+
+    return !dataConfig.node(playerName).virtual();
+  }
+
+  private static void manageBan(String playerName) {
+    playerName = playerName.toLowerCase(Locale.ROOT);
+    Date now = new Date();
+
+    if (!dataConfig.node(playerName).virtual()) {
+      SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.of("en"));
+
+      try {
+        Date date = sdf.parse(dataConfig.node(playerName).getString());
+
+        if (now.after(date) || (now.equals(date))) {
+          unShadowBanPlayer(playerName);
         }
+      } catch (ParseException e) {
+        e.printStackTrace();
+      }
     }
+  }
 
-    /**
-     * Un-shadow-ban a player!
-     *
-     * @param playerName The player to un-shadow-ban.
-     * @return true if a player got un-shadow-banned and false if he wasn't shadow-banned.
-     */
-    public static boolean unShadowBanPlayer(String playerName) {
-        playerName = playerName.toLowerCase(Locale.ROOT);
-        if (!dataConfig.node(playerName).virtual()) {
-            try {
-                dataConfig.node(playerName).set(null);
-            } catch (SerializationException e) {
-                e.printStackTrace();
-            }
+  private static void loadData() {
+    generateFile();
 
-            saveData();
-
-            return true;
-        } else {
-            return false;
-        }
+    try {
+      dataConfig = YamlConfigurationLoader.builder().path(dataFile).build().load();
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+  }
 
-    public static boolean isShadowBanned(String playerName) {
-        playerName = playerName.toLowerCase(Locale.ROOT);
-        manageBan(playerName);
+  private static void saveData() {
+    generateFile();
 
-        return !dataConfig.node(playerName).virtual();
+    try {
+      YamlConfigurationLoader.builder().path(dataFile).build().save(dataConfig);
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+  }
 
-    private static void manageBan(String playerName) {
-        playerName = playerName.toLowerCase(Locale.ROOT);
-        Date now = new Date();
+  private static void generateFile() {
+    try {
+      if (!Files.exists(dataDirectory)) {
+        Files.createDirectories(dataDirectory);
+      }
 
-        if (!dataConfig.node(playerName).virtual()) {
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.of("en"));
-
-            try {
-                Date date = sdf.parse(dataConfig.node(playerName).getString());
-
-                if (now.after(date) || (now.equals(date))) {
-                    unShadowBanPlayer(playerName);
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
+      if (!Files.exists(dataFile)) {
+        Files.createFile(dataFile);
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
     }
+  }
 
-    private static void loadData() {
-        generateFile();
+  public static void setupTool(Path dataDirectory) {
+    StorageTool.dataDirectory = dataDirectory;
+    StorageTool.dataFile = dataDirectory.resolve("data.yml");
 
-        try {
-            dataConfig = YamlConfigurationLoader.builder().path(dataFile).build().load();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void saveData() {
-        generateFile();
-
-        try {
-            YamlConfigurationLoader.builder().path(dataFile).build().save(dataConfig);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void generateFile() {
-        try {
-            if (!Files.exists(dataDirectory)) {
-                Files.createDirectories(dataDirectory);
-            }
-
-            if (!Files.exists(dataFile)) {
-                Files.createFile(dataFile);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void setupTool(Path dataDirectory) {
-        StorageTool.dataDirectory = dataDirectory;
-        StorageTool.dataFile = dataDirectory.resolve("data.yml");
-
-        loadData();
-    }
+    loadData();
+  }
 }

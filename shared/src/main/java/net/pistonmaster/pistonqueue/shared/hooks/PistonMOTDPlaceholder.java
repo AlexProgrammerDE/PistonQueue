@@ -27,15 +27,15 @@ import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 import java.util.Locale;
 
 public final class PistonMOTDPlaceholder implements PlaceholderParser {
-    public PistonMOTDPlaceholder() {
-        PlaceholderUtil.registerParser(this);
-    }
+  public PistonMOTDPlaceholder() {
+    PlaceholderUtil.registerParser(this);
+  }
 
-    @Override
-    public String parseString(String s) {
-        for (QueueType type : Config.QUEUE_TYPES) {
-            s = s.replace("%pistonqueue_" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(type.getQueueMap().size()));
-        }
-        return s;
+  @Override
+  public String parseString(String s) {
+    for (QueueType type : Config.QUEUE_TYPES) {
+      s = s.replace("%pistonqueue_" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(type.getQueueMap().size()));
     }
+    return s;
+  }
 }

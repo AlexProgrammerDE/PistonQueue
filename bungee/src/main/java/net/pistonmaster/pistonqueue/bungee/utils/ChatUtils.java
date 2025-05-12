@@ -28,20 +28,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public final class ChatUtils {
-    private ChatUtils() {
-    }
+  private ChatUtils() {
+  }
 
-    public static String parseToString(String str) {
-        return ChatColor.translateAlternateColorCodes('&', SharedChatUtils.parseText(str));
-    }
+  public static String parseToString(String str) {
+    return ChatColor.translateAlternateColorCodes('&', SharedChatUtils.parseText(str));
+  }
 
-    public static BaseComponent parseToComponent(String str) {
-        return TextComponent.fromLegacy(parseToString(str));
-    }
+  public static BaseComponent parseToComponent(String str) {
+    return TextComponent.fromLegacy(parseToString(str));
+  }
 
-    public static BaseComponent parseTab(List<String> tab) {
-        return parseToComponent(tab.stream()
-            .map(ChatUtils::parseToString)
-            .collect(Collectors.joining("\n")));
-    }
+  public static BaseComponent parseTab(List<String> tab) {
+    return parseToComponent(tab.stream()
+      .map(ChatUtils::parseToString)
+      .collect(Collectors.joining("\n")));
+  }
 }

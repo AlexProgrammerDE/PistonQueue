@@ -29,76 +29,76 @@ import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.entity.Player;
 
 public final class ProtocolLibWrapper {
-    private ProtocolLibWrapper() {
+  private ProtocolLibWrapper() {
+  }
+
+  public static void removeDebug(Player player) {
+    ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+
+    PacketContainer packet = manager.createPacket(PacketType.Play.Server.ENTITY_STATUS);
+
+    packet.getIntegers().write(0, player.getEntityId());
+
+    packet.getBytes().write(0, (byte) 22);
+
+    manager.sendServerPacket(player, packet);
+  }
+
+  public static void setupProtocolLib(PistonQueueBukkit plugin) {
+    ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+
+    if (plugin.isNoChunkPackets()) {
+      manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.MAP_CHUNK) {
+        @Override
+        public void onPacketSending(PacketEvent event) {
+          event.setCancelled(true);
+        }
+      });
     }
 
-    public static void removeDebug(Player player) {
-        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-
-        PacketContainer packet = manager.createPacket(PacketType.Play.Server.ENTITY_STATUS);
-
-        packet.getIntegers().write(0, player.getEntityId());
-
-        packet.getBytes().write(0, (byte) 22);
-
-        manager.sendServerPacket(player, packet);
+    if (plugin.isNoTimePackets()) {
+      manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_TIME) {
+        @Override
+        public void onPacketSending(PacketEvent event) {
+          event.setCancelled(true);
+        }
+      });
     }
 
-    public static void setupProtocolLib(PistonQueueBukkit plugin) {
-        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-
-        if (plugin.isNoChunkPackets()) {
-            manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.MAP_CHUNK) {
-                @Override
-                public void onPacketSending(PacketEvent event) {
-                    event.setCancelled(true);
-                }
-            });
+    if (plugin.isNoHealthPackets()) {
+      manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_HEALTH) {
+        @Override
+        public void onPacketSending(PacketEvent event) {
+          event.setCancelled(true);
         }
-
-        if (plugin.isNoTimePackets()) {
-            manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_TIME) {
-                @Override
-                public void onPacketSending(PacketEvent event) {
-                    event.setCancelled(true);
-                }
-            });
-        }
-
-        if (plugin.isNoHealthPackets()) {
-            manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.UPDATE_HEALTH) {
-                @Override
-                public void onPacketSending(PacketEvent event) {
-                    event.setCancelled(true);
-                }
-            });
-        }
-
-        if (plugin.isNoAdvancementPackets()) {
-            manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ADVANCEMENTS) {
-                @Override
-                public void onPacketSending(PacketEvent event) {
-                    event.setCancelled(true);
-                }
-            });
-        }
-
-        if (plugin.isNoExperiencePackets()) {
-            manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.EXPERIENCE) {
-                @Override
-                public void onPacketSending(PacketEvent event) {
-                    event.setCancelled(true);
-                }
-            });
-        }
-
-        if (plugin.isShowHeadPacket()) {
-            manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
-                @Override
-                public void onPacketSending(PacketEvent event) {
-                    event.setCancelled(true);
-                }
-            });
-        }
+      });
     }
+
+    if (plugin.isNoAdvancementPackets()) {
+      manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ADVANCEMENTS) {
+        @Override
+        public void onPacketSending(PacketEvent event) {
+          event.setCancelled(true);
+        }
+      });
+    }
+
+    if (plugin.isNoExperiencePackets()) {
+      manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.EXPERIENCE) {
+        @Override
+        public void onPacketSending(PacketEvent event) {
+          event.setCancelled(true);
+        }
+      });
+    }
+
+    if (plugin.isShowHeadPacket()) {
+      manager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.ENTITY_METADATA) {
+        @Override
+        public void onPacketSending(PacketEvent event) {
+          event.setCancelled(true);
+        }
+      });
+    }
+  }
 }

@@ -57,211 +57,211 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Plugin(id = "pistonqueue", name = PluginData.NAME, version = PluginData.VERSION,
-        url = PluginData.URL, description = PluginData.DESCRIPTION, authors = {"AlexProgrammerDE"})
+  url = PluginData.URL, description = PluginData.DESCRIPTION, authors = {"AlexProgrammerDE"})
 public final class PistonQueueVelocity implements PistonQueuePlugin {
-    @Getter
-    private final Path dataDirectory;
-    @Getter
-    private final ProxyServer proxyServer;
-    @Getter
-    private final Logger logger;
-    @Getter
-    private final PluginContainer pluginContainer;
-    @Getter
-    private final QueueListenerVelocity queueListenerVelocity = new QueueListenerVelocity(this);
-    private final Metrics.Factory metricsFactory;
+  @Getter
+  private final Path dataDirectory;
+  @Getter
+  private final ProxyServer proxyServer;
+  @Getter
+  private final Logger logger;
+  @Getter
+  private final PluginContainer pluginContainer;
+  @Getter
+  private final QueueListenerVelocity queueListenerVelocity = new QueueListenerVelocity(this);
+  private final Metrics.Factory metricsFactory;
 
-    @Inject
-    public PistonQueueVelocity(ProxyServer proxyServer, Logger logger, @DataDirectory Path dataDirectory, PluginContainer pluginContainer, Metrics.Factory metricsFactory) {
-        this.proxyServer = proxyServer;
-        this.logger = logger;
-        this.dataDirectory = dataDirectory;
-        this.pluginContainer = pluginContainer;
-        this.metricsFactory = metricsFactory;
+  @Inject
+  public PistonQueueVelocity(ProxyServer proxyServer, Logger logger, @DataDirectory Path dataDirectory, PluginContainer pluginContainer, Metrics.Factory metricsFactory) {
+    this.proxyServer = proxyServer;
+    this.logger = logger;
+    this.dataDirectory = dataDirectory;
+    this.pluginContainer = pluginContainer;
+    this.metricsFactory = metricsFactory;
+  }
+
+  @Subscribe
+  public void onProxyInitialization(ProxyInitializeEvent event) {
+    info("Loading config");
+    processConfig(dataDirectory);
+
+    StorageTool.setupTool(dataDirectory);
+    initializeReservationSlots();
+
+    info("Looking for hooks");
+    if (proxyServer.getPluginManager().getPlugin("pistonmotd").isPresent()) {
+      info("Hooking into PistonMOTD");
+      new PistonMOTDPlaceholder();
     }
 
-    @Subscribe
-    public void onProxyInitialization(ProxyInitializeEvent event) {
-        info("Loading config");
-        processConfig(dataDirectory);
+    info("Registering plugin messaging channel");
+    proxyServer.getChannelRegistrar().register(MinecraftChannelIdentifier.from("piston:queue"));
 
-        StorageTool.setupTool(dataDirectory);
-        initializeReservationSlots();
+    info("Registering commands");
+    proxyServer.getCommandManager().register("pistonqueue", new MainCommand(this), "pq");
 
-        info("Looking for hooks");
-        if (proxyServer.getPluginManager().getPlugin("pistonmotd").isPresent()) {
-            info("Hooking into PistonMOTD");
-            new PistonMOTDPlaceholder();
-        }
+    info("Registering listeners");
+    proxyServer.getEventManager().register(this, queueListenerVelocity);
 
-        info("Registering plugin messaging channel");
-        proxyServer.getChannelRegistrar().register(MinecraftChannelIdentifier.from("piston:queue"));
+    info("Loading Metrics");
+    metricsFactory.make(this, 12389);
 
-        info("Registering commands");
-        proxyServer.getCommandManager().register("pistonqueue", new MainCommand(this), "pq");
+    info("Checking for update");
+    try {
+      String currentVersionString = pluginContainer.getDescription().getVersion().orElse("unknown");
+      SemanticVersion gitHubVersion = new GitHubUpdateChecker()
+        .getVersion("https://api.github.com/repos/AlexProgrammerDE/PistonQueue/releases/latest");
+      SemanticVersion currentVersion = SemanticVersion.fromString(currentVersionString);
 
-        info("Registering listeners");
-        proxyServer.getEventManager().register(this, queueListenerVelocity);
+      if (gitHubVersion.isNewerThan(currentVersion)) {
+        info("There is an update available!");
+        info("Current version: " + currentVersionString + " New version: " + gitHubVersion);
+        info("Download it at: https://modrinth.com/plugin/pistonqueue");
+      } else {
+        info("You're up to date!");
+      }
+    } catch (IOException e) {
+      error("Could not check for updates!");
+      e.printStackTrace();
+    }
 
-        info("Loading Metrics");
-        metricsFactory.make(this, 12389);
+    info("Scheduling tasks");
+    scheduleTasks(queueListenerVelocity);
+  }
 
-        info("Checking for update");
+  @Override
+  public Optional<PlayerWrapper> getPlayer(UUID uuid) {
+    return proxyServer.getPlayer(uuid).map(this::wrapPlayer);
+  }
+
+  @Override
+  public List<PlayerWrapper> getPlayers() {
+    return proxyServer.getAllPlayers().stream().map(this::wrapPlayer).collect(Collectors.toList());
+  }
+
+  @Override
+  public Optional<ServerInfoWrapper> getServer(String name) {
+    return proxyServer.getServer(name).map(this::wrapServer);
+  }
+
+  @Override
+  public void schedule(Runnable runnable, long delay, long period, TimeUnit unit) {
+    proxyServer.getScheduler().buildTask(this, runnable).delay(delay, unit).repeat(period, unit).schedule();
+  }
+
+  @Override
+  public void info(String message) {
+    logger.info(message);
+  }
+
+  @Override
+  public void warning(String message) {
+    logger.warn(message);
+  }
+
+  @Override
+  public void error(String message) {
+    logger.error(message);
+  }
+
+  @Override
+  public List<String> getAuthors() {
+    return pluginContainer.getDescription().getAuthors();
+  }
+
+  @Override
+  public String getVersion() {
+    return pluginContainer.getDescription().getVersion().orElse("unknown");
+  }
+
+  private ServerInfoWrapper wrapServer(RegisteredServer server) {
+    return new ServerInfoWrapper() {
+      @Override
+      public List<PlayerWrapper> getConnectedPlayers() {
+        return server.getPlayersConnected().stream().map(PistonQueueVelocity.this::wrapPlayer).collect(Collectors.toList());
+      }
+
+      @Override
+      public boolean isOnline() {
         try {
-            String currentVersionString = pluginContainer.getDescription().getVersion().orElse("unknown");
-            SemanticVersion gitHubVersion = new GitHubUpdateChecker()
-                .getVersion("https://api.github.com/repos/AlexProgrammerDE/PistonQueue/releases/latest");
-            SemanticVersion currentVersion = SemanticVersion.fromString(currentVersionString);
+          server.ping().join();
+          return true;
+        } catch (CancellationException | CompletionException e) {
+          return false;
+        }
+      }
 
-          if (gitHubVersion.isNewerThan(currentVersion)) {
-              info("There is an update available!");
-              info("Current version: " + currentVersionString + " New version: " + gitHubVersion);
-              info("Download it at: https://modrinth.com/plugin/pistonqueue");
-          } else {
-              info("You're up to date!");
-          }
-        } catch (IOException e) {
-            error("Could not check for updates!");
-            e.printStackTrace();
+      @Override
+      public void sendPluginMessage(String channel, byte[] data) {
+        server.sendPluginMessage(() -> "piston:queue", data);
+      }
+    };
+  }
+
+  public PlayerWrapper wrapPlayer(Player player) {
+    return new PlayerWrapper() {
+      @Override
+      public boolean hasPermission(String node) {
+        return player.hasPermission(node);
+      }
+
+      @Override
+      public void connect(String server) {
+        Optional<RegisteredServer> optional = proxyServer.getServer(server);
+
+        if (optional.isEmpty()) {
+          error("Server" + server + " not found!!!");
+          return;
         }
 
-        info("Scheduling tasks");
-        scheduleTasks(queueListenerVelocity);
-    }
+        player.createConnectionRequest(optional.get()).connect();
+      }
 
-    @Override
-    public Optional<PlayerWrapper> getPlayer(UUID uuid) {
-        return proxyServer.getPlayer(uuid).map(this::wrapPlayer);
-    }
+      @Override
+      public Optional<String> getCurrentServer() {
+        if (player.getCurrentServer().isPresent()) {
+          return Optional.of(player.getCurrentServer().get().getServerInfo().getName());
+        } else {
+          return Optional.empty();
+        }
+      }
 
-    @Override
-    public List<PlayerWrapper> getPlayers() {
-        return proxyServer.getAllPlayers().stream().map(this::wrapPlayer).collect(Collectors.toList());
-    }
+      @Override
+      public void sendMessage(MessageType type, String message) {
+        if (message.equalsIgnoreCase("/") || message.isBlank()) {
+          return;
+        }
 
-    @Override
-    public Optional<ServerInfoWrapper> getServer(String name) {
-        return proxyServer.getServer(name).map(this::wrapServer);
-    }
+        switch (type) {
+          case CHAT -> player.sendMessage(ChatUtils.parseToComponent(message));
+          case ACTION_BAR -> player.sendActionBar(ChatUtils.parseToComponent(message));
+        }
+      }
 
-    @Override
-    public void schedule(Runnable runnable, long delay, long period, TimeUnit unit) {
-        proxyServer.getScheduler().buildTask(this, runnable).delay(delay, unit).repeat(period, unit).schedule();
-    }
+      @Override
+      public void sendPlayerList(List<String> header, List<String> footer) {
+        player.sendPlayerListHeaderAndFooter(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+      }
 
-    @Override
-    public void info(String message) {
-        logger.info(message);
-    }
+      @Override
+      public void resetPlayerList() {
+        player.sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
+      }
 
-    @Override
-    public void warning(String message) {
-        logger.warn(message);
-    }
+      @Override
+      public String getName() {
+        return player.getUsername();
+      }
 
-    @Override
-    public void error(String message) {
-        logger.error(message);
-    }
+      @Override
+      public UUID getUniqueId() {
+        return player.getUniqueId();
+      }
 
-    @Override
-    public List<String> getAuthors() {
-        return pluginContainer.getDescription().getAuthors();
-    }
-
-    @Override
-    public String getVersion() {
-        return pluginContainer.getDescription().getVersion().orElse("unknown");
-    }
-
-    private ServerInfoWrapper wrapServer(RegisteredServer server) {
-        return new ServerInfoWrapper() {
-            @Override
-            public List<PlayerWrapper> getConnectedPlayers() {
-                return server.getPlayersConnected().stream().map(PistonQueueVelocity.this::wrapPlayer).collect(Collectors.toList());
-            }
-
-            @Override
-            public boolean isOnline() {
-                try {
-                    server.ping().join();
-                    return true;
-                } catch (CancellationException | CompletionException e) {
-                    return false;
-                }
-            }
-
-            @Override
-            public void sendPluginMessage(String channel, byte[] data) {
-                server.sendPluginMessage(() -> "piston:queue", data);
-            }
-        };
-    }
-
-    public PlayerWrapper wrapPlayer(Player player) {
-        return new PlayerWrapper() {
-            @Override
-            public boolean hasPermission(String node) {
-                return player.hasPermission(node);
-            }
-
-            @Override
-            public void connect(String server) {
-                Optional<RegisteredServer> optional = proxyServer.getServer(server);
-
-                if (optional.isEmpty()) {
-                    error("Server" + server + " not found!!!");
-                    return;
-                }
-
-                player.createConnectionRequest(optional.get()).connect();
-            }
-
-            @Override
-            public Optional<String> getCurrentServer() {
-                if (player.getCurrentServer().isPresent()) {
-                    return Optional.of(player.getCurrentServer().get().getServerInfo().getName());
-                } else {
-                    return Optional.empty();
-                }
-            }
-
-            @Override
-            public void sendMessage(MessageType type, String message) {
-                if (message.equalsIgnoreCase("/") || message.isBlank()) {
-                    return;
-                }
-
-                switch (type) {
-                    case CHAT -> player.sendMessage(ChatUtils.parseToComponent(message));
-                    case ACTION_BAR -> player.sendActionBar(ChatUtils.parseToComponent(message));
-                }
-            }
-
-            @Override
-            public void sendPlayerList(List<String> header, List<String> footer) {
-                player.sendPlayerListHeaderAndFooter(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
-            }
-
-            @Override
-            public void resetPlayerList() {
-                player.sendPlayerListHeaderAndFooter(Component.empty(), Component.empty());
-            }
-
-            @Override
-            public String getName() {
-                return player.getUsername();
-            }
-
-            @Override
-            public UUID getUniqueId() {
-                return player.getUniqueId();
-            }
-
-            @Override
-            public void disconnect(String message) {
-                player.disconnect(ChatUtils.parseToComponent(message));
-            }
-        };
-    }
+      @Override
+      public void disconnect(String message) {
+        player.disconnect(ChatUtils.parseToComponent(message));
+      }
+    };
+  }
 }

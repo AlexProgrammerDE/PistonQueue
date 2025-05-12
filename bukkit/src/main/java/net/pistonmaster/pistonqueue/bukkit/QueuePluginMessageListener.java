@@ -33,32 +33,32 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 public final class QueuePluginMessageListener implements PluginMessageListener {
-    private final PistonQueueBukkit plugin;
+  private final PistonQueueBukkit plugin;
 
-    @Override
-    @SuppressWarnings("UnstableApiUsage")
-    public void onPluginMessageReceived(@NotNull String channel, @NotNull Player messagePlayer, byte[] message) {
-        if (!channel.equals("piston:queue")) return;
+  @Override
+  @SuppressWarnings("UnstableApiUsage")
+  public void onPluginMessageReceived(@NotNull String channel, @NotNull Player messagePlayer, byte[] message) {
+    if (!channel.equals("piston:queue")) return;
 
-        ByteArrayDataInput in = ByteStreams.newDataInput(message);
-        String subChannel = in.readUTF();
+    ByteArrayDataInput in = ByteStreams.newDataInput(message);
+    String subChannel = in.readUTF();
 
-        if (plugin.isPlayXP() && subChannel.equals("xpV2")) {
-            List<UUID> uuids = new ArrayList<>();
-            int count = in.readInt();
-            for (int i = 0; i < count; i++) {
-                uuids.add(UUID.fromString(in.readUTF()));
-            }
+    if (plugin.isPlayXP() && subChannel.equals("xpV2")) {
+      List<UUID> uuids = new ArrayList<>();
+      int count = in.readInt();
+      for (int i = 0; i < count; i++) {
+        uuids.add(UUID.fromString(in.readUTF()));
+      }
 
-            for (UUID uuid : uuids) {
-                Player target = plugin.getServer().getPlayer(uuid);
+      for (UUID uuid : uuids) {
+        Player target = plugin.getServer().getPlayer(uuid);
 
-                if (target == null) {
-                    continue;
-                }
-
-                target.playSound(target.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 100.0F, 1.0F);
-            }
+        if (target == null) {
+          continue;
         }
+
+        target.playSound(target.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 100.0F, 1.0F);
+      }
     }
+  }
 }

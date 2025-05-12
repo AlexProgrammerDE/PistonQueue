@@ -33,33 +33,33 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public final class MainCommand implements SimpleCommand, MainCommandShared {
-    private final PistonQueueVelocity plugin;
+  private final PistonQueueVelocity plugin;
 
-    @Override
-    public void execute(Invocation invocation) {
-        String[] args = invocation.arguments();
-        CommandSource sender = invocation.source();
+  @Override
+  public void execute(Invocation invocation) {
+    String[] args = invocation.arguments();
+    CommandSource sender = invocation.source();
 
-        onCommand(new CommandSourceWrapper() {
-            @Override
-            public void sendMessage(ComponentWrapper component) {
-                sender.sendMessage(((VelocityComponentWrapperImpl) component).mainComponent());
-            }
+    onCommand(new CommandSourceWrapper() {
+      @Override
+      public void sendMessage(ComponentWrapper component) {
+        sender.sendMessage(((VelocityComponentWrapperImpl) component).mainComponent());
+      }
 
-            @Override
-            public boolean hasPermission(String node) {
-                return sender.hasPermission(node);
-            }
-        }, args, plugin);
-    }
+      @Override
+      public boolean hasPermission(String node) {
+        return sender.hasPermission(node);
+      }
+    }, args, plugin);
+  }
 
-    @Override
-    public List<String> suggest(Invocation invocation) {
-        return onTab(invocation.arguments(), invocation.source()::hasPermission, plugin);
-    }
+  @Override
+  public List<String> suggest(Invocation invocation) {
+    return onTab(invocation.arguments(), invocation.source()::hasPermission, plugin);
+  }
 
-    @Override
-    public ComponentWrapperFactory component() {
-        return text -> new VelocityComponentWrapperImpl(Component.text(text));
-    }
+  @Override
+  public ComponentWrapperFactory component() {
+    return text -> new VelocityComponentWrapperImpl(Component.text(text));
+  }
 }

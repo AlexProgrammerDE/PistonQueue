@@ -26,23 +26,23 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PlayerWrapper extends PermissibleWrapper {
-    void connect(String server);
+  void connect(String server);
 
-    Optional<String> getCurrentServer();
+  Optional<String> getCurrentServer();
 
-    default void sendMessage(String message) {
-        sendMessage(MessageType.CHAT, message);
-    }
+  default void sendMessage(String message) {
+    sendMessage(MessageType.CHAT, message);
+  }
 
-    void sendMessage(MessageType type, String message);
+  void sendMessage(MessageType type, String message);
 
-    void sendPlayerList(List<String> header, List<String> footer);
+  void sendPlayerList(List<String> header, List<String> footer);
 
-    void resetPlayerList();
+  void resetPlayerList();
 
-    String getName();
+  String getName();
 
-    UUID getUniqueId();
+  UUID getUniqueId();
 
-    void disconnect(String message);
+  void disconnect(String message);
 }

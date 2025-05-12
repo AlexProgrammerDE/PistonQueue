@@ -20,7 +20,7 @@
 package net.pistonmaster.pistonqueue.shared.config;
 
 public final class ConfigOutdatedException extends Exception {
-    public ConfigOutdatedException(String message) {
-        super(message + " is missing in the config. Please remove the old config and restart the proxy to get the newest one.");
-    }
+  public ConfigOutdatedException(String message) {
+    super(message + " is missing in the config. Please remove the old config and restart the proxy to get the newest one.");
+  }
 }

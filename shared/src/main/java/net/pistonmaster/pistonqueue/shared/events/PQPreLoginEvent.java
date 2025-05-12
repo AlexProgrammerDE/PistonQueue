@@ -20,9 +20,9 @@
 package net.pistonmaster.pistonqueue.shared.events;
 
 public interface PQPreLoginEvent {
-    boolean isCancelled();
+  boolean isCancelled();
 
-    void setCancelled(String reason);
+  void setCancelled(String reason);
 
-    String getUsername();
+  String getUsername();
 }

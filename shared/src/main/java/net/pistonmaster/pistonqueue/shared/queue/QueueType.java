@@ -34,39 +34,39 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Getter
 @AllArgsConstructor
 public class QueueType {
-    private final Map<UUID, QueuedPlayer> queueMap = Collections.synchronizedMap(new LinkedHashMap<>());
-    private final Map<Integer, Duration> durationFromPosition = Collections.synchronizedMap(new LinkedHashMap<>());
-    private final Map<UUID, Map<Integer, Instant>> positionCache = new ConcurrentHashMap<>();
-    private final AtomicInteger playersWithTypeInTarget = new AtomicInteger();
-    private final String name;
-    @Setter
-    private int order;
-    @Setter
-    private String permission;
-    @Setter
-    private int reservedSlots;
-    @Setter
-    private List<String> header;
-    @Setter
-    private List<String> footer;
+  private final Map<UUID, QueuedPlayer> queueMap = Collections.synchronizedMap(new LinkedHashMap<>());
+  private final Map<Integer, Duration> durationFromPosition = Collections.synchronizedMap(new LinkedHashMap<>());
+  private final Map<UUID, Map<Integer, Instant>> positionCache = new ConcurrentHashMap<>();
+  private final AtomicInteger playersWithTypeInTarget = new AtomicInteger();
+  private final String name;
+  @Setter
+  private int order;
+  @Setter
+  private String permission;
+  @Setter
+  private int reservedSlots;
+  @Setter
+  private List<String> header;
+  @Setter
+  private List<String> footer;
 
-    public static QueueType getQueueType(PlayerWrapper player) {
-        for (QueueType type : Config.QUEUE_TYPES) {
-            if (type.getPermission().equals("default") || player.hasPermission(type.getPermission())) {
-                return type;
-            }
-        }
-        throw new RuntimeException("No queue type found for player! (There is no default queue type)");
+  public static QueueType getQueueType(PlayerWrapper player) {
+    for (QueueType type : Config.QUEUE_TYPES) {
+      if (type.getPermission().equals("default") || player.hasPermission(type.getPermission())) {
+        return type;
+      }
     }
+    throw new RuntimeException("No queue type found for player! (There is no default queue type)");
+  }
 
-    public record QueuedPlayer(
-        String targetServer,
-        QueueReason queueReason
-    ) {}
+  public enum QueueReason {
+    SERVER_FULL,
+    SERVER_DOWN,
+    RECOVERY
+  }
 
-    public enum QueueReason {
-        SERVER_FULL,
-        SERVER_DOWN,
-        RECOVERY
-    }
+  public record QueuedPlayer(
+    String targetServer,
+    QueueReason queueReason
+  ) {}
 }

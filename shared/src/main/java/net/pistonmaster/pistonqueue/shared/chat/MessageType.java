@@ -20,6 +20,6 @@
 package net.pistonmaster.pistonqueue.shared.chat;
 
 public enum MessageType {
-    CHAT,
-    ACTION_BAR
+  CHAT,
+  ACTION_BAR
 }

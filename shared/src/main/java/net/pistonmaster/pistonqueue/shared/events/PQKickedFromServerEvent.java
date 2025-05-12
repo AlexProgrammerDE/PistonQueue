@@ -24,15 +24,15 @@ import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 import java.util.Optional;
 
 public interface PQKickedFromServerEvent {
-    void setCancelServer(String server);
+  void setCancelServer(String server);
 
-    void setKickMessage(String message);
+  void setKickMessage(String message);
 
-    PlayerWrapper getPlayer();
+  PlayerWrapper getPlayer();
 
-    String getKickedFrom();
+  String getKickedFrom();
 
-    Optional<String> getKickReason();
+  Optional<String> getKickReason();
 
-    boolean willDisconnect();
+  boolean willDisconnect();
 }

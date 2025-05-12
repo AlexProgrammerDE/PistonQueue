@@ -20,8 +20,8 @@
 package net.pistonmaster.pistonqueue.shared.chat;
 
 public enum TextColorWrapper {
-    GOLD,
-    RED,
-    DARK_BLUE,
-    GREEN,
+  GOLD,
+  RED,
+  DARK_BLUE,
+  GREEN,
 }

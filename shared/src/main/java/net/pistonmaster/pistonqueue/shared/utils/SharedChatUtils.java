@@ -26,25 +26,25 @@ import java.time.Duration;
 import java.util.Locale;
 
 public final class SharedChatUtils {
-    private SharedChatUtils() {
+  private SharedChatUtils() {
+  }
+
+  public static String formatDuration(String str, Duration duration, int position) {
+    String format = duration.toHours() == 0 ?
+      String.format("%dm", duration.toMinutes() == 0 ? 1 : duration.toMinutes()) :
+      String.format("%dh %dm", duration.toHours(), duration.toMinutes() % 60);
+
+    return str.replace("%position%", String.valueOf(position)).replace("%wait%", format);
+  }
+
+  public static String parseText(String text) {
+    text = text.replace("%server_name%", Config.SERVER_NAME);
+    for (QueueType type : Config.QUEUE_TYPES) {
+      text = text.replace("%" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(type.getQueueMap().size()));
     }
+    text = text.replace("%position%", "None");
+    text = text.replace("%wait%", "None");
 
-    public static String formatDuration(String str, Duration duration, int position) {
-        String format = duration.toHours() == 0 ?
-                String.format("%dm", duration.toMinutes() == 0 ? 1 : duration.toMinutes()) :
-                String.format("%dh %dm", duration.toHours(), duration.toMinutes() % 60);
-
-        return str.replace("%position%", String.valueOf(position)).replace("%wait%", format);
-    }
-
-    public static String parseText(String text) {
-        text = text.replace("%server_name%", Config.SERVER_NAME);
-        for (QueueType type : Config.QUEUE_TYPES) {
-            text = text.replace("%" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(type.getQueueMap().size()));
-        }
-        text = text.replace("%position%", "None");
-        text = text.replace("%wait%", "None");
-
-        return text;
-    }
+    return text;
+  }
 }
