@@ -135,6 +135,11 @@ jobs:
         version-type: release
         changelog: ${{ steps.github_release.outputs.changelog }}
 
+        github-changelog: |
+          [![modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg)](https://modrinth.com/plugin/pistonqueue/version/${{ inputs.version }})
+
+          ${{ steps.github_release.outputs.changelog }}
+
         loaders: |
           bukkit
           bungeecord
