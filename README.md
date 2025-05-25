@@ -1,7 +1,10 @@
-# PistonQueue
+<img align="right" src="https://github.com/AlexProgrammerDE/PistonQueue/blob/main/images/logo.png?raw=true" height="150" width="150">
 
-[![PistonDev Discord](https://discord.com/api/guilds/739784741124833301/embed.png)](https://discord.gg/J9bmJNuTJm)
-[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen)](https://github.com/AlexProgrammerDE/PistonQueue)
+[![modrinth](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/available/modrinth_vector.svg)](https://modrinth.com/plugin/pistonqueue)
+
+[![discord](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/social/discord-singular_vector.svg)](https://discord.gg/J9bmJNuTJm) [![kofi](https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/donate/kofi-singular_vector.svg)](https://ko-fi.com/alexprogrammerde)
+
+# PistonQueue
 
 **⏰️ Powerful queue plugin for anarchy/survival servers.**
 
