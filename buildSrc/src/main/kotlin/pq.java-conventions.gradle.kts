@@ -23,7 +23,11 @@ dependencies {
 
 tasks {
     processResources {
-        expand("version" to version, "description" to description, "url" to "https://pistonmaster.net/PistonQueue")
+        expand(
+          "version" to version,
+          "description" to description,
+          "url" to "https://modrinth.com/plugin/pistonqueue"
+        )
     }
     test {
         reports.junitXml.required = true

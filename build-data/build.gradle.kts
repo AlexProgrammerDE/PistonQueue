@@ -15,7 +15,7 @@ sourceSets {
             javaSources {
                 property("version", project.version.toString())
                 property("description", rootProject.description)
-                property("url", "https://pistonmaster.net/PistonQueue")
+                property("url", "https://modrinth.com/plugin/pistonqueue")
             }
         }
     }
