@@ -22,7 +22,6 @@ package net.pistonmaster.pistonqueue.velocity;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
-import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
@@ -31,7 +30,6 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
-import net.pistonmaster.pistonqueue.data.PluginData;
 import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
@@ -56,8 +54,6 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-@Plugin(id = "pistonqueue", name = PluginData.NAME, version = PluginData.VERSION,
-  url = PluginData.URL, description = PluginData.DESCRIPTION, authors = {"AlexProgrammerDE"})
 public final class PistonQueueVelocity implements PistonQueuePlugin {
   @Getter
   private final Path dataDirectory;

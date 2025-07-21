@@ -1,0 +1,12 @@
+{
+  "id": "pistonqueue",
+  "name": "PistonQueue",
+  "version": "${version}",
+  "description": "${description}",
+  "url": "${url}",
+  "authors": [
+    "AlexProgrammerDE"
+  ],
+  "dependencies": [],
+  "main": "net.pistonmaster.pistonqueue.velocity.PistonQueueVelocity"
+}
