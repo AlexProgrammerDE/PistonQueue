@@ -80,8 +80,8 @@ publishing {
         }
         licenses {
           license {
-            name = "GNU General Public License v3.0"
-            url = "https://www.gnu.org/licenses/gpl-3.0.html"
+            name = "Apache License 2.0"
+            url = "https://www.apache.org/licenses/LICENSE-2.0"
           }
         }
         scm {
