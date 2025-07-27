@@ -22,8 +22,9 @@ dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
     repositories {
         mavenCentral()
-        maven("https://oss.sonatype.org/content/repositories/snapshots") {
-            name = "Sonatype"
+        maven("https://central.sonatype.com/repository/maven-snapshots/") {
+          name = "Sonatype Snapshot Repository"
+          mavenContent { snapshotsOnly() }
         }
         maven("https://papermc.io/repo/repository/maven-public/") {
             name = "PaperMC"
