@@ -195,18 +195,17 @@ public interface PistonQueuePlugin {
         return;
 
       Map<QueueType, AtomicInteger> map = new HashMap<>();
+      for (QueueType type : Config.QUEUE_TYPES) {
+        map.put(type, new AtomicInteger());
+      }
 
       for (PlayerWrapper player : targetServer.get().getConnectedPlayers()) {
         QueueType playerType = QueueType.getQueueType(player);
 
-        map.compute(playerType, (queueType, integer) -> {
-          if (integer == null) {
-            return new AtomicInteger(1);
-          } else {
-            integer.incrementAndGet();
-            return integer;
-          }
-        });
+        AtomicInteger queueTypePlayers = map.get(playerType);
+        if (queueTypePlayers != null) {
+          queueTypePlayers.incrementAndGet();
+        }
       }
 
       map.forEach((type, count) -> type.getPlayersWithTypeInTarget().set(count.get()));
