@@ -23,6 +23,8 @@ dependencies {
 
 tasks {
   processResources {
+    inputs.property("version", project.version)
+    inputs.property("description", project.description)
     filesMatching(
       listOf(
         "plugin.yml",
@@ -32,8 +34,8 @@ tasks {
       )
     ) {
       expand(
-        "version" to project.version,
-        "description" to project.description,
+        "version" to inputs.properties["version"],
+        "description" to inputs.properties["description"],
         "url" to "https://modrinth.com/plugin/pistonqueue",
       )
     }
