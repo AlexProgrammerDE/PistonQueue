@@ -34,9 +34,11 @@ tasks {
       )
     ) {
       expand(
-        "version" to inputs.properties["version"],
-        "description" to inputs.properties["description"],
-        "url" to "https://modrinth.com/plugin/pistonqueue",
+        mapOf(
+          "version" to inputs.properties["version"],
+          "description" to inputs.properties["description"],
+          "url" to "https://modrinth.com/plugin/pistonqueue",
+        )
       )
     }
   }
