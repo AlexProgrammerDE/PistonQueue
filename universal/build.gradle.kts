@@ -1,26 +1,21 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
-    id("pq.java-conventions")
+  id("pq.java-conventions")
 }
 
-val platforms = setOf(
-    rootProject.projects.pistonqueueBukkit,
-    rootProject.projects.pistonqueueBungee,
-    rootProject.projects.pistonqueueVelocity
-).map { it.dependencyProject }
+dependencies {
+  implementation(project(":pistonqueue-bukkit", "shadow"))
+  implementation(project(":pistonqueue-bungee", "shadow"))
+  implementation(project(":pistonqueue-velocity", "shadow"))
+}
 
 tasks {
-    jar {
-        archiveClassifier.set("")
-        archiveFileName.set("PistonQueue-${rootProject.version}.jar")
-        destinationDirectory.set(rootProject.projectDir.resolve("build/libs"))
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        platforms.forEach { platform ->
-            val shadowJarTask = platform.tasks.named<ShadowJar>("shadowJar").get()
-            dependsOn(shadowJarTask)
-            dependsOn(platform.tasks.withType<Jar>())
-            from(zipTree(shadowJarTask.archiveFile))
-        }
-    }
+  jar {
+    archiveClassifier.set("")
+    archiveFileName.set("PistonQueue-${rootProject.version}.jar")
+    destinationDirectory.set(rootProject.projectDir.resolve("build/libs"))
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    dependsOn(configurations.runtimeClasspath)
+    from({ configurations.runtimeClasspath.get().map { zipTree(it) } })
+  }
 }
