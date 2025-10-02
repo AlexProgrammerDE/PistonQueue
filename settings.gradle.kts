@@ -34,9 +34,6 @@ dependencyResolutionManagement {
         maven("https://repo.codemc.org/repository/maven-public") {
             name = "CodeMC"
         }
-        maven("https://repo.dmulloy2.net/repository/public") {
-            name = "dmulloy2"
-        }
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") {
             name = "PlaceholderAPI"
         }
