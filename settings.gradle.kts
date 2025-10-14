@@ -6,7 +6,7 @@ pluginManagement {
     }
     plugins {
         id("com.github.johnrengelman.shadow") version "8.1.1"
-        id("net.kyori.indra") version "3.2.0"
+        id("net.kyori.indra") version "4.0.0"
         id("net.kyori.indra.git") version "3.2.0"
         id("net.kyori.indra.publishing") version "3.2.0"
         id("net.kyori.blossom") version "2.2.0"
