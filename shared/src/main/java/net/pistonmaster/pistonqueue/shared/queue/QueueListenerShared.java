@@ -162,12 +162,18 @@ public abstract class QueueListenerShared {
   }
 
   public void moveQueue() {
+    plugin.info("════════════════════════════════════════════════════════════");
+    plugin.info("🔄 moveQueue() CALLED - Starting queue processing");
+    plugin.info("════════════════════════════════════════════════════════════");
+    
     for (QueueType type : Config.QUEUE_TYPES) {
+      plugin.info("Processing queue type: " + type.getName() + ", queued players: " + type.getQueueMap().size());
       for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
         Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
 
         Optional<String> optionalTarget = player.flatMap(PlayerWrapper::getCurrentServer);
         if (optionalTarget.isEmpty() || !optionalTarget.get().equals(Config.QUEUE_SERVER)) {
+          plugin.info("Removing player " + entry.getKey() + " from queue (not on queue server)");
           type.getQueueMap().remove(entry.getKey());
         }
       }
@@ -177,11 +183,21 @@ public abstract class QueueListenerShared {
       plugin.getPlayers().forEach(this::doRecovery);
     }
 
-    if (Config.PAUSE_QUEUE_IF_TARGET_DOWN && !onlineServers.contains(Config.TARGET_SERVER)) {
+    plugin.info("PAUSE_QUEUE_IF_TARGET_DOWN: " + Config.PAUSE_QUEUE_IF_TARGET_DOWN);
+    plugin.info("USE_TARGET_LOBBY_GROUP: " + Config.USE_TARGET_LOBBY_GROUP);
+    plugin.info("TARGET_SERVER: " + Config.TARGET_SERVER);
+    plugin.info("TARGET_SERVER online: " + onlineServers.contains(Config.TARGET_SERVER));
+    plugin.info("Online servers: " + onlineServers);
+    
+    if (Config.PAUSE_QUEUE_IF_TARGET_DOWN && !Config.USE_TARGET_LOBBY_GROUP && !onlineServers.contains(Config.TARGET_SERVER)) {
+      plugin.warning("⚠️ Queue PAUSED: TARGET_SERVER '" + Config.TARGET_SERVER + "' is offline and PAUSE_QUEUE_IF_TARGET_DOWN is enabled");
+      plugin.warning("To use lobby groups, the TARGET_SERVER check is skipped when USE_TARGET_LOBBY_GROUP is true");
       return;
     }
 
+    plugin.info("Proceeding to connect players from queue...");
     Arrays.stream(Config.QUEUE_TYPES).forEachOrdered(this::connectPlayer);
+    plugin.info("moveQueue() completed");
   }
 
   private void doRecovery(PlayerWrapper player) {
@@ -196,18 +212,28 @@ public abstract class QueueListenerShared {
   }
 
   private void connectPlayer(QueueType type) {
+    plugin.info("┌─────────────────────────────────────────────────────────┐");
+    plugin.info("│ connectPlayer() called for queue type: " + type.getName());
+    plugin.info("└─────────────────────────────────────────────────────────┘");
+    
     int freeSlots = getFreeSlots(type);
+    plugin.info("Free slots for " + type.getName() + ": " + freeSlots);
+    plugin.info("Queue size: " + type.getQueueMap().size());
 
     if (freeSlots <= 0) {
+      plugin.info("No free slots available, skipping queue processing for " + type.getName());
       return;
     }
 
     if (freeSlots > Config.MAX_PLAYERS_PER_MOVE)
       freeSlots = Config.MAX_PLAYERS_PER_MOVE;
 
+    plugin.info("Will attempt to move up to " + freeSlots + " players");
+
     for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
       Optional<PlayerWrapper> optional = plugin.getPlayer(entry.getKey());
       if (optional.isEmpty()) {
+        plugin.info("Player " + entry.getKey() + " not found online, skipping");
         continue;
       }
       PlayerWrapper player = optional.get();
