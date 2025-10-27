@@ -392,48 +392,64 @@ public interface PistonQueuePlugin {
               lg.setName(name);
               // selection
               SelectionOptions sel = new SelectionOptions();
-              String tie = g.node("selection").node("tieBreaker").getString("LEAST_PLAYERS");
-              try {
-                sel.setTieBreaker(net.pistonmaster.pistonqueue.shared.loadbalance.TieBreaker.valueOf(tie.toUpperCase(Locale.ROOT)));
-              } catch (IllegalArgumentException ex) {
-                sel.setTieBreaker(net.pistonmaster.pistonqueue.shared.loadbalance.TieBreaker.LEAST_PLAYERS);
+              ConfigurationNode selNode = g.node("selection");
+              String tie = selNode.node("tieBreaker").getString();
+              if (tie != null) {
+                try {
+                  sel.setTieBreaker(net.pistonmaster.pistonqueue.shared.loadbalance.TieBreaker.valueOf(tie.toUpperCase(Locale.ROOT)));
+                } catch (IllegalArgumentException ex) {
+                  sel.setTieBreaker(net.pistonmaster.pistonqueue.shared.loadbalance.TieBreaker.LEAST_PLAYERS);
+                }
               }
-              String pcs = g.node("selection").node("playerCountSource").getString("AUTO");
-              try {
-                sel.setPlayerCountSource(net.pistonmaster.pistonqueue.shared.loadbalance.PlayerCountSource.valueOf(pcs.toUpperCase(Locale.ROOT)));
-              } catch (IllegalArgumentException ex) {
-                sel.setPlayerCountSource(net.pistonmaster.pistonqueue.shared.loadbalance.PlayerCountSource.AUTO);
+              String pcs = selNode.node("playerCountSource").getString();
+              if (pcs != null) {
+                try {
+                  sel.setPlayerCountSource(net.pistonmaster.pistonqueue.shared.loadbalance.PlayerCountSource.valueOf(pcs.toUpperCase(Locale.ROOT)));
+                } catch (IllegalArgumentException ex) {
+                  sel.setPlayerCountSource(net.pistonmaster.pistonqueue.shared.loadbalance.PlayerCountSource.AUTO);
+                }
               }
-              String tovr = g.node("selection").node("transportOverride").getString("PER_ENDPOINT");
-              try {
-                sel.setTransportOverride(net.pistonmaster.pistonqueue.shared.loadbalance.TransportOverride.valueOf(tovr.toUpperCase(Locale.ROOT)));
-              } catch (IllegalArgumentException ex) {
-                sel.setTransportOverride(net.pistonmaster.pistonqueue.shared.loadbalance.TransportOverride.PER_ENDPOINT);
+              String tovr = selNode.node("transportOverride").getString();
+              if (tovr != null) {
+                try {
+                  sel.setTransportOverride(net.pistonmaster.pistonqueue.shared.loadbalance.TransportOverride.valueOf(tovr.toUpperCase(Locale.ROOT)));
+                } catch (IllegalArgumentException ex) {
+                  sel.setTransportOverride(net.pistonmaster.pistonqueue.shared.loadbalance.TransportOverride.PER_ENDPOINT);
+                }
               }
-              String fb = g.node("selection").node("fallbackOnTransferFail").getString("PROXY_CONNECT");
-              try {
-                sel.setFallbackOnTransferFail(net.pistonmaster.pistonqueue.shared.loadbalance.TransferFallback.valueOf(fb.toUpperCase(Locale.ROOT)));
-              } catch (IllegalArgumentException ex) {
-                sel.setFallbackOnTransferFail(net.pistonmaster.pistonqueue.shared.loadbalance.TransferFallback.PROXY_CONNECT);
+              String fb = selNode.node("fallbackOnTransferFail").getString();
+              if (fb != null) {
+                try {
+                  sel.setFallbackOnTransferFail(net.pistonmaster.pistonqueue.shared.loadbalance.TransferFallback.valueOf(fb.toUpperCase(Locale.ROOT)));
+                } catch (IllegalArgumentException ex) {
+                  sel.setFallbackOnTransferFail(net.pistonmaster.pistonqueue.shared.loadbalance.TransferFallback.PROXY_CONNECT);
+                }
               }
-              sel.setPingTimeoutMs(g.node("selection").node("pingTimeoutMs").getInt(750));
-              sel.setCacheTtlMs(g.node("selection").node("cacheTtlMs").getInt(2000));
+              sel.setPingTimeoutMs(selNode.node("pingTimeoutMs").getInt(750));
+              sel.setCacheTtlMs(selNode.node("cacheTtlMs").getInt(2000));
               lg.setSelection(sel);
               // endpoints
               List<EndpointConfig> eps = new ArrayList<>();
-              for (ConfigurationNode epNode : g.node("endpoints").childrenList()) {
+              ConfigurationNode endpointsNode = g.node("endpoints");
+              if (!endpointsNode.isList()) {
+                warning("LOBBY_GROUPS." + name + ".endpoints is not a list; skipping group.");
+                continue;
+              }
+              for (ConfigurationNode epNode : endpointsNode.childrenList()) {
                 EndpointConfig ep = new EndpointConfig();
                 ep.setName(epNode.node("name").getString("endpoint"));
-                String mode = epNode.node("mode").getString("VELOCITY");
-                try {
-                  ep.setMode(EndpointMode.valueOf(mode.toUpperCase(Locale.ROOT)));
-                } catch (IllegalArgumentException ex) {
-                  ep.setMode(EndpointMode.VELOCITY);
+                String mode = epNode.node("mode").getString();
+                if (mode != null) {
+                  try {
+                    ep.setMode(EndpointMode.valueOf(mode.toUpperCase(Locale.ROOT)));
+                  } catch (IllegalArgumentException ex) {
+                    ep.setMode(EndpointMode.VELOCITY);
+                  }
                 }
                 ep.setPriority(epNode.node("priority").getInt(1));
                 ep.setWeight(epNode.node("weight").getInt(1));
-                ep.setVelocityServer(epNode.node("velocityServer").getString(null));
-                ep.setHost(epNode.node("host").getString(null));
+                ep.setVelocityServer(epNode.node("velocityServer").getString());
+                ep.setHost(epNode.node("host").getString());
                 ep.setPort(epNode.node("port").getInt(0));
                 eps.add(ep);
               }
@@ -470,7 +486,8 @@ public interface PistonQueuePlugin {
         .replace("%SOURCE_SERVER%", Config.SOURCE_SERVER));
       i++;
     }
-    if (!Config.KICK_WHEN_DOWN_SERVERS.contains(Config.TARGET_SERVER)) {
+    // Only add TARGET_SERVER to health check list if lobby groups are disabled
+    if (!Config.USE_TARGET_LOBBY_GROUP && !Config.KICK_WHEN_DOWN_SERVERS.contains(Config.TARGET_SERVER)) {
       Config.KICK_WHEN_DOWN_SERVERS.add(Config.TARGET_SERVER);
     }
   }
