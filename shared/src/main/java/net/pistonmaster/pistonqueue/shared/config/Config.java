@@ -35,14 +35,20 @@ public final class Config {
     ENABLE_SOURCE_SERVER, ALWAYS_QUEUE, REGISTER_TAB,
     POSITION_MESSAGE_CHAT, POSITION_MESSAGE_HOT_BAR,
     PAUSE_QUEUE_IF_TARGET_DOWN, KICK_WHEN_DOWN, FORCE_TARGET_SERVER,
-    IF_TARGET_DOWN_SEND_TO_QUEUE, RECOVERY, ENABLE_USERNAME_REGEX, SEND_XP_SOUND;
+    IF_TARGET_DOWN_SEND_TO_QUEUE, RECOVERY, ENABLE_USERNAME_REGEX, SEND_XP_SOUND,
+    USE_TARGET_LOBBY_GROUP;
 
   public static int QUEUE_MOVE_DELAY, SERVER_ONLINE_CHECK_DELAY, POSITION_MESSAGE_DELAY,
-    PERCENT, MAX_PLAYERS_PER_MOVE;
+    PERCENT, MAX_PLAYERS_PER_MOVE,
+    TRANSFER_MIN_PROTOCOL;
 
   public static List<String> DOWN_WORD_LIST, KICK_WHEN_DOWN_SERVERS;
   public static QueueType[] QUEUE_TYPES; // Not allowed to be resized due to data corruption
   public static BanType SHADOW_BAN_TYPE;
+
+  // New load-balancing group configuration (nullable when feature is disabled)
+  public static String TARGET_LOBBY_GROUP;
+  public static java.util.Map<String, net.pistonmaster.pistonqueue.shared.loadbalance.LobbyGroupConfig> LOBBY_GROUPS;
 
   private Config() {
   }

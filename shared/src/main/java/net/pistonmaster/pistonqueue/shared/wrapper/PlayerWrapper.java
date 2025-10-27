@@ -30,6 +30,17 @@ public interface PlayerWrapper extends PermissibleWrapper {
 
   Optional<String> getCurrentServer();
 
+  /**
+   * Attempt to transfer the client directly to the given external host:port using a transfer packet.
+   * Implementations may return false if unsupported or if an error occurs.
+   */
+  default boolean transfer(String host, int port) { return false; }
+
+  /**
+   * Optional protocol version of the client (e.g., 763/764/765...). Empty if not available.
+   */
+  default Optional<Integer> getProtocolVersion() { return Optional.empty(); }
+
   default void sendMessage(String message) {
     sendMessage(MessageType.CHAT, message);
   }

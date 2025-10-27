@@ -21,10 +21,22 @@ It is a recreation of the 2b2t.org queue system design, but adds a lot of featur
 * Built-in support for forcing people into the end void.
 * Auth server support for cracked (offline mode: false) servers. 
 * Joining the auth server first before the queue server.
+* Optional multi-endpoint lobby groups with transfer (packet-based external redirect) to load-balance across multiple proxies/nodes.
 
 ## Setup
 
 Check out the [wiki](https://github.com/AlexProgrammerDE/PistonQueue/wiki) for a tutorial on how to set up PistonQueue.
+
+### Advanced: Lobby groups and packet transfer
+
+If you run multiple Velocity nodes on different public IPs and want basic load balancing and DDoS resilience, you can enable the optional lobby group feature. It lets you define multiple endpoints for a lobby, mixing regular Velocity servers and external nodes, and route players by priority → weight, then break ties by the server with fewer players.
+
+Highlights:
+- Modes: VELOCITY (connect via proxy server name) and TRANSFER (client is instructed to connect to host:port directly; requires modern clients, e.g. 1.20.5+).
+- Selection: priority (lower is better), weight (weighted pick within same priority), tie-breaker by least players.
+- Safety: TRANSFER_MIN_PROTOCOL guard to fall back to proxy connect for older clients.
+
+Configuration is documented inline in `proxy_config.yml` under the section "Advanced: Multi-endpoint lobby groups".
 
 ## 🌈 Community
 

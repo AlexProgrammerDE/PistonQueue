@@ -195,3 +195,78 @@ QUEUE_TYPES:
       - " website: https://www.example.com "
       - " These are the only official %server_name% websites and contacts "
       - ""
+
+# ===============================================
+# Advanced: Multi-endpoint lobby groups (Optional)
+# ===============================================
+# This feature lets you distribute players across multiple proxies or external nodes.
+# Each lobby group defines a set of endpoints with a selection strategy.
+#
+# Basic flow:
+# - When enabled, instead of connecting to TARGET_SERVER directly, the plugin selects an endpoint
+#   from the specified lobby group using: lowest priority -> weighted pick -> tie-breaker.
+# - Endpoints can be one of two modes:
+#   VELOCITY: connect by proxy server name (registered in your proxy config)
+#   TRANSFER: instruct the client to connect to an external host:port directly (requires 1.20.5+)
+#
+# Notes:
+# - This does NOT disable any of the queue mechanics; it only changes where players are sent after the queue.
+# - TRANSFER requires modern clients. Use TRANSFER_MIN_PROTOCOL to guard old clients; they will fall back to proxy connect.
+# - For TRANSFER endpoints, player counts are estimated based on recent transfers (best-effort). VELOCITY endpoints
+#   use the actual proxy player list.
+
+# Turn on lobby groups. When false, the plugin behaves like before (uses TARGET_SERVER).
+USE_TARGET_LOBBY_GROUP: false
+
+# Which lobby group to use when the feature is enabled.
+TARGET_LOBBY_GROUP: "MAIN_LOBBY"
+
+# Minimum protocol ID required to use TRANSFER (clients below this value will use proxy connect fallback).
+# 765 is Minecraft 1.20.5+. Set 0 to disable the check.
+TRANSFER_MIN_PROTOCOL: 765
+
+# Define one or more lobby groups.
+LOBBY_GROUPS:
+  MAIN_LOBBY:
+    # Endpoints in this group. Each endpoint can be VELOCITY or TRANSFER.
+    endpoints:
+      # Example: a normal Velocity-registered server
+      - name: "vel-1"
+        mode: "VELOCITY"        # VELOCITY | TRANSFER
+        priority: 1              # Lower number = higher priority. Only the lowest priority endpoints are considered.
+        weight: 10               # Weighted random among same-priority endpoints. Higher = more likely.
+        velocityServer: "main"   # Proxy server name (as in your proxy's config)
+
+      # Example: an external proxy/node reachable from the internet
+      - name: "ext-1"
+        mode: "TRANSFER"
+        priority: 1
+        weight: 10
+        host: "node1.example.com"
+        port: 25565
+
+    # Selection options for this group
+    selection:
+      # Tie-breaker when priority and weight produce a tie: LEAST_PLAYERS | NONE
+      tieBreaker: "LEAST_PLAYERS"
+
+      # Where to get player counts for selection and tie-breaking:
+      # AUTO: VELOCITY uses proxy player list; TRANSFER tries status ping (fallback to recent transfers)
+      # STATUS_PING: Always try status ping; on failure falls back to recent transfers
+      # RECENT_TRANSFER: Use only recent transfer counts (fast but approximate)
+      playerCountSource: "AUTO"
+
+      # Transport override:
+      # PER_ENDPOINT: Use each endpoint's own mode (VELOCITY or TRANSFER)
+      # FORCE_VELOCITY: Force all endpoints to use proxy connect (requires velocityServer on endpoints)
+      # FORCE_TRANSFER: Force all endpoints to use packet transfer (requires host/port on endpoints)
+      transportOverride: "PER_ENDPOINT"
+
+      # Behavior when a transfer is unsupported or fails:
+      # PROXY_CONNECT: Fallback to proxy connect (default)
+      # ABORT: Abort and keep player in queue (they remain in queue and will be retried on next cycle)
+      fallbackOnTransferFail: "PROXY_CONNECT"
+
+      # Timeouts/caches
+      pingTimeoutMs: 750            # Timeout for online checks/status ping
+      cacheTtlMs: 2000              # TTL (ms) for recent-transfer load estimates on TRANSFER endpoints

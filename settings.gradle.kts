@@ -14,15 +14,23 @@ dependencyResolutionManagement {
     @Suppress("UnstableApiUsage")
     repositories {
         mavenCentral()
-        maven("https://central.sonatype.com/repository/maven-snapshots/") {
-          name = "Sonatype Snapshot Repository"
-          mavenContent { snapshotsOnly() }
+        // Sonatype snapshots (for libraries publishing snapshots via Sonatype)
+        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") {
+            name = "Sonatype Snapshots"
+            mavenContent { snapshotsOnly() }
         }
-        maven("https://papermc.io/repo/repository/maven-public/") {
+        // PaperMC public repo (updated domain)
+        maven("https://repo.papermc.io/repository/maven-public/") {
             name = "PaperMC"
         }
-        maven("https://nexus.velocitypowered.com/repository/maven-public/") {
-            name = "VelocityPowered"
+        // VelocityPowered repos (releases and snapshots)
+        maven("https://repo.velocitypowered.com/releases") {
+            name = "Velocity Releases"
+            mavenContent { releasesOnly() }
+        }
+        maven("https://repo.velocitypowered.com/snapshots") {
+            name = "Velocity Snapshots"
+            mavenContent { snapshotsOnly() }
         }
         maven("https://repo.codemc.org/repository/maven-public") {
             name = "CodeMC"

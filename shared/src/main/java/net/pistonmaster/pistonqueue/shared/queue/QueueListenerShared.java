@@ -235,7 +235,12 @@ public abstract class QueueListenerShared {
           type.getDurationFromPosition().put(position, Duration.between(instant, Instant.now())));
       }
 
-      player.connect(entry.getValue().targetServer());
+      boolean started = plugin.connectPlayerToTarget(player, entry.getValue().targetServer());
+      if (!started) {
+        // Transfer aborted: put the player back into the queue (recovery-like behavior)
+        type.getQueueMap().put(entry.getKey(), entry.getValue());
+        continue;
+      }
 
       if (--freeSlots <= 0) {
         break;

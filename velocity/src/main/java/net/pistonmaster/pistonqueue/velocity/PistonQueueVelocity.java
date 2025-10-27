@@ -223,6 +223,39 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
       }
 
       @Override
+      public Optional<Integer> getProtocolVersion() {
+        try {
+          Object proto = player.getClass().getMethod("getProtocolVersion").invoke(player);
+          if (proto == null) return Optional.empty();
+          try {
+            int id = (int) proto.getClass().getMethod("getProtocol").invoke(proto);
+            return Optional.of(id);
+          } catch (ReflectiveOperationException ignored) {
+            return Optional.empty();
+          }
+        } catch (ReflectiveOperationException ignored) {
+          return Optional.empty();
+        }
+      }
+
+      @Override
+      public boolean transfer(String host, int port) {
+        try {
+          Class<?> addrClz = Class.forName("com.velocitypowered.api.network.ServerAddress");
+          Object address = addrClz.getMethod("of", String.class, int.class).invoke(null, host, port);
+          // Prefer method transfer(ServerAddress)
+          try {
+            player.getClass().getMethod("transfer", addrClz).invoke(player, address);
+            return true;
+          } catch (NoSuchMethodException e) {
+            return false;
+          }
+        } catch (ReflectiveOperationException e) {
+          return false;
+        }
+      }
+
+      @Override
       public void sendMessage(MessageType type, String message) {
         if (message.equalsIgnoreCase("/") || message.isBlank()) {
           return;

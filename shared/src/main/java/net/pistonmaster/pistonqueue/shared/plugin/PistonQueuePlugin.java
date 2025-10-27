@@ -25,6 +25,11 @@ import lombok.val;
 import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.config.ConfigOutdatedException;
+import net.pistonmaster.pistonqueue.shared.loadbalance.EndpointConfig;
+import net.pistonmaster.pistonqueue.shared.loadbalance.EndpointMode;
+import net.pistonmaster.pistonqueue.shared.loadbalance.EndpointSelector;
+import net.pistonmaster.pistonqueue.shared.loadbalance.LobbyGroupConfig;
+import net.pistonmaster.pistonqueue.shared.loadbalance.SelectionOptions;
 import net.pistonmaster.pistonqueue.shared.queue.QueueListenerShared;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
@@ -66,6 +71,71 @@ public interface PistonQueuePlugin {
   String getVersion();
 
   Path getDataDirectory();
+
+  /**
+   * Connect player using either traditional proxy routing or the configured lobby group with transfer support.
+   * Returns true if a connection/transfer was initiated, false if not possible (caller may initiate recovery).
+   */
+  default boolean connectPlayerToTarget(PlayerWrapper player, String defaultTargetServer) {
+    if (Config.USE_TARGET_LOBBY_GROUP && Config.TARGET_LOBBY_GROUP != null && Config.LOBBY_GROUPS != null) {
+      LobbyGroupConfig group = Config.LOBBY_GROUPS.get(Config.TARGET_LOBBY_GROUP);
+      if (group != null) {
+        Optional<EndpointConfig> pick = EndpointSelector.select(this, group);
+        if (pick.isPresent()) {
+          EndpointConfig ep = pick.get();
+          EndpointMode mode = ep.getMode();
+          // Transport override handling
+          switch (group.getSelection().getTransportOverride()) {
+            case FORCE_VELOCITY -> mode = EndpointMode.VELOCITY;
+            case FORCE_TRANSFER -> mode = EndpointMode.TRANSFER;
+            default -> {}
+          }
+
+          if (mode == EndpointMode.VELOCITY) {
+            if (ep.getVelocityServer() == null || ep.getVelocityServer().isBlank()) {
+              warning("Selected VELOCITY endpoint has no server name; falling back to default target.");
+              player.connect(defaultTargetServer);
+              return true;
+            }
+            player.connect(ep.getVelocityServer());
+            return true;
+          } else {
+            // TRANSFER path
+            if (ep.getHost() == null || ep.getPort() <= 0) {
+              warning("Selected TRANSFER endpoint has invalid host/port; falling back to default target.");
+              player.connect(defaultTargetServer);
+              return true;
+            }
+            int minProto = Math.max(0, Config.TRANSFER_MIN_PROTOCOL);
+            Optional<Integer> clientProto = player.getProtocolVersion();
+            if (minProto > 0 && clientProto.isPresent() && clientProto.get() < minProto) {
+              warning("Player " + player.getName() + " protocol=" + clientProto.get() + " below min transfer protocol=" + minProto + ". Using proxy connect fallback.");
+              player.connect(defaultTargetServer);
+              return true;
+            }
+            boolean ok = player.transfer(ep.getHost(), ep.getPort());
+            if (ok) {
+              EndpointSelector.noteTransfer(ep, group.getSelection().getCacheTtlMs());
+              return true;
+            } else {
+              warning("Transfer not supported or failed for player " + player.getName() + ".");
+              if (group.getSelection().getFallbackOnTransferFail() == net.pistonmaster.pistonqueue.shared.loadbalance.TransferFallback.PROXY_CONNECT) {
+                player.connect(defaultTargetServer);
+                return true;
+              } else {
+                return false; // ABORT, let caller requeue or handle
+              }
+            }
+          }
+        } else {
+          warning("No online endpoints available in lobby group '" + Config.TARGET_LOBBY_GROUP + "'. Using default target server.");
+        }
+      }
+    }
+    // Default legacy behavior
+    player.connect(defaultTargetServer);
+    return true;
+  }
 
   default void scheduleTasks(QueueListenerShared queueListener) {
     // Sends the position message and updates tab on an interval in chat
@@ -307,6 +377,70 @@ public interface PistonQueuePlugin {
               type.setHeader(typeData.node("HEADER").getList(String.class));
               type.setFooter(typeData.node("FOOTER").getList(String.class));
             }
+          }
+        } else if (fieldName.equals("LOBBY_GROUPS")) {
+          // Parse nested lobby groups
+          Map<Object, ? extends ConfigurationNode> groups = config.node("LOBBY_GROUPS").childrenMap();
+          if (groups == null || groups.isEmpty()) {
+            it.set(Config.class, null);
+          } else {
+            Map<String, LobbyGroupConfig> map = new HashMap<>();
+            for (Map.Entry<Object, ? extends ConfigurationNode> e : groups.entrySet()) {
+              String name = String.valueOf(e.getKey());
+              ConfigurationNode g = e.getValue();
+              LobbyGroupConfig lg = new LobbyGroupConfig();
+              lg.setName(name);
+              // selection
+              SelectionOptions sel = new SelectionOptions();
+              String tie = g.node("selection").node("tieBreaker").getString("LEAST_PLAYERS");
+              try {
+                sel.setTieBreaker(net.pistonmaster.pistonqueue.shared.loadbalance.TieBreaker.valueOf(tie.toUpperCase(Locale.ROOT)));
+              } catch (IllegalArgumentException ex) {
+                sel.setTieBreaker(net.pistonmaster.pistonqueue.shared.loadbalance.TieBreaker.LEAST_PLAYERS);
+              }
+              String pcs = g.node("selection").node("playerCountSource").getString("AUTO");
+              try {
+                sel.setPlayerCountSource(net.pistonmaster.pistonqueue.shared.loadbalance.PlayerCountSource.valueOf(pcs.toUpperCase(Locale.ROOT)));
+              } catch (IllegalArgumentException ex) {
+                sel.setPlayerCountSource(net.pistonmaster.pistonqueue.shared.loadbalance.PlayerCountSource.AUTO);
+              }
+              String tovr = g.node("selection").node("transportOverride").getString("PER_ENDPOINT");
+              try {
+                sel.setTransportOverride(net.pistonmaster.pistonqueue.shared.loadbalance.TransportOverride.valueOf(tovr.toUpperCase(Locale.ROOT)));
+              } catch (IllegalArgumentException ex) {
+                sel.setTransportOverride(net.pistonmaster.pistonqueue.shared.loadbalance.TransportOverride.PER_ENDPOINT);
+              }
+              String fb = g.node("selection").node("fallbackOnTransferFail").getString("PROXY_CONNECT");
+              try {
+                sel.setFallbackOnTransferFail(net.pistonmaster.pistonqueue.shared.loadbalance.TransferFallback.valueOf(fb.toUpperCase(Locale.ROOT)));
+              } catch (IllegalArgumentException ex) {
+                sel.setFallbackOnTransferFail(net.pistonmaster.pistonqueue.shared.loadbalance.TransferFallback.PROXY_CONNECT);
+              }
+              sel.setPingTimeoutMs(g.node("selection").node("pingTimeoutMs").getInt(750));
+              sel.setCacheTtlMs(g.node("selection").node("cacheTtlMs").getInt(2000));
+              lg.setSelection(sel);
+              // endpoints
+              List<EndpointConfig> eps = new ArrayList<>();
+              for (ConfigurationNode epNode : g.node("endpoints").childrenList()) {
+                EndpointConfig ep = new EndpointConfig();
+                ep.setName(epNode.node("name").getString("endpoint"));
+                String mode = epNode.node("mode").getString("VELOCITY");
+                try {
+                  ep.setMode(EndpointMode.valueOf(mode.toUpperCase(Locale.ROOT)));
+                } catch (IllegalArgumentException ex) {
+                  ep.setMode(EndpointMode.VELOCITY);
+                }
+                ep.setPriority(epNode.node("priority").getInt(1));
+                ep.setWeight(epNode.node("weight").getInt(1));
+                ep.setVelocityServer(epNode.node("velocityServer").getString(null));
+                ep.setHost(epNode.node("host").getString(null));
+                ep.setPort(epNode.node("port").getInt(0));
+                eps.add(ep);
+              }
+              lg.setEndpoints(eps);
+              map.put(name, lg);
+            }
+            it.set(Config.class, map);
           }
         } else {
           it.set(Config.class, config.node(fieldName).get(it.getType()));
