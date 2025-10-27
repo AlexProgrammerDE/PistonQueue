@@ -205,6 +205,11 @@ public interface PistonQueuePlugin {
 
     // Checks the status of all the servers
     schedule(() -> {
+      // Null check for KICK_WHEN_DOWN_SERVERS
+      if (Config.KICK_WHEN_DOWN_SERVERS == null) {
+        return;
+      }
+      
       List<String> servers = new ArrayList<>(Config.KICK_WHEN_DOWN_SERVERS);
       
       // If using lobby groups, don't check TARGET_SERVER
@@ -313,6 +318,11 @@ public interface PistonQueuePlugin {
 
   default void initializeReservationSlots() {
     schedule(() -> {
+      // Skip if using lobby groups (no single TARGET_SERVER)
+      if (Config.USE_TARGET_LOBBY_GROUP) {
+        return;
+      }
+      
       Optional<ServerInfoWrapper> targetServer = getServer(Config.TARGET_SERVER);
       if (targetServer.isEmpty())
         return;
@@ -531,12 +541,27 @@ public interface PistonQueuePlugin {
         new ConfigOutdatedException(packageSplit[packageSplit.length - 1]).printStackTrace();
       }
     });
+    
+    // Null safety checks
+    if (Config.KICK_WHEN_DOWN_SERVERS == null) {
+      error("KICK_WHEN_DOWN_SERVERS is null in config! Using empty list.");
+      Config.KICK_WHEN_DOWN_SERVERS = new ArrayList<>();
+    }
+    if (Config.TARGET_SERVER == null) {
+      error("TARGET_SERVER is null in config! Please check your config.yml");
+      Config.TARGET_SERVER = "main"; // Default fallback
+    }
+    if (Config.QUEUE_TYPES == null || Config.QUEUE_TYPES.length == 0) {
+      error("QUEUE_TYPES is null or empty in config! Please check your config.yml");
+      return; // Cannot continue without queue types
+    }
+    
     int i = 0;
     for (String text : Config.KICK_WHEN_DOWN_SERVERS) {
       Config.KICK_WHEN_DOWN_SERVERS.set(i, text
-        .replace("%TARGET_SERVER%", Config.TARGET_SERVER)
-        .replace("%QUEUE_SERVER%", Config.QUEUE_SERVER)
-        .replace("%SOURCE_SERVER%", Config.SOURCE_SERVER));
+        .replace("%TARGET_SERVER%", Config.TARGET_SERVER != null ? Config.TARGET_SERVER : "")
+        .replace("%QUEUE_SERVER%", Config.QUEUE_SERVER != null ? Config.QUEUE_SERVER : "")
+        .replace("%SOURCE_SERVER%", Config.SOURCE_SERVER != null ? Config.SOURCE_SERVER : ""));
       i++;
     }
     // Only add TARGET_SERVER to health check list if lobby groups are disabled

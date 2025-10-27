@@ -176,6 +176,12 @@ public abstract class QueueListenerShared {
   }
 
   public void moveQueue() {
+    // Null check for QUEUE_TYPES
+    if (Config.QUEUE_TYPES == null || Config.QUEUE_TYPES.length == 0) {
+      plugin.warning("QUEUE_TYPES is not initialized yet");
+      return;
+    }
+    
     // Calculate total queued players
     int totalQueued = Arrays.stream(Config.QUEUE_TYPES)
       .mapToInt(type -> type.getQueueMap().size())
