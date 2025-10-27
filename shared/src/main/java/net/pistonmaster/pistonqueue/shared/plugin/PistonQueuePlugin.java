@@ -140,7 +140,10 @@ public interface PistonQueuePlugin {
   default void scheduleTasks(QueueListenerShared queueListener) {
     // Sends the position message and updates tab on an interval in chat
     schedule(() -> {
-      if (queueListener.getOnlineServers().contains(Config.TARGET_SERVER)) {
+      // Skip TARGET_SERVER check if using lobby groups
+      boolean targetServerOnline = Config.USE_TARGET_LOBBY_GROUP || queueListener.getOnlineServers().contains(Config.TARGET_SERVER);
+      
+      if (targetServerOnline) {
         for (QueueType type : Config.QUEUE_TYPES) {
           if (Config.POSITION_MESSAGE_CHAT) {
             sendMessage(type, MessageType.CHAT);
@@ -177,6 +180,12 @@ public interface PistonQueuePlugin {
     // Checks the status of all the servers
     schedule(() -> {
       List<String> servers = new ArrayList<>(Config.KICK_WHEN_DOWN_SERVERS);
+      
+      // If using lobby groups, don't check TARGET_SERVER
+      if (Config.USE_TARGET_LOBBY_GROUP) {
+        servers.remove(Config.TARGET_SERVER);
+      }
+      
       CountDownLatch latch = new CountDownLatch(servers.size());
       for (String server : servers) {
         CompletableFuture.runAsync(() -> {
