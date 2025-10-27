@@ -47,12 +47,16 @@ Configuration is documented inline in `proxy_config.yml` under the section "Adva
 ### Queue position display
 
 Players can see their queue position through multiple methods (all configurable):
-- **Chat messages**: Traditional text messages with position updates
+- **Chat messages**: Traditional text messages with position updates (configurable interval)
 - **Action bar**: Compact display above the hotbar
-- **Title/Subtitle**: Large on-screen display (configurable as title or subtitle)
+- **Title/Subtitle**: Large on-screen display with independent update interval
 - **Tab list**: Player list header/footer with position and estimated wait time
 
-Animation timing and update frequency are fully customizable in the config.
+Each display method has its own update frequency:
+- `POSITION_MESSAGE_DELAY`: Controls chat and action bar updates (default: 10 seconds)
+- `POSITION_TITLE_DELAY`: Controls title/subtitle updates (default: 1 second for smoother display)
+
+Animation timing is fully customizable (fadeIn/fadeOut can be disabled for instant display).
 
 ### Minimum queue time
 
@@ -68,6 +72,12 @@ Handles connection failures gracefully:
 - Position cache to distinguish normal joins from recovery scenarios
 - Prevents false "recovery" messages on normal server joins
 - Cooldown system to prevent re-queue loops after transfers
+
+**Queue pause when all nodes are offline:**
+- Automatically pauses queue movement when no endpoints are available
+- Displays configurable pause message to players (throttled to avoid spam)
+- Resumes automatically when nodes come back online
+- Works with both traditional TARGET_SERVER and lobby group configurations
 
 ## 🌈 Community
 
