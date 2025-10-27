@@ -276,7 +276,8 @@ public interface PistonQueuePlugin {
         .replace("%total%", String.valueOf(queue.getQueueMap().size()));
 
       // fadeIn, stay, fadeOut in ticks (20 ticks = 1 second)
-      player.get().sendTitle("", subtitle, 5, 30, 5);
+      // fadeIn=0, fadeOut=0 for no animation
+      player.get().sendTitle("", subtitle, 0, 30, 0);
     }
   }
 
