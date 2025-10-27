@@ -277,6 +277,21 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
       }
 
       @Override
+      public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        net.kyori.adventure.title.Title.Times times = net.kyori.adventure.title.Title.Times.times(
+          java.time.Duration.ofMillis(fadeIn * 50L),
+          java.time.Duration.ofMillis(stay * 50L),
+          java.time.Duration.ofMillis(fadeOut * 50L)
+        );
+        net.kyori.adventure.title.Title adventureTitle = net.kyori.adventure.title.Title.title(
+          ChatUtils.parseToComponent(title),
+          ChatUtils.parseToComponent(subtitle),
+          times
+        );
+        player.showTitle(adventureTitle);
+      }
+
+      @Override
       public String getName() {
         return player.getUsername();
       }

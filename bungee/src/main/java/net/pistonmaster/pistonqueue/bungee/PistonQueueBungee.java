@@ -222,6 +222,17 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
       }
 
       @Override
+      public void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {
+        net.md_5.bungee.api.Title bungeeTitle = getProxy().createTitle();
+        bungeeTitle.title(ChatUtils.parseToComponent(title));
+        bungeeTitle.subTitle(ChatUtils.parseToComponent(subtitle));
+        bungeeTitle.fadeIn(fadeIn);
+        bungeeTitle.stay(stay);
+        bungeeTitle.fadeOut(fadeOut);
+        bungeeTitle.send(player);
+      }
+
+      @Override
       public String getName() {
         return player.getName();
       }

@@ -174,6 +174,9 @@ public interface PistonQueuePlugin {
           if (Config.POSITION_MESSAGE_HOT_BAR) {
             sendMessage(type, MessageType.ACTION_BAR);
           }
+          if (Config.POSITION_MESSAGE_TITLE) {
+            sendTitleMessage(type);
+          }
         }
       } else if (Config.PAUSE_QUEUE_IF_TARGET_DOWN) {
         for (QueueType type : Config.QUEUE_TYPES) {
@@ -251,6 +254,24 @@ public interface PistonQueuePlugin {
         .replace("%total%", String.valueOf(queue.getQueueMap().size()));
 
       player.get().sendMessage(type, chatMessage);
+    }
+  }
+
+  default void sendTitleMessage(QueueType queue) {
+    AtomicInteger position = new AtomicInteger();
+    for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
+      Optional<PlayerWrapper> player = getPlayer(entry.getKey());
+      if (player.isEmpty()) {
+        continue;
+      }
+
+      int pos = position.incrementAndGet();
+      String title = Config.QUEUE_POSITION_TITLE
+        .replace("%position%", String.valueOf(pos))
+        .replace("%total%", String.valueOf(queue.getQueueMap().size()));
+
+      // fadeIn, stay, fadeOut in ticks (20 ticks = 1 second)
+      player.get().sendTitle(title, "", 5, 30, 5);
     }
   }
 

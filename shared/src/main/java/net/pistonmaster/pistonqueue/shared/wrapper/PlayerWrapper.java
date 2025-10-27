@@ -50,6 +50,11 @@ public interface PlayerWrapper extends PermissibleWrapper {
   void sendPlayerList(List<String> header, List<String> footer);
 
   void resetPlayerList();
+  
+  /**
+   * Send a title/subtitle to the player
+   */
+  default void sendTitle(String title, String subtitle, int fadeIn, int stay, int fadeOut) {}
 
   String getName();
 

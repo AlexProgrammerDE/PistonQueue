@@ -28,7 +28,9 @@ SERVER_ONLINE_CHECK_DELAY: 500
 # Where to send the queue position message and what to send.
 POSITION_MESSAGE_CHAT: true
 POSITION_MESSAGE_HOT_BAR: false
+POSITION_MESSAGE_TITLE: false
 QUEUE_POSITION: "&6Position in queue: &l%position%"
+QUEUE_POSITION_TITLE: "&6Position in queue: &e&l%position%"
 POSITION_MESSAGE_DELAY: 10000
 
 # Whether to show a custom player list header and footer (tab) with the queue position.

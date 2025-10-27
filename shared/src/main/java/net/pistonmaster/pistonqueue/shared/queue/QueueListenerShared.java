@@ -345,6 +345,11 @@ public abstract class QueueListenerShared {
           type.getDurationFromPosition().put(position, Duration.between(instant, Instant.now())));
       }
 
+      // Play a short XP sound to the player right as they are about to enter
+      if (Config.SEND_XP_SOUND) {
+        sendXPSoundToPlayers(java.util.Collections.singletonList(player.getUniqueId()));
+      }
+
       plugin.info("=== Starting connection attempt for player: " + player.getName() + " ===");
       plugin.info("Target server from queue entry: " + entry.getValue().targetServer());
       plugin.info("Queue reason: " + entry.getValue().queueReason());
@@ -390,6 +395,19 @@ public abstract class QueueListenerShared {
     out.writeInt(uuids.size());
     uuids.forEach(id -> out.writeUTF(id.toString()));
 
+    plugin.getServer(Config.QUEUE_SERVER).ifPresent(server ->
+      server.sendPluginMessage("piston:queue", out.toByteArray()));
+  }
+
+  // Send XP sound to specific players (used when a player actually enters)
+  private void sendXPSoundToPlayers(java.util.Collection<java.util.UUID> ids) {
+    if (ids == null || ids.isEmpty()) return;
+    ByteArrayDataOutput out = ByteStreams.newDataOutput();
+    out.writeUTF("xpV2");
+    out.writeInt(ids.size());
+    for (java.util.UUID id : ids) {
+      out.writeUTF(id.toString());
+    }
     plugin.getServer(Config.QUEUE_SERVER).ifPresent(server ->
       server.sendPluginMessage("piston:queue", out.toByteArray()));
   }
