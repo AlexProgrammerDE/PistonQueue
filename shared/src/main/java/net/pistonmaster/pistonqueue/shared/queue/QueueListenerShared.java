@@ -296,7 +296,9 @@ public abstract class QueueListenerShared {
       plugin.info("Will attempt to move up to " + freeSlots + " player(s)");
     }
 
-    for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
+  boolean movedAny = false; // Track if we actually initiated any connection this tick
+
+  for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
       Optional<PlayerWrapper> optional = plugin.getPlayer(entry.getKey());
       if (optional.isEmpty()) {
         plugin.info("Player " + entry.getKey() + " not found online, skipping");
@@ -359,6 +361,7 @@ public abstract class QueueListenerShared {
           continue;
         } else {
           plugin.info("✅ Connection initiated for player " + player.getName());
+          movedAny = true;
         }
       } finally {
         net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin.QUEUE_LISTENER.remove();
@@ -369,7 +372,8 @@ public abstract class QueueListenerShared {
       }
     }
 
-    if (Config.SEND_XP_SOUND) {
+    if (Config.SEND_XP_SOUND && movedAny) {
+      // Only play XP sound when the queue actually progressed this tick
       sendXPSoundToQueueType(type);
     }
   }
