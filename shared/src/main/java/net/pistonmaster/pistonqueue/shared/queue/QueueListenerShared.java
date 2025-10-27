@@ -47,6 +47,10 @@ public abstract class QueueListenerShared {
   
   // Track queue join time for minimum queue time enforcement
   private final Map<UUID, Instant> queueJoinTimes = Collections.synchronizedMap(new HashMap<>());
+  
+  // Track last pause message time to avoid spam
+  private Instant lastPauseMessageTime = null;
+  private static final Duration PAUSE_MESSAGE_INTERVAL = Duration.ofSeconds(10);
 
   /**
    * Mark a player as recently transferred to prevent recovery from adding them back to queue
@@ -227,8 +231,30 @@ public abstract class QueueListenerShared {
       if (totalQueued > 0) {
         plugin.warning("⚠️ Queue PAUSED: TARGET_SERVER '" + Config.TARGET_SERVER + "' is offline and PAUSE_QUEUE_IF_TARGET_DOWN is enabled");
         plugin.warning("To use lobby groups, the TARGET_SERVER check is skipped when USE_TARGET_LOBBY_GROUP is true");
+        
+        // Send message to all queued players (throttled to avoid spam)
+        sendPauseMessageToQueuedPlayers();
       }
       return;
+    }
+    
+    // Check lobby group endpoints if enabled
+    if (Config.PAUSE_QUEUE_IF_TARGET_DOWN && Config.USE_TARGET_LOBBY_GROUP && Config.TARGET_LOBBY_GROUP != null && Config.LOBBY_GROUPS != null) {
+      net.pistonmaster.pistonqueue.shared.loadbalance.LobbyGroupConfig group = Config.LOBBY_GROUPS.get(Config.TARGET_LOBBY_GROUP);
+      if (group != null) {
+        Optional<net.pistonmaster.pistonqueue.shared.loadbalance.EndpointConfig> available = 
+          net.pistonmaster.pistonqueue.shared.loadbalance.EndpointSelector.select(plugin, group);
+        
+        if (available.isEmpty()) {
+          if (totalQueued > 0) {
+            plugin.warning("⚠️ Queue PAUSED: No online endpoints in lobby group '" + Config.TARGET_LOBBY_GROUP + "'");
+            
+            // Send message to all queued players (throttled to avoid spam)
+            sendPauseMessageToQueuedPlayers();
+          }
+          return;
+        }
+      }
     }
 
     if (totalQueued > 0) {
@@ -431,6 +457,26 @@ public abstract class QueueListenerShared {
           list.put(position, Instant.now());
         }
       }
+    }
+  }
+  
+  /**
+   * Send pause message to all queued players, throttled to avoid spam
+   */
+  private void sendPauseMessageToQueuedPlayers() {
+    Instant now = Instant.now();
+    
+    // Only send message every PAUSE_MESSAGE_INTERVAL seconds
+    if (lastPauseMessageTime == null || Duration.between(lastPauseMessageTime, now).compareTo(PAUSE_MESSAGE_INTERVAL) >= 0) {
+      lastPauseMessageTime = now;
+      
+      Arrays.stream(Config.QUEUE_TYPES).forEach(type -> {
+        type.getQueueMap().keySet().forEach(uuid -> {
+          plugin.getPlayer(uuid).ifPresent(player -> 
+            player.sendMessage(Config.PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE)
+          );
+        });
+      });
     }
   }
 }

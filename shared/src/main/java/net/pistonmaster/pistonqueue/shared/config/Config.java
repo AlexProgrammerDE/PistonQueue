@@ -41,7 +41,7 @@ public final class Config {
 
   public static int QUEUE_MOVE_DELAY, SERVER_ONLINE_CHECK_DELAY, POSITION_MESSAGE_DELAY,
     PERCENT, MAX_PLAYERS_PER_MOVE,
-    TRANSFER_MIN_PROTOCOL, MINIMUM_QUEUE_TIME_SECONDS;
+    TRANSFER_MIN_PROTOCOL, MINIMUM_QUEUE_TIME_SECONDS, POSITION_TITLE_DELAY;
 
   public static List<String> DOWN_WORD_LIST, KICK_WHEN_DOWN_SERVERS;
   public static QueueType[] QUEUE_TYPES; // Not allowed to be resized due to data corruption

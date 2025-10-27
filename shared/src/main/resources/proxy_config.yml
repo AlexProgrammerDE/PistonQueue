@@ -32,6 +32,7 @@ POSITION_MESSAGE_TITLE: false
 QUEUE_POSITION: "&6Position in queue: &l%position%"
 QUEUE_POSITION_TITLE: "&6Position in queue: &e&l%position%"
 POSITION_MESSAGE_DELAY: 10000
+POSITION_TITLE_DELAY: 1000
 
 # Whether to show a custom player list header and footer (tab) with the queue position.
 POSITION_PLAYER_LIST: true

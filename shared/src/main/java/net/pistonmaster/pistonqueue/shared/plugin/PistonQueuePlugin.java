@@ -148,7 +148,14 @@ public interface PistonQueuePlugin {
             }
           }
         } else {
-          warning("No online endpoints in group '" + Config.TARGET_LOBBY_GROUP + "', using fallback: " + defaultTargetServer);
+          // No online endpoints available
+          warning("⚠️ No online endpoints in group '" + Config.TARGET_LOBBY_GROUP + "'");
+          
+          // Send pause message to player
+          player.sendMessage(Config.PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE);
+          
+          // Return false to keep player in queue (don't attempt connection)
+          return false;
         }
       } else {
         warning("Lobby group '" + Config.TARGET_LOBBY_GROUP + "' not found, using fallback: " + defaultTargetServer);
@@ -174,9 +181,6 @@ public interface PistonQueuePlugin {
           if (Config.POSITION_MESSAGE_HOT_BAR) {
             sendMessage(type, MessageType.ACTION_BAR);
           }
-          if (Config.POSITION_MESSAGE_TITLE) {
-            sendTitleMessage(type);
-          }
         }
       } else if (Config.PAUSE_QUEUE_IF_TARGET_DOWN) {
         for (QueueType type : Config.QUEUE_TYPES) {
@@ -185,6 +189,19 @@ public interface PistonQueuePlugin {
         }
       }
     }, Config.POSITION_MESSAGE_DELAY, Config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
+
+    // Sends title messages on a separate interval (can be faster than chat)
+    if (Config.POSITION_MESSAGE_TITLE) {
+      schedule(() -> {
+        boolean targetServerOnline = Config.USE_TARGET_LOBBY_GROUP || queueListener.getOnlineServers().contains(Config.TARGET_SERVER);
+        
+        if (targetServerOnline) {
+          for (QueueType type : Config.QUEUE_TYPES) {
+            sendTitleMessage(type);
+          }
+        }
+      }, Config.POSITION_TITLE_DELAY, Config.POSITION_TITLE_DELAY, TimeUnit.MILLISECONDS);
+    }
 
     // Updates the tab
     schedule(() -> {
