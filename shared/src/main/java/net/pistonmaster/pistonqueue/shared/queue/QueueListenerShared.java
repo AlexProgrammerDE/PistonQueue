@@ -314,30 +314,22 @@ public abstract class QueueListenerShared {
       plugin.info("=== Starting connection attempt for player: " + player.getName() + " ===");
       plugin.info("Target server from queue entry: " + entry.getValue().targetServer());
       plugin.info("Queue reason: " + entry.getValue().queueReason());
-      plugin.info("Current server: " + player.getCurrentServer().orElse("none"));
       
-      // Check if transfer will be used (lobby group mode with TRANSFER endpoint)
-      boolean usingTransfer = Config.USE_TARGET_LOBBY_GROUP 
-        && Config.TARGET_LOBBY_GROUP != null 
-        && Config.LOBBY_GROUPS != null
-        && Config.LOBBY_GROUPS.containsKey(Config.TARGET_LOBBY_GROUP);
+      // Set ThreadLocal so connectPlayerToTarget can call back to mark transfer
+      net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin.QUEUE_LISTENER.set(this);
+      try {
+        boolean started = plugin.connectPlayerToTarget(player, entry.getValue().targetServer());
       
-      if (usingTransfer) {
-        // Mark player for transfer cooldown before attempting connection
-        // This prevents RECOVERY from immediately re-queueing if transfer succeeds but player disconnects
-        markRecentTransfer(player.getUniqueId());
-      }
-      
-      boolean started = plugin.connectPlayerToTarget(player, entry.getValue().targetServer());
-      
-      if (!started) {
-        // Transfer aborted: put the player back into the queue (recovery-like behavior)
-        plugin.warning("❌ connectPlayerToTarget returned FALSE for player " + player.getName() + ". Returning to queue.");
-        plugin.warning("This means the connection attempt was aborted. Check logs above for reason.");
-        type.getQueueMap().put(entry.getKey(), entry.getValue());
-        continue;
-      } else {
-        plugin.info("✅ connectPlayerToTarget returned TRUE for player " + player.getName() + ". Player should be connecting now.");
+        if (!started) {
+          // Transfer aborted: put the player back into the queue (recovery-like behavior)
+          plugin.warning("❌ connectPlayerToTarget returned FALSE for player " + player.getName() + ". Returning to queue.");
+          type.getQueueMap().put(entry.getKey(), entry.getValue());
+          continue;
+        } else {
+          plugin.info("✅ Connection initiated for player " + player.getName());
+        }
+      } finally {
+        net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin.QUEUE_LISTENER.remove();
       }
 
       if (--freeSlots <= 0) {

@@ -240,26 +240,16 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
 
       @Override
       public boolean transfer(String host, int port) {
-        info("🔍 Attempting transfer to " + host + ":" + port);
-        
         try {
-          // Velocity uses transferToHost(InetSocketAddress)
           java.net.InetSocketAddress address = new java.net.InetSocketAddress(host, port);
-          info("✅ Created InetSocketAddress: " + address);
-          
           var transferMethod = player.getClass().getMethod("transferToHost", java.net.InetSocketAddress.class);
-          info("✅ Found transferToHost method");
-          
           transferMethod.invoke(player, address);
-          info("✅ transferToHost invoked successfully for player " + player.getUsername());
           return true;
         } catch (NoSuchMethodException e) {
-          warning("❌ transferToHost(InetSocketAddress) method not found!");
-          warning("Player class: " + player.getClass().getName());
+          warning("transferToHost() method not available");
           return false;
         } catch (Exception e) {
-          warning("❌ Exception during transferToHost: " + e.getClass().getName() + ": " + e.getMessage());
-          e.printStackTrace();
+          warning("Transfer error: " + e.getMessage());
           return false;
         }
       }
