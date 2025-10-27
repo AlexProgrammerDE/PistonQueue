@@ -78,61 +78,80 @@ public interface PistonQueuePlugin {
    */
   default boolean connectPlayerToTarget(PlayerWrapper player, String defaultTargetServer) {
     if (Config.USE_TARGET_LOBBY_GROUP && Config.TARGET_LOBBY_GROUP != null && Config.LOBBY_GROUPS != null) {
+      info("Player " + player.getName() + " using lobby group mode. Group: " + Config.TARGET_LOBBY_GROUP);
       LobbyGroupConfig group = Config.LOBBY_GROUPS.get(Config.TARGET_LOBBY_GROUP);
       if (group != null) {
+        info("Selecting endpoint from group '" + Config.TARGET_LOBBY_GROUP + "' with " + group.getEndpoints().size() + " endpoints");
         Optional<EndpointConfig> pick = EndpointSelector.select(this, group);
         if (pick.isPresent()) {
           EndpointConfig ep = pick.get();
+          info("Selected endpoint: name=" + ep.getName() + ", mode=" + ep.getMode() + ", priority=" + ep.getPriority() + ", weight=" + ep.getWeight());
+          
           EndpointMode mode = ep.getMode();
           // Transport override handling
           switch (group.getSelection().getTransportOverride()) {
-            case FORCE_VELOCITY -> mode = EndpointMode.VELOCITY;
-            case FORCE_TRANSFER -> mode = EndpointMode.TRANSFER;
+            case FORCE_VELOCITY -> {
+              info("Transport override FORCE_VELOCITY applied");
+              mode = EndpointMode.VELOCITY;
+            }
+            case FORCE_TRANSFER -> {
+              info("Transport override FORCE_TRANSFER applied");
+              mode = EndpointMode.TRANSFER;
+            }
             default -> {}
           }
 
           if (mode == EndpointMode.VELOCITY) {
             if (ep.getVelocityServer() == null || ep.getVelocityServer().isBlank()) {
-              warning("Selected VELOCITY endpoint has no server name; falling back to default target.");
+              warning("Selected VELOCITY endpoint '" + ep.getName() + "' has no server name; falling back to default target: " + defaultTargetServer);
               player.connect(defaultTargetServer);
               return true;
             }
+            info("Connecting player " + player.getName() + " to VELOCITY server: " + ep.getVelocityServer());
             player.connect(ep.getVelocityServer());
             return true;
           } else {
             // TRANSFER path
             if (ep.getHost() == null || ep.getPort() <= 0) {
-              warning("Selected TRANSFER endpoint has invalid host/port; falling back to default target.");
+              warning("Selected TRANSFER endpoint '" + ep.getName() + "' has invalid host/port (host=" + ep.getHost() + ", port=" + ep.getPort() + "); falling back to default target: " + defaultTargetServer);
               player.connect(defaultTargetServer);
               return true;
             }
             int minProto = Math.max(0, Config.TRANSFER_MIN_PROTOCOL);
             Optional<Integer> clientProto = player.getProtocolVersion();
+            info("Attempting TRANSFER for player " + player.getName() + " to " + ep.getHost() + ":" + ep.getPort() + " (client protocol: " + clientProto.orElse(-1) + ", min required: " + minProto + ")");
+            
             if (minProto > 0 && clientProto.isPresent() && clientProto.get() < minProto) {
-              warning("Player " + player.getName() + " protocol=" + clientProto.get() + " below min transfer protocol=" + minProto + ". Using proxy connect fallback.");
+              warning("Player " + player.getName() + " protocol=" + clientProto.get() + " below min transfer protocol=" + minProto + ". Using proxy connect fallback to: " + defaultTargetServer);
               player.connect(defaultTargetServer);
               return true;
             }
             boolean ok = player.transfer(ep.getHost(), ep.getPort());
             if (ok) {
+              info("Transfer successful for player " + player.getName() + " to " + ep.getHost() + ":" + ep.getPort());
               EndpointSelector.noteTransfer(ep, group.getSelection().getCacheTtlMs());
               return true;
             } else {
-              warning("Transfer not supported or failed for player " + player.getName() + ".");
+              warning("Transfer not supported or failed for player " + player.getName() + " to " + ep.getHost() + ":" + ep.getPort() + ". Fallback policy: " + group.getSelection().getFallbackOnTransferFail());
               if (group.getSelection().getFallbackOnTransferFail() == net.pistonmaster.pistonqueue.shared.loadbalance.TransferFallback.PROXY_CONNECT) {
+                info("Using proxy connect fallback to: " + defaultTargetServer);
                 player.connect(defaultTargetServer);
                 return true;
               } else {
+                warning("Transfer ABORT - player " + player.getName() + " will remain in queue for retry");
                 return false; // ABORT, let caller requeue or handle
               }
             }
           }
         } else {
-          warning("No online endpoints available in lobby group '" + Config.TARGET_LOBBY_GROUP + "'. Using default target server.");
+          warning("No online endpoints available in lobby group '" + Config.TARGET_LOBBY_GROUP + "'. Checked " + (group.getEndpoints() != null ? group.getEndpoints().size() : 0) + " endpoints. Using default target server: " + defaultTargetServer);
         }
+      } else {
+        warning("Lobby group '" + Config.TARGET_LOBBY_GROUP + "' not found in LOBBY_GROUPS configuration. Using default target server: " + defaultTargetServer);
       }
     }
     // Default legacy behavior
+    info("Using legacy connection mode for player " + player.getName() + " to server: " + defaultTargetServer);
     player.connect(defaultTargetServer);
     return true;
   }
