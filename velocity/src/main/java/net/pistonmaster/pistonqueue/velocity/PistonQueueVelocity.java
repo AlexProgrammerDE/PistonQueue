@@ -240,17 +240,40 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
 
       @Override
       public boolean transfer(String host, int port) {
+        info("🔍 Attempting reflection-based transfer to " + host + ":" + port);
         try {
+          info("Loading ServerAddress class...");
           Class<?> addrClz = Class.forName("com.velocitypowered.api.network.ServerAddress");
+          info("✅ ServerAddress class loaded: " + addrClz.getName());
+          
+          info("Creating ServerAddress instance via of(" + host + ", " + port + ")...");
           Object address = addrClz.getMethod("of", String.class, int.class).invoke(null, host, port);
+          info("✅ ServerAddress created: " + address);
+          
           // Prefer method transfer(ServerAddress)
           try {
-            player.getClass().getMethod("transfer", addrClz).invoke(player, address);
+            info("Looking for Player.transfer(ServerAddress) method...");
+            var transferMethod = player.getClass().getMethod("transfer", addrClz);
+            info("✅ Found transfer method: " + transferMethod);
+            
+            info("Invoking transfer method...");
+            transferMethod.invoke(player, address);
+            info("✅ Transfer method invoked successfully!");
             return true;
           } catch (NoSuchMethodException e) {
+            warning("❌ NoSuchMethodException: Player.transfer(ServerAddress) method not found!");
+            warning("Player class: " + player.getClass().getName());
+            warning("Available methods:");
+            for (var m : player.getClass().getMethods()) {
+              if (m.getName().contains("transfer") || m.getName().contains("Transfer")) {
+                warning("  - " + m.getName() + "(" + java.util.Arrays.toString(m.getParameterTypes()) + ")");
+              }
+            }
             return false;
           }
         } catch (ReflectiveOperationException e) {
+          warning("❌ ReflectiveOperationException during transfer: " + e.getClass().getName() + ": " + e.getMessage());
+          e.printStackTrace();
           return false;
         }
       }
