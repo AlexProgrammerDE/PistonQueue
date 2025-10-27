@@ -41,6 +41,17 @@ public abstract class QueueListenerShared {
   private final PistonQueuePlugin plugin;
   @Getter
   private final Set<String> onlineServers = Collections.synchronizedSet(new HashSet<>());
+  // Track recent transfers to prevent immediate recovery after transfer disconnect
+  private final Map<UUID, Instant> recentTransfers = Collections.synchronizedMap(new HashMap<>());
+  private static final Duration TRANSFER_COOLDOWN = Duration.ofSeconds(10);
+
+  /**
+   * Mark a player as recently transferred to prevent recovery from adding them back to queue
+   */
+  public void markRecentTransfer(UUID playerId) {
+    recentTransfers.put(playerId, Instant.now());
+    plugin.info("Marked player " + playerId + " as recently transferred (10s cooldown)");
+  }
 
   protected void onPreLogin(PQPreLoginEvent event) {
     if (event.isCancelled())
@@ -224,6 +235,20 @@ public abstract class QueueListenerShared {
 
     Optional<String> currentServer = player.getCurrentServer();
     if (!type.getQueueMap().containsKey(player.getUniqueId()) && currentServer.isPresent() && currentServer.get().equals(Config.QUEUE_SERVER)) {
+      // Check if player was recently transferred (within cooldown period)
+      Instant lastTransfer = recentTransfers.get(player.getUniqueId());
+      if (lastTransfer != null) {
+        Duration timeSinceTransfer = Duration.between(lastTransfer, Instant.now());
+        if (timeSinceTransfer.compareTo(TRANSFER_COOLDOWN) < 0) {
+          long secondsRemaining = TRANSFER_COOLDOWN.getSeconds() - timeSinceTransfer.getSeconds();
+          plugin.info("Skipping RECOVERY for player " + player.getName() + " - was transferred " + timeSinceTransfer.getSeconds() + "s ago (cooldown: " + secondsRemaining + "s remaining)");
+          return;
+        } else {
+          // Cooldown expired, remove from tracking
+          recentTransfers.remove(player.getUniqueId());
+        }
+      }
+      
       type.getQueueMap().putIfAbsent(player.getUniqueId(), new QueueType.QueuedPlayer(Config.TARGET_SERVER, QueueType.QueueReason.RECOVERY));
 
       player.sendMessage(Config.RECOVERY_MESSAGE);
@@ -290,6 +315,18 @@ public abstract class QueueListenerShared {
       plugin.info("Target server from queue entry: " + entry.getValue().targetServer());
       plugin.info("Queue reason: " + entry.getValue().queueReason());
       plugin.info("Current server: " + player.getCurrentServer().orElse("none"));
+      
+      // Check if transfer will be used (lobby group mode with TRANSFER endpoint)
+      boolean usingTransfer = Config.USE_TARGET_LOBBY_GROUP 
+        && Config.TARGET_LOBBY_GROUP != null 
+        && Config.LOBBY_GROUPS != null
+        && Config.LOBBY_GROUPS.containsKey(Config.TARGET_LOBBY_GROUP);
+      
+      if (usingTransfer) {
+        // Mark player for transfer cooldown before attempting connection
+        // This prevents RECOVERY from immediately re-queueing if transfer succeeds but player disconnects
+        markRecentTransfer(player.getUniqueId());
+      }
       
       boolean started = plugin.connectPlayerToTarget(player, entry.getValue().targetServer());
       
