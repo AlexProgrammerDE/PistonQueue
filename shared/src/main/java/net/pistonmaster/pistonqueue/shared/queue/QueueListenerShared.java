@@ -235,11 +235,21 @@ public abstract class QueueListenerShared {
           type.getDurationFromPosition().put(position, Duration.between(instant, Instant.now())));
       }
 
+      plugin.info("=== Starting connection attempt for player: " + player.getName() + " ===");
+      plugin.info("Target server from queue entry: " + entry.getValue().targetServer());
+      plugin.info("Queue reason: " + entry.getValue().queueReason());
+      plugin.info("Current server: " + player.getCurrentServer().orElse("none"));
+      
       boolean started = plugin.connectPlayerToTarget(player, entry.getValue().targetServer());
+      
       if (!started) {
         // Transfer aborted: put the player back into the queue (recovery-like behavior)
+        plugin.warning("❌ connectPlayerToTarget returned FALSE for player " + player.getName() + ". Returning to queue.");
+        plugin.warning("This means the connection attempt was aborted. Check logs above for reason.");
         type.getQueueMap().put(entry.getKey(), entry.getValue());
         continue;
+      } else {
+        plugin.info("✅ connectPlayerToTarget returned TRUE for player " + player.getName() + ". Player should be connecting now.");
       }
 
       if (--freeSlots <= 0) {

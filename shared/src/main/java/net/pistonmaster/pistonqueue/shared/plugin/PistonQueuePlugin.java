@@ -77,6 +77,15 @@ public interface PistonQueuePlugin {
    * Returns true if a connection/transfer was initiated, false if not possible (caller may initiate recovery).
    */
   default boolean connectPlayerToTarget(PlayerWrapper player, String defaultTargetServer) {
+    info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    info("🔌 connectPlayerToTarget() CALLED");
+    info("Player: " + player.getName());
+    info("Default target: " + defaultTargetServer);
+    info("USE_TARGET_LOBBY_GROUP: " + Config.USE_TARGET_LOBBY_GROUP);
+    info("TARGET_LOBBY_GROUP: " + Config.TARGET_LOBBY_GROUP);
+    info("LOBBY_GROUPS loaded: " + (Config.LOBBY_GROUPS != null ? Config.LOBBY_GROUPS.size() + " groups" : "null"));
+    info("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    
     if (Config.USE_TARGET_LOBBY_GROUP && Config.TARGET_LOBBY_GROUP != null && Config.LOBBY_GROUPS != null) {
       info("Player " + player.getName() + " using lobby group mode. Group: " + Config.TARGET_LOBBY_GROUP);
       LobbyGroupConfig group = Config.LOBBY_GROUPS.get(Config.TARGET_LOBBY_GROUP);
