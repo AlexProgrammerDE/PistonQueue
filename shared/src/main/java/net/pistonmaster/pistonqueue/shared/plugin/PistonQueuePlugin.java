@@ -271,12 +271,12 @@ public interface PistonQueuePlugin {
       }
 
       int pos = position.incrementAndGet();
-      String title = Config.QUEUE_POSITION_TITLE
+      String subtitle = Config.QUEUE_POSITION_TITLE
         .replace("%position%", String.valueOf(pos))
         .replace("%total%", String.valueOf(queue.getQueueMap().size()));
 
       // fadeIn, stay, fadeOut in ticks (20 ticks = 1 second)
-      player.get().sendTitle(title, "", 5, 30, 5);
+      player.get().sendTitle("", subtitle, 5, 30, 5);
     }
   }
 
