@@ -240,63 +240,28 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
 
       @Override
       public boolean transfer(String host, int port) {
-        info("🔍 Attempting reflection-based transfer to " + host + ":" + port);
+        info("🔍 Attempting transfer to " + host + ":" + port);
         
-        // Try multiple possible class names for ServerAddress
-        String[] possibleClasses = {
-          "com.velocitypowered.api.network.ServerAddress",
-          "com.velocitypowered.api.proxy.server.ServerAddress",
-          "com.velocitypowered.proxy.connection.client.ServerAddress",
-          "java.net.InetSocketAddress"
-        };
-        
-        for (String className : possibleClasses) {
-          try {
-            info("Trying class: " + className);
-            Class<?> addrClz = Class.forName(className);
-            info("✅ Found address class: " + addrClz.getName());
-            
-            Object address;
-            if (className.equals("java.net.InetSocketAddress")) {
-              // InetSocketAddress uses constructor
-              address = addrClz.getConstructor(String.class, int.class).newInstance(host, port);
-            } else {
-              // ServerAddress typically uses static factory method
-              address = addrClz.getMethod("of", String.class, int.class).invoke(null, host, port);
-            }
-            info("✅ Created address instance: " + address);
-            
-            // Try to find transfer method
-            try {
-              info("Looking for Player.transfer(" + addrClz.getSimpleName() + ") method...");
-              var transferMethod = player.getClass().getMethod("transfer", addrClz);
-              info("✅ Found transfer method: " + transferMethod);
-              
-              info("Invoking transfer method...");
-              transferMethod.invoke(player, address);
-              info("✅ Transfer method invoked successfully!");
-              return true;
-            } catch (NoSuchMethodException e) {
-              info("Player.transfer(" + addrClz.getSimpleName() + ") not found, trying next class...");
-              continue;
-            }
-          } catch (ClassNotFoundException e) {
-            info("Class " + className + " not found, trying next...");
-            continue;
-          } catch (ReflectiveOperationException e) {
-            warning("Error with class " + className + ": " + e.getClass().getName() + ": " + e.getMessage());
-            continue;
-          }
+        try {
+          // Velocity uses transferToHost(InetSocketAddress)
+          java.net.InetSocketAddress address = new java.net.InetSocketAddress(host, port);
+          info("✅ Created InetSocketAddress: " + address);
+          
+          var transferMethod = player.getClass().getMethod("transferToHost", java.net.InetSocketAddress.class);
+          info("✅ Found transferToHost method");
+          
+          transferMethod.invoke(player, address);
+          info("✅ transferToHost invoked successfully for player " + player.getUsername());
+          return true;
+        } catch (NoSuchMethodException e) {
+          warning("❌ transferToHost(InetSocketAddress) method not found!");
+          warning("Player class: " + player.getClass().getName());
+          return false;
+        } catch (Exception e) {
+          warning("❌ Exception during transferToHost: " + e.getClass().getName() + ": " + e.getMessage());
+          e.printStackTrace();
+          return false;
         }
-        
-        // If all attempts failed, show available methods
-        warning("❌ No working transfer method found! Available Player methods:");
-        for (var m : player.getClass().getMethods()) {
-          if (m.getName().toLowerCase().contains("transfer") || m.getName().toLowerCase().contains("connect")) {
-            warning("  - " + m.getName() + "(" + java.util.Arrays.toString(m.getParameterTypes()) + ")");
-          }
-        }
-        return false;
       }
 
       @Override
