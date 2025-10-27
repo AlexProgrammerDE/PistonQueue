@@ -44,6 +44,9 @@ public abstract class QueueListenerShared {
   // Track recent transfers to prevent immediate recovery after transfer disconnect
   private final Map<UUID, Instant> recentTransfers = Collections.synchronizedMap(new HashMap<>());
   private static final Duration TRANSFER_COOLDOWN = Duration.ofSeconds(10);
+  
+  // Track queue join time for minimum queue time enforcement
+  private final Map<UUID, Instant> queueJoinTimes = Collections.synchronizedMap(new HashMap<>());
 
   /**
    * Mark a player as recently transferred to prevent recovery from adding them back to queue
@@ -196,6 +199,7 @@ public abstract class QueueListenerShared {
         if (optionalTarget.isEmpty() || !optionalTarget.get().equals(Config.QUEUE_SERVER)) {
           plugin.info("Removing player " + entry.getKey() + " from queue (not on queue server)");
           type.getQueueMap().remove(entry.getKey());
+          queueJoinTimes.remove(entry.getKey()); // Cleanup join time tracking
         }
       }
     }
@@ -254,6 +258,11 @@ public abstract class QueueListenerShared {
       boolean wasInQueue = type.getPositionCache().containsKey(player.getUniqueId());
       
       type.getQueueMap().putIfAbsent(player.getUniqueId(), new QueueType.QueuedPlayer(Config.TARGET_SERVER, QueueType.QueueReason.RECOVERY));
+      
+      // Track queue join time for minimum queue time enforcement
+      if (!wasInQueue && Config.MINIMUM_QUEUE_TIME_ENABLED) {
+        queueJoinTimes.put(player.getUniqueId(), Instant.now());
+      }
 
       if (wasInQueue) {
         // Genuine recovery: player was queued before but lost connection
@@ -294,6 +303,22 @@ public abstract class QueueListenerShared {
         continue;
       }
       PlayerWrapper player = optional.get();
+      
+      // Check minimum queue time
+      if (Config.MINIMUM_QUEUE_TIME_ENABLED && Config.MINIMUM_QUEUE_TIME_SECONDS > 0) {
+        Instant joinTime = queueJoinTimes.get(player.getUniqueId());
+        if (joinTime != null) {
+          Duration timeInQueue = Duration.between(joinTime, Instant.now());
+          long requiredSeconds = Config.MINIMUM_QUEUE_TIME_SECONDS;
+          if (timeInQueue.getSeconds() < requiredSeconds) {
+            long remaining = requiredSeconds - timeInQueue.getSeconds();
+            plugin.info("Player " + player.getName() + " has only been in queue for " + timeInQueue.getSeconds() + "s (minimum: " + requiredSeconds + "s, remaining: " + remaining + "s)");
+            continue; // Skip this player, try next
+          }
+          // Minimum time satisfied, remove from tracking
+          queueJoinTimes.remove(player.getUniqueId());
+        }
+      }
 
       type.getQueueMap().remove(entry.getKey());
 

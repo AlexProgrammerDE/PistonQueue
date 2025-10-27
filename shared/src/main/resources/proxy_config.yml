@@ -99,6 +99,11 @@ QUEUE_MOVE_DELAY: 1000
 # Max players allowed to be moved into the target server at once with one queue move.
 MAX_PLAYERS_PER_MOVE: 10
 
+# Minimum queue time: force players to wait in queue for at least this many seconds
+# even if the queue is empty. Set to 0 to disable.
+MINIMUM_QUEUE_TIME_ENABLED: false
+MINIMUM_QUEUE_TIME_SECONDS: 5
+
 # Should the queue be always active or only when the target server is full?
 # When activated you will always be sent into the queue server and then the target server.
 ALWAYS_QUEUE: false
