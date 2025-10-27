@@ -249,9 +249,16 @@ public abstract class QueueListenerShared {
         }
       }
       
+      // Only send RECOVERY_MESSAGE if player was actually in queue before (genuine recovery case)
+      // Don't send message on first join to queue server
+      boolean wasInQueue = type.getPositionCache().containsKey(player.getUniqueId());
+      
       type.getQueueMap().putIfAbsent(player.getUniqueId(), new QueueType.QueuedPlayer(Config.TARGET_SERVER, QueueType.QueueReason.RECOVERY));
 
-      player.sendMessage(Config.RECOVERY_MESSAGE);
+      if (wasInQueue) {
+        // Genuine recovery: player was queued before but lost connection
+        player.sendMessage(Config.RECOVERY_MESSAGE);
+      }
     }
   }
 
