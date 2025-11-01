@@ -1,6 +1,7 @@
 plugins {
   `java-library`
   `maven-publish`
+  id("net.ltgt.errorprone")
 }
 
 java {
@@ -11,6 +12,7 @@ java {
 
 dependencies {
   implementation("org.jetbrains:annotations:26.0.2-1")
+  errorprone("com.google.errorprone:error_prone_core:2.43.0")
 
   compileOnly("org.projectlombok:lombok:1.18.42")
   annotationProcessor("org.projectlombok:lombok:1.18.42")
