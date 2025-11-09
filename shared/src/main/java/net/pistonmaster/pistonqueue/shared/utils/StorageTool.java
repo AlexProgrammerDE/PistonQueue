@@ -109,6 +109,7 @@ public final class StorageTool {
   private static void loadData() {
     generateFile();
     convertLegacyDataIfNeeded();
+    ensureFileInitialized();
     dataConfig = YamlConfigurations.update(dataFile, StorageData.class);
   }
 
@@ -180,6 +181,16 @@ public final class StorageTool {
       StorageData legacyData = new StorageData();
       legacyData.getBans().putAll(legacyEntries);
       YamlConfigurations.save(dataFile, StorageData.class, legacyData);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private static void ensureFileInitialized() {
+    try {
+      if (Files.size(dataFile) == 0) {
+        YamlConfigurations.save(dataFile, StorageData.class, new StorageData());
+      }
     } catch (IOException e) {
       e.printStackTrace();
     }
