@@ -32,6 +32,7 @@ import net.pistonmaster.pistonqueue.shared.wrapper.PermissibleWrapper;
 import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
 import java.util.*;
+import java.util.concurrent.locks.Lock;
 
 public interface MainCommandShared {
   List<String> commands = List.of("help", "version", "stats");
@@ -59,7 +60,7 @@ public interface MainCommandShared {
           sender.sendMessage(component().text(group.getName()).color(TextColorWrapper.GOLD));
           for (QueueType type : group.getQueueTypes()) {
             sender.sendMessage(component().text(" - " + type.getName() + ": ").color(TextColorWrapper.GOLD)
-              .append(component().text(String.valueOf(type.getQueueMap().size())).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+              .append(component().text(String.valueOf(queueSize(type))).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
           }
         }
         sendLine(sender);
@@ -257,6 +258,16 @@ public interface MainCommandShared {
     for (PlayerWrapper player : proxy.getPlayers()) {
       if (player.getName().toLowerCase(Locale.ROOT).startsWith(args[1].toLowerCase(Locale.ROOT)))
         completions.add(player.getName());
+    }
+  }
+
+  private static int queueSize(QueueType type) {
+    Lock readLock = type.getQueueLock().readLock();
+    readLock.lock();
+    try {
+      return type.getQueueMap().size();
+    } finally {
+      readLock.unlock();
     }
   }
 

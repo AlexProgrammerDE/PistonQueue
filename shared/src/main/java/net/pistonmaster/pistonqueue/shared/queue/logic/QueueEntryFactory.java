@@ -28,6 +28,7 @@ import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Handles the bookkeeping required when a player gets placed into a queue.
@@ -42,10 +43,6 @@ public final class QueueEntryFactory {
   public void enqueue(PlayerWrapper player, QueueGroup group, QueueType type, PQServerPreConnectEvent event, boolean serverFull, Config config) {
     player.sendPlayerList(type.getHeader(), type.getFooter());
 
-    if (serverFull && !type.getQueueMap().containsKey(player.getUniqueId())) {
-      player.sendMessage(config.SERVER_IS_FULL_MESSAGE);
-    }
-
     Optional<String> originalTarget = event.getTarget();
     event.setTarget(group.getQueueServer());
 
@@ -57,6 +54,22 @@ public final class QueueEntryFactory {
       queueTarget = originalTarget.get();
     }
 
-    queueMap.putIfAbsent(player.getUniqueId(), new QueueType.QueuedPlayer(queueTarget, QueueType.QueueReason.SERVER_FULL));
+    UUID playerId = player.getUniqueId();
+    boolean shouldNotifyFull = false;
+    Lock writeLock = type.getQueueLock().writeLock();
+    writeLock.lock();
+    try {
+      if (serverFull && !queueMap.containsKey(playerId)) {
+        shouldNotifyFull = true;
+      }
+
+      queueMap.putIfAbsent(playerId, new QueueType.QueuedPlayer(queueTarget, QueueType.QueueReason.SERVER_FULL));
+    } finally {
+      writeLock.unlock();
+    }
+
+    if (shouldNotifyFull) {
+      player.sendMessage(config.SERVER_IS_FULL_MESSAGE);
+    }
   }
 }

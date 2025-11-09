@@ -31,10 +31,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -250,7 +250,7 @@ class QueueMoveProcessorTest {
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
     QueueCleaner cleaner = new QueueCleaner(environment);
     QueueRecoveryHandler recovery = new QueueRecoveryHandler(environment);
-    Set<String> shadowBannedNames = java.util.Collections.synchronizedSet(new HashSet<>());
+    Set<String> shadowBannedNames = ConcurrentHashMap.newKeySet();
     ShadowBanService shadowBanService = shadowBannedNames::contains;
     QueueConnector connector = new QueueConnector(environment, calculator, shadowBanService);
     QueueMoveProcessor processor = new QueueMoveProcessor(environment, cleaner, recovery, connector);

@@ -25,15 +25,22 @@ import lombok.Setter;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 @Getter
 @AllArgsConstructor
 public class QueueType {
-  private final Map<UUID, QueuedPlayer> queueMap = Collections.synchronizedMap(new LinkedHashMap<>());
-  private final Map<Integer, Duration> durationFromPosition = Collections.synchronizedMap(new LinkedHashMap<>());
+  private final Map<UUID, QueuedPlayer> queueMap = new LinkedHashMap<>();
+  private final Map<Integer, Duration> durationFromPosition = new LinkedHashMap<>();
+  private final ReadWriteLock queueLock = new ReentrantReadWriteLock();
+  private final ReadWriteLock durationLock = new ReentrantReadWriteLock();
   private final Map<UUID, Map<Integer, Instant>> positionCache = new ConcurrentHashMap<>();
   private final AtomicInteger playersWithTypeInTarget = new AtomicInteger();
   private final String name;

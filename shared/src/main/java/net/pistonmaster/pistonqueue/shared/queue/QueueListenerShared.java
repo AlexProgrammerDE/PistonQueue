@@ -38,15 +38,15 @@ import net.pistonmaster.pistonqueue.shared.queue.logic.StorageShadowBanService;
 import net.pistonmaster.pistonqueue.shared.utils.StorageTool;
 import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
 
 public abstract class QueueListenerShared {
   private final PistonQueuePlugin plugin;
   @Getter
-  private final Set<String> onlineServers = Collections.synchronizedSet(new HashSet<>());
+  private final Set<String> onlineServers = ConcurrentHashMap.newKeySet();
   private final QueueEnvironment queueEnvironment;
   private final QueuePlacementCoordinator queuePlacementCoordinator;
   private final QueueMoveProcessor queueMoveProcessor;
@@ -98,9 +98,14 @@ public abstract class QueueListenerShared {
 
           event.getPlayer().sendMessage(config.IF_TARGET_DOWN_SEND_TO_QUEUE_MESSAGE);
 
-          config.getQueueType(event.getPlayer())
-            .getQueueMap()
-            .put(event.getPlayer().getUniqueId(), new QueueType.QueuedPlayer(event.getKickedFrom(), QueueType.QueueReason.SERVER_DOWN));
+          QueueType queueType = config.getQueueType(event.getPlayer());
+          Lock writeLock = queueType.getQueueLock().writeLock();
+          writeLock.lock();
+          try {
+            queueType.getQueueMap().put(event.getPlayer().getUniqueId(), new QueueType.QueuedPlayer(event.getKickedFrom(), QueueType.QueueReason.SERVER_DOWN));
+          } finally {
+            writeLock.unlock();
+          }
         });
     }
 

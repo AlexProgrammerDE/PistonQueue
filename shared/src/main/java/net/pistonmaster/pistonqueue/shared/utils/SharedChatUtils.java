@@ -24,6 +24,7 @@ import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 
 import java.time.Duration;
 import java.util.Locale;
+import java.util.concurrent.locks.Lock;
 
 public final class SharedChatUtils {
   private SharedChatUtils() {
@@ -40,11 +41,21 @@ public final class SharedChatUtils {
   public static String parseText(Config config, String text) {
     text = text.replace("%server_name%", config.SERVER_NAME);
     for (QueueType type : config.getAllQueueTypes()) {
-      text = text.replace("%" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(type.getQueueMap().size()));
+      text = text.replace("%" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(queueSize(type)));
     }
     text = text.replace("%position%", "None");
     text = text.replace("%wait%", "None");
 
     return text;
+  }
+
+  private static int queueSize(QueueType type) {
+    Lock readLock = type.getQueueLock().readLock();
+    readLock.lock();
+    try {
+      return type.getQueueMap().size();
+    } finally {
+      readLock.unlock();
+    }
   }
 }

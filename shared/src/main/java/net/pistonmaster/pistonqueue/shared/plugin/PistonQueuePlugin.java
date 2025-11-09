@@ -42,6 +42,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 public interface PistonQueuePlugin {
@@ -95,8 +96,9 @@ public interface PistonQueuePlugin {
         }
       } else if (config.PAUSE_QUEUE_IF_TARGET_DOWN) {
         for (QueueType type : config.getAllQueueTypes()) {
-          type.getQueueMap().forEach((id, queuedPlayer) ->
-            getPlayer(id).ifPresent(value -> value.sendMessage(config.PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE)));
+          for (UUID uuid : snapshotQueueOrder(type)) {
+            getPlayer(uuid).ifPresent(value -> value.sendMessage(config.PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE));
+          }
         }
       }
     }, config.POSITION_MESSAGE_DELAY, config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
@@ -157,8 +159,7 @@ public interface PistonQueuePlugin {
 
   default void sendMessage(QueueType queue, MessageType type) {
     Config config = getConfiguration();
-    Map<UUID, QueueType.QueuedPlayer> queueMap = queue.getQueueMap();
-    List<UUID> queueOrder = snapshotQueueOrder(queueMap);
+    List<UUID> queueOrder = snapshotQueueOrder(queue);
 
     int totalQueued = queueOrder.size();
     int position = 0;
@@ -177,8 +178,7 @@ public interface PistonQueuePlugin {
   }
 
   default void updateTab(QueueType queue) {
-    Map<UUID, QueueType.QueuedPlayer> queueMap = queue.getQueueMap();
-    List<UUID> queueOrder = snapshotQueueOrder(queueMap);
+    List<UUID> queueOrder = snapshotQueueOrder(queue);
 
     int position = 0;
     for (UUID uuid : queueOrder) {
@@ -196,25 +196,35 @@ public interface PistonQueuePlugin {
   }
 
   default String replacePosition(String text, int position, QueueType type) {
-    if (type.getDurationFromPosition().containsKey(position)) {
-      Duration duration = type.getDurationFromPosition().get(position);
+    Duration durationForExactPosition = null;
+    Integer biggestPosition = null;
+    Duration biggestDuration = null;
 
-      return SharedChatUtils.formatDuration(text, duration, position);
-    } else {
-      Map.Entry<Integer, Duration> biggestEntry = null;
-
-      for (Map.Entry<Integer, Duration> entry : type.getDurationFromPosition().entrySet()) {
-        if (biggestEntry == null || entry.getKey() > biggestEntry.getKey()) {
-          biggestEntry = entry;
+    Lock readLock = type.getDurationLock().readLock();
+    readLock.lock();
+    try {
+      durationForExactPosition = type.getDurationFromPosition().get(position);
+      if (durationForExactPosition == null) {
+        for (Map.Entry<Integer, Duration> entry : type.getDurationFromPosition().entrySet()) {
+          if (biggestPosition == null || entry.getKey() > biggestPosition) {
+            biggestPosition = entry.getKey();
+            biggestDuration = entry.getValue();
+          }
         }
       }
-
-      Duration predictedDuration = biggestEntry == null ?
-        Duration.of(position, ChronoUnit.MINUTES) :
-        biggestEntry.getValue().plus(position - biggestEntry.getKey(), ChronoUnit.MINUTES);
-
-      return SharedChatUtils.formatDuration(text, predictedDuration, position);
+    } finally {
+      readLock.unlock();
     }
+
+    if (durationForExactPosition != null) {
+      return SharedChatUtils.formatDuration(text, durationForExactPosition, position);
+    }
+
+    Duration predictedDuration = biggestDuration == null
+      ? Duration.of(position, ChronoUnit.MINUTES)
+      : biggestDuration.plus(position - biggestPosition, ChronoUnit.MINUTES);
+
+    return SharedChatUtils.formatDuration(text, predictedDuration, position);
   }
 
   default void initializeReservationSlots() {
@@ -258,7 +268,7 @@ public interface PistonQueuePlugin {
     outOnlineQueue.writeInt(config.getAllQueueTypes().size());
     for (QueueType queueType : config.getAllQueueTypes()) {
       outOnlineQueue.writeUTF(queueType.getName().toLowerCase(Locale.ROOT));
-      outOnlineQueue.writeInt(queueType.getQueueMap().size());
+      outOnlineQueue.writeInt(getQueueSize(queueType));
     }
 
     ByteArrayDataOutput outOnlineTarget = ByteStreams.newDataOutput();
@@ -304,9 +314,23 @@ public interface PistonQueuePlugin {
     getConfiguration().copyFrom(loaded);
   }
 
-  private static List<UUID> snapshotQueueOrder(Map<UUID, QueueType.QueuedPlayer> queueMap) {
-    synchronized (queueMap) {
-      return new ArrayList<>(queueMap.keySet());
+  private static List<UUID> snapshotQueueOrder(QueueType queue) {
+    Lock readLock = queue.getQueueLock().readLock();
+    readLock.lock();
+    try {
+      return new ArrayList<>(queue.getQueueMap().keySet());
+    } finally {
+      readLock.unlock();
+    }
+  }
+
+  private static int getQueueSize(QueueType queue) {
+    Lock readLock = queue.getQueueLock().readLock();
+    readLock.lock();
+    try {
+      return queue.getQueueMap().size();
+    } finally {
+      readLock.unlock();
     }
   }
 }

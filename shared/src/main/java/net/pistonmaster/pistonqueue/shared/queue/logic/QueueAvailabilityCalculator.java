@@ -21,6 +21,8 @@ package net.pistonmaster.pistonqueue.shared.queue.logic;
 
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 
+import java.util.concurrent.locks.Lock;
+
 /**
  * Encapsulates the slot and fullness calculation so it can be reused and
  * tested independently from the listener implementation.
@@ -40,6 +42,12 @@ public final class QueueAvailabilityCalculator {
   }
 
   private boolean hasQueuedPlayers(QueueType type) {
-    return !type.getQueueMap().isEmpty();
+    Lock readLock = type.getQueueLock().readLock();
+    readLock.lock();
+    try {
+      return !type.getQueueMap().isEmpty();
+    } finally {
+      readLock.unlock();
+    }
   }
 }

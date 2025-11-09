@@ -42,6 +42,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Responsible for moving players from the queue onto their target server.
@@ -79,7 +80,7 @@ public final class QueueConnector {
       }
 
       if (!processedThisCycle.add(entry.getKey())) {
-        type.getQueueMap().put(entry.getKey(), entry.getValue());
+        requeuePlayer(type, entry);
         break;
       }
 
@@ -97,7 +98,7 @@ public final class QueueConnector {
         || (config.SHADOW_BAN_TYPE == BanType.PERCENT && ThreadLocalRandom.current().nextInt(100) >= config.PERCENT))) {
         player.sendMessage(config.SHADOW_BAN_MESSAGE);
 
-        type.getQueueMap().put(entry.getKey(), entry.getValue());
+        requeuePlayer(type, entry);
 
         continue;
       }
@@ -106,8 +107,14 @@ public final class QueueConnector {
 
       Map<Integer, Instant> cache = type.getPositionCache().get(entry.getKey());
       if (cache != null) {
-        cache.forEach((position, instant) ->
-          type.getDurationFromPosition().put(position, Duration.between(instant, Instant.now())));
+        Lock durationWriteLock = type.getDurationLock().writeLock();
+        durationWriteLock.lock();
+        try {
+          cache.forEach((position, instant) ->
+            type.getDurationFromPosition().put(position, Duration.between(instant, Instant.now())));
+        } finally {
+          durationWriteLock.unlock();
+        }
       }
 
       player.connect(entry.getValue().targetServer());
@@ -125,14 +132,17 @@ public final class QueueConnector {
     out.writeUTF("xpV2");
 
     List<UUID> uuids = new ArrayList<>(5);
-    Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
-    synchronized (queueMap) {
-      for (UUID uuid : queueMap.keySet()) {
+    Lock readLock = type.getQueueLock().readLock();
+    readLock.lock();
+    try {
+      for (UUID uuid : type.getQueueMap().keySet()) {
         uuids.add(uuid);
         if (uuids.size() == 5) {
           break;
         }
       }
+    } finally {
+      readLock.unlock();
     }
 
     out.writeInt(uuids.size());
@@ -145,9 +155,10 @@ public final class QueueConnector {
   private void indexPositionTime(QueueType type) {
     int position = 0;
 
-    Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
-    synchronized (queueMap) {
-      for (UUID uuid : queueMap.keySet()) {
+    Lock readLock = type.getQueueLock().readLock();
+    readLock.lock();
+    try {
+      for (UUID uuid : type.getQueueMap().keySet()) {
         position++;
         Map<Integer, Instant> list = type.getPositionCache().get(uuid);
         if (list == null) {
@@ -156,13 +167,16 @@ public final class QueueConnector {
           list.put(position, Instant.now());
         }
       }
+    } finally {
+      readLock.unlock();
     }
   }
 
   private Map.Entry<UUID, QueueType.QueuedPlayer> pollNextQueueEntry(QueueType type) {
-    Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
-    synchronized (queueMap) {
-      Iterator<Map.Entry<UUID, QueueType.QueuedPlayer>> iterator = queueMap.entrySet().iterator();
+    Lock writeLock = type.getQueueLock().writeLock();
+    writeLock.lock();
+    try {
+      Iterator<Map.Entry<UUID, QueueType.QueuedPlayer>> iterator = type.getQueueMap().entrySet().iterator();
       if (!iterator.hasNext()) {
         return null;
       }
@@ -170,6 +184,18 @@ public final class QueueConnector {
       Map.Entry<UUID, QueueType.QueuedPlayer> entry = iterator.next();
       iterator.remove();
       return new AbstractMap.SimpleEntry<>(entry);
+    } finally {
+      writeLock.unlock();
+    }
+  }
+
+  private void requeuePlayer(QueueType type, Map.Entry<UUID, QueueType.QueuedPlayer> entry) {
+    Lock writeLock = type.getQueueLock().writeLock();
+    writeLock.lock();
+    try {
+      type.getQueueMap().put(entry.getKey(), entry.getValue());
+    } finally {
+      writeLock.unlock();
     }
   }
 }

@@ -25,6 +25,7 @@ import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 import net.pistonmaster.pistonqueue.shared.config.Config;
 
 import java.util.Locale;
+import java.util.concurrent.locks.Lock;
 
 public final class PistonMOTDPlaceholder implements PlaceholderParser {
   private final Config config;
@@ -37,8 +38,18 @@ public final class PistonMOTDPlaceholder implements PlaceholderParser {
   @Override
   public String parseString(String s) {
     for (QueueType type : config.getAllQueueTypes()) {
-      s = s.replace("%pistonqueue_" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(type.getQueueMap().size()));
+      s = s.replace("%pistonqueue_" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(queueSize(type)));
     }
     return s;
+  }
+
+  private static int queueSize(QueueType type) {
+    Lock readLock = type.getQueueLock().readLock();
+    readLock.lock();
+    try {
+      return type.getQueueMap().size();
+    } finally {
+      readLock.unlock();
+    }
   }
 }

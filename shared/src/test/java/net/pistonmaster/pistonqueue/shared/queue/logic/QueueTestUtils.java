@@ -45,28 +45,34 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.locks.ReentrantLock;
 
 final class QueueTestUtils {
-  private static volatile boolean storageInitialized;
+  private static final AtomicBoolean storageInitialized = new AtomicBoolean();
+  private static final ReentrantLock storageInitLock = new ReentrantLock();
 
   private QueueTestUtils() {
   }
 
   static void ensureStorageToolInitialized() {
-    if (storageInitialized) {
+    if (storageInitialized.get()) {
       return;
     }
-    synchronized (QueueTestUtils.class) {
-      if (storageInitialized) {
+    storageInitLock.lock();
+    try {
+      if (storageInitialized.get()) {
         return;
       }
-      try {
-        Path dir = Files.createTempDirectory("pq-storage-test");
-        StorageTool.setupTool(dir);
-        storageInitialized = true;
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
-      }
+
+      Path dir = Files.createTempDirectory("pq-storage-test");
+      StorageTool.setupTool(dir);
+      storageInitialized.set(true);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    } finally {
+      storageInitLock.unlock();
     }
   }
 
@@ -104,7 +110,7 @@ final class QueueTestUtils {
   }
 
   static Set<String> onlineServers(String... names) {
-    Set<String> servers = Collections.synchronizedSet(new HashSet<>());
+    Set<String> servers = ConcurrentHashMap.newKeySet();
     Collections.addAll(servers, names);
     return servers;
   }

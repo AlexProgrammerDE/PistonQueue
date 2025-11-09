@@ -26,6 +26,7 @@ import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Puts players back into the queue when recovery is enabled and something went wrong with their connection.
@@ -43,11 +44,22 @@ public final class QueueRecoveryHandler {
     QueueGroup group = environment.resolveGroupForType(type);
 
     Optional<String> currentServer = player.getCurrentServer();
-    if (!type.getQueueMap().containsKey(player.getUniqueId())
-      && currentServer.isPresent()
-      && currentServer.get().equals(group.getQueueServer())) {
-      type.getQueueMap().putIfAbsent(player.getUniqueId(), new QueueType.QueuedPlayer(environment.defaultTarget(group), QueueType.QueueReason.RECOVERY));
-      player.sendMessage(config.RECOVERY_MESSAGE);
+    if (currentServer.isPresent() && currentServer.get().equals(group.getQueueServer())) {
+      boolean addedToQueue = false;
+      Lock writeLock = type.getQueueLock().writeLock();
+      writeLock.lock();
+      try {
+        if (!type.getQueueMap().containsKey(player.getUniqueId())) {
+          type.getQueueMap().put(player.getUniqueId(), new QueueType.QueuedPlayer(environment.defaultTarget(group), QueueType.QueueReason.RECOVERY));
+          addedToQueue = true;
+        }
+      } finally {
+        writeLock.unlock();
+      }
+
+      if (addedToQueue) {
+        player.sendMessage(config.RECOVERY_MESSAGE);
+      }
     }
   }
 }
