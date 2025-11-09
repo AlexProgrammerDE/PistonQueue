@@ -1,5 +1,6 @@
 plugins {
     id("pq.platform-conventions")
+    id("xyz.jpenilla.run-velocity") version "3.0.2"
 }
 
 dependencies {
@@ -10,4 +11,10 @@ dependencies {
     implementation("org.bstats:bstats-velocity:3.1.0")
 
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
+}
+
+tasks {
+  runVelocity {
+    velocityVersion("3.4.0-SNAPSHOT")
+  }
 }
