@@ -6,5 +6,6 @@ dependencies {
     api("de.exlll:configlib-yaml:4.6.3")
     compileOnly("net.pistonmaster:pistonmotd-api:5.2.7")
     compileOnly("org.apiguardian:apiguardian-api:1.1.2")
+    api("com.github.spotbugs:spotbugs-annotations:4.8.3")
     compileOnly("com.google.guava:guava:33.5.0-jre")
 }

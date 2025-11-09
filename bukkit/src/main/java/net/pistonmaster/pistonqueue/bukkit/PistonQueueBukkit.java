@@ -28,6 +28,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 @Getter
 public final class PistonQueueBukkit extends JavaPlugin {
@@ -140,8 +141,7 @@ public final class PistonQueueBukkit extends JavaPlugin {
         log.info(ChatColor.BLUE + "You're up to date!");
       }
     } catch (IOException e) {
-      log.severe("Could not check for updates!");
-      e.printStackTrace();
+      log.log(Level.SEVERE, "Could not check for updates!", e);
     }
   }
 

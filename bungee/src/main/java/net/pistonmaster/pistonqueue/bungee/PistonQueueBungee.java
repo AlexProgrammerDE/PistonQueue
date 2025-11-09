@@ -49,6 +49,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.logging.Level;
 
 @Getter
 public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin {
@@ -99,7 +100,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
       }
     } catch (IOException e) {
       error("Could not check for updates!");
-      e.printStackTrace();
+      getLogger().log(Level.SEVERE, "Update check failed", e);
     }
 
     info(ChatColor.BLUE + "Scheduling tasks");

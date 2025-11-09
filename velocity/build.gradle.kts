@@ -11,6 +11,7 @@ dependencies {
     implementation("org.bstats:bstats-velocity:3.1.0")
 
     compileOnly("com.velocitypowered:velocity-api:3.1.1")
+    compileOnly("com.github.spotbugs:spotbugs-annotations:4.8.3")
 }
 
 tasks {

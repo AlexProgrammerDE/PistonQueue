@@ -38,11 +38,11 @@ public class QueueType {
   private final AtomicInteger playersWithTypeInTarget = new AtomicInteger();
   private final String name;
   @Setter
-  private int order;
+  private volatile int order;
   @Setter
   private String permission;
   @Setter
-  private int reservedSlots;
+  private volatile int reservedSlots;
   @Setter
   private List<String> header;
   @Setter

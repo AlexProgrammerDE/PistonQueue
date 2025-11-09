@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Getter
@@ -48,8 +49,7 @@ public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMe
         log.info(ChatColor.BLUE + "You're up to date!");
       }
     } catch (IOException e) {
-      log.severe("Could not check for updates!");
-      e.printStackTrace();
+      log.log(Level.SEVERE, "Could not check for updates!", e);
     }
 
     log.info(ChatColor.BLUE + "Successfully enabled!");

@@ -27,13 +27,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class StorageTool {
+  private static final Logger LOGGER = Logger.getLogger(StorageTool.class.getName());
   private static Path dataDirectory;
   private static StorageData dataConfig;
   private static Path dataFile;
@@ -52,9 +57,9 @@ public final class StorageTool {
     playerName = playerName.toLowerCase(Locale.ROOT);
     manageBan(playerName);
 
-    Map<String, String> bans = dataConfig.getBans();
+    Map<String, String> bans = dataConfig.getMutableBans();
     if (!bans.containsKey(playerName)) {
-      bans.put(playerName, date.toString());
+      bans.put(playerName, date.toInstant().toString());
       saveData();
 
       return true;
@@ -71,7 +76,7 @@ public final class StorageTool {
    */
   public static boolean unShadowBanPlayer(String playerName) {
     playerName = playerName.toLowerCase(Locale.ROOT);
-    if (dataConfig.getBans().remove(playerName) != null) {
+    if (dataConfig.getMutableBans().remove(playerName) != null) {
       saveData();
 
       return true;
@@ -84,24 +89,17 @@ public final class StorageTool {
     playerName = playerName.toLowerCase(Locale.ROOT);
     manageBan(playerName);
 
-    return dataConfig.getBans().containsKey(playerName);
+    return dataConfig.getMutableBans().containsKey(playerName);
   }
 
   private static void manageBan(String playerName) {
     playerName = playerName.toLowerCase(Locale.ROOT);
-    Date now = new Date();
+    Instant now = Instant.now();
 
-    if (dataConfig.getBans().containsKey(playerName)) {
-      SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.of("en"));
-
-      try {
-        Date date = sdf.parse(dataConfig.getBans().get(playerName));
-
-        if (now.after(date) || (now.equals(date))) {
-          unShadowBanPlayer(playerName);
-        }
-      } catch (ParseException e) {
-        e.printStackTrace();
+    if (dataConfig.getMutableBans().containsKey(playerName)) {
+      Instant expiresAt = parseExpiryInstant(dataConfig.getMutableBans().get(playerName));
+      if (expiresAt != null && !now.isBefore(expiresAt)) {
+        unShadowBanPlayer(playerName);
       }
     }
   }
@@ -128,7 +126,7 @@ public final class StorageTool {
         Files.createFile(dataFile);
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.log(Level.SEVERE, "Failed to create data file", e);
     }
   }
 
@@ -179,10 +177,10 @@ public final class StorageTool {
       }
 
       StorageData legacyData = new StorageData();
-      legacyData.getBans().putAll(legacyEntries);
+      legacyData.getMutableBans().putAll(legacyEntries);
       YamlConfigurations.save(dataFile, StorageData.class, legacyData);
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.log(Level.SEVERE, "Failed to convert legacy data", e);
     }
   }
 
@@ -192,7 +190,25 @@ public final class StorageTool {
         YamlConfigurations.save(dataFile, StorageData.class, new StorageData());
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.log(Level.SEVERE, "Failed to initialize storage file", e);
+    }
+  }
+
+  private static Instant parseExpiryInstant(String value) {
+    if (value == null) {
+      return null;
+    }
+    try {
+      return Instant.parse(value);
+    } catch (DateTimeParseException ignored) {
+      try {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.of("en"));
+        Date parsed = sdf.parse(value);
+        return parsed.toInstant();
+      } catch (ParseException e) {
+        LOGGER.log(Level.WARNING, "Failed to parse shadow ban expiry value \"" + value + '"', e);
+        return null;
+      }
     }
   }
 }

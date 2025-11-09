@@ -309,10 +309,24 @@ public abstract class QueueListenerShared {
   }
 
   private QueueGroup defaultGroup() {
-    return currentConfig().getDefaultGroup();
+    QueueGroup group = currentConfig().getDefaultGroup();
+    if (group != null) {
+      return group;
+    }
+    QueueType[] queueTypes = currentConfig().getAllQueueTypes().toArray(new QueueType[0]);
+    return new QueueGroup(
+      "default",
+      currentConfig().QUEUE_SERVER,
+      List.of(currentConfig().TARGET_SERVER),
+      currentConfig().ENABLE_SOURCE_SERVER ? List.of(currentConfig().SOURCE_SERVER) : List.of(),
+      queueTypes
+    );
   }
 
   private QueueGroup resolveGroupForTarget(String server) {
+    if (server == null) {
+      return defaultGroup();
+    }
     return currentConfig().findGroupByTarget(server).orElse(defaultGroup());
   }
 

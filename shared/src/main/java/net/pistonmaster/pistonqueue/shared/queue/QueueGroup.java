@@ -35,7 +35,7 @@ public final class QueueGroup {
     this.queueServer = queueServer;
     this.targetServers = Collections.unmodifiableList(new ArrayList<>(targetServers));
     this.sourceServers = Collections.unmodifiableList(new ArrayList<>(sourceServers));
-    this.queueTypes = queueTypes;
+    this.queueTypes = queueTypes == null ? new QueueType[0] : queueTypes.clone();
   }
 
   public String getName() {
@@ -55,6 +55,6 @@ public final class QueueGroup {
   }
 
   public QueueType[] getQueueTypes() {
-    return queueTypes;
+    return queueTypes.clone();
   }
 }

@@ -21,7 +21,9 @@ package net.pistonmaster.pistonqueue.shared.config;
 
 import de.exlll.configlib.Comment;
 import de.exlll.configlib.Configuration;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -33,6 +35,14 @@ public final class StorageData {
   private Map<String, String> bans = new LinkedHashMap<>();
 
   public Map<String, String> getBans() {
+    return Collections.unmodifiableMap(bans);
+  }
+
+  @SuppressFBWarnings(
+    value = "EI_EXPOSE_REP",
+    justification = "Mutable map required for runtime updates"
+  )
+  public Map<String, String> getMutableBans() {
     return bans;
   }
 }

@@ -69,7 +69,18 @@ public interface PistonQueuePlugin {
 
   default void scheduleTasks(QueueListenerShared queueListener) {
     Config config = getConfiguration();
-    QueueGroup defaultGroup = config.getDefaultGroup();
+    QueueGroup resolvedDefaultGroup = config.getDefaultGroup();
+    if (resolvedDefaultGroup == null) {
+      QueueType[] queueTypes = config.getAllQueueTypes().toArray(new QueueType[0]);
+      resolvedDefaultGroup = new QueueGroup(
+        "default",
+        config.QUEUE_SERVER,
+        Collections.singletonList(config.TARGET_SERVER),
+        config.ENABLE_SOURCE_SERVER ? Collections.singletonList(config.SOURCE_SERVER) : Collections.emptyList(),
+        queueTypes
+      );
+    }
+    final QueueGroup defaultGroup = resolvedDefaultGroup;
     // Sends the position message and updates tab on an interval in chat
     schedule(() -> {
       boolean targetsOnline = defaultGroup.getTargetServers().stream().anyMatch(queueListener.getOnlineServers()::contains);
@@ -112,7 +123,7 @@ public interface PistonQueuePlugin {
       List<String> servers = new ArrayList<>(config.KICK_WHEN_DOWN_SERVERS);
       CountDownLatch latch = new CountDownLatch(servers.size());
       for (String server : servers) {
-        CompletableFuture.runAsync(() -> {
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
           try {
             Optional<ServerInfoWrapper> serverInfoWrapper = getServer(server);
 
@@ -130,18 +141,23 @@ public interface PistonQueuePlugin {
             latch.countDown();
           }
         });
+        future.exceptionally(ex -> {
+          error("Failed to check status of server " + server + ": " + ex.getMessage());
+          return null;
+        });
       }
       try {
         latch.await();
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        Thread.currentThread().interrupt();
+        error("Server status check interrupted: " + e.getMessage());
       }
     }, 500, config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
   }
 
   default void sendMessage(QueueType queue, MessageType type) {
     Config config = getConfiguration();
-    AtomicInteger position = new AtomicInteger();
+    int position = 0;
     for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
       Optional<PlayerWrapper> player = getPlayer(entry.getKey());
       if (player.isEmpty()) {
@@ -149,7 +165,7 @@ public interface PistonQueuePlugin {
       }
 
       String chatMessage = config.QUEUE_POSITION
-        .replace("%position%", String.valueOf(position.incrementAndGet()))
+        .replace("%position%", String.valueOf(++position))
         .replace("%total%", String.valueOf(queue.getQueueMap().size()));
 
       player.get().sendMessage(type, chatMessage);
@@ -157,16 +173,19 @@ public interface PistonQueuePlugin {
   }
 
   default void updateTab(QueueType queue) {
-    AtomicInteger position = new AtomicInteger();
+    int position = 0;
 
     for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-      getPlayer(entry.getKey()).ifPresent(player -> {
-        int incrementedPosition = position.incrementAndGet();
+      Optional<PlayerWrapper> optionalPlayer = getPlayer(entry.getKey());
+      if (optionalPlayer.isEmpty()) {
+        continue;
+      }
+      PlayerWrapper player = optionalPlayer.get();
+      int incrementedPosition = ++position;
 
-        player.sendPlayerList(
-          queue.getHeader().stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()),
-          queue.getFooter().stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()));
-      });
+      player.sendPlayerList(
+        queue.getHeader().stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()),
+        queue.getFooter().stream().map(str -> replacePosition(str, incrementedPosition, queue)).collect(Collectors.toList()));
     }
   }
 
@@ -266,7 +285,7 @@ public interface PistonQueuePlugin {
 
       loadConfig(file);
     } catch (IOException e) {
-      e.printStackTrace();
+      error("Failed to process config: " + e.getMessage());
     }
   }
 

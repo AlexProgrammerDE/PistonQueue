@@ -22,14 +22,30 @@ package net.pistonmaster.pistonqueue.shared.config;
 import de.exlll.configlib.Comment;
 import de.exlll.configlib.Configuration;
 import de.exlll.configlib.Ignore;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.pistonmaster.pistonqueue.shared.queue.BanType;
 import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 @Configuration
+@SuppressFBWarnings(
+  value = "MS_PKGPROTECT",
+  justification = "Fields intentionally public for ConfigLib serialization compatibility"
+)
 public final class Config {
   @Comment("Placeholder for %server_name%")
   public String SERVER_NAME = "&cexample.org";
@@ -154,7 +170,7 @@ public final class Config {
   private final Map<String, QueueGroup> queueGroupsByTarget = new HashMap<>();
 
   @Ignore
-  private final Map<QueueType, QueueGroup> queueGroupByType = new IdentityHashMap<>();
+  private final IdentityHashMap<QueueType, QueueGroup> queueGroupByType = new IdentityHashMap<>();
 
   @Ignore
   private final List<QueueType> allQueueTypes = new ArrayList<>();
@@ -266,8 +282,8 @@ public final class Config {
       new ArrayList<>(configuration.getFooter()));
   }
 
-  private static LinkedHashMap<String, QueueTypeConfiguration> defaultQueueTypes() {
-    LinkedHashMap<String, QueueTypeConfiguration> defaults = new LinkedHashMap<>();
+  private static Map<String, QueueTypeConfiguration> defaultQueueTypes() {
+    Map<String, QueueTypeConfiguration> defaults = new LinkedHashMap<>();
     defaults.put("REGULAR", createQueueType(
       3,
       50,
@@ -395,16 +411,21 @@ public final class Config {
     queueGroupByType.clear();
     allQueueTypes.clear();
 
+    QueueType[] effectiveTypes = QUEUE_TYPES;
+    if (effectiveTypes == null) {
+      effectiveTypes = new QueueType[0];
+      QUEUE_TYPES = effectiveTypes;
+    }
+
     QueueGroup defaultGroup = new QueueGroup(
       "default",
       QUEUE_SERVER,
       Collections.singletonList(TARGET_SERVER),
       ENABLE_SOURCE_SERVER ? Collections.singletonList(SOURCE_SERVER) : Collections.emptyList(),
-      QUEUE_TYPES
+      effectiveTypes
     );
     registerGroup(defaultGroup);
     defaultQueueGroup = defaultGroup;
-    QUEUE_TYPES = defaultGroup.getQueueTypes();
   }
 
   private void registerGroup(QueueGroup group) {

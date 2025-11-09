@@ -26,7 +26,24 @@ import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapper;
 import net.pistonmaster.pistonqueue.shared.chat.TextColorWrapper;
 import net.pistonmaster.pistonqueue.shared.chat.TextDecorationWrapper;
 
-public record VelocityComponentWrapperImpl(Component mainComponent) implements ComponentWrapper {
+public final class VelocityComponentWrapperImpl implements ComponentWrapper {
+  private final Component mainComponent;
+
+  public VelocityComponentWrapperImpl(Component mainComponent) {
+    this.mainComponent = copyComponent(mainComponent);
+  }
+
+  Component mainComponent() {
+    return mainComponent;
+  }
+
+  private static Component copyComponent(Component component) {
+    if (component == null) {
+      return Component.empty();
+    }
+    return Component.empty().append(component);
+  }
+
   @Override
   public ComponentWrapper append(String text) {
     return new VelocityComponentWrapperImpl(mainComponent.append(Component.text(text)));
@@ -34,7 +51,7 @@ public record VelocityComponentWrapperImpl(Component mainComponent) implements C
 
   @Override
   public ComponentWrapper append(ComponentWrapper component) {
-    return new VelocityComponentWrapperImpl(mainComponent.append(((VelocityComponentWrapperImpl) component).mainComponent()));
+    return new VelocityComponentWrapperImpl(mainComponent.append(((VelocityComponentWrapperImpl) component).mainComponent));
   }
 
   @Override

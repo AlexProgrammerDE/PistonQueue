@@ -34,8 +34,8 @@ import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 import java.util.*;
 
 public interface MainCommandShared {
-  String[] commands = {"help", "version", "stats"};
-  String[] adminCommands = {"slotstats", "reload", "shadowban", "unshadowban"};
+  List<String> commands = List.of("help", "version", "stats");
+  List<String> adminCommands = List.of("slotstats", "reload", "shadowban", "unshadowban");
 
   default void onCommand(CommandSourceWrapper sender, String[] args, PistonQueuePlugin plugin) {
     Config config = plugin.getConfiguration();
@@ -111,8 +111,6 @@ public interface MainCommandShared {
         }
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-
         if (args[2].toLowerCase(Locale.ROOT).endsWith("d")) {
           int d = Integer.parseInt(args[2].toLowerCase(Locale.ROOT).replace("d", ""));
 
@@ -249,9 +247,9 @@ public interface MainCommandShared {
 
       Collections.sort(completions);
 
-      return completions;
+      return List.copyOf(completions);
     } else {
-      return Collections.emptyList();
+      return List.of();
     }
   }
 

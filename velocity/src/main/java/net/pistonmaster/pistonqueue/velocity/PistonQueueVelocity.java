@@ -120,7 +120,7 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
       }
     } catch (IOException e) {
       error("Could not check for updates!");
-      e.printStackTrace();
+      logger.error("Update check failed", e);
     }
 
     info("Scheduling tasks");
