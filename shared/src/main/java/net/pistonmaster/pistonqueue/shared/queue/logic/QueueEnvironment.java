@@ -19,6 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.shared.queue.logic;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
@@ -44,6 +45,7 @@ public final class QueueEnvironment {
     this.onlineServers = Objects.requireNonNull(onlineServers, "onlineServers");
   }
 
+  @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Plugin API is immutable for consumers")
   public PistonQueuePlugin plugin() {
     return plugin;
   }
@@ -52,6 +54,7 @@ public final class QueueEnvironment {
     return configSupplier.get();
   }
 
+  @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Caller needs live view for synchronization")
   public Set<String> onlineServers() {
     return onlineServers;
   }
