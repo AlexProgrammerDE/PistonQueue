@@ -21,6 +21,8 @@ package net.pistonmaster.pistonqueue.shared.queue.logic;
 
 import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.config.Config;
+import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
+import net.pistonmaster.pistonqueue.shared.events.PQPreLoginEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
 import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
@@ -332,6 +334,101 @@ final class QueueTestUtils {
     public String getName() {
       return name;
     }
+  }
+
+  static final class TestKickEvent implements PQKickedFromServerEvent {
+    private final TestPlayer player;
+    private final String kickedFrom;
+    private final String kickReason;
+    private String cancelServer;
+    private String kickMessage;
+    private boolean willDisconnect = true;
+
+    TestKickEvent(TestPlayer player, String kickedFrom, String kickReason) {
+      this.player = player;
+      this.kickedFrom = kickedFrom;
+      this.kickReason = kickReason;
+    }
+
+    @Override
+    public void setCancelServer(String server) {
+      this.cancelServer = server;
+    }
+
+    @Override
+    public void setKickMessage(String message) {
+      this.kickMessage = message;
+    }
+
+    @Override
+    public TestPlayer getPlayer() {
+      return player;
+    }
+
+    @Override
+    public String getKickedFrom() {
+      return kickedFrom;
+    }
+
+    @Override
+    public Optional<String> getKickReason() {
+      return Optional.ofNullable(kickReason);
+    }
+
+    @Override
+    public boolean willDisconnect() {
+      return willDisconnect;
+    }
+
+    public void setWillDisconnect(boolean willDisconnect) {
+      this.willDisconnect = willDisconnect;
+    }
+
+    public Optional<String> getCancelServer() {
+      return Optional.ofNullable(cancelServer);
+    }
+
+    public Optional<String> getKickMessage() {
+      return Optional.ofNullable(kickMessage);
+    }
+  }
+
+  static TestKickEvent kickEvent(TestPlayer player, String kickedFrom, String kickReason) {
+    return new TestKickEvent(player, kickedFrom, kickReason);
+  }
+
+  static final class TestPreLoginEvent implements PQPreLoginEvent {
+    private final String username;
+    private boolean cancelled;
+    private String cancelReason;
+
+    TestPreLoginEvent(String username) {
+      this.username = username;
+    }
+
+    @Override
+    public String getUsername() {
+      return username;
+    }
+
+    @Override
+    public boolean isCancelled() {
+      return cancelled;
+    }
+
+    @Override
+    public void setCancelled(String reason) {
+      this.cancelled = true;
+      this.cancelReason = reason;
+    }
+
+    public Optional<String> getCancelReason() {
+      return Optional.ofNullable(cancelReason);
+    }
+  }
+
+  static TestPreLoginEvent preLoginEvent(String username) {
+    return new TestPreLoginEvent(username);
   }
 
   static final class TestPreConnectEvent implements PQServerPreConnectEvent {

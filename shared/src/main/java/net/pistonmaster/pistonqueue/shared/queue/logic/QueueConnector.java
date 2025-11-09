@@ -60,14 +60,10 @@ public final class QueueConnector {
 
   public void connectPlayers(QueueGroup group, QueueType type) {
     Config config = environment.config();
-    int freeSlots = availabilityCalculator.getFreeSlots(type);
+    int freeSlots = calculateEffectiveFreeSlots(config, type);
 
     if (freeSlots <= 0) {
       return;
-    }
-
-    if (freeSlots > config.MAX_PLAYERS_PER_MOVE) {
-      freeSlots = config.MAX_PLAYERS_PER_MOVE;
     }
 
     int movesLeft = freeSlots;
@@ -91,34 +87,15 @@ public final class QueueConnector {
       }
       PlayerWrapper player = optional.get();
 
-      player.sendMessage(config.JOINING_TARGET_SERVER);
-      player.resetPlayerList();
-
-      if (shadowBanService.isShadowBanned(player.getName())
-        && (config.SHADOW_BAN_TYPE == BanType.LOOP
-        || (config.SHADOW_BAN_TYPE == BanType.PERCENT && ThreadLocalRandom.current().nextInt(100) >= config.PERCENT))) {
+      if (shouldSkipPlayerDueToShadowBan(config, player)) {
         player.sendMessage(config.SHADOW_BAN_MESSAGE);
-
         requeuePlayer(type, entry);
-
         continue;
       }
 
-      indexPositionTime(type);
-
-      Map<Integer, Instant> cache = type.getPositionCache().get(entry.getKey());
-      if (cache != null) {
-        Lock durationWriteLock = type.getDurationLock().writeLock();
-        durationWriteLock.lock();
-        try {
-          cache.forEach((position, instant) ->
-            type.getDurationFromPosition().put(position, Duration.between(instant, Instant.now())));
-        } finally {
-          durationWriteLock.unlock();
-        }
-      }
-
-      player.connect(entry.getValue().targetServer());
+      preparePlayerForConnection(config, player);
+      recordPositionDuration(type, entry.getKey());
+      connectPlayer(player, entry.getValue().targetServer());
       type.getActiveTransfers().remove(entry.getKey());
 
       movesLeft--;
@@ -127,6 +104,48 @@ public final class QueueConnector {
     if (config.SEND_XP_SOUND) {
       sendXPSoundToQueueType(group, type);
     }
+  }
+
+  int calculateEffectiveFreeSlots(Config config, QueueType type) {
+    int freeSlots = availabilityCalculator.getFreeSlots(type);
+    if (freeSlots <= 0) {
+      return 0;
+    }
+    return Math.min(freeSlots, config.MAX_PLAYERS_PER_MOVE);
+  }
+
+  boolean shouldSkipPlayerDueToShadowBan(Config config, PlayerWrapper player) {
+    if (!shadowBanService.isShadowBanned(player.getName())) {
+      return false;
+    }
+
+    return config.SHADOW_BAN_TYPE == BanType.LOOP
+      || (config.SHADOW_BAN_TYPE == BanType.PERCENT && ThreadLocalRandom.current().nextInt(100) >= config.PERCENT);
+  }
+
+  void preparePlayerForConnection(Config config, PlayerWrapper player) {
+    player.sendMessage(config.JOINING_TARGET_SERVER);
+    player.resetPlayerList();
+  }
+
+  void recordPositionDuration(QueueType type, UUID playerId) {
+    indexPositionTime(type);
+
+    Map<Integer, Instant> cache = type.getPositionCache().get(playerId);
+    if (cache != null) {
+      Lock durationWriteLock = type.getDurationLock().writeLock();
+      durationWriteLock.lock();
+      try {
+        cache.forEach((position, instant) ->
+          type.getDurationFromPosition().put(position, Duration.between(instant, Instant.now())));
+      } finally {
+        durationWriteLock.unlock();
+      }
+    }
+  }
+
+  void connectPlayer(PlayerWrapper player, String targetServer) {
+    player.connect(targetServer);
   }
 
   private void sendXPSoundToQueueType(QueueGroup group, QueueType type) {

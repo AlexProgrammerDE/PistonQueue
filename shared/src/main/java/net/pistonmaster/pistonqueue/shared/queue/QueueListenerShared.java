@@ -25,6 +25,7 @@ import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQPreLoginEvent;
 import net.pistonmaster.pistonqueue.shared.events.PQServerPreConnectEvent;
 import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
+import net.pistonmaster.pistonqueue.shared.queue.logic.KickEventHandler;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueueAvailabilityCalculator;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueueCleaner;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueueConnector;
@@ -33,8 +34,10 @@ import net.pistonmaster.pistonqueue.shared.queue.logic.QueueEnvironment;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueueMoveProcessor;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueuePlacementCoordinator;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueueRecoveryHandler;
+import net.pistonmaster.pistonqueue.shared.queue.logic.ShadowBanKickHandler;
 import net.pistonmaster.pistonqueue.shared.queue.logic.ShadowBanService;
 import net.pistonmaster.pistonqueue.shared.queue.logic.StorageShadowBanService;
+import net.pistonmaster.pistonqueue.shared.queue.logic.UsernameValidator;
 import net.pistonmaster.pistonqueue.shared.utils.StorageTool;
 import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
@@ -50,10 +53,18 @@ public abstract class QueueListenerShared {
   private final QueueEnvironment queueEnvironment;
   private final QueuePlacementCoordinator queuePlacementCoordinator;
   private final QueueMoveProcessor queueMoveProcessor;
+  private final UsernameValidator usernameValidator;
+  private final ShadowBanKickHandler shadowBanKickHandler;
+  private final KickEventHandler kickEventHandler;
 
   protected QueueListenerShared(PistonQueuePlugin plugin) {
     this.plugin = plugin;
     this.queueEnvironment = new QueueEnvironment(plugin, this::currentConfig, onlineServers);
+    Config config = currentConfig();
+    this.usernameValidator = new UsernameValidator(config);
+    this.shadowBanKickHandler = new ShadowBanKickHandler(config);
+    this.kickEventHandler = new KickEventHandler(config, queueEnvironment);
+
     QueueAvailabilityCalculator availabilityCalculator = new QueueAvailabilityCalculator();
     QueueEntryFactory queueEntryFactory = new QueueEntryFactory(queueEnvironment);
     this.queuePlacementCoordinator = new QueuePlacementCoordinator(queueEnvironment, availabilityCalculator, queueEntryFactory);
@@ -65,53 +76,15 @@ public abstract class QueueListenerShared {
   }
 
   protected void onPreLogin(PQPreLoginEvent event) {
-    if (event.isCancelled())
-      return;
-
-    Config config = currentConfig();
-    if (config.ENABLE_USERNAME_REGEX && !event.getUsername().matches(config.USERNAME_REGEX)) {
-      event.setCancelled(config.USERNAME_REGEX_MESSAGE.replace("%regex%", config.USERNAME_REGEX));
-    }
+    usernameValidator.validateUsername(event);
   }
 
   protected void onPostLogin(PlayerWrapper player) {
-    Config config = currentConfig();
-    if (StorageTool.isShadowBanned(player.getName()) && config.SHADOW_BAN_TYPE == BanType.KICK) {
-      player.disconnect(config.SERVER_DOWN_KICK_MESSAGE);
-    }
+    shadowBanKickHandler.handleShadowBanKick(player);
   }
 
   protected void onKick(PQKickedFromServerEvent event) {
-    Config config = currentConfig();
-    QueueGroup group = queueEnvironment.resolveGroupForTarget(event.getKickedFrom());
-    boolean kickedFromProtectedTarget = group.getTargetServers().contains(event.getKickedFrom());
-    if (config.IF_TARGET_DOWN_SEND_TO_QUEUE && kickedFromProtectedTarget) {
-      String kickReason = event.getKickReason()
-        .map(s -> s.toLowerCase(Locale.ROOT))
-        .orElse("unknown reason");
-
-      config.DOWN_WORD_LIST.stream()
-        .filter(word -> kickReason.contains(word.toLowerCase(Locale.ROOT)))
-        .findFirst()
-        .ifPresent(word -> {
-          event.setCancelServer(group.getQueueServer());
-
-          event.getPlayer().sendMessage(config.IF_TARGET_DOWN_SEND_TO_QUEUE_MESSAGE);
-
-          QueueType queueType = config.getQueueType(event.getPlayer());
-          Lock writeLock = queueType.getQueueLock().writeLock();
-          writeLock.lock();
-          try {
-            queueType.getQueueMap().put(event.getPlayer().getUniqueId(), new QueueType.QueuedPlayer(event.getKickedFrom(), QueueType.QueueReason.SERVER_DOWN));
-          } finally {
-            writeLock.unlock();
-          }
-        });
-    }
-
-    if (config.ENABLE_KICK_MESSAGE && event.willDisconnect()) {
-      event.setKickMessage(config.KICK_MESSAGE);
-    }
+    kickEventHandler.handleKick(event);
   }
 
   protected void onPreConnect(PQServerPreConnectEvent event) {
