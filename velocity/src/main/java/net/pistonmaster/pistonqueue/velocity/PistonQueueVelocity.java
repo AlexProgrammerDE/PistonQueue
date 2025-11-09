@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CancellationException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -209,6 +210,7 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
       }
 
       @Override
+      @SuppressWarnings("FutureReturnValueIgnored")
       public void connect(String server) {
         Optional<RegisteredServer> optional = proxyServer.getServer(server);
 
@@ -217,7 +219,13 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
           return;
         }
 
-        player.createConnectionRequest(optional.get()).connect();
+        RegisteredServer target = optional.get();
+        CompletableFuture<?> future = player.createConnectionRequest(target).connect();
+        future.whenComplete((result, throwable) -> {
+          if (throwable != null) {
+            logger.error("Failed to connect {} to {}", player.getUsername(), target.getServerInfo().getName(), throwable);
+          }
+        });
       }
 
       @Override

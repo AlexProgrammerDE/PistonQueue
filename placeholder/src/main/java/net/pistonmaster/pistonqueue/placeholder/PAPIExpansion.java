@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 public final class PAPIExpansion extends PlaceholderExpansion {
@@ -46,5 +47,10 @@ public final class PAPIExpansion extends PlaceholderExpansion {
     }
 
     return null;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(getIdentifier());
   }
 }

@@ -42,7 +42,7 @@ public final class MainCommand extends Command implements TabExecutor, MainComma
     onCommand(new CommandSourceWrapper() {
       @Override
       public void sendMessage(ComponentWrapper component) {
-        sender.sendMessage(((BungeeComponentWrapperImpl) component).mainComponent().create());
+        sender.sendMessage(((BungeeComponentWrapperImpl) component).toBaseComponents());
       }
 
       @Override

@@ -194,11 +194,28 @@ public abstract class QueueListenerShared {
 
   private void cleanQueueForGroup(QueueGroup group) {
     for (QueueType type : group.getQueueTypes()) {
-      for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
-        Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
+      Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
+      List<UUID> queueSnapshot;
+      synchronized (queueMap) {
+        queueSnapshot = new ArrayList<>(queueMap.keySet());
+      }
+
+      if (queueSnapshot.isEmpty()) {
+        continue;
+      }
+
+      List<UUID> staleEntries = new ArrayList<>();
+      for (UUID uuid : queueSnapshot) {
+        Optional<PlayerWrapper> player = plugin.getPlayer(uuid);
         Optional<String> optionalTarget = player.flatMap(PlayerWrapper::getCurrentServer);
         if (optionalTarget.isEmpty() || !optionalTarget.get().equals(group.getQueueServer())) {
-          type.getQueueMap().remove(entry.getKey());
+          staleEntries.add(uuid);
+        }
+      }
+
+      if (!staleEntries.isEmpty()) {
+        synchronized (queueMap) {
+          staleEntries.forEach(queueMap::remove);
         }
       }
     }
@@ -227,17 +244,23 @@ public abstract class QueueListenerShared {
       return;
     }
 
-    if (freeSlots > config.MAX_PLAYERS_PER_MOVE)
+    if (freeSlots > config.MAX_PLAYERS_PER_MOVE) {
       freeSlots = config.MAX_PLAYERS_PER_MOVE;
+    }
 
-    for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
+    int movesLeft = freeSlots;
+
+    while (movesLeft > 0) {
+      Map.Entry<UUID, QueueType.QueuedPlayer> entry = pollNextQueueEntry(type);
+      if (entry == null) {
+        break;
+      }
+
       Optional<PlayerWrapper> optional = plugin.getPlayer(entry.getKey());
       if (optional.isEmpty()) {
         continue;
       }
       PlayerWrapper player = optional.get();
-
-      type.getQueueMap().remove(entry.getKey());
 
       player.sendMessage(config.JOINING_TARGET_SERVER);
       player.resetPlayerList();
@@ -262,9 +285,7 @@ public abstract class QueueListenerShared {
 
       player.connect(entry.getValue().targetServer());
 
-      if (--freeSlots <= 0) {
-        break;
-      }
+      movesLeft--;
     }
 
     if (config.SEND_XP_SOUND) {
@@ -276,10 +297,16 @@ public abstract class QueueListenerShared {
     ByteArrayDataOutput out = ByteStreams.newDataOutput();
     out.writeUTF("xpV2");
 
-    List<UUID> uuids = type.getQueueMap().keySet()
-      .stream()
-      .limit(5)
-      .toList();
+    List<UUID> uuids = new ArrayList<>(5);
+    Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
+    synchronized (queueMap) {
+      for (UUID uuid : queueMap.keySet()) {
+        uuids.add(uuid);
+        if (uuids.size() == 5) {
+          break;
+        }
+      }
+    }
 
     out.writeInt(uuids.size());
     uuids.forEach(id -> out.writeUTF(id.toString()));
@@ -291,13 +318,14 @@ public abstract class QueueListenerShared {
   private void indexPositionTime(QueueType type) {
     int position = 0;
 
-    for (UUID uuid : new LinkedHashMap<>(type.getQueueMap()).keySet()) {
-      position++;
-      Map<Integer, Instant> list = type.getPositionCache().get(uuid);
-      if (list == null) {
-        type.getPositionCache().put(uuid, new HashMap<>(Collections.singletonMap(position, Instant.now())));
-      } else {
-        if (!list.containsKey(position)) {
+    Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
+    synchronized (queueMap) {
+      for (UUID uuid : queueMap.keySet()) {
+        position++;
+        Map<Integer, Instant> list = type.getPositionCache().get(uuid);
+        if (list == null) {
+          type.getPositionCache().put(uuid, new HashMap<>(Collections.singletonMap(position, Instant.now())));
+        } else if (!list.containsKey(position)) {
           list.put(position, Instant.now());
         }
       }
@@ -344,5 +372,19 @@ public abstract class QueueListenerShared {
 
   private boolean isGroupTargetOnline(QueueGroup group) {
     return group.getTargetServers().stream().anyMatch(onlineServers::contains);
+  }
+
+  private Map.Entry<UUID, QueueType.QueuedPlayer> pollNextQueueEntry(QueueType type) {
+    Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
+    synchronized (queueMap) {
+      Iterator<Map.Entry<UUID, QueueType.QueuedPlayer>> iterator = queueMap.entrySet().iterator();
+      if (!iterator.hasNext()) {
+        return null;
+      }
+
+      Map.Entry<UUID, QueueType.QueuedPlayer> entry = iterator.next();
+      iterator.remove();
+      return new AbstractMap.SimpleEntry<>(entry);
+    }
   }
 }

@@ -157,26 +157,32 @@ public interface PistonQueuePlugin {
 
   default void sendMessage(QueueType queue, MessageType type) {
     Config config = getConfiguration();
+    Map<UUID, QueueType.QueuedPlayer> queueMap = queue.getQueueMap();
+    List<UUID> queueOrder = snapshotQueueOrder(queueMap);
+
+    int totalQueued = queueOrder.size();
     int position = 0;
-    for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-      Optional<PlayerWrapper> player = getPlayer(entry.getKey());
+    for (UUID uuid : queueOrder) {
+      Optional<PlayerWrapper> player = getPlayer(uuid);
       if (player.isEmpty()) {
         continue;
       }
 
       String chatMessage = config.QUEUE_POSITION
         .replace("%position%", String.valueOf(++position))
-        .replace("%total%", String.valueOf(queue.getQueueMap().size()));
+        .replace("%total%", String.valueOf(totalQueued));
 
       player.get().sendMessage(type, chatMessage);
     }
   }
 
   default void updateTab(QueueType queue) {
-    int position = 0;
+    Map<UUID, QueueType.QueuedPlayer> queueMap = queue.getQueueMap();
+    List<UUID> queueOrder = snapshotQueueOrder(queueMap);
 
-    for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(queue.getQueueMap()).entrySet()) {
-      Optional<PlayerWrapper> optionalPlayer = getPlayer(entry.getKey());
+    int position = 0;
+    for (UUID uuid : queueOrder) {
+      Optional<PlayerWrapper> optionalPlayer = getPlayer(uuid);
       if (optionalPlayer.isEmpty()) {
         continue;
       }
@@ -296,5 +302,11 @@ public interface PistonQueuePlugin {
       builder -> builder.setNameFormatter(NameFormatters.IDENTITY)
     );
     getConfiguration().copyFrom(loaded);
+  }
+
+  private static List<UUID> snapshotQueueOrder(Map<UUID, QueueType.QueuedPlayer> queueMap) {
+    synchronized (queueMap) {
+      return new ArrayList<>(queueMap.keySet());
+    }
   }
 }

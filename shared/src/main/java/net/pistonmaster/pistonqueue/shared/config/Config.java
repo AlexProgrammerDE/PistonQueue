@@ -43,7 +43,7 @@ import java.util.Optional;
 
 @Configuration
 @SuppressFBWarnings(
-  value = "MS_PKGPROTECT",
+  value = "PA_PUBLIC_PRIMITIVE_ATTRIBUTE",
   justification = "Fields intentionally public for ConfigLib serialization compatibility"
 )
 public final class Config {

@@ -20,36 +20,64 @@
 package net.pistonmaster.pistonqueue.bungee.commands;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapper;
 import net.pistonmaster.pistonqueue.shared.chat.TextColorWrapper;
 import net.pistonmaster.pistonqueue.shared.chat.TextDecorationWrapper;
 
-public record BungeeComponentWrapperImpl(ComponentBuilder mainComponent) implements ComponentWrapper {
+final class BungeeComponentWrapperImpl implements ComponentWrapper {
+  private final ComponentBuilder componentBuilder;
+
+  BungeeComponentWrapperImpl(ComponentBuilder componentBuilder) {
+    this.componentBuilder = copyBuilder(componentBuilder);
+  }
+
+  private BungeeComponentWrapperImpl(ComponentBuilder componentBuilder, boolean trusted) {
+    this.componentBuilder = trusted ? componentBuilder : copyBuilder(componentBuilder);
+  }
+
+  private static ComponentBuilder copyBuilder(ComponentBuilder source) {
+    return new ComponentBuilder(source);
+  }
+
+  BaseComponent[] toBaseComponents() {
+    return componentBuilder.create();
+  }
+
   @Override
   public ComponentWrapper append(String text) {
-    return new BungeeComponentWrapperImpl(mainComponent.append(text));
+    ComponentBuilder newBuilder = copyBuilder(componentBuilder);
+    newBuilder.append(text);
+    return new BungeeComponentWrapperImpl(newBuilder, true);
   }
 
   @Override
   public ComponentWrapper append(ComponentWrapper component) {
-    return new BungeeComponentWrapperImpl(mainComponent.append(((BungeeComponentWrapperImpl) component).mainComponent().create()));
+    ComponentBuilder newBuilder = copyBuilder(componentBuilder);
+    BungeeComponentWrapperImpl other = (BungeeComponentWrapperImpl) component;
+    newBuilder.append(other.toBaseComponents());
+    return new BungeeComponentWrapperImpl(newBuilder, true);
   }
 
   @Override
   public ComponentWrapper color(TextColorWrapper color) {
-    return new BungeeComponentWrapperImpl(mainComponent.color(switch (color) {
+    ComponentBuilder newBuilder = copyBuilder(componentBuilder);
+    newBuilder.color(switch (color) {
       case GOLD -> ChatColor.GOLD;
       case RED -> ChatColor.RED;
       case DARK_BLUE -> ChatColor.DARK_BLUE;
       case GREEN -> ChatColor.GREEN;
-    }));
+    });
+    return new BungeeComponentWrapperImpl(newBuilder, true);
   }
 
   @Override
   public ComponentWrapper decorate(TextDecorationWrapper decoration) {
-    return new BungeeComponentWrapperImpl(switch (decoration) {
-      case BOLD -> mainComponent.bold(true);
-    });
+    ComponentBuilder newBuilder = copyBuilder(componentBuilder);
+    if (decoration == TextDecorationWrapper.BOLD) {
+      newBuilder.bold(true);
+    }
+    return new BungeeComponentWrapperImpl(newBuilder, true);
   }
 }

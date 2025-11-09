@@ -39,7 +39,7 @@ import org.bukkit.scoreboard.Team;
 
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Level;
 
 @RequiredArgsConstructor
@@ -190,6 +190,6 @@ public final class ServerListener implements Listener {
   }
 
   public int getRandomNumberUsingNextInt(int min, int max) {
-    return new Random().nextInt(max - min) + min;
+    return ThreadLocalRandom.current().nextInt(min, max);
   }
 }
