@@ -31,6 +31,7 @@ import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
 import net.pistonmaster.pistonqueue.shared.chat.MessageType;
+import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
 import net.pistonmaster.pistonqueue.shared.utils.StorageTool;
@@ -65,6 +66,7 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
   private final PluginContainer pluginContainer;
   @Getter
   private final QueueListenerVelocity queueListenerVelocity = new QueueListenerVelocity(this);
+  private final Config configuration = new Config();
   private final Metrics.Factory metricsFactory;
 
   @Inject
@@ -87,7 +89,7 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
     info("Looking for hooks");
     if (proxyServer.getPluginManager().getPlugin("pistonmotd").isPresent()) {
       info("Hooking into PistonMOTD");
-      new PistonMOTDPlaceholder();
+      new PistonMOTDPlaceholder(configuration);
     }
 
     info("Registering plugin messaging channel");
@@ -170,6 +172,11 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
     return pluginContainer.getDescription().getVersion().orElse("unknown");
   }
 
+  @Override
+  public Config getConfiguration() {
+    return configuration;
+  }
+
   private ServerInfoWrapper wrapServer(RegisteredServer server) {
     return new ServerInfoWrapper() {
       @Override
@@ -229,14 +236,14 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
         }
 
         switch (type) {
-          case CHAT -> player.sendMessage(ChatUtils.parseToComponent(message));
-          case ACTION_BAR -> player.sendActionBar(ChatUtils.parseToComponent(message));
+          case CHAT -> player.sendMessage(ChatUtils.parseToComponent(configuration, message));
+          case ACTION_BAR -> player.sendActionBar(ChatUtils.parseToComponent(configuration, message));
         }
       }
 
       @Override
       public void sendPlayerList(List<String> header, List<String> footer) {
-        player.sendPlayerListHeaderAndFooter(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+        player.sendPlayerListHeaderAndFooter(ChatUtils.parseTab(configuration, header), ChatUtils.parseTab(configuration, footer));
       }
 
       @Override
@@ -256,7 +263,7 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
 
       @Override
       public void disconnect(String message) {
-        player.disconnect(ChatUtils.parseToComponent(message));
+        player.disconnect(ChatUtils.parseToComponent(configuration, message));
       }
     };
   }

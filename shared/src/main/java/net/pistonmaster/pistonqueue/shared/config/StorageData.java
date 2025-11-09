@@ -19,8 +19,20 @@
  */
 package net.pistonmaster.pistonqueue.shared.config;
 
-public final class ConfigOutdatedException extends Exception {
-  public ConfigOutdatedException(String message) {
-    super(message + " is missing in the config. Please remove the old config and restart the proxy to get the newest one.");
+import de.exlll.configlib.Comment;
+import de.exlll.configlib.Configuration;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+@Configuration
+public final class StorageData {
+  @Comment({
+    "Shadow banned players mapped to the date when they should be unbanned."
+  })
+  private Map<String, String> bans = new LinkedHashMap<>();
+
+  public Map<String, String> getBans() {
+    return bans;
   }
 }

@@ -37,9 +37,9 @@ public final class SharedChatUtils {
     return str.replace("%position%", String.valueOf(position)).replace("%wait%", format);
   }
 
-  public static String parseText(String text) {
-    text = text.replace("%server_name%", Config.SERVER_NAME);
-    for (QueueType type : Config.QUEUE_TYPES) {
+  public static String parseText(Config config, String text) {
+    text = text.replace("%server_name%", config.SERVER_NAME);
+    for (QueueType type : config.QUEUE_TYPES) {
       text = text.replace("%" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(type.getQueueMap().size()));
     }
     text = text.replace("%position%", "None");

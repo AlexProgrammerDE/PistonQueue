@@ -21,19 +21,22 @@ package net.pistonmaster.pistonqueue.shared.hooks;
 
 import net.pistonmaster.pistonmotd.api.PlaceholderParser;
 import net.pistonmaster.pistonmotd.api.PlaceholderUtil;
-import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
+import net.pistonmaster.pistonqueue.shared.config.Config;
 
 import java.util.Locale;
 
 public final class PistonMOTDPlaceholder implements PlaceholderParser {
-  public PistonMOTDPlaceholder() {
+  private final Config config;
+
+  public PistonMOTDPlaceholder(Config config) {
+    this.config = config;
     PlaceholderUtil.registerParser(this);
   }
 
   @Override
   public String parseString(String s) {
-    for (QueueType type : Config.QUEUE_TYPES) {
+    for (QueueType type : config.QUEUE_TYPES) {
       s = s.replace("%pistonqueue_" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(type.getQueueMap().size()));
     }
     return s;

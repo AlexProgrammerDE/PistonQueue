@@ -3,7 +3,8 @@ plugins {
 }
 
 dependencies {
-    implementation("org.spongepowered:configurate-yaml:4.2.0")
+    api("de.exlll:configlib-yaml:4.6.3")
     compileOnly("net.pistonmaster:pistonmotd-api:5.2.7")
+    compileOnly("org.apiguardian:apiguardian-api:1.1.2")
     compileOnly("com.google.guava:guava:33.5.0-jre")
 }

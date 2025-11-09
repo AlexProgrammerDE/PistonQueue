@@ -46,92 +46,96 @@ public abstract class QueueListenerShared {
     if (event.isCancelled())
       return;
 
-    if (Config.ENABLE_USERNAME_REGEX && !event.getUsername().matches(Config.USERNAME_REGEX)) {
-      event.setCancelled(Config.USERNAME_REGEX_MESSAGE.replace("%regex%", Config.USERNAME_REGEX));
+    Config config = plugin.getConfiguration();
+    if (config.ENABLE_USERNAME_REGEX && !event.getUsername().matches(config.USERNAME_REGEX)) {
+      event.setCancelled(config.USERNAME_REGEX_MESSAGE.replace("%regex%", config.USERNAME_REGEX));
     }
   }
 
   protected void onPostLogin(PlayerWrapper player) {
-    if (StorageTool.isShadowBanned(player.getName()) && Config.SHADOW_BAN_TYPE == BanType.KICK) {
-      player.disconnect(Config.SERVER_DOWN_KICK_MESSAGE);
+    Config config = plugin.getConfiguration();
+    if (StorageTool.isShadowBanned(player.getName()) && config.SHADOW_BAN_TYPE == BanType.KICK) {
+      player.disconnect(config.SERVER_DOWN_KICK_MESSAGE);
     }
   }
 
   protected void onKick(PQKickedFromServerEvent event) {
-    if (Config.IF_TARGET_DOWN_SEND_TO_QUEUE && event.getKickedFrom().equals(Config.TARGET_SERVER)) {
+    Config config = plugin.getConfiguration();
+    if (config.IF_TARGET_DOWN_SEND_TO_QUEUE && event.getKickedFrom().equals(config.TARGET_SERVER)) {
       String kickReason = event.getKickReason()
         .map(s -> s.toLowerCase(Locale.ROOT))
         .orElse("unknown reason");
 
-      Config.DOWN_WORD_LIST.stream()
+      config.DOWN_WORD_LIST.stream()
         .filter(word -> kickReason.contains(word.toLowerCase(Locale.ROOT)))
         .findFirst()
         .ifPresent(word -> {
-          event.setCancelServer(Config.QUEUE_SERVER);
+          event.setCancelServer(config.QUEUE_SERVER);
 
-          event.getPlayer().sendMessage(Config.IF_TARGET_DOWN_SEND_TO_QUEUE_MESSAGE);
+          event.getPlayer().sendMessage(config.IF_TARGET_DOWN_SEND_TO_QUEUE_MESSAGE);
 
-          QueueType.getQueueType(event.getPlayer())
+          config.getQueueType(event.getPlayer())
             .getQueueMap()
             .put(event.getPlayer().getUniqueId(), new QueueType.QueuedPlayer(event.getKickedFrom(), QueueType.QueueReason.SERVER_DOWN));
         });
     }
 
-    if (Config.ENABLE_KICK_MESSAGE && event.willDisconnect()) {
-      event.setKickMessage(Config.KICK_MESSAGE);
+    if (config.ENABLE_KICK_MESSAGE && event.willDisconnect()) {
+      event.setKickMessage(config.KICK_MESSAGE);
     }
   }
 
   protected void onPreConnect(PQServerPreConnectEvent event) {
     PlayerWrapper player = event.getPlayer();
+    Config config = plugin.getConfiguration();
 
-    if (Config.ENABLE_SOURCE_SERVER && !isSourceToTarget(event)) {
+    if (config.ENABLE_SOURCE_SERVER && !isSourceToTarget(event, config)) {
       return;
     }
 
-    if (!Config.ENABLE_SOURCE_SERVER && player.getCurrentServer().isPresent()) {
+    if (!config.ENABLE_SOURCE_SERVER && player.getCurrentServer().isPresent()) {
       return;
     }
 
-    if (Config.KICK_WHEN_DOWN) {
-      for (String server : Config.KICK_WHEN_DOWN_SERVERS) {
+    if (config.KICK_WHEN_DOWN) {
+      for (String server : config.KICK_WHEN_DOWN_SERVERS) {
         if (!onlineServers.contains(server)) {
-          player.disconnect(Config.SERVER_DOWN_KICK_MESSAGE);
+          player.disconnect(config.SERVER_DOWN_KICK_MESSAGE);
           return;
         }
       }
     }
 
-    QueueType type = QueueType.getQueueType(player);
+    QueueType type = config.getQueueType(player);
 
     boolean serverFull = false;
-    if (Config.ALWAYS_QUEUE || (serverFull = isServerFull(type))) {
-      if (player.hasPermission(Config.QUEUE_BYPASS_PERMISSION)) {
-        event.setTarget(Config.TARGET_SERVER);
+    if (config.ALWAYS_QUEUE || (serverFull = isServerFull(type))) {
+      if (player.hasPermission(config.QUEUE_BYPASS_PERMISSION)) {
+        event.setTarget(config.TARGET_SERVER);
       } else {
-        putQueue(player, type, event, serverFull);
+        putQueue(player, type, event, serverFull, config);
       }
     }
   }
 
-  private void putQueue(PlayerWrapper player, QueueType type, PQServerPreConnectEvent event, boolean serverFull) {
+  private void putQueue(PlayerWrapper player, QueueType type, PQServerPreConnectEvent event, boolean serverFull, Config config) {
     player.sendPlayerList(type.getHeader(), type.getFooter());
 
     if (serverFull && !type.getQueueMap().containsKey(player.getUniqueId())) {
-      player.sendMessage(Config.SERVER_IS_FULL_MESSAGE);
+      player.sendMessage(config.SERVER_IS_FULL_MESSAGE);
     }
 
     // Redirect the player to the queue.
     Optional<String> originalTarget = event.getTarget();
 
-    event.setTarget(Config.QUEUE_SERVER);
+    event.setTarget(config.QUEUE_SERVER);
 
     Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
 
     String queueTarget;
     // Store the data concerning the player's original destination
-    if (Config.FORCE_TARGET_SERVER || originalTarget.isEmpty()) {
-      queueTarget = Config.TARGET_SERVER;
+    if (config.FORCE_TARGET_SERVER || originalTarget.isEmpty()) {
+      queueTarget = config.TARGET_SERVER;
     } else {
       queueTarget = originalTarget.get();
     }
@@ -155,55 +159,58 @@ public abstract class QueueListenerShared {
     return !type.getQueueMap().isEmpty();
   }
 
-  private boolean isSourceToTarget(PQServerPreConnectEvent event) {
+  private boolean isSourceToTarget(PQServerPreConnectEvent event, Config config) {
     Optional<String> previousServer = event.getPlayer().getCurrentServer();
-    return previousServer.isPresent() && previousServer.get().equals(Config.SOURCE_SERVER)
-      && event.getTarget().isPresent() && event.getTarget().get().equals(Config.TARGET_SERVER);
+    return previousServer.isPresent() && previousServer.get().equals(config.SOURCE_SERVER)
+      && event.getTarget().isPresent() && event.getTarget().get().equals(config.TARGET_SERVER);
   }
 
   public void moveQueue() {
-    for (QueueType type : Config.QUEUE_TYPES) {
+    Config config = plugin.getConfiguration();
+    for (QueueType type : config.QUEUE_TYPES) {
       for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
         Optional<PlayerWrapper> player = plugin.getPlayer(entry.getKey());
 
         Optional<String> optionalTarget = player.flatMap(PlayerWrapper::getCurrentServer);
-        if (optionalTarget.isEmpty() || !optionalTarget.get().equals(Config.QUEUE_SERVER)) {
+        if (optionalTarget.isEmpty() || !optionalTarget.get().equals(config.QUEUE_SERVER)) {
           type.getQueueMap().remove(entry.getKey());
         }
       }
     }
 
-    if (Config.RECOVERY) {
+    if (config.RECOVERY) {
       plugin.getPlayers().forEach(this::doRecovery);
     }
 
-    if (Config.PAUSE_QUEUE_IF_TARGET_DOWN && !onlineServers.contains(Config.TARGET_SERVER)) {
+    if (config.PAUSE_QUEUE_IF_TARGET_DOWN && !onlineServers.contains(config.TARGET_SERVER)) {
       return;
     }
 
-    Arrays.stream(Config.QUEUE_TYPES).forEachOrdered(this::connectPlayer);
+    Arrays.stream(config.QUEUE_TYPES).forEachOrdered(this::connectPlayer);
   }
 
   private void doRecovery(PlayerWrapper player) {
-    QueueType type = QueueType.getQueueType(player);
+    Config config = plugin.getConfiguration();
+    QueueType type = config.getQueueType(player);
 
     Optional<String> currentServer = player.getCurrentServer();
-    if (!type.getQueueMap().containsKey(player.getUniqueId()) && currentServer.isPresent() && currentServer.get().equals(Config.QUEUE_SERVER)) {
-      type.getQueueMap().putIfAbsent(player.getUniqueId(), new QueueType.QueuedPlayer(Config.TARGET_SERVER, QueueType.QueueReason.RECOVERY));
+    if (!type.getQueueMap().containsKey(player.getUniqueId()) && currentServer.isPresent() && currentServer.get().equals(config.QUEUE_SERVER)) {
+      type.getQueueMap().putIfAbsent(player.getUniqueId(), new QueueType.QueuedPlayer(config.TARGET_SERVER, QueueType.QueueReason.RECOVERY));
 
-      player.sendMessage(Config.RECOVERY_MESSAGE);
+      player.sendMessage(config.RECOVERY_MESSAGE);
     }
   }
 
   private void connectPlayer(QueueType type) {
+    Config config = plugin.getConfiguration();
     int freeSlots = getFreeSlots(type);
 
     if (freeSlots <= 0) {
       return;
     }
 
-    if (freeSlots > Config.MAX_PLAYERS_PER_MOVE)
-      freeSlots = Config.MAX_PLAYERS_PER_MOVE;
+    if (freeSlots > config.MAX_PLAYERS_PER_MOVE)
+      freeSlots = config.MAX_PLAYERS_PER_MOVE;
 
     for (Map.Entry<UUID, QueueType.QueuedPlayer> entry : new LinkedHashMap<>(type.getQueueMap()).entrySet()) {
       Optional<PlayerWrapper> optional = plugin.getPlayer(entry.getKey());
@@ -214,13 +221,13 @@ public abstract class QueueListenerShared {
 
       type.getQueueMap().remove(entry.getKey());
 
-      player.sendMessage(Config.JOINING_TARGET_SERVER);
+      player.sendMessage(config.JOINING_TARGET_SERVER);
       player.resetPlayerList();
 
       if (StorageTool.isShadowBanned(player.getName())
-        && (Config.SHADOW_BAN_TYPE == BanType.LOOP
-        || (Config.SHADOW_BAN_TYPE == BanType.PERCENT && ThreadLocalRandom.current().nextInt(100) >= Config.PERCENT))) {
-        player.sendMessage(Config.SHADOW_BAN_MESSAGE);
+        && (config.SHADOW_BAN_TYPE == BanType.LOOP
+        || (config.SHADOW_BAN_TYPE == BanType.PERCENT && ThreadLocalRandom.current().nextInt(100) >= config.PERCENT))) {
+        player.sendMessage(config.SHADOW_BAN_MESSAGE);
 
         type.getQueueMap().put(entry.getKey(), entry.getValue());
 
@@ -242,7 +249,7 @@ public abstract class QueueListenerShared {
       }
     }
 
-    if (Config.SEND_XP_SOUND) {
+    if (config.SEND_XP_SOUND) {
       sendXPSoundToQueueType(type);
     }
   }
@@ -259,7 +266,7 @@ public abstract class QueueListenerShared {
     out.writeInt(uuids.size());
     uuids.forEach(id -> out.writeUTF(id.toString()));
 
-    plugin.getServer(Config.QUEUE_SERVER).ifPresent(server ->
+    plugin.getServer(plugin.getConfiguration().QUEUE_SERVER).ifPresent(server ->
       server.sendPluginMessage("piston:queue", out.toByteArray()));
   }
 

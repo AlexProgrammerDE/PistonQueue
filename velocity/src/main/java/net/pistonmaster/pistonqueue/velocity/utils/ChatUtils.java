@@ -21,6 +21,7 @@ package net.pistonmaster.pistonqueue.velocity.utils;
 
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
 
 import java.util.List;
@@ -30,18 +31,18 @@ public final class ChatUtils {
   private ChatUtils() {
   }
 
-  public static TextComponent parseToComponent(String str) {
-    return LegacyComponentSerializer.legacySection().deserialize(parseToString(str));
+  public static TextComponent parseToComponent(Config config, String str) {
+    return LegacyComponentSerializer.legacySection().deserialize(parseToString(config, str));
   }
 
-  public static String parseToString(String str) {
-    return LegacyComponentSerializer.legacySection().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(SharedChatUtils.parseText(str)));
+  public static String parseToString(Config config, String str) {
+    return LegacyComponentSerializer.legacySection().serialize(LegacyComponentSerializer.legacyAmpersand().deserialize(SharedChatUtils.parseText(config, str)));
   }
 
-  public static TextComponent parseTab(List<String> tab) {
-    return parseToComponent(
+  public static TextComponent parseTab(Config config, List<String> tab) {
+    return parseToComponent(config,
       tab.stream()
-        .map(ChatUtils::parseToString)
+        .map(line -> parseToString(config, line))
         .collect(Collectors.joining("\n"))
     );
   }

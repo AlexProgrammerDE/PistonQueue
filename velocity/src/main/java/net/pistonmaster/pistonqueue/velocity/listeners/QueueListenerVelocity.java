@@ -95,7 +95,7 @@ public final class QueueListenerVelocity extends QueueListenerShared {
 
       @Override
       public void setKickMessage(String message) {
-        event.setResult(KickedFromServerEvent.DisconnectPlayer.create(ChatUtils.parseToComponent(message)));
+        event.setResult(KickedFromServerEvent.DisconnectPlayer.create(ChatUtils.parseToComponent(plugin.getConfiguration(), message)));
       }
 
       @Override
@@ -129,7 +129,7 @@ public final class QueueListenerVelocity extends QueueListenerShared {
 
       @Override
       public void setCancelled(String reason) {
-        event.setResult(PreLoginEvent.PreLoginComponentResult.denied(ChatUtils.parseToComponent(reason)));
+        event.setResult(PreLoginEvent.PreLoginComponentResult.denied(ChatUtils.parseToComponent(plugin.getConfiguration(), reason)));
       }
 
       @Override

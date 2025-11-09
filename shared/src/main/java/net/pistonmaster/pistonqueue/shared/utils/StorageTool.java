@@ -19,9 +19,8 @@
  */
 package net.pistonmaster.pistonqueue.shared.utils;
 
-import org.spongepowered.configurate.ConfigurationNode;
-import org.spongepowered.configurate.serialize.SerializationException;
-import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
+import de.exlll.configlib.YamlConfigurations;
+import net.pistonmaster.pistonqueue.shared.config.StorageData;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,11 +28,14 @@ import java.nio.file.Path;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public final class StorageTool {
   private static Path dataDirectory;
-  private static ConfigurationNode dataConfig;
+  private static StorageData dataConfig;
   private static Path dataFile;
 
   private StorageTool() {
@@ -50,13 +52,9 @@ public final class StorageTool {
     playerName = playerName.toLowerCase(Locale.ROOT);
     manageBan(playerName);
 
-    if (dataConfig.node(playerName).virtual()) {
-      try {
-        dataConfig.node(playerName).set(date.toString());
-      } catch (SerializationException e) {
-        e.printStackTrace();
-      }
-
+    Map<String, String> bans = dataConfig.getBans();
+    if (!bans.containsKey(playerName)) {
+      bans.put(playerName, date.toString());
       saveData();
 
       return true;
@@ -73,13 +71,7 @@ public final class StorageTool {
    */
   public static boolean unShadowBanPlayer(String playerName) {
     playerName = playerName.toLowerCase(Locale.ROOT);
-    if (!dataConfig.node(playerName).virtual()) {
-      try {
-        dataConfig.node(playerName).set(null);
-      } catch (SerializationException e) {
-        e.printStackTrace();
-      }
-
+    if (dataConfig.getBans().remove(playerName) != null) {
       saveData();
 
       return true;
@@ -92,18 +84,18 @@ public final class StorageTool {
     playerName = playerName.toLowerCase(Locale.ROOT);
     manageBan(playerName);
 
-    return !dataConfig.node(playerName).virtual();
+    return dataConfig.getBans().containsKey(playerName);
   }
 
   private static void manageBan(String playerName) {
     playerName = playerName.toLowerCase(Locale.ROOT);
     Date now = new Date();
 
-    if (!dataConfig.node(playerName).virtual()) {
+    if (dataConfig.getBans().containsKey(playerName)) {
       SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy", Locale.of("en"));
 
       try {
-        Date date = sdf.parse(dataConfig.node(playerName).getString());
+        Date date = sdf.parse(dataConfig.getBans().get(playerName));
 
         if (now.after(date) || (now.equals(date))) {
           unShadowBanPlayer(playerName);
@@ -116,22 +108,13 @@ public final class StorageTool {
 
   private static void loadData() {
     generateFile();
-
-    try {
-      dataConfig = YamlConfigurationLoader.builder().path(dataFile).build().load();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    convertLegacyDataIfNeeded();
+    dataConfig = YamlConfigurations.update(dataFile, StorageData.class);
   }
 
   private static void saveData() {
     generateFile();
-
-    try {
-      YamlConfigurationLoader.builder().path(dataFile).build().save(dataConfig);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    YamlConfigurations.save(dataFile, StorageData.class, dataConfig);
   }
 
   private static void generateFile() {
@@ -153,5 +136,52 @@ public final class StorageTool {
     StorageTool.dataFile = dataDirectory.resolve("data.yml");
 
     loadData();
+  }
+
+  private static void convertLegacyDataIfNeeded() {
+    try {
+      if (!Files.exists(dataFile)) {
+        return;
+      }
+      List<String> lines = Files.readAllLines(dataFile);
+      boolean alreadyNewFormat = lines.stream()
+        .map(String::trim)
+        .anyMatch(line -> line.startsWith("bans:"));
+      if (alreadyNewFormat || lines.isEmpty()) {
+        return;
+      }
+
+      Map<String, String> legacyEntries = new LinkedHashMap<>();
+      for (String rawLine : lines) {
+        String line = rawLine.trim();
+        if (line.isEmpty() || line.startsWith("#")) {
+          continue;
+        }
+        int colonIndex = line.indexOf(':');
+        if (colonIndex < 0) {
+          continue;
+        }
+        String key = line.substring(0, colonIndex).trim();
+        String value = line.substring(colonIndex + 1).trim();
+        if (value.startsWith("'") && value.endsWith("'") && value.length() >= 2) {
+          value = value.substring(1, value.length() - 1);
+        } else if (value.startsWith("\"") && value.endsWith("\"") && value.length() >= 2) {
+          value = value.substring(1, value.length() - 1);
+        }
+        if (!key.isEmpty()) {
+          legacyEntries.put(key, value);
+        }
+      }
+
+      if (legacyEntries.isEmpty()) {
+        return;
+      }
+
+      StorageData legacyData = new StorageData();
+      legacyData.getBans().putAll(legacyEntries);
+      YamlConfigurations.save(dataFile, StorageData.class, legacyData);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

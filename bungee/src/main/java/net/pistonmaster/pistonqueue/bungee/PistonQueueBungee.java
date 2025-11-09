@@ -30,6 +30,7 @@ import net.pistonmaster.pistonqueue.bungee.commands.MainCommand;
 import net.pistonmaster.pistonqueue.bungee.listeners.QueueListenerBungee;
 import net.pistonmaster.pistonqueue.bungee.utils.ChatUtils;
 import net.pistonmaster.pistonqueue.shared.chat.MessageType;
+import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.hooks.PistonMOTDPlaceholder;
 import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
 import net.pistonmaster.pistonqueue.shared.utils.StorageTool;
@@ -51,6 +52,7 @@ import java.util.stream.Collectors;
 
 @Getter
 public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin {
+  private final Config configuration = new Config();
   private final QueueListenerBungee queueListenerBungee = new QueueListenerBungee(this);
 
   @Override
@@ -66,7 +68,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
     info(ChatColor.BLUE + "Looking for hooks");
     if (getProxy().getPluginManager().getPlugin("PistonMOTD") != null) {
       info(ChatColor.BLUE + "Hooking into PistonMOTD");
-      new PistonMOTDPlaceholder();
+      new PistonMOTDPlaceholder(configuration);
     }
 
     info(ChatColor.BLUE + "Registering plugin messaging channel");
@@ -154,6 +156,11 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
     return getDataFolder().toPath();
   }
 
+  @Override
+  public Config getConfiguration() {
+    return configuration;
+  }
+
   private ServerInfoWrapper wrapServer(ServerInfo serverInfo) {
     return new ServerInfoWrapper() {
       @Override
@@ -206,14 +213,14 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
         }
 
         switch (type) {
-          case CHAT -> player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(message));
-          case ACTION_BAR -> player.sendMessage(ChatMessageType.ACTION_BAR, ChatUtils.parseToComponent(message));
+          case CHAT -> player.sendMessage(ChatMessageType.CHAT, ChatUtils.parseToComponent(configuration, message));
+          case ACTION_BAR -> player.sendMessage(ChatMessageType.ACTION_BAR, ChatUtils.parseToComponent(configuration, message));
         }
       }
 
       @Override
       public void sendPlayerList(List<String> header, List<String> footer) {
-        player.setTabHeader(ChatUtils.parseTab(header), ChatUtils.parseTab(footer));
+        player.setTabHeader(ChatUtils.parseTab(configuration, header), ChatUtils.parseTab(configuration, footer));
       }
 
       @Override
@@ -233,7 +240,7 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
 
       @Override
       public void disconnect(String message) {
-        player.disconnect(ChatUtils.parseToComponent(message));
+        player.disconnect(ChatUtils.parseToComponent(configuration, message));
       }
     };
   }

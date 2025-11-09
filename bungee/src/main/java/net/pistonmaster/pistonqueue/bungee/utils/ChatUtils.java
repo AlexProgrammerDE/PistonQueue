@@ -22,6 +22,7 @@ package net.pistonmaster.pistonqueue.bungee.utils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
 
 import java.util.List;
@@ -31,17 +32,17 @@ public final class ChatUtils {
   private ChatUtils() {
   }
 
-  public static String parseToString(String str) {
-    return ChatColor.translateAlternateColorCodes('&', SharedChatUtils.parseText(str));
+  public static String parseToString(Config config, String str) {
+    return ChatColor.translateAlternateColorCodes('&', SharedChatUtils.parseText(config, str));
   }
 
-  public static BaseComponent parseToComponent(String str) {
-    return TextComponent.fromLegacy(parseToString(str));
+  public static BaseComponent parseToComponent(Config config, String str) {
+    return TextComponent.fromLegacy(parseToString(config, str));
   }
 
-  public static BaseComponent parseTab(List<String> tab) {
-    return parseToComponent(tab.stream()
-      .map(ChatUtils::parseToString)
+  public static BaseComponent parseTab(Config config, List<String> tab) {
+    return parseToComponent(config, tab.stream()
+      .map(line -> parseToString(config, line))
       .collect(Collectors.joining("\n")));
   }
 }

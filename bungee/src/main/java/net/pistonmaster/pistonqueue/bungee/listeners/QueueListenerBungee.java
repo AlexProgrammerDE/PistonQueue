@@ -93,7 +93,7 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
 
       @Override
       public void setKickMessage(String message) {
-        event.setReason(ChatUtils.parseToComponent(message));
+        event.setReason(ChatUtils.parseToComponent(plugin.getConfiguration(), message));
       }
 
       @Override
@@ -127,7 +127,7 @@ public final class QueueListenerBungee extends QueueListenerShared implements Li
 
       @Override
       public void setCancelled(String reason) {
-        event.setReason(ChatUtils.parseToComponent(reason));
+        event.setReason(ChatUtils.parseToComponent(plugin.getConfiguration(), reason));
         event.setCancelled(true);
       }
 
