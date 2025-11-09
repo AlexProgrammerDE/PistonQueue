@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,6 +43,7 @@ public class QueueType {
   private final ReadWriteLock queueLock = new ReentrantReadWriteLock();
   private final ReadWriteLock durationLock = new ReentrantReadWriteLock();
   private final Map<UUID, Map<Integer, Instant>> positionCache = new ConcurrentHashMap<>();
+  private final Set<UUID> activeTransfers = ConcurrentHashMap.newKeySet();
   private final AtomicInteger playersWithTypeInTarget = new AtomicInteger();
   private final String name;
   @Setter

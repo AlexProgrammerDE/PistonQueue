@@ -86,6 +86,7 @@ public final class QueueConnector {
 
       Optional<PlayerWrapper> optional = environment.plugin().getPlayer(entry.getKey());
       if (optional.isEmpty()) {
+        type.getActiveTransfers().remove(entry.getKey());
         continue;
       }
       PlayerWrapper player = optional.get();
@@ -118,6 +119,7 @@ public final class QueueConnector {
       }
 
       player.connect(entry.getValue().targetServer());
+      type.getActiveTransfers().remove(entry.getKey());
 
       movesLeft--;
     }
@@ -183,6 +185,7 @@ public final class QueueConnector {
 
       Map.Entry<UUID, QueueType.QueuedPlayer> entry = iterator.next();
       iterator.remove();
+      type.getActiveTransfers().add(entry.getKey());
       return new AbstractMap.SimpleEntry<>(entry);
     } finally {
       writeLock.unlock();
@@ -193,6 +196,7 @@ public final class QueueConnector {
     Lock writeLock = type.getQueueLock().writeLock();
     writeLock.lock();
     try {
+      type.getActiveTransfers().remove(entry.getKey());
       type.getQueueMap().put(entry.getKey(), entry.getValue());
     } finally {
       writeLock.unlock();
