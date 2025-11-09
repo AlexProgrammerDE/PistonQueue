@@ -25,6 +25,7 @@ import de.exlll.configlib.NameFormatters;
 import de.exlll.configlib.YamlConfigurations;
 import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.config.Config;
+import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueListenerShared;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 import net.pistonmaster.pistonqueue.shared.utils.SharedChatUtils;
@@ -68,10 +69,12 @@ public interface PistonQueuePlugin {
 
   default void scheduleTasks(QueueListenerShared queueListener) {
     Config config = getConfiguration();
+    QueueGroup defaultGroup = config.getDefaultGroup();
     // Sends the position message and updates tab on an interval in chat
     schedule(() -> {
-      if (queueListener.getOnlineServers().contains(config.TARGET_SERVER)) {
-        for (QueueType type : config.QUEUE_TYPES) {
+      boolean targetsOnline = defaultGroup.getTargetServers().stream().anyMatch(queueListener.getOnlineServers()::contains);
+      if (targetsOnline) {
+        for (QueueType type : config.getAllQueueTypes()) {
           if (config.POSITION_MESSAGE_CHAT) {
             sendMessage(type, MessageType.CHAT);
           }
@@ -80,7 +83,7 @@ public interface PistonQueuePlugin {
           }
         }
       } else if (config.PAUSE_QUEUE_IF_TARGET_DOWN) {
-        for (QueueType type : config.QUEUE_TYPES) {
+        for (QueueType type : config.getAllQueueTypes()) {
           type.getQueueMap().forEach((id, queuedPlayer) ->
             getPlayer(id).ifPresent(value -> value.sendMessage(config.PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE)));
         }
@@ -93,7 +96,7 @@ public interface PistonQueuePlugin {
         return;
       }
 
-      for (QueueType type : config.QUEUE_TYPES) {
+      for (QueueType type : config.getAllQueueTypes()) {
         updateTab(type);
       }
     }, config.QUEUE_MOVE_DELAY, config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
@@ -192,25 +195,27 @@ public interface PistonQueuePlugin {
   default void initializeReservationSlots() {
     schedule(() -> {
       Config config = getConfiguration();
-      Optional<ServerInfoWrapper> targetServer = getServer(config.TARGET_SERVER);
-      if (targetServer.isEmpty())
-        return;
-
-      Map<QueueType, AtomicInteger> map = new HashMap<>();
-      for (QueueType type : config.QUEUE_TYPES) {
-        map.put(type, new AtomicInteger());
-      }
-
-      for (PlayerWrapper player : targetServer.get().getConnectedPlayers()) {
-        QueueType playerType = config.getQueueType(player);
-
-        AtomicInteger queueTypePlayers = map.get(playerType);
-        if (queueTypePlayers != null) {
-          queueTypePlayers.incrementAndGet();
+      for (QueueGroup group : config.getQueueGroups()) {
+        Map<QueueType, AtomicInteger> map = new HashMap<>();
+        for (QueueType type : group.getQueueTypes()) {
+          map.put(type, new AtomicInteger());
         }
-      }
 
-      map.forEach((type, count) -> type.getPlayersWithTypeInTarget().set(count.get()));
+        for (String targetServerName : group.getTargetServers()) {
+          getServer(targetServerName).ifPresent(targetServer -> {
+            for (PlayerWrapper player : targetServer.getConnectedPlayers()) {
+              QueueType playerType = config.getQueueType(player);
+
+              AtomicInteger queueTypePlayers = map.get(playerType);
+              if (queueTypePlayers != null) {
+                queueTypePlayers.incrementAndGet();
+              }
+            }
+          });
+        }
+
+        map.forEach((type, count) -> type.getPlayersWithTypeInTarget().set(count.get()));
+      }
     }, 0, 1, TimeUnit.SECONDS);
   }
 
@@ -225,8 +230,8 @@ public interface PistonQueuePlugin {
     ByteArrayDataOutput outOnlineQueue = ByteStreams.newDataOutput();
 
     outOnlineQueue.writeUTF("onlineQueue");
-    outOnlineQueue.writeInt(config.QUEUE_TYPES.length);
-    for (QueueType queueType : config.QUEUE_TYPES) {
+    outOnlineQueue.writeInt(config.getAllQueueTypes().size());
+    for (QueueType queueType : config.getAllQueueTypes()) {
       outOnlineQueue.writeUTF(queueType.getName().toLowerCase(Locale.ROOT));
       outOnlineQueue.writeInt(queueType.getQueueMap().size());
     }
@@ -234,8 +239,8 @@ public interface PistonQueuePlugin {
     ByteArrayDataOutput outOnlineTarget = ByteStreams.newDataOutput();
 
     outOnlineTarget.writeUTF("onlineTarget");
-    outOnlineTarget.writeInt(config.QUEUE_TYPES.length);
-    for (QueueType queueType : config.QUEUE_TYPES) {
+    outOnlineTarget.writeInt(config.getAllQueueTypes().size());
+    for (QueueType queueType : config.getAllQueueTypes()) {
       outOnlineTarget.writeUTF(queueType.getName().toLowerCase(Locale.ROOT));
       outOnlineTarget.writeInt(queueType.getPlayersWithTypeInTarget().get());
     }

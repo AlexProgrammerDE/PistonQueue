@@ -36,7 +36,7 @@ public final class PistonMOTDPlaceholder implements PlaceholderParser {
 
   @Override
   public String parseString(String s) {
-    for (QueueType type : config.QUEUE_TYPES) {
+    for (QueueType type : config.getAllQueueTypes()) {
       s = s.replace("%pistonqueue_" + type.getName().toLowerCase(Locale.ROOT) + "%", String.valueOf(type.getQueueMap().size()));
     }
     return s;

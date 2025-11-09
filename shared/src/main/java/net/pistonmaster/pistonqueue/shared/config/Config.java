@@ -23,6 +23,7 @@ import de.exlll.configlib.Comment;
 import de.exlll.configlib.Configuration;
 import de.exlll.configlib.Ignore;
 import net.pistonmaster.pistonqueue.shared.queue.BanType;
+import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
@@ -143,6 +144,24 @@ public final class Config {
   @Ignore
   public QueueType[] QUEUE_TYPES; // Not allowed to be resized due to data corruption
 
+  @Ignore
+  private final List<QueueGroup> queueGroups = new ArrayList<>();
+
+  @Ignore
+  private final Map<String, QueueGroup> queueGroupsByName = new LinkedHashMap<>();
+
+  @Ignore
+  private final Map<String, QueueGroup> queueGroupsByTarget = new HashMap<>();
+
+  @Ignore
+  private final Map<QueueType, QueueGroup> queueGroupByType = new IdentityHashMap<>();
+
+  @Ignore
+  private final List<QueueType> allQueueTypes = new ArrayList<>();
+
+  @Ignore
+  private QueueGroup defaultQueueGroup;
+
   public Config() {
   }
 
@@ -202,10 +221,11 @@ public final class Config {
 
     QUEUE_TYPE_DEFINITIONS = copyQueueDefinitions(source.QUEUE_TYPE_DEFINITIONS);
     applyQueueTypes(QUEUE_TYPE_DEFINITIONS);
+    rebuildQueueGroups();
   }
 
   public QueueType getQueueType(PlayerWrapper player) {
-    for (QueueType type : QUEUE_TYPES) {
+    for (QueueType type : allQueueTypes) {
       if (type.getPermission().equals("default") || player.hasPermission(type.getPermission())) {
         return type;
       }
@@ -343,6 +363,60 @@ public final class Config {
     Map<String, QueueTypeConfiguration> copy = new LinkedHashMap<>();
     original.forEach((name, def) -> copy.put(name, def.copy()));
     return copy;
+  }
+
+  public QueueGroup getDefaultGroup() {
+    return defaultQueueGroup;
+  }
+
+  public Collection<QueueGroup> getQueueGroups() {
+    return Collections.unmodifiableList(queueGroups);
+  }
+
+  public Optional<QueueGroup> findGroupByTarget(String server) {
+    if (server == null) {
+      return Optional.empty();
+    }
+    return Optional.ofNullable(queueGroupsByTarget.get(server.toLowerCase(Locale.ROOT)));
+  }
+
+  public QueueGroup getGroupFor(QueueType type) {
+    return queueGroupByType.get(type);
+  }
+
+  public List<QueueType> getAllQueueTypes() {
+    return Collections.unmodifiableList(allQueueTypes);
+  }
+
+  private void rebuildQueueGroups() {
+    queueGroups.clear();
+    queueGroupsByName.clear();
+    queueGroupsByTarget.clear();
+    queueGroupByType.clear();
+    allQueueTypes.clear();
+
+    QueueGroup defaultGroup = new QueueGroup(
+      "default",
+      QUEUE_SERVER,
+      Collections.singletonList(TARGET_SERVER),
+      ENABLE_SOURCE_SERVER ? Collections.singletonList(SOURCE_SERVER) : Collections.emptyList(),
+      QUEUE_TYPES
+    );
+    registerGroup(defaultGroup);
+    defaultQueueGroup = defaultGroup;
+    QUEUE_TYPES = defaultGroup.getQueueTypes();
+  }
+
+  private void registerGroup(QueueGroup group) {
+    queueGroups.add(group);
+    queueGroupsByName.put(group.getName().toLowerCase(Locale.ROOT), group);
+    for (String target : group.getTargetServers()) {
+      queueGroupsByTarget.put(target.toLowerCase(Locale.ROOT), group);
+    }
+    for (QueueType type : group.getQueueTypes()) {
+      queueGroupByType.put(type, group);
+      allQueueTypes.add(type);
+    }
   }
 
   @Configuration

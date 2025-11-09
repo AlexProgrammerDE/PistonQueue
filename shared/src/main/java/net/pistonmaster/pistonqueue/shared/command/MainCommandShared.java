@@ -24,6 +24,7 @@ import net.pistonmaster.pistonqueue.shared.chat.TextColorWrapper;
 import net.pistonmaster.pistonqueue.shared.chat.TextDecorationWrapper;
 import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
+import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 import net.pistonmaster.pistonqueue.shared.utils.StorageTool;
 import net.pistonmaster.pistonqueue.shared.wrapper.CommandSourceWrapper;
@@ -54,9 +55,12 @@ public interface MainCommandShared {
       case "stats" -> {
         sendLine(sender);
         sender.sendMessage(component().text("Queue stats").color(TextColorWrapper.GOLD));
-        for (QueueType type : config.QUEUE_TYPES) {
-          sender.sendMessage(component().text(type.getName() + ": ").color(TextColorWrapper.GOLD)
-            .append(component().text(String.valueOf(type.getQueueMap().size())).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+        for (QueueGroup group : config.getQueueGroups()) {
+          sender.sendMessage(component().text(group.getName()).color(TextColorWrapper.GOLD));
+          for (QueueType type : group.getQueueTypes()) {
+            sender.sendMessage(component().text(" - " + type.getName() + ": ").color(TextColorWrapper.GOLD)
+              .append(component().text(String.valueOf(type.getQueueMap().size())).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+          }
         }
         sendLine(sender);
       }
@@ -68,8 +72,12 @@ public interface MainCommandShared {
 
         sendLine(sender);
         sender.sendMessage(component().text("Target slot stats").color(TextColorWrapper.GOLD));
-        for (QueueType type : config.QUEUE_TYPES) {
-          sender.sendMessage(component().text(type.getName() + ": ").color(TextColorWrapper.GOLD).append(component().text(type.getPlayersWithTypeInTarget().get() + " / " + type.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+        for (QueueGroup group : config.getQueueGroups()) {
+          sender.sendMessage(component().text(group.getName()).color(TextColorWrapper.GOLD));
+          for (QueueType type : group.getQueueTypes()) {
+            sender.sendMessage(component().text(" - " + type.getName() + ": ").color(TextColorWrapper.GOLD)
+              .append(component().text(type.getPlayersWithTypeInTarget().get() + " / " + type.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
+          }
         }
         sendLine(sender);
       }
