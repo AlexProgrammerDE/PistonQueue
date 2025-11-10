@@ -80,7 +80,7 @@ public final class QueueListenerVelocity extends QueueListenerShared {
       @Override
       public void setTarget(String server) {
         event.setResult(ServerPreConnectEvent.ServerResult.allowed(plugin.getProxyServer().getServer(server).orElseThrow(() ->
-          new IllegalArgumentException(String.format("Server %s not found", server)))));
+          new IllegalArgumentException("Server %s not found".formatted(server)))));
       }
     };
   }
@@ -90,7 +90,7 @@ public final class QueueListenerVelocity extends QueueListenerShared {
       @Override
       public void setCancelServer(String server) {
         event.setResult(KickedFromServerEvent.RedirectPlayer.create(plugin.getProxyServer().getServer(server).orElseThrow(() ->
-          new IllegalArgumentException(String.format("Server %s not found", server)))));
+          new IllegalArgumentException("Server %s not found".formatted(server)))));
       }
 
       @Override

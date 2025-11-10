@@ -58,7 +58,7 @@ class QueueEntryFactoryTest {
     config.FORCE_TARGET_SERVER = true;
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer(), group.getTargetServers().get(0));
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer(), group.getTargetServers().getFirst());
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
 
@@ -68,7 +68,7 @@ class QueueEntryFactoryTest {
 
     entryFactory.enqueue(player, group, type, event, true, config);
 
-    assertEquals(group.getTargetServers().get(0), type.getQueueMap().get(player.getUniqueId()).targetServer());
+    assertEquals(group.getTargetServers().getFirst(), type.getQueueMap().get(player.getUniqueId()).targetServer());
   }
 
   @Test

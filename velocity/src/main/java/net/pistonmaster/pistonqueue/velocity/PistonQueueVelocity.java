@@ -239,7 +239,7 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
 
       @Override
       public void sendMessage(MessageType type, String message) {
-        if (message.equalsIgnoreCase("/") || message.isBlank()) {
+        if ("/".equalsIgnoreCase(message) || message.isBlank()) {
           return;
         }
 

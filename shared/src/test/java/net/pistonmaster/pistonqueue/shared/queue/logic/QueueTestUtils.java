@@ -48,6 +48,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -161,7 +162,7 @@ final class QueueTestUtils {
     }
 
     @Override
-    public void schedule(Runnable runnable, long delay, long period, java.util.concurrent.TimeUnit unit) {
+    public void schedule(Runnable runnable, long delay, long period, TimeUnit unit) {
       // Not needed in tests
     }
 

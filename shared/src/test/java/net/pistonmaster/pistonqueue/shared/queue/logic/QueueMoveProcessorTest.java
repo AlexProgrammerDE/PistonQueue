@@ -30,9 +30,7 @@ import net.pistonmaster.pistonqueue.shared.queue.logic.ShadowBanService;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -110,13 +108,13 @@ class QueueMoveProcessorTest {
     context.processor().processQueues();
 
     assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(context.config().RECOVERY_MESSAGE)));
-    assertTrue(player.getConnections().contains(context.group().getTargetServers().get(0)));
+    assertTrue(player.getConnections().contains(context.group().getTargetServers().getFirst()));
   }
 
   @Test
   void pausesWhenTargetsOffline() {
     MoveContext context = context(5);
-    context.onlineServers().remove(context.group().getTargetServers().get(0));
+    context.onlineServers().remove(context.group().getTargetServers().getFirst());
     TestPlayer player = context.plugin().registerPlayer("Waiting");
     enqueue(context, player, "main");
 
@@ -130,7 +128,7 @@ class QueueMoveProcessorTest {
   void resumesWhenPauseDisabled() {
     MoveContext context = context(5);
     context.config().PAUSE_QUEUE_IF_TARGET_DOWN = false;
-    context.onlineServers().remove(context.group().getTargetServers().get(0));
+    context.onlineServers().remove(context.group().getTargetServers().getFirst());
     TestPlayer player = context.plugin().registerPlayer("Bold");
     enqueue(context, player, "main");
 
@@ -174,7 +172,7 @@ class QueueMoveProcessorTest {
     MoveContext context = context(5);
     TestPlayer player = context.plugin().registerPlayer("Timer");
     enqueue(context, player, "main");
-    context.queueType().getPositionCache().put(player.getUniqueId(), new java.util.HashMap<>(java.util.Map.of(1, Instant.now().minusSeconds(5))));
+    context.queueType().getPositionCache().put(player.getUniqueId(), new HashMap<>(Map.of(1, Instant.now().minusSeconds(5))));
 
     context.processor().processQueues();
 
@@ -213,7 +211,7 @@ class QueueMoveProcessorTest {
   @Test
   void movesAfterTargetsComeBackOnline() {
     MoveContext context = context(5);
-    String target = context.group().getTargetServers().get(0);
+    String target = context.group().getTargetServers().getFirst();
     context.onlineServers().remove(target);
     TestPlayer player = context.plugin().registerPlayer("Flip");
     enqueue(context, player, target);
@@ -245,7 +243,7 @@ class QueueMoveProcessorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(slots);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> online = QueueTestUtils.onlineServers(group.getQueueServer(), group.getTargetServers().get(0));
+    Set<String> online = QueueTestUtils.onlineServers(group.getQueueServer(), group.getTargetServers().getFirst());
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, online);
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
     QueueCleaner cleaner = new QueueCleaner(environment);

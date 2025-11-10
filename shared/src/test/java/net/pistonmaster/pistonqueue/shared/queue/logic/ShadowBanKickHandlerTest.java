@@ -21,7 +21,11 @@ package net.pistonmaster.pistonqueue.shared.queue.logic;
 
 import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.queue.BanType;
+import net.pistonmaster.pistonqueue.shared.utils.StorageTool;
 import org.junit.jupiter.api.Test;
+
+import java.time.Instant;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -39,7 +43,7 @@ class ShadowBanKickHandlerTest {
 
     // Simulate shadow ban
     QueueTestUtils.ensureStorageToolInitialized();
-    net.pistonmaster.pistonqueue.shared.utils.StorageTool.shadowBanPlayer("BannedPlayer", java.util.Date.from(java.time.Instant.ofEpochMilli(System.currentTimeMillis() + 86400000))); // 1 day from now
+    StorageTool.shadowBanPlayer("BannedPlayer", Date.from(Instant.ofEpochMilli(System.currentTimeMillis() + 86400000))); // 1 day from now
 
     handler.handleShadowBanKick(player);
 
@@ -72,7 +76,7 @@ class ShadowBanKickHandlerTest {
 
     // Simulate shadow ban
     QueueTestUtils.ensureStorageToolInitialized();
-    net.pistonmaster.pistonqueue.shared.utils.StorageTool.shadowBanPlayer("BannedPlayer", java.util.Date.from(java.time.Instant.ofEpochMilli(System.currentTimeMillis() + 86400000))); // 1 day from now
+    StorageTool.shadowBanPlayer("BannedPlayer", Date.from(Instant.ofEpochMilli(System.currentTimeMillis() + 86400000))); // 1 day from now
 
     handler.handleShadowBanKick(player);
 
@@ -91,7 +95,7 @@ class ShadowBanKickHandlerTest {
 
     // Simulate shadow ban
     QueueTestUtils.ensureStorageToolInitialized();
-    net.pistonmaster.pistonqueue.shared.utils.StorageTool.shadowBanPlayer("BannedPlayer", java.util.Date.from(java.time.Instant.ofEpochMilli(System.currentTimeMillis() + 86400000))); // 1 day from now
+    StorageTool.shadowBanPlayer("BannedPlayer", Date.from(Instant.ofEpochMilli(System.currentTimeMillis() + 86400000))); // 1 day from now
 
     handler.handleShadowBanKick(player);
 

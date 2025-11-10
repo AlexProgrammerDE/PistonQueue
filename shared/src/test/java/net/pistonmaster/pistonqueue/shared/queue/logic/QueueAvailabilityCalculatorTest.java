@@ -24,6 +24,8 @@ import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType.QueueReason;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class QueueAvailabilityCalculatorTest {
@@ -104,7 +106,7 @@ class QueueAvailabilityCalculatorTest {
     QueueType type = config.QUEUE_TYPES[0];
     type.setReservedSlots(10);
     type.getPlayersWithTypeInTarget().set(0);
-    type.getQueueMap().put(java.util.UUID.randomUUID(), new QueueType.QueuedPlayer("target", QueueReason.SERVER_FULL));
+    type.getQueueMap().put(UUID.randomUUID(), new QueueType.QueuedPlayer("target", QueueReason.SERVER_FULL));
 
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
 

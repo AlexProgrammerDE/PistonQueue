@@ -57,7 +57,7 @@ public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMe
 
   @Override
   public void onPluginMessageReceived(String channel, @NotNull Player player, byte[] bytes) {
-    if (!channel.equalsIgnoreCase("piston:queue")) {
+    if (!"piston:queue".equalsIgnoreCase(channel)) {
       return;
     }
 
@@ -65,7 +65,7 @@ public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMe
     ByteArrayDataInput in = ByteStreams.newDataInput(bytes);
     String subChannel = in.readUTF();
 
-    if (subChannel.equalsIgnoreCase("onlineQueue")) {
+    if ("onlineQueue".equalsIgnoreCase(subChannel)) {
       int count = in.readInt();
 
       for (int i = 0; i < count; i++) {
@@ -74,7 +74,7 @@ public final class PistonQueuePlaceholder extends JavaPlugin implements PluginMe
 
         onlineQueue.put(queue, online);
       }
-    } else if (subChannel.equalsIgnoreCase("onlineTarget")) {
+    } else if ("onlineTarget".equalsIgnoreCase(subChannel)) {
       int count = in.readInt();
 
       for (int i = 0; i < count; i++) {

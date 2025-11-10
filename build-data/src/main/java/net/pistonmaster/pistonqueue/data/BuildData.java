@@ -24,4 +24,7 @@ public class BuildData {
     DESCRIPTION = properties.getProperty("description");
     URL = properties.getProperty("url");
   }
+
+  private BuildData() {
+  }
 }

@@ -133,11 +133,11 @@ public interface PistonQueuePlugin {
               if (serverInfoWrapper.get().isOnline()) {
                 queueListener.getOnlineServers().add(server);
               } else {
-                warning(String.format("Server %s is down!!!", server));
+                warning("Server %s is down!!!".formatted(server));
                 queueListener.getOnlineServers().remove(server);
               }
             } else {
-              warning(String.format("Server \"%s\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up", server));
+              warning("Server \"%s\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up".formatted(server));
             }
           } finally {
             latch.countDown();

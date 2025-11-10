@@ -230,19 +230,21 @@ public interface MainCommandShared {
 
       if (args.length == 1) {
         for (String string : commands) {
-          if (string.toLowerCase(Locale.ROOT).startsWith(args[0].toLowerCase(Locale.ROOT)))
+          if (string.toLowerCase(Locale.ROOT).startsWith(args[0].toLowerCase(Locale.ROOT))) {
             completions.add(string);
+          }
         }
 
         if (wrapper.hasPermission(config.ADMIN_PERMISSION)) {
           for (String string : adminCommands) {
-            if (string.toLowerCase(Locale.ROOT).startsWith(args[0].toLowerCase(Locale.ROOT)))
+            if (string.toLowerCase(Locale.ROOT).startsWith(args[0].toLowerCase(Locale.ROOT))) {
               completions.add(string);
+            }
           }
         }
       } else if (wrapper.hasPermission(config.ADMIN_PERMISSION)
         && args.length == 2
-        && (args[0].equalsIgnoreCase("shadowban") || args[0].equalsIgnoreCase("unshadowban"))) {
+        && ("shadowban".equalsIgnoreCase(args[0]) || "unshadowban".equalsIgnoreCase(args[0]))) {
         addPlayers(completions, args, plugin);
       }
 
@@ -256,8 +258,9 @@ public interface MainCommandShared {
 
   default void addPlayers(List<String> completions, String[] args, PistonQueuePlugin proxy) {
     for (PlayerWrapper player : proxy.getPlayers()) {
-      if (player.getName().toLowerCase(Locale.ROOT).startsWith(args[1].toLowerCase(Locale.ROOT)))
+      if (player.getName().toLowerCase(Locale.ROOT).startsWith(args[1].toLowerCase(Locale.ROOT))) {
         completions.add(player.getName());
+      }
     }
   }
 

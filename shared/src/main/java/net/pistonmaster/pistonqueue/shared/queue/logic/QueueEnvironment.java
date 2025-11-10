@@ -92,7 +92,7 @@ public final class QueueEnvironment {
     if (group.getTargetServers().isEmpty()) {
       return config().TARGET_SERVER;
     }
-    return group.getTargetServers().get(0);
+    return group.getTargetServers().getFirst();
   }
 
   public boolean isGroupTargetOnline(QueueGroup group) {

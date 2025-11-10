@@ -36,7 +36,7 @@ class QueueRecoveryHandlerTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer(), group.getTargetServers().get(0));
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer(), group.getTargetServers().getFirst());
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 
@@ -93,7 +93,7 @@ class QueueRecoveryHandlerTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer(), group.getTargetServers().get(0));
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer(), group.getTargetServers().getFirst());
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 

@@ -38,12 +38,14 @@ public final class QueuePluginMessageListener implements PluginMessageListener {
   @Override
   @SuppressWarnings("UnstableApiUsage")
   public void onPluginMessageReceived(@NotNull String channel, @NotNull Player messagePlayer, byte[] message) {
-    if (!channel.equals("piston:queue")) return;
+    if (!"piston:queue".equals(channel)) {
+      return;
+    }
 
     ByteArrayDataInput in = ByteStreams.newDataInput(message);
     String subChannel = in.readUTF();
 
-    if (plugin.isPlayXP() && subChannel.equals("xpV2")) {
+    if (plugin.isPlayXP() && "xpV2".equals(subChannel)) {
       List<UUID> uuids = new ArrayList<>();
       int count = in.readInt();
       for (int i = 0; i < count; i++) {

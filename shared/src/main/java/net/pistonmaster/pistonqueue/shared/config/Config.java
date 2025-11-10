@@ -66,7 +66,7 @@ public final class Config {
 
   @Comment("Where to send the queue position message and what to send.")
   public boolean POSITION_MESSAGE_CHAT = true;
-  public boolean POSITION_MESSAGE_HOT_BAR = false;
+  public boolean POSITION_MESSAGE_HOT_BAR;
   public String QUEUE_POSITION = "&6Position in queue: &l%position%";
   public int POSITION_MESSAGE_DELAY = 10000;
 
@@ -74,7 +74,7 @@ public final class Config {
   public boolean POSITION_PLAYER_LIST = true;
 
   @Comment("This is a message to hide the actual reason of why you are getting kicked from the server.")
-  public boolean ENABLE_KICK_MESSAGE = false;
+  public boolean ENABLE_KICK_MESSAGE;
   public String KICK_MESSAGE = "&6You have lost connection to the server";
 
   @Comment("Failure protection for the queue")
@@ -82,7 +82,7 @@ public final class Config {
   public String PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE = "&6The main server is down. We will be back soon!";
 
   @Comment("When the servers are down should we prevent new players from joining the proxy?")
-  public boolean KICK_WHEN_DOWN = false;
+  public boolean KICK_WHEN_DOWN;
   public String SERVER_DOWN_KICK_MESSAGE = "%server_name% &6is down please try again later :(";
 
   @Comment("%TARGET_SERVER%, %QUEUE_SERVER% and %SOURCE_SERVER% are placeholders for the server names")
@@ -114,13 +114,13 @@ public final class Config {
   public String QUEUE_SERVER = "queue";
   public String TARGET_SERVER = "main";
 
-  public boolean FORCE_TARGET_SERVER = false;
+  public boolean FORCE_TARGET_SERVER;
 
   @Comment({
     "Set this to true if you're a lobby or cracked/offline mode server.",
     "This option is required for those setups to work. Make your proxy sends source -> target."
   })
-  public boolean ENABLE_SOURCE_SERVER = false;
+  public boolean ENABLE_SOURCE_SERVER;
   public String SOURCE_SERVER = "lobby";
 
   @Comment("Connecting to server message")
@@ -136,7 +136,7 @@ public final class Config {
   public int MAX_PLAYERS_PER_MOVE = 10;
 
   @Comment("Should the queue be always active or only when the target server is full?")
-  public boolean ALWAYS_QUEUE = false;
+  public boolean ALWAYS_QUEUE;
 
   @Comment("Send an XP sound to every player who gets to position 5 or below in the queue")
   public boolean SEND_XP_SOUND = true;
@@ -242,7 +242,7 @@ public final class Config {
 
   public QueueType getQueueType(PlayerWrapper player) {
     for (QueueType type : allQueueTypes) {
-      if (type.getPermission().equals("default") || player.hasPermission(type.getPermission())) {
+      if ("default".equals(type.getPermission()) || player.hasPermission(type.getPermission())) {
         return type;
       }
     }
@@ -443,7 +443,7 @@ public final class Config {
   @Configuration
   public static final class QueueTypeConfiguration {
     private int ORDER = 1;
-    private int SLOTS = 0;
+    private int SLOTS;
     private String PERMISSION = "default";
     private List<String> HEADER = new ArrayList<>();
     private List<String> FOOTER = new ArrayList<>();
