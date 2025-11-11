@@ -1,33 +1,43 @@
 # PistonQueue V${version}
 # Note - Operators and users with the permission "queue.admin" will be excluded from restrictions.
 
-forceLocation: true # Force the user to remain in a certain position.
-forcedWorldName: "world_the_end" # Forced world
-forcedX: 500 # Forced x coordinate
-forcedY: 256 # Forced y coordinate
-forcedZ: 500 # Forced z coordinate
+location:
+  enabled: true # Force the user to remain in a certain position.
+  world: "world_the_end" # Forced world
+  coordinates:
+    x: 500 # Forced x coordinate
+    y: 256 # Forced y coordinate
+    z: 500 # Forced z coordinate
 
-hidePlayers: true # Hide players from each other, so that it looks like every user is alone in the world. This will also disable join/leave messages.
-restrictMovement: true # Prevent players from moving.
-forceGamemode: true # Force players to remain in a gamemode.
-forcedGamemode: "spectator" # The gamemode to force players to remain in.
-disableChat: true # Don't allow players to chat.
-disableCmd: true # Don't allow commands.
+visibility:
+  hidePlayers: true # Hide players from each other, so that it looks like every user is alone in the world. This will also disable join/leave messages.
+  restrictMovement: true # Prevent players from moving.
+  forceGamemode:
+    enabled: true # Force players to remain in a gamemode.
+    mode: "spectator" # The gamemode to force players to remain in.
+  team:
+    enabled: false # Show a player's own name to themselves in spectator menu.
+    name: "%player_name%" # The team name the user sees. (Valid placeholders: %player_name%, %random%)
 
-team: false # Show a players own name to himself in spectator menu.
-teamName: "%player_name%" # The team name the user sees. (Valid placeholders: %player_name%, %random%)
+communication:
+  disableChat: true # Don't allow players to chat.
+  disableCommands: true # Don't allow commands.
 
-playXP: true # Plays an XP sound when the proxy sends a plugin message.
+audio:
+  playXpSound: true # Plays an XP sound when the proxy sends a plugin message.
 
-preventExperience: true # Prevents players from gaining experience.
-preventDamage: true # Prevents players from getting damage.
-preventHunger: true # Prevents players from gaining hunger.
+protections:
+  preventExperience: true # Prevents players from gaining experience.
+  preventDamage: true # Prevents players from getting damage.
+  preventHunger: true # Prevents players from gaining hunger.
 
 # ProtocolLib only
-disableDebug: true # Doesn't show the clients position on F3.
-noChunkPackets: true # Do not send chunk data packets.
-noTimePackets: true # Do not send time packets.
-noHealthPackets: true # Do not send health packets.
-noAdvancementPackets: true # Do not send advancement packets.
-noExperiencePackets: true # Do not send experience packets.
-showHeadPacket: true # Does not send entity metadata anymore, causing that the entire player head is shown while in spectator.
+protocolLib:
+  disableDebug: true # Doesn't show the client's position on F3.
+  suppressPackets:
+    chunk: true # Do not send chunk data packets.
+    time: true # Do not send time packets.
+    health: true # Do not send health packets.
+    advancement: true # Do not send advancement packets.
+    experience: true # Do not send experience packets.
+  showFullHead: true # Does not send entity metadata anymore, causing that the entire player head is shown while in spectator.
