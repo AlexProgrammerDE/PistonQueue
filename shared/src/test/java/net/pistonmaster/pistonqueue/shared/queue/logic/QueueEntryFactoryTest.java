@@ -41,7 +41,7 @@ class QueueEntryFactoryTest {
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Enqueue");
     QueueTestUtils.TestPreConnectEvent event = QueueTestUtils.preConnectEvent(player, "customTarget");
 
@@ -55,14 +55,14 @@ class QueueEntryFactoryTest {
   @Test
   void forcesDefaultTargetWhenConfigured() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.FORCE_TARGET_SERVER = true;
+    config.setForceTargetServer(true);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer(), group.getTargetServers().getFirst());
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Force");
     QueueTestUtils.TestPreConnectEvent event = QueueTestUtils.preConnectEvent(player, "customTarget");
 
@@ -80,7 +80,7 @@ class QueueEntryFactoryTest {
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Full");
     QueueTestUtils.TestPreConnectEvent event = QueueTestUtils.preConnectEvent(player, "target");
 
@@ -88,7 +88,7 @@ class QueueEntryFactoryTest {
     entryFactory.enqueue(player, group, type, event, true, config); // Try to enqueue again
 
     long fullMessageCount = player.getMessages().stream()
-      .filter(msg -> msg.contains(config.SERVER_IS_FULL_MESSAGE))
+      .filter(msg -> msg.contains(config.serverIsFullMessage()))
       .count();
     assertEquals(1, fullMessageCount);
   }
@@ -102,7 +102,7 @@ class QueueEntryFactoryTest {
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     type.setHeader(List.of("Header Line 1", "Header Line 2"));
     type.setFooter(List.of("Footer Line 1"));
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("List");
@@ -123,13 +123,13 @@ class QueueEntryFactoryTest {
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("NotFull");
     QueueTestUtils.TestPreConnectEvent event = QueueTestUtils.preConnectEvent(player, "target");
 
     entryFactory.enqueue(player, group, type, event, false, config);
 
     assertTrue(player.getMessages().stream()
-      .noneMatch(msg -> msg.contains(config.SERVER_IS_FULL_MESSAGE)));
+      .noneMatch(msg -> msg.contains(config.serverIsFullMessage())));
   }
 }

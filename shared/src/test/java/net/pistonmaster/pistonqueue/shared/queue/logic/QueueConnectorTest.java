@@ -42,7 +42,7 @@ class QueueConnectorTest {
     ShadowBanService shadowBanService = shadowBannedNames::contains;
     QueueConnector connector = new QueueConnector(environment, calculator, shadowBanService);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     type.getPlayersWithTypeInTarget().set(5); // Server is full
 
     int result = connector.calculateEffectiveFreeSlots(config, type);
@@ -53,7 +53,7 @@ class QueueConnectorTest {
   @Test
   void calculateEffectiveFreeSlotsRespectsMaxPlayersPerMove() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
-    config.MAX_PLAYERS_PER_MOVE = 2;
+    config.setMaxPlayersPerMove(2);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
@@ -62,7 +62,7 @@ class QueueConnectorTest {
     ShadowBanService shadowBanService = shadowBannedNames::contains;
     QueueConnector connector = new QueueConnector(environment, calculator, shadowBanService);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     type.getPlayersWithTypeInTarget().set(0); // Server has slots
 
     int result = connector.calculateEffectiveFreeSlots(config, type);
@@ -73,7 +73,7 @@ class QueueConnectorTest {
   @Test
   void shouldSkipPlayerDueToShadowBanReturnsTrueForLoopBan() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.SHADOW_BAN_TYPE = BanType.LOOP;
+    config.setShadowBanType(BanType.LOOP);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
@@ -93,7 +93,7 @@ class QueueConnectorTest {
   @Test
   void shouldSkipPlayerDueToShadowBanReturnsFalseForNonBannedPlayer() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.SHADOW_BAN_TYPE = BanType.LOOP;
+    config.setShadowBanType(BanType.LOOP);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
@@ -124,7 +124,7 @@ class QueueConnectorTest {
 
     connector.preparePlayerForConnection(config, player);
 
-    assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(config.JOINING_TARGET_SERVER)));
+    assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(config.joiningTargetServer())));
     assertTrue(player.getPlayerListHeader().isEmpty() && player.getPlayerListFooter().isEmpty());
   }
 }

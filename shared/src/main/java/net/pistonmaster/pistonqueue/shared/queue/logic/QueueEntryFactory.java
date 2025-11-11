@@ -48,7 +48,7 @@ public final class QueueEntryFactory {
 
     Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
     String queueTarget;
-    if (config.FORCE_TARGET_SERVER || originalTarget.isEmpty()) {
+    if (config.forceTargetServer() || originalTarget.isEmpty()) {
       queueTarget = environment.defaultTarget(group);
     } else {
       queueTarget = originalTarget.get();
@@ -69,7 +69,7 @@ public final class QueueEntryFactory {
     }
 
     if (shouldNotifyFull) {
-      player.sendMessage(config.SERVER_IS_FULL_MESSAGE);
+      player.sendMessage(config.serverIsFullMessage());
     }
   }
 }

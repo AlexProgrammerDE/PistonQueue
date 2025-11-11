@@ -52,12 +52,12 @@ public final class QueueMoveProcessor {
       queueCleaner.cleanGroup(group);
     }
 
-    if (config.RECOVERY) {
+    if (config.recovery()) {
       environment.plugin().getPlayers().forEach(recoveryHandler::recoverPlayer);
     }
 
     for (QueueGroup group : config.getQueueGroups()) {
-      if (config.PAUSE_QUEUE_IF_TARGET_DOWN && !environment.isGroupTargetOnline(group)) {
+      if (config.pauseQueueIfTargetDown() && !environment.isGroupTargetOnline(group)) {
         continue;
       }
       for (QueueType type : group.getQueueTypes()) {

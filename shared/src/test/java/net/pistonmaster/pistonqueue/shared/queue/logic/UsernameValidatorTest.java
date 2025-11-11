@@ -29,9 +29,9 @@ class UsernameValidatorTest {
   @Test
   void allowsValidUsernameWhenRegexEnabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.ENABLE_USERNAME_REGEX = true;
-    config.USERNAME_REGEX = "[A-Za-z0-9_]{3,16}";
-    config.USERNAME_REGEX_MESSAGE = "Invalid username format";
+    config.setEnableUsernameRegex(true);
+    config.setUsernameRegex("[A-Za-z0-9_]{3,16}");
+    config.setUsernameRegexMessage("Invalid username format");
 
     UsernameValidator validator = new UsernameValidator(config);
     QueueTestUtils.TestPreLoginEvent event = QueueTestUtils.preLoginEvent("ValidUser123");
@@ -45,9 +45,9 @@ class UsernameValidatorTest {
   @Test
   void rejectsInvalidUsernameWhenRegexEnabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.ENABLE_USERNAME_REGEX = true;
-    config.USERNAME_REGEX = "[A-Za-z0-9_]{3,16}";
-    config.USERNAME_REGEX_MESSAGE = "Username must match %regex%";
+    config.setEnableUsernameRegex(true);
+    config.setUsernameRegex("[A-Za-z0-9_]{3,16}");
+    config.setUsernameRegexMessage("Username must match %regex%");
 
     UsernameValidator validator = new UsernameValidator(config);
     QueueTestUtils.TestPreLoginEvent event = QueueTestUtils.preLoginEvent("Invalid@User!");
@@ -61,8 +61,8 @@ class UsernameValidatorTest {
   @Test
   void allowsAnyUsernameWhenRegexDisabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.ENABLE_USERNAME_REGEX = false;
-    config.USERNAME_REGEX = "[A-Za-z0-9_]{3,16}";
+    config.setEnableUsernameRegex(false);
+    config.setUsernameRegex("[A-Za-z0-9_]{3,16}");
 
     UsernameValidator validator = new UsernameValidator(config);
     QueueTestUtils.TestPreLoginEvent event = QueueTestUtils.preLoginEvent("Any@User!123");
@@ -75,8 +75,8 @@ class UsernameValidatorTest {
   @Test
   void doesNotProcessAlreadyCancelledEvent() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.ENABLE_USERNAME_REGEX = true;
-    config.USERNAME_REGEX = "[A-Za-z0-9_]{3,16}";
+    config.setEnableUsernameRegex(true);
+    config.setUsernameRegex("[A-Za-z0-9_]{3,16}");
 
     UsernameValidator validator = new UsernameValidator(config);
     QueueTestUtils.TestPreLoginEvent event = QueueTestUtils.preLoginEvent("Invalid@User!");
@@ -91,9 +91,9 @@ class UsernameValidatorTest {
   @Test
   void replacesRegexPlaceholderInMessage() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.ENABLE_USERNAME_REGEX = true;
-    config.USERNAME_REGEX = "[A-Za-z]{5,}";
-    config.USERNAME_REGEX_MESSAGE = "Username must match pattern: %regex%";
+    config.setEnableUsernameRegex(true);
+    config.setUsernameRegex("[A-Za-z]{5,}");
+    config.setUsernameRegexMessage("Username must match pattern: %regex%");
 
     UsernameValidator validator = new UsernameValidator(config);
     QueueTestUtils.TestPreLoginEvent event = QueueTestUtils.preLoginEvent("123");

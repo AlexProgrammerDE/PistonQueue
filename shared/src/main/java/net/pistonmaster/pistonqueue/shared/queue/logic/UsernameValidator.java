@@ -44,8 +44,8 @@ public final class UsernameValidator {
       return;
     }
 
-    if (config.ENABLE_USERNAME_REGEX && !event.getUsername().matches(config.USERNAME_REGEX)) {
-      event.setCancelled(config.USERNAME_REGEX_MESSAGE.replace("%regex%", config.USERNAME_REGEX));
+    if (config.enableUsernameRegex() && !event.getUsername().matches(config.usernameRegex())) {
+      event.setCancelled(config.usernameRegexMessage().replace("%regex%", config.usernameRegex()));
     }
   }
 }

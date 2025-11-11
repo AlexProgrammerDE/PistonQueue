@@ -40,14 +40,14 @@ class QueueRecoveryHandlerTest {
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Recover");
     player.setCurrentServer(group.getQueueServer());
 
     recoveryHandler.recoverPlayer(player);
 
     assertTrue(type.getQueueMap().containsKey(player.getUniqueId()));
-    assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(config.RECOVERY_MESSAGE)));
+    assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(config.recoveryMessage())));
   }
 
   @Test
@@ -59,7 +59,7 @@ class QueueRecoveryHandlerTest {
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("NotRecover");
     player.setCurrentServer("otherServer");
 
@@ -78,7 +78,7 @@ class QueueRecoveryHandlerTest {
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Transferring");
     player.setCurrentServer(group.getQueueServer());
     type.getActiveTransfers().add(player.getUniqueId());
@@ -97,7 +97,7 @@ class QueueRecoveryHandlerTest {
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Duplicate");
     player.setCurrentServer(group.getQueueServer());
     type.getQueueMap().put(player.getUniqueId(), new QueueType.QueuedPlayer("target", QueueReason.RECOVERY));
@@ -107,7 +107,7 @@ class QueueRecoveryHandlerTest {
     assertEquals(1, type.getQueueMap().size());
     // Should not send duplicate messages - player is already queued so no message sent
     long recoveryMessageCount = player.getMessages().stream()
-      .filter(msg -> msg.contains(config.RECOVERY_MESSAGE))
+      .filter(msg -> msg.contains(config.recoveryMessage()))
       .count();
     assertEquals(0, recoveryMessageCount);
   }

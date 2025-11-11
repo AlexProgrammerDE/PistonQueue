@@ -42,8 +42,8 @@ public final class ShadowBanKickHandler {
    * @param player the player who just logged in
    */
   public void handleShadowBanKick(PlayerWrapper player) {
-    if (StorageTool.isShadowBanned(player.getName()) && config.SHADOW_BAN_TYPE == BanType.KICK) {
-      player.disconnect(config.SERVER_DOWN_KICK_MESSAGE);
+    if (StorageTool.isShadowBanned(player.getName()) && config.shadowBanType() == BanType.KICK) {
+      player.disconnect(config.serverDownKickMessage());
     }
   }
 }

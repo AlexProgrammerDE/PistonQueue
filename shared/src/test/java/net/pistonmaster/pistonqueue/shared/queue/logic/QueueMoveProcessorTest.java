@@ -60,7 +60,7 @@ class QueueMoveProcessorTest {
   @Test
   void respectsMaxPlayersPerMove() {
     MoveContext context = context(5);
-    context.config().MAX_PLAYERS_PER_MOVE = 1;
+    context.config().setMaxPlayersPerMove(1);
     TestPlayer first = context.plugin().registerPlayer("P1");
     enqueue(context, first, "main");
     TestPlayer second = context.plugin().registerPlayer("P2");
@@ -107,7 +107,7 @@ class QueueMoveProcessorTest {
 
     context.processor().processQueues();
 
-    assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(context.config().RECOVERY_MESSAGE)));
+    assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(context.config().recoveryMessage())));
     assertTrue(player.getConnections().contains(context.group().getTargetServers().getFirst()));
   }
 
@@ -127,7 +127,7 @@ class QueueMoveProcessorTest {
   @Test
   void resumesWhenPauseDisabled() {
     MoveContext context = context(5);
-    context.config().PAUSE_QUEUE_IF_TARGET_DOWN = false;
+    context.config().setPauseQueueIfTargetDown(false);
     context.onlineServers().remove(context.group().getTargetServers().getFirst());
     TestPlayer player = context.plugin().registerPlayer("Bold");
     enqueue(context, player, "main");
@@ -163,7 +163,7 @@ class QueueMoveProcessorTest {
     context.processor().processQueues();
 
     assertTrue(context.queueType().getQueueMap().containsKey(player.getUniqueId()));
-    assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(context.config().SHADOW_BAN_MESSAGE)));
+    assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(context.config().shadowBanMessage())));
     context.unShadowBan(player.getName());
   }
 
@@ -252,7 +252,7 @@ class QueueMoveProcessorTest {
     ShadowBanService shadowBanService = shadowBannedNames::contains;
     QueueConnector connector = new QueueConnector(environment, calculator, shadowBanService);
     QueueMoveProcessor processor = new QueueMoveProcessor(environment, cleaner, recovery, connector);
-    return new MoveContext(config, plugin, environment, processor, group, config.QUEUE_TYPES[0], online, shadowBannedNames);
+    return new MoveContext(config, plugin, environment, processor, group, QueueTestUtils.defaultQueueType(config), online, shadowBannedNames);
   }
 
   private record MoveContext(

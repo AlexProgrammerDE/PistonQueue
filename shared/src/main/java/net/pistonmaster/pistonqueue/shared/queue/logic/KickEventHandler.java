@@ -56,17 +56,17 @@ public final class KickEventHandler {
     QueueGroup group = queueEnvironment.resolveGroupForTarget(event.getKickedFrom());
     boolean kickedFromProtectedTarget = group.getTargetServers().contains(event.getKickedFrom());
 
-    if (config.IF_TARGET_DOWN_SEND_TO_QUEUE && kickedFromProtectedTarget) {
+    if (config.ifTargetDownSendToQueue() && kickedFromProtectedTarget) {
       String kickReason = event.getKickReason()
         .map(s -> s.toLowerCase(Locale.ROOT))
         .orElse("unknown reason");
 
-      config.DOWN_WORD_LIST.stream()
+      config.downWordList().stream()
         .filter(word -> kickReason.contains(word.toLowerCase(Locale.ROOT)))
         .findFirst()
         .ifPresent(word -> {
           event.setCancelServer(group.getQueueServer());
-          event.getPlayer().sendMessage(config.IF_TARGET_DOWN_SEND_TO_QUEUE_MESSAGE);
+          event.getPlayer().sendMessage(config.ifTargetDownSendToQueueMessage());
 
           QueueType queueType = config.getQueueType(event.getPlayer());
           Lock writeLock = queueType.getQueueLock().writeLock();
@@ -82,8 +82,8 @@ public final class KickEventHandler {
   }
 
   private void handleKickMessage(PQKickedFromServerEvent event) {
-    if (config.ENABLE_KICK_MESSAGE && event.willDisconnect()) {
-      event.setKickMessage(config.KICK_MESSAGE);
+    if (config.enableKickMessage() && event.willDisconnect()) {
+      event.setKickMessage(config.kickMessage());
     }
   }
 }
