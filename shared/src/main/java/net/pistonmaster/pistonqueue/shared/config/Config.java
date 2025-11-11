@@ -23,7 +23,6 @@ import de.exlll.configlib.Comment;
 import de.exlll.configlib.Configuration;
 import de.exlll.configlib.Ignore;
 import de.exlll.configlib.PostProcess;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.pistonmaster.pistonqueue.shared.queue.BanType;
 import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
@@ -41,10 +40,6 @@ import java.util.Map;
 import java.util.Optional;
 
 @Configuration
-@SuppressFBWarnings(
-  value = "PA_PUBLIC_PRIMITIVE_ATTRIBUTE",
-  justification = "Fields intentionally exposed through getters for ConfigLib serialization compatibility"
-)
 public final class Config {
   public static final int CURRENT_VERSION = 2;
 

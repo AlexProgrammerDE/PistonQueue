@@ -19,6 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.shared.hooks;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.pistonmaster.pistonmotd.api.PlaceholderParser;
 import net.pistonmaster.pistonmotd.api.PlaceholderUtil;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
@@ -30,6 +31,10 @@ import java.util.concurrent.locks.Lock;
 public final class PistonMOTDPlaceholder implements PlaceholderParser {
   private final Config config;
 
+  @SuppressFBWarnings(
+    value = "EI_EXPOSE_REP2",
+    justification = "Placeholder must reflect live configuration changes and only reads from the provided reference"
+  )
   public PistonMOTDPlaceholder(Config config) {
     this.config = config;
     PlaceholderUtil.registerParser(this);

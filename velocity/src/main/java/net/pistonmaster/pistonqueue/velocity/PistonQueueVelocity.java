@@ -30,6 +30,7 @@ import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import lombok.Getter;
 import net.kyori.adventure.text.Component;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.hooks.PistonMOTDPlaceholder;
@@ -174,6 +175,10 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
   }
 
   @Override
+  @SuppressFBWarnings(
+    value = "EI_EXPOSE_REP",
+    justification = "Configuration is intentionally shared and mutated via copyFrom to keep references in sync"
+  )
   public Config getConfiguration() {
     return configuration;
   }
