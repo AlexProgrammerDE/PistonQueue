@@ -33,7 +33,7 @@ class QueueAvailabilityCalculatorTest {
   @Test
   void getFreeSlotsReturnsCorrectCount() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     type.setReservedSlots(10);
     type.getPlayersWithTypeInTarget().set(3);
 
@@ -47,7 +47,7 @@ class QueueAvailabilityCalculatorTest {
   @Test
   void getFreeSlotsReturnsZeroWhenFull() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     type.setReservedSlots(5);
     type.getPlayersWithTypeInTarget().set(5);
 
@@ -61,7 +61,7 @@ class QueueAvailabilityCalculatorTest {
   @Test
   void isTargetFullReturnsTrueWhenNoFreeSlots() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     type.setReservedSlots(5);
     type.getPlayersWithTypeInTarget().set(5);
 
@@ -75,7 +75,7 @@ class QueueAvailabilityCalculatorTest {
   @Test
   void isTargetFullReturnsFalseWhenHasFreeSlots() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     type.setReservedSlots(10);
     type.getPlayersWithTypeInTarget().set(7);
 
@@ -89,7 +89,7 @@ class QueueAvailabilityCalculatorTest {
   @Test
   void isServerFullReturnsTrueWhenTargetFull() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     type.setReservedSlots(5);
     type.getPlayersWithTypeInTarget().set(5);
 
@@ -103,7 +103,7 @@ class QueueAvailabilityCalculatorTest {
   @Test
   void isServerFullReturnsTrueWhenHasQueuedPlayers() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     type.setReservedSlots(10);
     type.getPlayersWithTypeInTarget().set(0);
     type.getQueueMap().put(UUID.randomUUID(), new QueueType.QueuedPlayer("target", QueueReason.SERVER_FULL));
@@ -118,7 +118,7 @@ class QueueAvailabilityCalculatorTest {
   @Test
   void isServerFullReturnsFalseWhenNotFullAndNoQueue() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     type.setReservedSlots(10);
     type.getPlayersWithTypeInTarget().set(5);
 

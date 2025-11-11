@@ -66,7 +66,7 @@ public interface MainCommandShared {
         sendLine(sender);
       }
       case "slotstats" -> {
-        if (!sender.hasPermission(config.ADMIN_PERMISSION)) {
+        if (!sender.hasPermission(config.adminPermission())) {
           noPermission(sender);
           return;
         }
@@ -83,7 +83,7 @@ public interface MainCommandShared {
         sendLine(sender);
       }
       case "reload" -> {
-        if (!sender.hasPermission(config.ADMIN_PERMISSION)) {
+        if (!sender.hasPermission(config.adminPermission())) {
           noPermission(sender);
           return;
         }
@@ -96,7 +96,7 @@ public interface MainCommandShared {
         sendLine(sender);
       }
       case "shadowban" -> {
-        if (!sender.hasPermission(config.ADMIN_PERMISSION)) {
+        if (!sender.hasPermission(config.adminPermission())) {
           noPermission(sender);
           return;
         }
@@ -148,7 +148,7 @@ public interface MainCommandShared {
 
       }
       case "unshadowban" -> {
-        if (!sender.hasPermission(config.ADMIN_PERMISSION)) {
+        if (!sender.hasPermission(config.adminPermission())) {
           noPermission(sender);
           return;
         }
@@ -191,7 +191,7 @@ public interface MainCommandShared {
     sender.sendMessage(component().text("/pq version").color(TextColorWrapper.GOLD));
     sender.sendMessage(component().text("/pq stats").color(TextColorWrapper.GOLD));
 
-    if (sender.hasPermission(config.ADMIN_PERMISSION)) {
+    if (sender.hasPermission(config.adminPermission())) {
       sender.sendMessage(component().text("/pq slotstats").color(TextColorWrapper.GOLD));
       sender.sendMessage(component().text("/pq reload").color(TextColorWrapper.GOLD));
       sender.sendMessage(component().text("/pq shadowban").color(TextColorWrapper.GOLD));
@@ -225,7 +225,7 @@ public interface MainCommandShared {
 
   default List<String> onTab(String[] args, PermissibleWrapper wrapper, PistonQueuePlugin plugin) {
     Config config = plugin.getConfiguration();
-    if (config.REGISTER_TAB) {
+    if (config.registerTab()) {
       final List<String> completions = new ArrayList<>();
 
       if (args.length == 1) {
@@ -235,14 +235,14 @@ public interface MainCommandShared {
           }
         }
 
-        if (wrapper.hasPermission(config.ADMIN_PERMISSION)) {
+        if (wrapper.hasPermission(config.adminPermission())) {
           for (String string : adminCommands) {
             if (string.toLowerCase(Locale.ROOT).startsWith(args[0].toLowerCase(Locale.ROOT))) {
               completions.add(string);
             }
           }
         }
-      } else if (wrapper.hasPermission(config.ADMIN_PERMISSION)
+      } else if (wrapper.hasPermission(config.adminPermission())
         && args.length == 2
         && ("shadowban".equalsIgnoreCase(args[0]) || "unshadowban".equalsIgnoreCase(args[0]))) {
         addPlayers(completions, args, plugin);

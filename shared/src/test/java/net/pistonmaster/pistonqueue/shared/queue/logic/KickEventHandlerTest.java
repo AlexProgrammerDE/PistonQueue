@@ -33,11 +33,10 @@ class KickEventHandlerTest {
   @Test
   void redirectsToQueueWhenKickedFromDownTargetServer() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.TARGET_SERVER = "target"; // Set the target server
-    QueueTestUtils.rebuildQueueGroups(config); // Rebuild groups after changing target server
-    config.IF_TARGET_DOWN_SEND_TO_QUEUE = true;
-    config.DOWN_WORD_LIST = List.of("server", "down", "offline");
-    config.IF_TARGET_DOWN_SEND_TO_QUEUE_MESSAGE = "Server is down, redirecting to queue";
+    config.setTargetServer("target");
+    config.setIfTargetDownSendToQueue(true);
+    config.setDownWordList(List.of("server", "down", "offline"));
+    config.setIfTargetDownSendToQueueMessage("Server is down, redirecting to queue");
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
@@ -51,16 +50,16 @@ class KickEventHandlerTest {
 
     assertEquals("queue", event.getCancelServer().orElseThrow());
     assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains("Server is down, redirecting to queue")));
-    assertTrue(config.QUEUE_TYPES[0].getQueueMap().containsKey(player.getUniqueId()));
-    assertEquals("target", config.QUEUE_TYPES[0].getQueueMap().get(player.getUniqueId()).targetServer());
+    assertTrue(QueueTestUtils.defaultQueueType(config).getQueueMap().containsKey(player.getUniqueId()));
+    assertEquals("target", QueueTestUtils.defaultQueueType(config).getQueueMap().get(player.getUniqueId()).targetServer());
   }
 
   @Test
   void doesNotRedirectWhenQueueRedirectionDisabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.TARGET_SERVER = "target"; // Set the target server
-    config.IF_TARGET_DOWN_SEND_TO_QUEUE = false;
-    config.DOWN_WORD_LIST = List.of("down");
+    config.setTargetServer("target");
+    config.setIfTargetDownSendToQueue(false);
+    config.setDownWordList(List.of("down"));
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
@@ -73,15 +72,15 @@ class KickEventHandlerTest {
     handler.handleKick(event);
 
     assertTrue(event.getCancelServer().isEmpty());
-    assertTrue(config.QUEUE_TYPES[0].getQueueMap().isEmpty());
+    assertTrue(QueueTestUtils.defaultQueueType(config).getQueueMap().isEmpty());
   }
 
   @Test
   void doesNotRedirectWhenKickedFromNonTargetServer() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.TARGET_SERVER = "target"; // Set the target server
-    config.IF_TARGET_DOWN_SEND_TO_QUEUE = true;
-    config.DOWN_WORD_LIST = List.of("down");
+    config.setTargetServer("target");
+    config.setIfTargetDownSendToQueue(true);
+    config.setDownWordList(List.of("down"));
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
@@ -94,15 +93,15 @@ class KickEventHandlerTest {
     handler.handleKick(event);
 
     assertTrue(event.getCancelServer().isEmpty());
-    assertTrue(config.QUEUE_TYPES[0].getQueueMap().isEmpty());
+    assertTrue(QueueTestUtils.defaultQueueType(config).getQueueMap().isEmpty());
   }
 
   @Test
   void doesNotRedirectWhenKickReasonDoesNotMatch() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.TARGET_SERVER = "target"; // Set the target server
-    config.IF_TARGET_DOWN_SEND_TO_QUEUE = true;
-    config.DOWN_WORD_LIST = List.of("down");
+    config.setTargetServer("target");
+    config.setIfTargetDownSendToQueue(true);
+    config.setDownWordList(List.of("down"));
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
@@ -115,14 +114,14 @@ class KickEventHandlerTest {
     handler.handleKick(event);
 
     assertTrue(event.getCancelServer().isEmpty());
-    assertTrue(config.QUEUE_TYPES[0].getQueueMap().isEmpty());
+    assertTrue(QueueTestUtils.defaultQueueType(config).getQueueMap().isEmpty());
   }
 
   @Test
   void setsCustomKickMessageWhenEnabledAndWillDisconnect() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.ENABLE_KICK_MESSAGE = true;
-    config.KICK_MESSAGE = "Custom kick message";
+    config.setEnableKickMessage(true);
+    config.setKickMessage("Custom kick message");
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
@@ -141,8 +140,8 @@ class KickEventHandlerTest {
   @Test
   void doesNotSetKickMessageWhenDisabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.ENABLE_KICK_MESSAGE = false;
-    config.KICK_MESSAGE = "Custom kick message";
+    config.setEnableKickMessage(false);
+    config.setKickMessage("Custom kick message");
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
@@ -161,8 +160,8 @@ class KickEventHandlerTest {
   @Test
   void doesNotSetKickMessageWhenNotDisconnecting() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.ENABLE_KICK_MESSAGE = true;
-    config.KICK_MESSAGE = "Custom kick message";
+    config.setEnableKickMessage(true);
+    config.setKickMessage("Custom kick message");
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
@@ -181,9 +180,9 @@ class KickEventHandlerTest {
   @Test
   void handlesKickWithoutReason() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.TARGET_SERVER = "target"; // Set the target server
-    config.IF_TARGET_DOWN_SEND_TO_QUEUE = true;
-    config.DOWN_WORD_LIST = List.of("down");
+    config.setTargetServer("target");
+    config.setIfTargetDownSendToQueue(true);
+    config.setDownWordList(List.of("down"));
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
@@ -196,16 +195,15 @@ class KickEventHandlerTest {
     handler.handleKick(event);
 
     assertTrue(event.getCancelServer().isEmpty());
-    assertTrue(config.QUEUE_TYPES[0].getQueueMap().isEmpty());
+    assertTrue(QueueTestUtils.defaultQueueType(config).getQueueMap().isEmpty());
   }
 
   @Test
   void caseInsensitiveKickReasonMatching() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.TARGET_SERVER = "target"; // Set the target server
-    QueueTestUtils.rebuildQueueGroups(config); // Rebuild groups after changing target server
-    config.IF_TARGET_DOWN_SEND_TO_QUEUE = true;
-    config.DOWN_WORD_LIST = List.of("server", "DOWN");
+    config.setTargetServer("target");
+    config.setIfTargetDownSendToQueue(true);
+    config.setDownWordList(List.of("server", "DOWN"));
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
@@ -218,6 +216,6 @@ class KickEventHandlerTest {
     handler.handleKick(event);
 
     assertEquals("queue", event.getCancelServer().orElseThrow());
-    assertTrue(config.QUEUE_TYPES[0].getQueueMap().containsKey(player.getUniqueId()));
+    assertTrue(QueueTestUtils.defaultQueueType(config).getQueueMap().containsKey(player.getUniqueId()));
   }
 }

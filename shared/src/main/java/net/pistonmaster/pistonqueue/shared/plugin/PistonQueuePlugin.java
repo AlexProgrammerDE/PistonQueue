@@ -25,6 +25,7 @@ import de.exlll.configlib.NameFormatters;
 import de.exlll.configlib.YamlConfigurations;
 import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.config.Config;
+import net.pistonmaster.pistonqueue.shared.config.ConfigMigrator;
 import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueListenerShared;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
@@ -75,9 +76,9 @@ public interface PistonQueuePlugin {
       QueueType[] queueTypes = config.getAllQueueTypes().toArray(new QueueType[0]);
       resolvedDefaultGroup = new QueueGroup(
         "default",
-        config.QUEUE_SERVER,
-        Collections.singletonList(config.TARGET_SERVER),
-        config.ENABLE_SOURCE_SERVER ? Collections.singletonList(config.SOURCE_SERVER) : Collections.emptyList(),
+        config.queueServer(),
+        Collections.singletonList(config.targetServer()),
+        config.enableSourceServer() ? Collections.singletonList(config.sourceServer()) : Collections.emptyList(),
         queueTypes
       );
     }
@@ -87,42 +88,42 @@ public interface PistonQueuePlugin {
       boolean targetsOnline = defaultGroup.getTargetServers().stream().anyMatch(queueListener.getOnlineServers()::contains);
       if (targetsOnline) {
         for (QueueType type : config.getAllQueueTypes()) {
-          if (config.POSITION_MESSAGE_CHAT) {
+          if (config.positionMessageChat()) {
             sendMessage(type, MessageType.CHAT);
           }
-          if (config.POSITION_MESSAGE_HOT_BAR) {
+          if (config.positionMessageHotBar()) {
             sendMessage(type, MessageType.ACTION_BAR);
           }
         }
-      } else if (config.PAUSE_QUEUE_IF_TARGET_DOWN) {
+      } else if (config.pauseQueueIfTargetDown()) {
         for (QueueType type : config.getAllQueueTypes()) {
           for (UUID uuid : snapshotQueueOrder(type)) {
-            getPlayer(uuid).ifPresent(value -> value.sendMessage(config.PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE));
+            getPlayer(uuid).ifPresent(value -> value.sendMessage(config.pauseQueueIfTargetDownMessage()));
           }
         }
       }
-    }, config.POSITION_MESSAGE_DELAY, config.POSITION_MESSAGE_DELAY, TimeUnit.MILLISECONDS);
+    }, config.positionMessageDelay(), config.positionMessageDelay(), TimeUnit.MILLISECONDS);
 
     // Updates the tab
     schedule(() -> {
-      if (!config.POSITION_PLAYER_LIST) {
+      if (!config.positionPlayerList()) {
         return;
       }
 
       for (QueueType type : config.getAllQueueTypes()) {
         updateTab(type);
       }
-    }, config.QUEUE_MOVE_DELAY, config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
+    }, config.queueMoveDelay(), config.queueMoveDelay(), TimeUnit.MILLISECONDS);
 
     // Send plugin message
-    schedule(this::sendCustomData, config.QUEUE_MOVE_DELAY, config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
+    schedule(this::sendCustomData, config.queueMoveDelay(), config.queueMoveDelay(), TimeUnit.MILLISECONDS);
 
     // Moves the queue when someone logs off the target server on an interval set in the config.yml
-    schedule(queueListener::moveQueue, config.QUEUE_MOVE_DELAY, config.QUEUE_MOVE_DELAY, TimeUnit.MILLISECONDS);
+    schedule(queueListener::moveQueue, config.queueMoveDelay(), config.queueMoveDelay(), TimeUnit.MILLISECONDS);
 
     // Checks the status of all the servers
     schedule(() -> {
-      List<String> servers = new ArrayList<>(config.KICK_WHEN_DOWN_SERVERS);
+      List<String> servers = new ArrayList<>(config.kickWhenDownServers());
       CountDownLatch latch = new CountDownLatch(servers.size());
       for (String server : servers) {
         CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
@@ -154,7 +155,7 @@ public interface PistonQueuePlugin {
         Thread.currentThread().interrupt();
         error("Server status check interrupted: " + e.getMessage());
       }
-    }, 500, config.SERVER_ONLINE_CHECK_DELAY, TimeUnit.MILLISECONDS);
+    }, 500, config.serverOnlineCheckDelay(), TimeUnit.MILLISECONDS);
   }
 
   default void sendMessage(QueueType queue, MessageType type) {
@@ -169,7 +170,7 @@ public interface PistonQueuePlugin {
         continue;
       }
 
-      String chatMessage = config.QUEUE_POSITION
+      String chatMessage = config.queuePosition()
         .replace("%position%", String.valueOf(++position))
         .replace("%total%", String.valueOf(totalQueued));
 
@@ -306,6 +307,7 @@ public interface PistonQueuePlugin {
   }
 
   default void loadConfig(Path file) throws IOException {
+    ConfigMigrator.migrate(file);
     Config loaded = YamlConfigurations.update(
       file,
       Config.class,

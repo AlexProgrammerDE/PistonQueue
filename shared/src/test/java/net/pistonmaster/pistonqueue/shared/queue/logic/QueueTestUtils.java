@@ -33,8 +33,6 @@ import net.pistonmaster.pistonqueue.shared.wrapper.ServerInfoWrapper;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -51,6 +49,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.LinkedHashMap;
 
 final class QueueTestUtils {
   private static final AtomicBoolean storageInitialized = new AtomicBoolean();
@@ -82,15 +81,28 @@ final class QueueTestUtils {
   static Config createConfigWithSingleQueueType(int slots) {
     Config config = new Config();
     config.copyFrom(config); // Initializes defaults and queue groups
-    QueueType queueType = new QueueType(
-      "DEFAULT",
-      1,
-      "default",
-      slots,
-      new ArrayList<>(),
-      new ArrayList<>());
-    config.QUEUE_TYPES = new QueueType[]{queueType};
-    rebuildQueueGroups(config);
+
+    Config.QueueTypeConfiguration queueTypeConfiguration = new Config.QueueTypeConfiguration();
+    queueTypeConfiguration.setOrder(1);
+    queueTypeConfiguration.setSlots(slots);
+    queueTypeConfiguration.setPermission("default");
+    queueTypeConfiguration.setHeader(List.of());
+    queueTypeConfiguration.setFooter(List.of());
+
+    Map<String, Config.QueueTypeConfiguration> queueTypeDefinitions = new LinkedHashMap<>();
+    queueTypeDefinitions.put("DEFAULT", queueTypeConfiguration);
+
+    Config.QueueGroupConfiguration groupConfiguration = new Config.QueueGroupConfiguration();
+    groupConfiguration.setDefaultGroup(true);
+    groupConfiguration.setQueueServer("");
+    groupConfiguration.setTargetServers(List.of());
+    groupConfiguration.setSourceServers(List.of());
+    groupConfiguration.setQueueTypes(List.of("DEFAULT"));
+
+    Map<String, Config.QueueGroupConfiguration> groupDefinitions = new LinkedHashMap<>();
+    groupDefinitions.put("default", groupConfiguration);
+    config.setQueueDefinitions(queueTypeDefinitions, groupDefinitions);
+
     return config;
   }
 
@@ -98,14 +110,8 @@ final class QueueTestUtils {
     return config.getQueueGroups().iterator().next();
   }
 
-  static void rebuildQueueGroups(Config config) {
-    try {
-      Method rebuild = Config.class.getDeclaredMethod("rebuildQueueGroups");
-      rebuild.setAccessible(true);
-      rebuild.invoke(config);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      throw new RuntimeException(e);
-    }
+  static QueueType defaultQueueType(Config config) {
+    return config.getAllQueueTypes().get(0);
   }
 
   static TestPreConnectEvent preConnectEvent(PlayerWrapper player, String target) {
@@ -132,8 +138,8 @@ final class QueueTestUtils {
         throw new UncheckedIOException(e);
       }
       // Pre-register queue and target servers used by tests
-      registerServer(config.QUEUE_SERVER);
-      registerServer(config.TARGET_SERVER);
+      registerServer(config.queueServer());
+      registerServer(config.targetServer());
     }
 
     TestServer registerServer(String name) {

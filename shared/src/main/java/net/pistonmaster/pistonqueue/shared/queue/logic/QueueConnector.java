@@ -88,7 +88,7 @@ public final class QueueConnector {
       PlayerWrapper player = optional.get();
 
       if (shouldSkipPlayerDueToShadowBan(config, player)) {
-        player.sendMessage(config.SHADOW_BAN_MESSAGE);
+        player.sendMessage(config.shadowBanMessage());
         requeuePlayer(type, entry);
         continue;
       }
@@ -101,7 +101,7 @@ public final class QueueConnector {
       movesLeft--;
     }
 
-    if (config.SEND_XP_SOUND) {
+    if (config.sendXpSound()) {
       sendXPSoundToQueueType(group, type);
     }
   }
@@ -111,7 +111,7 @@ public final class QueueConnector {
     if (freeSlots <= 0) {
       return 0;
     }
-    return Math.min(freeSlots, config.MAX_PLAYERS_PER_MOVE);
+    return Math.min(freeSlots, config.maxPlayersPerMove());
   }
 
   boolean shouldSkipPlayerDueToShadowBan(Config config, PlayerWrapper player) {
@@ -119,12 +119,12 @@ public final class QueueConnector {
       return false;
     }
 
-    return config.SHADOW_BAN_TYPE == BanType.LOOP
-      || (config.SHADOW_BAN_TYPE == BanType.PERCENT && ThreadLocalRandom.current().nextInt(100) >= config.PERCENT);
+    return config.shadowBanType() == BanType.LOOP
+      || (config.shadowBanType() == BanType.PERCENT && ThreadLocalRandom.current().nextInt(100) >= config.shadowBanPercent());
   }
 
   void preparePlayerForConnection(Config config, PlayerWrapper player) {
-    player.sendMessage(config.JOINING_TARGET_SERVER);
+    player.sendMessage(config.joiningTargetServer());
     player.resetPlayerList();
   }
 

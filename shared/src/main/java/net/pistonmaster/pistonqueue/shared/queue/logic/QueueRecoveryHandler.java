@@ -60,7 +60,7 @@ public final class QueueRecoveryHandler {
       }
 
       if (addedToQueue) {
-        player.sendMessage(config.RECOVERY_MESSAGE);
+        player.sendMessage(config.recoveryMessage());
       }
     }
   }

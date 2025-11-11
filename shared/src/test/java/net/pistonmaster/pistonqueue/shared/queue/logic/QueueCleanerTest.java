@@ -40,7 +40,7 @@ class QueueCleanerTest {
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueCleaner cleaner = new QueueCleaner(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Stale");
     type.getQueueMap().put(player.getUniqueId(), new QueueType.QueuedPlayer("target", QueueReason.SERVER_FULL));
     // Player is not on the queue server anymore
@@ -59,7 +59,7 @@ class QueueCleanerTest {
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueCleaner cleaner = new QueueCleaner(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Active");
     player.setCurrentServer(group.getQueueServer());
     type.getQueueMap().put(player.getUniqueId(), new QueueType.QueuedPlayer("target", QueueReason.SERVER_FULL));
@@ -93,7 +93,7 @@ class QueueCleanerTest {
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueCleaner cleaner = new QueueCleaner(environment);
 
-    QueueType type = config.QUEUE_TYPES[0];
+    QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player1 = plugin.registerPlayer("Stale1");
     QueueTestUtils.TestPlayer player2 = plugin.registerPlayer("Stale2");
     type.getQueueMap().put(player1.getUniqueId(), new QueueType.QueuedPlayer("target", QueueReason.SERVER_FULL));

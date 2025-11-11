@@ -53,18 +53,18 @@ public final class QueuePlacementCoordinator {
       .flatMap(name -> config.findGroupByTarget(name))
       .orElse(environment.defaultGroup());
 
-    if (config.ENABLE_SOURCE_SERVER && !isSourceToTarget(event, targetGroup)) {
+    if (config.enableSourceServer() && !isSourceToTarget(event, targetGroup)) {
       return;
     }
 
-    if (!config.ENABLE_SOURCE_SERVER && player.getCurrentServer().isPresent()) {
+    if (!config.enableSourceServer() && player.getCurrentServer().isPresent()) {
       return;
     }
 
-    if (config.KICK_WHEN_DOWN) {
-      for (String server : config.KICK_WHEN_DOWN_SERVERS) {
+    if (config.kickWhenDown()) {
+      for (String server : config.kickWhenDownServers()) {
         if (!environment.onlineServers().contains(server)) {
-          player.disconnect(config.SERVER_DOWN_KICK_MESSAGE);
+          player.disconnect(config.serverDownKickMessage());
           return;
         }
       }
@@ -74,8 +74,8 @@ public final class QueuePlacementCoordinator {
     QueueGroup typeGroup = environment.resolveGroupForType(type);
 
     boolean serverFull = false;
-    if (config.ALWAYS_QUEUE || (serverFull = availabilityCalculator.isServerFull(type))) {
-      if (player.hasPermission(config.QUEUE_BYPASS_PERMISSION)) {
+    if (config.alwaysQueue() || (serverFull = availabilityCalculator.isServerFull(type))) {
+      if (player.hasPermission(config.queueBypassPermission())) {
         event.setTarget(environment.defaultTarget(typeGroup));
       } else {
         queueEntryFactory.enqueue(player, typeGroup, type, event, serverFull, config);

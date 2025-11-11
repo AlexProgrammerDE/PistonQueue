@@ -69,9 +69,9 @@ public final class QueueEnvironment {
     QueueType[] queueTypes = config.getAllQueueTypes().toArray(new QueueType[0]);
     return new QueueGroup(
       "default",
-      config.QUEUE_SERVER,
-      List.of(config.TARGET_SERVER),
-      config.ENABLE_SOURCE_SERVER ? List.of(config.SOURCE_SERVER) : List.of(),
+      config.queueServer(),
+      List.of(config.targetServer()),
+      config.enableSourceServer() ? List.of(config.sourceServer()) : List.of(),
       queueTypes
     );
   }
@@ -90,7 +90,7 @@ public final class QueueEnvironment {
 
   public String defaultTarget(QueueGroup group) {
     if (group.getTargetServers().isEmpty()) {
-      return config().TARGET_SERVER;
+      return config().targetServer();
     }
     return group.getTargetServers().getFirst();
   }

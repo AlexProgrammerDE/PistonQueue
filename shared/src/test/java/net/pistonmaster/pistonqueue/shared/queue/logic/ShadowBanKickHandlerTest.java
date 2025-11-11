@@ -34,8 +34,8 @@ class ShadowBanKickHandlerTest {
   @Test
   void kicksShadowBannedPlayerWhenKickTypeEnabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.SHADOW_BAN_TYPE = BanType.KICK;
-    config.SERVER_DOWN_KICK_MESSAGE = "You are shadow banned";
+    config.setShadowBanType(BanType.KICK);
+    config.setServerDownKickMessage("You are shadow banned");
 
     ShadowBanKickHandler handler = new ShadowBanKickHandler(config);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
@@ -54,7 +54,7 @@ class ShadowBanKickHandlerTest {
   @Test
   void doesNotKickNonShadowBannedPlayer() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.SHADOW_BAN_TYPE = BanType.KICK;
+    config.setShadowBanType(BanType.KICK);
 
     ShadowBanKickHandler handler = new ShadowBanKickHandler(config);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
@@ -68,7 +68,7 @@ class ShadowBanKickHandlerTest {
   @Test
   void doesNotKickShadowBannedPlayerWhenKickTypeDisabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.SHADOW_BAN_TYPE = BanType.LOOP; // Not KICK type
+    config.setShadowBanType(BanType.LOOP); // Not KICK type
 
     ShadowBanKickHandler handler = new ShadowBanKickHandler(config);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
@@ -86,8 +86,8 @@ class ShadowBanKickHandlerTest {
   @Test
   void usesCorrectKickMessage() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.SHADOW_BAN_TYPE = BanType.KICK;
-    config.SERVER_DOWN_KICK_MESSAGE = "Custom shadow ban message";
+    config.setShadowBanType(BanType.KICK);
+    config.setServerDownKickMessage("Custom shadow ban message");
 
     ShadowBanKickHandler handler = new ShadowBanKickHandler(config);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
