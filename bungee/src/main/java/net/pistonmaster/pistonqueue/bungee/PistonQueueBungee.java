@@ -19,6 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.bungee;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import lombok.Getter;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
@@ -158,6 +159,10 @@ public final class PistonQueueBungee extends Plugin implements PistonQueuePlugin
   }
 
   @Override
+  @SuppressFBWarnings(
+    value = "EI_EXPOSE_REP",
+    justification = "Configuration is intentionally shared and mutated via copyFrom to keep references in sync"
+  )
   public Config getConfiguration() {
     return configuration;
   }
