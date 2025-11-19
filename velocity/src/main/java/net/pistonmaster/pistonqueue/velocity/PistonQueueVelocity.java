@@ -67,7 +67,7 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
   @Getter
   private final PluginContainer pluginContainer;
   @Getter
-  private final QueueListenerVelocity queueListenerVelocity = new QueueListenerVelocity(this);
+  private final QueueListenerVelocity queueListenerVelocity;
   private final Config configuration = new Config();
   private final Metrics.Factory metricsFactory;
 
@@ -78,6 +78,7 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
     this.dataDirectory = dataDirectory;
     this.pluginContainer = pluginContainer;
     this.metricsFactory = metricsFactory;
+    this.queueListenerVelocity = new QueueListenerVelocity(this);
   }
 
   @Subscribe
