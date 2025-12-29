@@ -18,11 +18,8 @@ dependencyResolutionManagement {
           name = "Sonatype Snapshot Repository"
           mavenContent { snapshotsOnly() }
         }
-        maven("https://papermc.io/repo/repository/maven-public/") {
+        maven("https://repo.papermc.io/repository/maven-public/") {
             name = "PaperMC"
-        }
-        maven("https://nexus.velocitypowered.com/repository/maven-public/") {
-            name = "VelocityPowered"
         }
         maven("https://repo.codemc.org/repository/maven-public") {
             name = "CodeMC"
