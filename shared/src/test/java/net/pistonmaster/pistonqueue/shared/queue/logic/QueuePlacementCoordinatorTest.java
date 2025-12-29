@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -55,6 +56,19 @@ class QueuePlacementCoordinatorTest {
     assertEquals(config.queueServer(), event.getTarget().orElseThrow());
     assertTrue(type.getQueueMap().containsKey(player.getUniqueId()));
     assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(config.serverIsFullMessage())));
+  }
+
+  @Test
+  void queuesPlayerWhenShadowBanned() {
+    Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
+    QueueType type = config.getAllQueueTypes().getFirst();
+
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
+    TestPlayer player = context.plugin().registerPlayer("BannedPlayer");
+
+    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, config.targetServer()));
+
+    assertTrue(type.getQueueMap().containsKey(player.getUniqueId()));
   }
 
   @Test
@@ -230,7 +244,10 @@ class QueuePlacementCoordinatorTest {
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
     QueueServerSelector selector = new QueueServerSelector(environment);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
-    QueuePlacementCoordinator coordinator = new QueuePlacementCoordinator(environment, calculator, entryFactory);
+    Set<String> shadowBannedNames = ConcurrentHashMap.newKeySet();
+    shadowBannedNames.add("BannedPlayer");
+    ShadowBanService shadowBanService = shadowBannedNames::contains;
+    QueuePlacementCoordinator coordinator = new QueuePlacementCoordinator(environment, calculator, entryFactory,shadowBanService);
     return new CoordinatorContext(plugin, environment, coordinator);
   }
 
