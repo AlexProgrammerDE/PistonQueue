@@ -99,7 +99,11 @@ public final class PistonQueueVelocity implements PistonQueuePlugin {
     proxyServer.getChannelRegistrar().register(MinecraftChannelIdentifier.from("piston:queue"));
 
     info("Registering commands");
-    proxyServer.getCommandManager().register("pistonqueue", new MainCommand(this), "pq");
+    var commandMeta = proxyServer.getCommandManager().metaBuilder("pistonqueue")
+      .aliases("pq")
+      .plugin(this)
+      .build();
+    proxyServer.getCommandManager().register(commandMeta, new MainCommand(this));
 
     info("Registering listeners");
     proxyServer.getEventManager().register(this, queueListenerVelocity);

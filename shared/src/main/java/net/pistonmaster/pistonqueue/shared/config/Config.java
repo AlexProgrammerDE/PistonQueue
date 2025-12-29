@@ -19,6 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.shared.config;
 
+import com.google.common.base.Splitter;
 import de.exlll.configlib.Comment;
 import de.exlll.configlib.Configuration;
 import de.exlll.configlib.Ignore;
@@ -613,7 +614,7 @@ public final class Config {
       }
 
       // Split by comma to support comma-separated server lists
-      for (String server : processed.split(",")) {
+      for (String server : Splitter.on(',').split(processed)) {
         String trimmed = server.trim();
         if (!trimmed.isEmpty() && !resolved.contains(trimmed)) {
           resolved.add(trimmed);
@@ -698,9 +699,9 @@ public final class Config {
       }
 
       List<String> typeNames = configuration.getQueueTypes();
-      QueueType[] groupTypes;
+      List<QueueType> groupTypes;
       if (typeNames.isEmpty()) {
-        groupTypes = queueTypeInstances.values().toArray(QueueType[]::new);
+        groupTypes = List.copyOf(queueTypeInstances.values());
       } else {
         groupTypes = typeNames.stream()
           .map(nameKey -> {
@@ -710,7 +711,7 @@ public final class Config {
             }
             return type;
           })
-          .toArray(QueueType[]::new);
+          .toList();
       }
 
       QueueGroup group = new QueueGroup(

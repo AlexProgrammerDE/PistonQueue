@@ -64,7 +64,7 @@ public final class QueueEnvironment {
       return group;
     }
 
-    QueueType[] queueTypes = config.getAllQueueTypes().toArray(new QueueType[0]);
+    List<QueueType> queueTypes = config.getAllQueueTypes();
     return new QueueGroup(
       "default",
       List.of(config.queueServer()),

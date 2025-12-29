@@ -19,18 +19,16 @@
  */
 package net.pistonmaster.pistonqueue.shared.queue;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public record QueueGroup(String name, List<String> queueServers, List<String> targetServers, List<String> sourceServers, QueueType[] queueTypes) {
-  public QueueGroup(String name, List<String> queueServers, List<String> targetServers, List<String> sourceServers, QueueType[] queueTypes) {
+public record QueueGroup(String name, List<String> queueServers, List<String> targetServers, List<String> sourceServers, List<QueueType> queueTypes) {
+  public QueueGroup(String name, List<String> queueServers, List<String> targetServers, List<String> sourceServers, List<QueueType> queueTypes) {
     this.name = name;
     this.queueServers = List.copyOf(queueServers);
     this.targetServers = List.copyOf(targetServers);
     this.sourceServers = List.copyOf(sourceServers);
-    this.queueTypes = queueTypes == null ? new QueueType[0] : queueTypes.clone();
+    this.queueTypes = queueTypes == null ? List.of() : List.copyOf(queueTypes);
   }
 
   /// Returns all queue servers configured for this group.
@@ -52,10 +50,5 @@ public record QueueGroup(String name, List<String> queueServers, List<String> ta
     String lowerServer = server.toLowerCase(Locale.ROOT);
     return queueServers.stream()
       .anyMatch(qs -> qs.toLowerCase(Locale.ROOT).equals(lowerServer));
-  }
-
-  @Override
-  public QueueType[] queueTypes() {
-    return queueTypes.clone();
   }
 }

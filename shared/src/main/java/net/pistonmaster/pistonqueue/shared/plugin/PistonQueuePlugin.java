@@ -73,7 +73,7 @@ public interface PistonQueuePlugin {
     Config config = getConfiguration();
     QueueGroup resolvedDefaultGroup = config.getDefaultGroup();
     if (resolvedDefaultGroup == null) {
-      QueueType[] queueTypes = config.getAllQueueTypes().toArray(new QueueType[0]);
+      List<QueueType> queueTypes = config.getAllQueueTypes();
       resolvedDefaultGroup = new QueueGroup(
         "default",
         Collections.singletonList(config.queueServer()),
