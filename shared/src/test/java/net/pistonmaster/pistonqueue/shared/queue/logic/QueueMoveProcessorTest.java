@@ -101,19 +101,19 @@ class QueueMoveProcessorTest {
   void recoversPlayersStrandedOnQueueServer() {
     MoveContext context = context(5);
     TestPlayer player = context.plugin().registerPlayer("Returner");
-    player.setCurrentServer(context.group().getQueueServers().getFirst());
+    player.setCurrentServer(context.group().queueServers().getFirst());
     context.queueType().getQueueMap().clear();
 
     context.processor().processQueues();
 
     assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(context.config().recoveryMessage())));
-    assertTrue(player.getConnections().contains(context.group().getTargetServers().getFirst()));
+    assertTrue(player.getConnections().contains(context.group().targetServers().getFirst()));
   }
 
   @Test
   void pausesWhenTargetsOffline() {
     MoveContext context = context(5);
-    context.onlineServers().remove(context.group().getTargetServers().getFirst());
+    context.onlineServers().remove(context.group().targetServers().getFirst());
     TestPlayer player = context.plugin().registerPlayer("Waiting");
     enqueue(context, player, "main");
 
@@ -127,7 +127,7 @@ class QueueMoveProcessorTest {
   void resumesWhenPauseDisabled() {
     MoveContext context = context(5);
     context.config().setPauseQueueIfTargetDown(false);
-    context.onlineServers().remove(context.group().getTargetServers().getFirst());
+    context.onlineServers().remove(context.group().targetServers().getFirst());
     TestPlayer player = context.plugin().registerPlayer("Bold");
     enqueue(context, player, "main");
 
@@ -143,7 +143,7 @@ class QueueMoveProcessorTest {
     context.config().setMaxPlayersPerMove(1);
 
     // Register queue server and add players to its connected list
-    TestServer queueServer = context.plugin().registerServer(context.group().getQueueServers().getFirst());
+    TestServer queueServer = context.plugin().registerServer(context.group().queueServers().getFirst());
 
     for (int i = 0; i < 3; i++) {
       TestPlayer player = context.plugin().registerPlayer("XP" + i);
@@ -218,7 +218,7 @@ class QueueMoveProcessorTest {
   @Test
   void movesAfterTargetsComeBackOnline() {
     MoveContext context = context(5);
-    String target = context.group().getTargetServers().getFirst();
+    String target = context.group().targetServers().getFirst();
     context.onlineServers().remove(target);
     TestPlayer player = context.plugin().registerPlayer("Flip");
     enqueue(context, player, target);
@@ -242,7 +242,7 @@ class QueueMoveProcessorTest {
   }
 
   private void enqueue(MoveContext context, TestPlayer player, String target) {
-    player.setCurrentServer(context.group().getQueueServers().getFirst());
+    player.setCurrentServer(context.group().queueServers().getFirst());
     context.queueType().getQueueMap().put(player.getUniqueId(), new QueueType.QueuedPlayer(target, QueueReason.SERVER_FULL));
   }
 
@@ -251,8 +251,8 @@ class QueueMoveProcessorTest {
     TestQueuePlugin plugin = new TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     List<String> servers = new ArrayList<>();
-    servers.addAll(group.getQueueServers());
-    servers.addAll(group.getTargetServers());
+    servers.addAll(group.queueServers());
+    servers.addAll(group.targetServers());
     Set<String> online = QueueTestUtils.onlineServers(servers.toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, online);
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();

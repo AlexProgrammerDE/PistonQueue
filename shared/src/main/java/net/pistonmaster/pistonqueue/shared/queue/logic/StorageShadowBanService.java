@@ -21,9 +21,7 @@ package net.pistonmaster.pistonqueue.shared.queue.logic;
 
 import net.pistonmaster.pistonqueue.shared.utils.StorageTool;
 
-/**
- * Production implementation that defers to {@link StorageTool}.
- */
+/// Production implementation that defers to [StorageTool].
 public final class StorageShadowBanService implements ShadowBanService {
   @Override
   public boolean isShadowBanned(String playerName) {

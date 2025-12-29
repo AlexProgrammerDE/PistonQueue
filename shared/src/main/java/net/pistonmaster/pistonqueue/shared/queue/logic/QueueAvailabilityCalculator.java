@@ -23,10 +23,8 @@ import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 
 import java.util.concurrent.locks.Lock;
 
-/**
- * Encapsulates the slot and fullness calculation so it can be reused and
- * tested independently from the listener implementation.
- */
+/// Encapsulates the slot and fullness calculation so it can be reused and
+/// tested independently from the listener implementation.
 public final class QueueAvailabilityCalculator {
 
   public boolean isServerFull(QueueType type) {

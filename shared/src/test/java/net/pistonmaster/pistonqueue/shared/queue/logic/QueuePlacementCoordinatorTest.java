@@ -43,7 +43,7 @@ class QueuePlacementCoordinatorTest {
   @Test
   void queuesPlayerWhenServerFull() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
-    QueueType type = config.getAllQueueTypes().get(0);
+    QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
     CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer(), config.queueServer()));
@@ -60,7 +60,7 @@ class QueuePlacementCoordinatorTest {
   @Test
   void bypassesQueueWhenPermissionPresent() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
-    QueueType type = config.getAllQueueTypes().get(0);
+    QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
     CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
@@ -78,7 +78,7 @@ class QueuePlacementCoordinatorTest {
   void queuesEvenWhenNotFullIfAlwaysQueueEnabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     config.setAlwaysQueue(true);
-    QueueType type = config.getAllQueueTypes().get(0);
+    QueueType type = config.getAllQueueTypes().getFirst();
 
     CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
     TestPlayer player = context.plugin().registerPlayer("Cara");
@@ -92,7 +92,7 @@ class QueuePlacementCoordinatorTest {
   void retainsOriginalTargetWhenNotForced() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
     config.setForceTargetServer(false);
-    QueueType type = config.getAllQueueTypes().get(0);
+    QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
     CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
@@ -109,7 +109,7 @@ class QueuePlacementCoordinatorTest {
   void forcesDefaultTargetWhenFlagEnabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
     config.setForceTargetServer(true);
-    QueueType type = config.getAllQueueTypes().get(0);
+    QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
     CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
@@ -126,7 +126,7 @@ class QueuePlacementCoordinatorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
     config.setKickWhenDown(true);
     config.setKickWhenDownServers(List.of(config.targetServer()));
-    QueueType type = config.getAllQueueTypes().get(0);
+    QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
     CoordinatorContext context = context(config, QueueTestUtils.onlineServers());
@@ -144,7 +144,7 @@ class QueuePlacementCoordinatorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
     config.setEnableSourceServer(true);
     config.setSourceServer("lobby");
-    QueueType type = config.getAllQueueTypes().get(0);
+    QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
     CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
@@ -161,7 +161,7 @@ class QueuePlacementCoordinatorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
     config.setEnableSourceServer(true);
     config.setSourceServer("lobby");
-    QueueType type = config.getAllQueueTypes().get(0);
+    QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
     CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
@@ -177,7 +177,7 @@ class QueuePlacementCoordinatorTest {
   void ignoresAlreadyConnectedPlayersWhenSourceDisabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
     config.setEnableSourceServer(false);
-    QueueType type = config.getAllQueueTypes().get(0);
+    QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
     CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
@@ -192,7 +192,7 @@ class QueuePlacementCoordinatorTest {
   @Test
   void doesNotDuplicateQueueEntries() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
-    QueueType type = config.getAllQueueTypes().get(0);
+    QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
     CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
@@ -210,7 +210,7 @@ class QueuePlacementCoordinatorTest {
   @Test
   void updatesPlayerListWithConfiguredHeader() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
-    QueueType type = config.getAllQueueTypes().get(0);
+    QueueType type = config.getAllQueueTypes().getFirst();
     type.setHeader(new ArrayList<>(List.of("header")));
     type.setFooter(new ArrayList<>(List.of("footer")));
     type.getPlayersWithTypeInTarget().set(1);

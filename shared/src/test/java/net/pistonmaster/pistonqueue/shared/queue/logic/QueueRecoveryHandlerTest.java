@@ -35,8 +35,8 @@ class QueueRecoveryHandlerTest {
 
   private static Set<String> serversFromGroup(QueueGroup group) {
     List<String> servers = new ArrayList<>();
-    servers.addAll(group.getQueueServers());
-    servers.addAll(group.getTargetServers());
+    servers.addAll(group.queueServers());
+    servers.addAll(group.targetServers());
     return QueueTestUtils.onlineServers(servers.toArray(String[]::new));
   }
 
@@ -51,7 +51,7 @@ class QueueRecoveryHandlerTest {
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Recover");
-    player.setCurrentServer(group.getQueueServers().getFirst());
+    player.setCurrentServer(group.queueServers().getFirst());
 
     recoveryHandler.recoverPlayer(player);
 
@@ -64,7 +64,7 @@ class QueueRecoveryHandlerTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServers().toArray(String[]::new));
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 
@@ -83,13 +83,13 @@ class QueueRecoveryHandlerTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServers().toArray(String[]::new));
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Transferring");
-    player.setCurrentServer(group.getQueueServers().getFirst());
+    player.setCurrentServer(group.queueServers().getFirst());
     type.getActiveTransfers().add(player.getUniqueId());
 
     recoveryHandler.recoverPlayer(player);
@@ -108,7 +108,7 @@ class QueueRecoveryHandlerTest {
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Duplicate");
-    player.setCurrentServer(group.getQueueServers().getFirst());
+    player.setCurrentServer(group.queueServers().getFirst());
     type.getQueueMap().put(player.getUniqueId(), new QueueType.QueuedPlayer("target", QueueReason.RECOVERY));
 
     recoveryHandler.recoverPlayer(player);

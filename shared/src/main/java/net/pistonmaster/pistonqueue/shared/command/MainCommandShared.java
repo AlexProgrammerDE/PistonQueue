@@ -57,8 +57,8 @@ public interface MainCommandShared {
         sendLine(sender);
         sender.sendMessage(component().text("Queue stats").color(TextColorWrapper.GOLD));
         for (QueueGroup group : config.getQueueGroups()) {
-          sender.sendMessage(component().text(group.getName()).color(TextColorWrapper.GOLD));
-          for (QueueType type : group.getQueueTypes()) {
+          sender.sendMessage(component().text(group.name()).color(TextColorWrapper.GOLD));
+          for (QueueType type : group.queueTypes()) {
             sender.sendMessage(component().text(" - " + type.getName() + ": ").color(TextColorWrapper.GOLD)
               .append(component().text(String.valueOf(queueSize(type))).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
           }
@@ -74,8 +74,8 @@ public interface MainCommandShared {
         sendLine(sender);
         sender.sendMessage(component().text("Target slot stats").color(TextColorWrapper.GOLD));
         for (QueueGroup group : config.getQueueGroups()) {
-          sender.sendMessage(component().text(group.getName()).color(TextColorWrapper.GOLD));
-          for (QueueType type : group.getQueueTypes()) {
+          sender.sendMessage(component().text(group.name()).color(TextColorWrapper.GOLD));
+          for (QueueType type : group.queueTypes()) {
             sender.sendMessage(component().text(" - " + type.getName() + ": ").color(TextColorWrapper.GOLD)
               .append(component().text(type.getPlayersWithTypeInTarget().get() + " / " + type.getReservedSlots()).color(TextColorWrapper.GOLD).decorate(TextDecorationWrapper.BOLD)));
           }

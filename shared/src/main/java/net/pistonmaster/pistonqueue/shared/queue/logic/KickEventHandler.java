@@ -29,9 +29,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.concurrent.locks.Lock;
 
-/**
- * Handles kick events and potentially redirects players to the queue.
- */
+/// Handles kick events and potentially redirects players to the queue.
 public final class KickEventHandler {
   private final Config config;
   private final QueueEnvironment queueEnvironment;
@@ -43,12 +41,10 @@ public final class KickEventHandler {
     this.queueServerSelector = Objects.requireNonNull(queueServerSelector, "queueServerSelector");
   }
 
-  /**
-   * Handles a kick event, potentially redirecting the player to the queue if they were kicked
-   * from a protected target server due to it being down.
-   *
-   * @param event the kick event
-   */
+  /// Handles a kick event, potentially redirecting the player to the queue if they were kicked
+  /// from a protected target server due to it being down.
+  ///
+  /// @param event the kick event
   public void handleKick(PQKickedFromServerEvent event) {
     handleQueueRedirection(event);
     handleKickMessage(event);
@@ -56,7 +52,7 @@ public final class KickEventHandler {
 
   private void handleQueueRedirection(PQKickedFromServerEvent event) {
     QueueGroup group = queueEnvironment.resolveGroupForTarget(event.getKickedFrom());
-    boolean kickedFromProtectedTarget = group.getTargetServers().contains(event.getKickedFrom());
+    boolean kickedFromProtectedTarget = group.targetServers().contains(event.getKickedFrom());
 
     if (config.ifTargetDownSendToQueue() && kickedFromProtectedTarget) {
       String kickReason = event.getKickReason()

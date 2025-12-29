@@ -28,9 +28,7 @@ import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 import java.util.Objects;
 import java.util.Optional;
 
-/**
- * Encapsulates the pre-connect logic so that it can be unit tested.
- */
+/// Encapsulates the pre-connect logic so that it can be unit tested.
 public final class QueuePlacementCoordinator {
   private final QueueEnvironment environment;
   private final QueueAvailabilityCalculator availabilityCalculator;
@@ -50,7 +48,7 @@ public final class QueuePlacementCoordinator {
     PlayerWrapper player = event.getPlayer();
     Config config = environment.config();
     QueueGroup targetGroup = event.getTarget()
-      .flatMap(name -> config.findGroupByTarget(name))
+      .flatMap(config::findGroupByTarget)
       .orElse(environment.defaultGroup());
 
     if (config.enableSourceServer() && !isSourceToTarget(event, targetGroup)) {
@@ -86,8 +84,8 @@ public final class QueuePlacementCoordinator {
   private boolean isSourceToTarget(PQServerPreConnectEvent event, QueueGroup group) {
     Optional<String> previousServer = event.getPlayer().getCurrentServer();
     return previousServer.isPresent()
-      && group.getSourceServers().contains(previousServer.get())
+      && group.sourceServers().contains(previousServer.get())
       && event.getTarget().isPresent()
-      && group.getTargetServers().contains(event.getTarget().get());
+      && group.targetServers().contains(event.getTarget().get());
   }
 }

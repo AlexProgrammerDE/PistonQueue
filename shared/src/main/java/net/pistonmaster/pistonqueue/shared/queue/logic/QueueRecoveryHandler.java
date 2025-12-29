@@ -28,9 +28,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
-/**
- * Puts players back into the queue when recovery is enabled and something went wrong with their connection.
- */
+/// Puts players back into the queue when recovery is enabled and something went wrong with their connection.
 public final class QueueRecoveryHandler {
   private final QueueEnvironment environment;
 

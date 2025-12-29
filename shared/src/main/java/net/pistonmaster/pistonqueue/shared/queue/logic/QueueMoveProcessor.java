@@ -25,9 +25,7 @@ import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 
 import java.util.Objects;
 
-/**
- * Coordinates moving the queue forward by delegating to specialized helpers.
- */
+/// Coordinates moving the queue forward by delegating to specialized helpers.
 public final class QueueMoveProcessor {
   private final QueueEnvironment environment;
   private final QueueCleaner queueCleaner;
@@ -60,7 +58,7 @@ public final class QueueMoveProcessor {
       if (config.pauseQueueIfTargetDown() && !environment.isGroupTargetOnline(group)) {
         continue;
       }
-      for (QueueType type : group.getQueueTypes()) {
+      for (QueueType type : group.queueTypes()) {
         queueConnector.connectPlayers(group, type);
       }
     }

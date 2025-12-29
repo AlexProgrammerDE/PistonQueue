@@ -30,10 +30,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
-/**
- * Centralizes access to frequently used queue context objects so that the
- * extracted logic can stay framework agnostic and easy to test.
- */
+/// Centralizes access to frequently used queue context objects so that the
+/// extracted logic can stay framework agnostic and easy to test.
 public final class QueueEnvironment {
   private final PistonQueuePlugin plugin;
   private final Supplier<Config> configSupplier;
@@ -89,23 +87,21 @@ public final class QueueEnvironment {
   }
 
   public String defaultTarget(QueueGroup group) {
-    if (group.getTargetServers().isEmpty()) {
+    if (group.targetServers().isEmpty()) {
       return config().targetServer();
     }
-    return group.getTargetServers().getFirst();
+    return group.targetServers().getFirst();
   }
 
   public boolean isGroupTargetOnline(QueueGroup group) {
-    return group.getTargetServers().stream().anyMatch(onlineServers::contains);
+    return group.targetServers().stream().anyMatch(onlineServers::contains);
   }
 
-  /**
-   * Checks if at least one queue server in the group is online.
-   *
-   * @param group the queue group to check
-   * @return true if at least one queue server is online
-   */
+  /// Checks if at least one queue server in the group is online.
+  ///
+  /// @param group the queue group to check
+  /// @return true if at least one queue server is online
   public boolean isGroupQueueServerOnline(QueueGroup group) {
-    return group.getQueueServers().stream().anyMatch(onlineServers::contains);
+    return group.queueServers().stream().anyMatch(onlineServers::contains);
   }
 }

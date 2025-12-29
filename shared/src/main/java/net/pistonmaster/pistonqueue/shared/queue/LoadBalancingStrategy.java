@@ -19,23 +19,15 @@
  */
 package net.pistonmaster.pistonqueue.shared.queue;
 
-/**
- * Strategy for selecting which queue server to send players to when multiple
- * queue servers are configured for a queue group.
- */
+/// Strategy for selecting which queue server to send players to when multiple
+/// queue servers are configured for a queue group.
 public enum LoadBalancingStrategy {
-  /**
-   * Alternates between queue servers in order.
-   */
+  /// Alternates between queue servers in order.
   ROUND_ROBIN,
 
-  /**
-   * Sends players to the queue server with the fewest connected players.
-   */
+  /// Sends players to the queue server with the fewest connected players.
   LEAST_PLAYERS,
 
-  /**
-   * Randomly selects a queue server.
-   */
+  /// Randomly selects a queue server.
   RANDOM
 }

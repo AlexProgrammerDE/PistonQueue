@@ -26,9 +26,7 @@ import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
 import java.util.Objects;
 
-/**
- * Handles shadow ban kicks for players after they log in.
- */
+/// Handles shadow ban kicks for players after they log in.
 public final class ShadowBanKickHandler {
   private final Config config;
 
@@ -36,11 +34,9 @@ public final class ShadowBanKickHandler {
     this.config = Objects.requireNonNull(config, "config");
   }
 
-  /**
-   * Checks if the player should be kicked due to shadow ban and disconnects them if so.
-   *
-   * @param player the player who just logged in
-   */
+  /// Checks if the player should be kicked due to shadow ban and disconnects them if so.
+  ///
+  /// @param player the player who just logged in
   public void handleShadowBanKick(PlayerWrapper player) {
     if (StorageTool.isShadowBanned(player.getName()) && config.shadowBanType() == BanType.KICK) {
       player.disconnect(config.serverDownKickMessage());

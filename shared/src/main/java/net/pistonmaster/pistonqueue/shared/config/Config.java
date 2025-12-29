@@ -740,11 +740,11 @@ public final class Config {
 
   private void registerGroup(QueueGroup group) {
     queueGroupList.add(group);
-    queueGroupsByName.put(group.getName().toLowerCase(Locale.ROOT), group);
-    for (String target : group.getTargetServers()) {
+    queueGroupsByName.put(group.name().toLowerCase(Locale.ROOT), group);
+    for (String target : group.targetServers()) {
       queueGroupsByTarget.put(target.toLowerCase(Locale.ROOT), group);
     }
-    for (QueueType type : group.getQueueTypes()) {
+    for (QueueType type : group.queueTypes()) {
       queueGroupByType.put(type, group);
     }
   }

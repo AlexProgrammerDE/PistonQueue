@@ -29,9 +29,7 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Selects which queue server to send a player to based on the configured load balancing strategy.
- */
+/// Selects which queue server to send a player to based on the configured load balancing strategy.
 public final class QueueServerSelector {
   private final QueueEnvironment environment;
   private final AtomicInteger roundRobinCounter = new AtomicInteger();
@@ -40,17 +38,15 @@ public final class QueueServerSelector {
     this.environment = Objects.requireNonNull(environment, "environment");
   }
 
-  /**
-   * Selects a queue server from the given group based on the configured load balancing strategy.
-   *
-   * @param group the queue group to select a server from
-   * @return the selected queue server name
-   * @throws IllegalStateException if no queue servers are configured for the group
-   */
+  /// Selects a queue server from the given group based on the configured load balancing strategy.
+  ///
+  /// @param group the queue group to select a server from
+  /// @return the selected queue server name
+  /// @throws IllegalStateException if no queue servers are configured for the group
   public String selectQueueServer(QueueGroup group) {
-    List<String> queueServers = group.getQueueServers();
+    List<String> queueServers = group.queueServers();
     if (queueServers.isEmpty()) {
-      throw new IllegalStateException("No queue servers configured for group: " + group.getName());
+      throw new IllegalStateException("No queue servers configured for group: " + group.name());
     }
 
     if (queueServers.size() == 1) {

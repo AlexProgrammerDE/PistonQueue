@@ -31,9 +31,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 
-/**
- * Removes stale entries from the queue maps to prevent memory leaks.
- */
+/// Removes stale entries from the queue maps to prevent memory leaks.
 public final class QueueCleaner {
   private final QueueEnvironment environment;
 
@@ -42,7 +40,7 @@ public final class QueueCleaner {
   }
 
   public void cleanGroup(QueueGroup group) {
-    for (QueueType type : group.getQueueTypes()) {
+    for (QueueType type : group.queueTypes()) {
       Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
       List<UUID> queueSnapshot;
       Lock readLock = type.getQueueLock().readLock();

@@ -46,13 +46,11 @@ public final class StorageTool {
   private StorageTool() {
   }
 
-  /**
-   * Shadow-ban a player!
-   *
-   * @param playerName The player to shadow-ban.
-   * @param date       The date when he will be unbanned.
-   * @return true if player got shadow-banned and if already shadow-banned false.
-   */
+  /// Shadow-ban a player!
+  ///
+  /// @param playerName The player to shadow-ban.
+  /// @param date       The date when he will be unbanned.
+  /// @return true if player got shadow-banned and if already shadow-banned false.
   public static boolean shadowBanPlayer(String playerName, Date date) {
     playerName = playerName.toLowerCase(Locale.ROOT);
     manageBan(playerName);
@@ -68,12 +66,10 @@ public final class StorageTool {
     }
   }
 
-  /**
-   * Un-shadow-ban a player!
-   *
-   * @param playerName The player to un-shadow-ban.
-   * @return true if a player got un-shadow-banned and false if he wasn't shadow-banned.
-   */
+  /// Un-shadow-ban a player!
+  ///
+  /// @param playerName The player to un-shadow-ban.
+  /// @return true if a player got un-shadow-banned and false if he wasn't shadow-banned.
   public static boolean unShadowBanPlayer(String playerName) {
     playerName = playerName.toLowerCase(Locale.ROOT);
     if (dataConfig.getMutableBans().remove(playerName) != null) {

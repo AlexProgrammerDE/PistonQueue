@@ -31,9 +31,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 
-/**
- * Handles the bookkeeping required when a player gets placed into a queue.
- */
+/// Handles the bookkeeping required when a player gets placed into a queue.
 public final class QueueEntryFactory {
   private final QueueEnvironment environment;
   private final QueueServerSelector queueServerSelector;

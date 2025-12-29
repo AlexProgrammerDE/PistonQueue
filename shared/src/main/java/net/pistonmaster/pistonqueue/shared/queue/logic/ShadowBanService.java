@@ -19,9 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.shared.queue.logic;
 
-/**
- * Abstraction around the static {@code StorageTool} API to make queue logic easier to test.
- */
+/// Abstraction around the static `StorageTool` API to make queue logic easier to test.
 public interface ShadowBanService {
   boolean isShadowBanned(String playerName);
 }

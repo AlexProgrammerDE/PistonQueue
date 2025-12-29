@@ -29,9 +29,7 @@ import java.nio.file.Path;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- * Performs migrations of legacy configuration files to the new format.
- */
+/// Performs migrations of legacy configuration files to the new format.
 public final class ConfigMigrator {
   private static final Pattern CONFIG_VERSION_PATTERN = Pattern.compile("configVersion:\\s*(\\d+)");
   private static final Pattern QUEUE_SERVER_PATTERN = Pattern.compile("(\\s+)queueServer:\\s*\"?([^\"\\n]+)\"?");
@@ -102,7 +100,7 @@ public final class ConfigMigrator {
     // Migrate queueServer to queueServers in queue groups
     // This regex finds queueServer entries within queueGroups section and converts them to queueServers list
     Matcher matcher = QUEUE_SERVER_PATTERN.matcher(result);
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     while (matcher.find()) {
       String indent = matcher.group(1);
       String serverName = matcher.group(2).trim();

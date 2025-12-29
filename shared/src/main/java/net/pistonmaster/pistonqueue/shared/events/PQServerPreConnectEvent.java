@@ -23,9 +23,7 @@ import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
 import java.util.Optional;
 
-/**
- * Event for trying to connect to a server that allows us to intercept the connection and redirect the player.
- */
+/// Event for trying to connect to a server that allows us to intercept the connection and redirect the player.
 public interface PQServerPreConnectEvent {
   PlayerWrapper getPlayer();
 

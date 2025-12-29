@@ -85,7 +85,7 @@ public interface PistonQueuePlugin {
     final QueueGroup defaultGroup = resolvedDefaultGroup;
     // Sends the position message and updates tab on an interval in chat
     schedule(() -> {
-      boolean targetsOnline = defaultGroup.getTargetServers().stream().anyMatch(queueListener.getOnlineServers()::contains);
+      boolean targetsOnline = defaultGroup.targetServers().stream().anyMatch(queueListener.getOnlineServers()::contains);
       if (targetsOnline) {
         for (QueueType type : config.getAllQueueTypes()) {
           if (config.positionMessageChat()) {
@@ -233,11 +233,11 @@ public interface PistonQueuePlugin {
       Config config = getConfiguration();
       for (QueueGroup group : config.getQueueGroups()) {
         Map<QueueType, AtomicInteger> map = new HashMap<>();
-        for (QueueType type : group.getQueueTypes()) {
+        for (QueueType type : group.queueTypes()) {
           map.put(type, new AtomicInteger());
         }
 
-        for (String targetServerName : group.getTargetServers()) {
+        for (String targetServerName : group.targetServers()) {
           getServer(targetServerName).ifPresent(targetServer -> {
             for (PlayerWrapper player : targetServer.getConnectedPlayers()) {
               QueueType playerType = config.getQueueType(player);

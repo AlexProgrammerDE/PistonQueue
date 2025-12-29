@@ -24,9 +24,7 @@ import net.pistonmaster.pistonqueue.shared.events.PQPreLoginEvent;
 
 import java.util.Objects;
 
-/**
- * Handles username validation for pre-login events.
- */
+/// Handles username validation for pre-login events.
 public final class UsernameValidator {
   private final Config config;
 
@@ -34,11 +32,9 @@ public final class UsernameValidator {
     this.config = Objects.requireNonNull(config, "config");
   }
 
-  /**
-   * Validates the username in the pre-login event and cancels it if it doesn't match the regex.
-   *
-   * @param event the pre-login event
-   */
+  /// Validates the username in the pre-login event and cancels it if it doesn't match the regex.
+  ///
+  /// @param event the pre-login event
   public void validateUsername(PQPreLoginEvent event) {
     if (event.isCancelled()) {
       return;

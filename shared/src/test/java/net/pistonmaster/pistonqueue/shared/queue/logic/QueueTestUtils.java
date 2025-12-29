@@ -111,7 +111,7 @@ final class QueueTestUtils {
   }
 
   static QueueType defaultQueueType(Config config) {
-    return config.getAllQueueTypes().get(0);
+    return config.getAllQueueTypes().getFirst();
   }
 
   static TestPreConnectEvent preConnectEvent(PlayerWrapper player, String target) {

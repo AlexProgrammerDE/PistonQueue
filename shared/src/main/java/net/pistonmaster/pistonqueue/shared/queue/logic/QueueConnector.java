@@ -44,9 +44,7 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Lock;
 
-/**
- * Responsible for moving players from the queue onto their target server.
- */
+/// Responsible for moving players from the queue onto their target server.
 public final class QueueConnector {
   private final QueueEnvironment environment;
   private final QueueAvailabilityCalculator availabilityCalculator;
@@ -172,7 +170,7 @@ public final class QueueConnector {
     byte[] data = out.toByteArray();
 
     // Send XP sound to all queue servers in the group that have players
-    for (String queueServer : group.getQueueServers()) {
+    for (String queueServer : group.queueServers()) {
       environment.plugin().getServer(queueServer).ifPresent(server -> {
         if (!server.getConnectedPlayers().isEmpty()) {
           server.sendPluginMessage("piston:queue", data);

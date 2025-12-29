@@ -24,40 +24,27 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public final class QueueGroup {
-  private final String name;
-  private final List<String> queueServers;
-  private final List<String> targetServers;
-  private final List<String> sourceServers;
-  private final QueueType[] queueTypes;
-
+public record QueueGroup(String name, List<String> queueServers, List<String> targetServers, List<String> sourceServers, QueueType[] queueTypes) {
   public QueueGroup(String name, List<String> queueServers, List<String> targetServers, List<String> sourceServers, QueueType[] queueTypes) {
     this.name = name;
-    this.queueServers = Collections.unmodifiableList(new ArrayList<>(queueServers));
-    this.targetServers = Collections.unmodifiableList(new ArrayList<>(targetServers));
-    this.sourceServers = Collections.unmodifiableList(new ArrayList<>(sourceServers));
+    this.queueServers = List.copyOf(queueServers);
+    this.targetServers = List.copyOf(targetServers);
+    this.sourceServers = List.copyOf(sourceServers);
     this.queueTypes = queueTypes == null ? new QueueType[0] : queueTypes.clone();
   }
 
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Returns all queue servers configured for this group.
-   *
-   * @return an unmodifiable list of queue server names
-   */
-  public List<String> getQueueServers() {
+  /// Returns all queue servers configured for this group.
+  ///
+  /// @return an unmodifiable list of queue server names
+  @Override
+  public List<String> queueServers() {
     return queueServers;
   }
 
-  /**
-   * Checks if the given server name is one of this group's queue servers.
-   *
-   * @param server the server name to check (case-insensitive)
-   * @return true if the server is a queue server for this group
-   */
+  /// Checks if the given server name is one of this group's queue servers.
+  ///
+  /// @param server the server name to check (case-insensitive)
+  /// @return true if the server is a queue server for this group
   public boolean hasQueueServer(String server) {
     if (server == null) {
       return false;
@@ -67,15 +54,8 @@ public final class QueueGroup {
       .anyMatch(qs -> qs.toLowerCase(Locale.ROOT).equals(lowerServer));
   }
 
-  public List<String> getTargetServers() {
-    return targetServers;
-  }
-
-  public List<String> getSourceServers() {
-    return sourceServers;
-  }
-
-  public QueueType[] getQueueTypes() {
+  @Override
+  public QueueType[] queueTypes() {
     return queueTypes.clone();
   }
 }
