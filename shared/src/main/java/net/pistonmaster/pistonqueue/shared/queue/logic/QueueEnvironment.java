@@ -69,7 +69,7 @@ public final class QueueEnvironment {
     QueueType[] queueTypes = config.getAllQueueTypes().toArray(new QueueType[0]);
     return new QueueGroup(
       "default",
-      config.queueServer(),
+      List.of(config.queueServer()),
       List.of(config.targetServer()),
       config.enableSourceServer() ? List.of(config.sourceServer()) : List.of(),
       queueTypes
@@ -97,5 +97,15 @@ public final class QueueEnvironment {
 
   public boolean isGroupTargetOnline(QueueGroup group) {
     return group.getTargetServers().stream().anyMatch(onlineServers::contains);
+  }
+
+  /**
+   * Checks if at least one queue server in the group is online.
+   *
+   * @param group the queue group to check
+   * @return true if at least one queue server is online
+   */
+  public boolean isGroupQueueServerOnline(QueueGroup group) {
+    return group.getQueueServers().stream().anyMatch(onlineServers::contains);
   }
 }

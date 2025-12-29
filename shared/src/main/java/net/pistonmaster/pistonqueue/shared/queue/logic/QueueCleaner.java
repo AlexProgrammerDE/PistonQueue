@@ -61,7 +61,7 @@ public final class QueueCleaner {
       for (UUID uuid : queueSnapshot) {
         Optional<PlayerWrapper> player = environment.plugin().getPlayer(uuid);
         Optional<String> optionalTarget = player.flatMap(PlayerWrapper::getCurrentServer);
-        if (optionalTarget.isEmpty() || !optionalTarget.get().equals(group.getQueueServer())) {
+        if (optionalTarget.isEmpty() || !group.hasQueueServer(optionalTarget.get())) {
           staleEntries.add(uuid);
         }
       }

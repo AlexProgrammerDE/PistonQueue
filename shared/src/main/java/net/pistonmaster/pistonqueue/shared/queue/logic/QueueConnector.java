@@ -169,8 +169,16 @@ public final class QueueConnector {
     out.writeInt(uuids.size());
     uuids.forEach(id -> out.writeUTF(id.toString()));
 
-    environment.plugin().getServer(group.getQueueServer()).ifPresent(server ->
-      server.sendPluginMessage("piston:queue", out.toByteArray()));
+    byte[] data = out.toByteArray();
+
+    // Send XP sound to all queue servers in the group that have players
+    for (String queueServer : group.getQueueServers()) {
+      environment.plugin().getServer(queueServer).ifPresent(server -> {
+        if (!server.getConnectedPlayers().isEmpty()) {
+          server.sendPluginMessage("piston:queue", data);
+        }
+      });
+    }
   }
 
   private void indexPositionTime(QueueType type) {

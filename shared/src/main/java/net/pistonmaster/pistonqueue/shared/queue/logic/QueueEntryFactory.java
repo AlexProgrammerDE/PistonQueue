@@ -26,6 +26,7 @@ import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
@@ -35,16 +36,19 @@ import java.util.concurrent.locks.Lock;
  */
 public final class QueueEntryFactory {
   private final QueueEnvironment environment;
+  private final QueueServerSelector queueServerSelector;
 
-  public QueueEntryFactory(QueueEnvironment environment) {
-    this.environment = environment;
+  public QueueEntryFactory(QueueEnvironment environment, QueueServerSelector queueServerSelector) {
+    this.environment = Objects.requireNonNull(environment, "environment");
+    this.queueServerSelector = Objects.requireNonNull(queueServerSelector, "queueServerSelector");
   }
 
   public void enqueue(PlayerWrapper player, QueueGroup group, QueueType type, PQServerPreConnectEvent event, boolean serverFull, Config config) {
     player.sendPlayerList(type.getHeader(), type.getFooter());
 
     Optional<String> originalTarget = event.getTarget();
-    event.setTarget(group.getQueueServer());
+    String selectedQueueServer = queueServerSelector.selectQueueServer(group);
+    event.setTarget(selectedQueueServer);
 
     Map<UUID, QueueType.QueuedPlayer> queueMap = type.getQueueMap();
     String queueTarget;

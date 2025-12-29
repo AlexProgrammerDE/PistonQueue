@@ -22,17 +22,18 @@ package net.pistonmaster.pistonqueue.shared.queue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public final class QueueGroup {
   private final String name;
-  private final String queueServer;
+  private final List<String> queueServers;
   private final List<String> targetServers;
   private final List<String> sourceServers;
   private final QueueType[] queueTypes;
 
-  public QueueGroup(String name, String queueServer, List<String> targetServers, List<String> sourceServers, QueueType[] queueTypes) {
+  public QueueGroup(String name, List<String> queueServers, List<String> targetServers, List<String> sourceServers, QueueType[] queueTypes) {
     this.name = name;
-    this.queueServer = queueServer;
+    this.queueServers = Collections.unmodifiableList(new ArrayList<>(queueServers));
     this.targetServers = Collections.unmodifiableList(new ArrayList<>(targetServers));
     this.sourceServers = Collections.unmodifiableList(new ArrayList<>(sourceServers));
     this.queueTypes = queueTypes == null ? new QueueType[0] : queueTypes.clone();
@@ -42,8 +43,28 @@ public final class QueueGroup {
     return name;
   }
 
-  public String getQueueServer() {
-    return queueServer;
+  /**
+   * Returns all queue servers configured for this group.
+   *
+   * @return an unmodifiable list of queue server names
+   */
+  public List<String> getQueueServers() {
+    return queueServers;
+  }
+
+  /**
+   * Checks if the given server name is one of this group's queue servers.
+   *
+   * @param server the server name to check (case-insensitive)
+   * @return true if the server is a queue server for this group
+   */
+  public boolean hasQueueServer(String server) {
+    if (server == null) {
+      return false;
+    }
+    String lowerServer = server.toLowerCase(Locale.ROOT);
+    return queueServers.stream()
+      .anyMatch(qs -> qs.toLowerCase(Locale.ROOT).equals(lowerServer));
   }
 
   public List<String> getTargetServers() {

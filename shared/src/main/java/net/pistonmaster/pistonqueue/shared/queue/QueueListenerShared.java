@@ -34,17 +34,15 @@ import net.pistonmaster.pistonqueue.shared.queue.logic.QueueEnvironment;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueueMoveProcessor;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueuePlacementCoordinator;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueueRecoveryHandler;
+import net.pistonmaster.pistonqueue.shared.queue.logic.QueueServerSelector;
 import net.pistonmaster.pistonqueue.shared.queue.logic.ShadowBanKickHandler;
 import net.pistonmaster.pistonqueue.shared.queue.logic.ShadowBanService;
 import net.pistonmaster.pistonqueue.shared.queue.logic.StorageShadowBanService;
 import net.pistonmaster.pistonqueue.shared.queue.logic.UsernameValidator;
-import net.pistonmaster.pistonqueue.shared.utils.StorageTool;
 import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
-import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
 
 public abstract class QueueListenerShared {
   private final PistonQueuePlugin plugin;
@@ -63,10 +61,12 @@ public abstract class QueueListenerShared {
     Config config = currentConfig();
     this.usernameValidator = new UsernameValidator(config);
     this.shadowBanKickHandler = new ShadowBanKickHandler(config);
-    this.kickEventHandler = new KickEventHandler(config, queueEnvironment);
+
+    QueueServerSelector queueServerSelector = new QueueServerSelector(queueEnvironment);
+    this.kickEventHandler = new KickEventHandler(config, queueEnvironment, queueServerSelector);
 
     QueueAvailabilityCalculator availabilityCalculator = new QueueAvailabilityCalculator();
-    QueueEntryFactory queueEntryFactory = new QueueEntryFactory(queueEnvironment);
+    QueueEntryFactory queueEntryFactory = new QueueEntryFactory(queueEnvironment, queueServerSelector);
     this.queuePlacementCoordinator = new QueuePlacementCoordinator(queueEnvironment, availabilityCalculator, queueEntryFactory);
     QueueCleaner queueCleaner = new QueueCleaner(queueEnvironment);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(queueEnvironment);

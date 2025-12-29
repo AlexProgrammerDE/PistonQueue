@@ -24,6 +24,7 @@ import de.exlll.configlib.Configuration;
 import de.exlll.configlib.Ignore;
 import de.exlll.configlib.PostProcess;
 import net.pistonmaster.pistonqueue.shared.queue.BanType;
+import net.pistonmaster.pistonqueue.shared.queue.LoadBalancingStrategy;
 import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
@@ -34,14 +35,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @Configuration
 public final class Config {
-  public static final int CURRENT_VERSION = 2;
+  public static final int CURRENT_VERSION = 3;
 
   @Comment("Configuration version. Do not edit manually.")
   private int configVersion = CURRENT_VERSION;
@@ -84,10 +87,10 @@ public final class Config {
   private boolean kickWhenDown = false;
   private String serverDownKickMessage = "%server_name% &6is down please try again later :(";
 
-  @Comment("%TARGET_SERVER%, %QUEUE_SERVER% and %SOURCE_SERVER% are placeholders for the server names")
+  @Comment("%TARGET_SERVER%, %QUEUE_SERVERS% and %SOURCE_SERVER% are placeholders for the server names")
   private List<String> rawKickWhenDownServers = new ArrayList<>(List.of(
     "%TARGET_SERVER%",
-    "%QUEUE_SERVER%"
+    "%QUEUE_SERVERS%"
   ));
 
   @Comment({
@@ -109,9 +112,12 @@ public final class Config {
   private boolean recovery = true;
   private String recoveryMessage = "&cOops something went wrong... Putting you back in queue.";
 
-  @Comment("Set the queue servers name that is in the proxy config file.")
+  @Comment("Set the queue server name that is in the proxy config file.")
   private String queueServer = "queue";
   private String targetServer = "main";
+
+  @Comment("Load balancing strategy for multiple queue servers: ROUND_ROBIN, LEAST_PLAYERS, RANDOM")
+  private LoadBalancingStrategy queueLoadBalancing = LoadBalancingStrategy.LEAST_PLAYERS;
 
   private boolean forceTargetServer = false;
 
@@ -219,6 +225,7 @@ public final class Config {
     recoveryMessage = source.recoveryMessage;
     queueServer = source.queueServer;
     targetServer = source.targetServer;
+    queueLoadBalancing = source.queueLoadBalancing;
     forceTargetServer = source.forceTargetServer;
     enableSourceServer = source.enableSourceServer;
     sourceServer = source.sourceServer;
@@ -344,6 +351,10 @@ public final class Config {
 
   public String targetServer() {
     return targetServer;
+  }
+
+  public LoadBalancingStrategy queueLoadBalancing() {
+    return queueLoadBalancing;
   }
 
   public boolean forceTargetServer() {
@@ -586,10 +597,28 @@ public final class Config {
   private void rebuildKickWhenDownServers() {
     List<String> resolved = new ArrayList<>();
     for (String text : rawKickWhenDownServers) {
-      resolved.add(text
+      String processed = text
         .replace("%TARGET_SERVER%", targetServer)
-        .replace("%QUEUE_SERVER%", queueServer)
-        .replace("%SOURCE_SERVER%", sourceServer));
+        .replace("%SOURCE_SERVER%", sourceServer);
+
+      // Handle %QUEUE_SERVERS% - collect all queue servers from all groups
+      if (processed.contains("%QUEUE_SERVERS%")) {
+        Set<String> allQueueServers = new LinkedHashSet<>();
+        allQueueServers.add(queueServer); // Add default queue server
+        for (QueueGroupConfiguration groupConfig : queueGroups.values()) {
+          allQueueServers.addAll(groupConfig.getQueueServers());
+        }
+        String queueServersStr = String.join(",", allQueueServers);
+        processed = processed.replace("%QUEUE_SERVERS%", queueServersStr);
+      }
+
+      // Split by comma to support comma-separated server lists
+      for (String server : processed.split(",")) {
+        String trimmed = server.trim();
+        if (!trimmed.isEmpty() && !resolved.contains(trimmed)) {
+          resolved.add(trimmed);
+        }
+      }
     }
     if (!resolved.contains(targetServer)) {
       resolved.add(targetServer);
@@ -653,9 +682,9 @@ public final class Config {
       String name = entry.getKey();
       QueueGroupConfiguration configuration = entry.getValue();
 
-      String resolvedQueueServer = configuration.getQueueServer();
-      if (resolvedQueueServer == null || resolvedQueueServer.isBlank()) {
-        resolvedQueueServer = queueServer;
+      List<String> resolvedQueueServers = configuration.getQueueServers();
+      if (resolvedQueueServers.isEmpty()) {
+        resolvedQueueServers = List.of(queueServer);
       }
 
       List<String> targetServers = configuration.getTargetServers();
@@ -686,7 +715,7 @@ public final class Config {
 
       QueueGroup group = new QueueGroup(
         name,
-        resolvedQueueServer,
+        resolvedQueueServers,
         targetServers,
         sourceServers,
         groupTypes
@@ -800,7 +829,7 @@ public final class Config {
   private Map<String, QueueGroupConfiguration> defaultQueueGroups() {
     Map<String, QueueGroupConfiguration> defaults = new LinkedHashMap<>();
     QueueGroupConfiguration configuration = new QueueGroupConfiguration();
-    configuration.queueServer = queueServer;
+    configuration.queueServers = new ArrayList<>(List.of(queueServer));
     configuration.targetServers = new ArrayList<>(List.of(targetServer));
     configuration.sourceServers = new ArrayList<>(List.of(sourceServer));
     configuration.queueTypes = new ArrayList<>(queueTypes.keySet());
@@ -858,7 +887,9 @@ public final class Config {
     config.pauseQueueIfTargetDownMessage = legacy.PAUSE_QUEUE_IF_TARGET_DOWN_MESSAGE;
     config.kickWhenDown = legacy.KICK_WHEN_DOWN;
     config.serverDownKickMessage = legacy.SERVER_DOWN_KICK_MESSAGE;
-    config.rawKickWhenDownServers = new ArrayList<>(legacy.RAW_KICK_WHEN_DOWN_SERVERS);
+    config.rawKickWhenDownServers = new ArrayList<>(legacy.RAW_KICK_WHEN_DOWN_SERVERS.stream()
+      .map(s -> s.replace("%QUEUE_SERVER%", "%QUEUE_SERVERS%"))
+      .toList());
     config.ifTargetDownSendToQueue = legacy.IF_TARGET_DOWN_SEND_TO_QUEUE;
     config.ifTargetDownSendToQueueMessage = legacy.IF_TARGET_DOWN_SEND_TO_QUEUE_MESSAGE;
     config.downWordList = new ArrayList<>(legacy.DOWN_WORD_LIST);
@@ -947,14 +978,14 @@ public final class Config {
 
   @Configuration
   public static final class QueueGroupConfiguration {
-    private String queueServer = "";
+    private List<String> queueServers = new ArrayList<>();
     private List<String> targetServers = new ArrayList<>();
     private List<String> sourceServers = new ArrayList<>();
     private List<String> queueTypes = new ArrayList<>();
     private boolean defaultGroup = false;
 
-    public String getQueueServer() {
-      return queueServer;
+    public List<String> getQueueServers() {
+      return new ArrayList<>(queueServers);
     }
 
     public List<String> getTargetServers() {
@@ -973,8 +1004,8 @@ public final class Config {
       return defaultGroup;
     }
 
-    public void setQueueServer(String queueServer) {
-      this.queueServer = queueServer;
+    public void setQueueServers(List<String> queueServers) {
+      this.queueServers = new ArrayList<>(queueServers);
     }
 
     public void setTargetServers(List<String> targetServers) {
@@ -995,7 +1026,7 @@ public final class Config {
 
     private QueueGroupConfiguration copy() {
       QueueGroupConfiguration configuration = new QueueGroupConfiguration();
-      configuration.queueServer = queueServer;
+      configuration.queueServers = new ArrayList<>(queueServers);
       configuration.targetServers = new ArrayList<>(targetServers);
       configuration.sourceServers = new ArrayList<>(sourceServers);
       configuration.queueTypes = new ArrayList<>(queueTypes);

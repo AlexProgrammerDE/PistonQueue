@@ -35,10 +35,12 @@ import java.util.concurrent.locks.Lock;
 public final class KickEventHandler {
   private final Config config;
   private final QueueEnvironment queueEnvironment;
+  private final QueueServerSelector queueServerSelector;
 
-  public KickEventHandler(Config config, QueueEnvironment queueEnvironment) {
+  public KickEventHandler(Config config, QueueEnvironment queueEnvironment, QueueServerSelector queueServerSelector) {
     this.config = Objects.requireNonNull(config, "config");
     this.queueEnvironment = Objects.requireNonNull(queueEnvironment, "queueEnvironment");
+    this.queueServerSelector = Objects.requireNonNull(queueServerSelector, "queueServerSelector");
   }
 
   /**
@@ -65,7 +67,8 @@ public final class KickEventHandler {
         .filter(word -> kickReason.contains(word.toLowerCase(Locale.ROOT)))
         .findFirst()
         .ifPresent(word -> {
-          event.setCancelServer(group.getQueueServer());
+          String selectedQueueServer = queueServerSelector.selectQueueServer(group);
+          event.setCancelServer(selectedQueueServer);
           event.getPlayer().sendMessage(config.ifTargetDownSendToQueueMessage());
 
           QueueType queueType = config.getQueueType(event.getPlayer());

@@ -22,7 +22,6 @@ package net.pistonmaster.pistonqueue.shared.queue.logic;
 import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
-import net.pistonmaster.pistonqueue.shared.queue.QueueType.QueueReason;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -37,9 +36,10 @@ class QueueEntryFactoryTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer());
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServers().toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Enqueue");
@@ -47,7 +47,7 @@ class QueueEntryFactoryTest {
 
     entryFactory.enqueue(player, group, type, event, true, config);
 
-    assertEquals(group.getQueueServer(), event.getTarget().orElseThrow());
+    assertTrue(group.hasQueueServer(event.getTarget().orElseThrow()));
     assertTrue(type.getQueueMap().containsKey(player.getUniqueId()));
     assertEquals("customTarget", type.getQueueMap().get(player.getUniqueId()).targetServer());
   }
@@ -58,9 +58,14 @@ class QueueEntryFactoryTest {
     config.setForceTargetServer(true);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer(), group.getTargetServers().getFirst());
+    String[] servers = new String[group.getQueueServers().size() + group.getTargetServers().size()];
+    int i = 0;
+    for (String s : group.getQueueServers()) servers[i++] = s;
+    for (String s : group.getTargetServers()) servers[i++] = s;
+    Set<String> onlineServers = QueueTestUtils.onlineServers(servers);
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Force");
@@ -76,9 +81,10 @@ class QueueEntryFactoryTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer());
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServers().toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Full");
@@ -98,9 +104,10 @@ class QueueEntryFactoryTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer());
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServers().toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
     type.setHeader(List.of("Header Line 1", "Header Line 2"));
@@ -119,9 +126,10 @@ class QueueEntryFactoryTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer());
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServers().toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("NotFull");

@@ -20,7 +20,7 @@
 package net.pistonmaster.pistonqueue.shared.queue.logic;
 
 import net.pistonmaster.pistonqueue.shared.config.Config;
-import net.pistonmaster.pistonqueue.shared.queue.QueueType;
+import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -39,16 +39,18 @@ class KickEventHandlerTest {
     config.setIfTargetDownSendToQueueMessage("Server is down, redirecting to queue");
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
+    QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    KickEventHandler handler = new KickEventHandler(config, environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("KickedPlayer");
     QueueTestUtils.TestKickEvent event = QueueTestUtils.kickEvent(player, "target", "Server is currently down");
 
     handler.handleKick(event);
 
-    assertEquals("queue", event.getCancelServer().orElseThrow());
+    assertTrue(group.hasQueueServer(event.getCancelServer().orElseThrow()));
     assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains("Server is down, redirecting to queue")));
     assertTrue(QueueTestUtils.defaultQueueType(config).getQueueMap().containsKey(player.getUniqueId()));
     assertEquals("target", QueueTestUtils.defaultQueueType(config).getQueueMap().get(player.getUniqueId()).targetServer());
@@ -64,7 +66,8 @@ class KickEventHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    KickEventHandler handler = new KickEventHandler(config, environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("KickedPlayer");
     QueueTestUtils.TestKickEvent event = QueueTestUtils.kickEvent(player, "target", "Server is down");
@@ -85,7 +88,8 @@ class KickEventHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    KickEventHandler handler = new KickEventHandler(config, environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("KickedPlayer");
     QueueTestUtils.TestKickEvent event = QueueTestUtils.kickEvent(player, "lobby", "Server is down");
@@ -106,7 +110,8 @@ class KickEventHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    KickEventHandler handler = new KickEventHandler(config, environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("KickedPlayer");
     QueueTestUtils.TestKickEvent event = QueueTestUtils.kickEvent(player, "target", "You were kicked by an admin");
@@ -126,7 +131,8 @@ class KickEventHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    KickEventHandler handler = new KickEventHandler(config, environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("KickedPlayer");
     QueueTestUtils.TestKickEvent event = QueueTestUtils.kickEvent(player, "target", "Some reason");
@@ -146,7 +152,8 @@ class KickEventHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    KickEventHandler handler = new KickEventHandler(config, environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("KickedPlayer");
     QueueTestUtils.TestKickEvent event = QueueTestUtils.kickEvent(player, "target", "Some reason");
@@ -166,7 +173,8 @@ class KickEventHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    KickEventHandler handler = new KickEventHandler(config, environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("KickedPlayer");
     QueueTestUtils.TestKickEvent event = QueueTestUtils.kickEvent(player, "target", "Some reason");
@@ -187,7 +195,8 @@ class KickEventHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    KickEventHandler handler = new KickEventHandler(config, environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("KickedPlayer");
     QueueTestUtils.TestKickEvent event = QueueTestUtils.kickEvent(player, "target", null); // No kick reason
@@ -206,16 +215,18 @@ class KickEventHandlerTest {
     config.setDownWordList(List.of("server", "DOWN"));
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
+    QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
-    KickEventHandler handler = new KickEventHandler(config, environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("KickedPlayer");
     QueueTestUtils.TestKickEvent event = QueueTestUtils.kickEvent(player, "target", "SERVER IS CURRENTLY down");
 
     handler.handleKick(event);
 
-    assertEquals("queue", event.getCancelServer().orElseThrow());
+    assertTrue(group.hasQueueServer(event.getCancelServer().orElseThrow()));
     assertTrue(QueueTestUtils.defaultQueueType(config).getQueueMap().containsKey(player.getUniqueId()));
   }
 }

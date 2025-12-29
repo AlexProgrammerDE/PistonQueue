@@ -228,7 +228,8 @@ class QueuePlacementCoordinatorTest {
     TestQueuePlugin plugin = new TestQueuePlugin(config);
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
-    QueueEntryFactory entryFactory = new QueueEntryFactory(environment);
+    QueueServerSelector selector = new QueueServerSelector(environment);
+    QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
     QueuePlacementCoordinator coordinator = new QueuePlacementCoordinator(environment, calculator, entryFactory);
     return new CoordinatorContext(plugin, environment, coordinator);
   }

@@ -26,7 +26,6 @@ import net.pistonmaster.pistonqueue.shared.queue.QueueType.QueueReason;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueueTestUtils.TestPlayer;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueueTestUtils.TestQueuePlugin;
 import net.pistonmaster.pistonqueue.shared.queue.logic.QueueTestUtils.TestServer;
-import net.pistonmaster.pistonqueue.shared.queue.logic.ShadowBanService;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
@@ -102,7 +101,7 @@ class QueueMoveProcessorTest {
   void recoversPlayersStrandedOnQueueServer() {
     MoveContext context = context(5);
     TestPlayer player = context.plugin().registerPlayer("Returner");
-    player.setCurrentServer(context.group().getQueueServer());
+    player.setCurrentServer(context.group().getQueueServers().getFirst());
     context.queueType().getQueueMap().clear();
 
     context.processor().processQueues();
@@ -140,14 +139,22 @@ class QueueMoveProcessorTest {
   @Test
   void sendsXpSoundWhenMovingQueue() {
     MoveContext context = context(5);
+    // Limit moves so some players remain in queue to receive XP sound
+    context.config().setMaxPlayersPerMove(1);
+
+    // Register queue server and add players to its connected list
+    TestServer queueServer = context.plugin().registerServer(context.group().getQueueServers().getFirst());
+
     for (int i = 0; i < 3; i++) {
       TestPlayer player = context.plugin().registerPlayer("XP" + i);
       enqueue(context, player, "main");
+      // Players need to be "connected" to the queue server for XP sound to be sent
+      queueServer.getConnectedPlayers().add(player);
     }
 
     context.processor().processQueues();
 
-    TestServer queueServer = context.plugin().registerServer(context.group().getQueueServer());
+    // XP sound should be sent to players still waiting in queue
     assertFalse(queueServer.getPluginMessages().isEmpty());
   }
 
@@ -235,7 +242,7 @@ class QueueMoveProcessorTest {
   }
 
   private void enqueue(MoveContext context, TestPlayer player, String target) {
-    player.setCurrentServer(context.group().getQueueServer());
+    player.setCurrentServer(context.group().getQueueServers().getFirst());
     context.queueType().getQueueMap().put(player.getUniqueId(), new QueueType.QueuedPlayer(target, QueueReason.SERVER_FULL));
   }
 
@@ -243,7 +250,10 @@ class QueueMoveProcessorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(slots);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> online = QueueTestUtils.onlineServers(group.getQueueServer(), group.getTargetServers().getFirst());
+    List<String> servers = new ArrayList<>();
+    servers.addAll(group.getQueueServers());
+    servers.addAll(group.getTargetServers());
+    Set<String> online = QueueTestUtils.onlineServers(servers.toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, online);
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
     QueueCleaner cleaner = new QueueCleaner(environment);

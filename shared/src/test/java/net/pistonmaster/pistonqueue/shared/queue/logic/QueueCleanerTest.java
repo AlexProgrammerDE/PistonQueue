@@ -36,7 +36,7 @@ class QueueCleanerTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer());
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServers().toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueCleaner cleaner = new QueueCleaner(environment);
 
@@ -55,13 +55,13 @@ class QueueCleanerTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer());
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServers().toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueCleaner cleaner = new QueueCleaner(environment);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
     QueueTestUtils.TestPlayer player = plugin.registerPlayer("Active");
-    player.setCurrentServer(group.getQueueServer());
+    player.setCurrentServer(group.getQueueServers().getFirst());
     type.getQueueMap().put(player.getUniqueId(), new QueueType.QueuedPlayer("target", QueueReason.SERVER_FULL));
 
     cleaner.cleanGroup(group);
@@ -75,7 +75,7 @@ class QueueCleanerTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer());
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServers().toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueCleaner cleaner = new QueueCleaner(environment);
 
@@ -89,7 +89,7 @@ class QueueCleanerTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
-    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServer());
+    Set<String> onlineServers = QueueTestUtils.onlineServers(group.getQueueServers().toArray(String[]::new));
     QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
     QueueCleaner cleaner = new QueueCleaner(environment);
 

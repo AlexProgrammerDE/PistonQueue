@@ -45,7 +45,7 @@ public final class QueueRecoveryHandler {
 
     Optional<String> currentServer = player.getCurrentServer();
     if (currentServer.isPresent()
-      && currentServer.get().equals(group.getQueueServer())
+      && group.hasQueueServer(currentServer.get())
       && !type.getActiveTransfers().contains(player.getUniqueId())) {
       boolean addedToQueue = false;
       Lock writeLock = type.getQueueLock().writeLock();
