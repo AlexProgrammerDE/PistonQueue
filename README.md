@@ -26,6 +26,11 @@ It is a recreation of the 2b2t.org queue system design, but adds a lot of featur
 
 Check out the [wiki](https://github.com/AlexProgrammerDE/PistonQueue/wiki) for a tutorial on how to set up PistonQueue.
 
+- [Installation Guide](https://github.com/AlexProgrammerDE/PistonQueue/wiki/Installation)
+- [Configuration](https://github.com/AlexProgrammerDE/PistonQueue/wiki/Configuration)
+- [Commands & Permissions](https://github.com/AlexProgrammerDE/PistonQueue/wiki/Commands-and-Permissions)
+- [FAQ & Troubleshooting](https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ)
+
 ## 🌈 Community
 
 Feel free to join our Discord community server:

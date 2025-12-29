@@ -51,6 +51,8 @@ public interface MainCommandShared {
         sender.sendMessage(component().text("PistonQueue").color(TextColorWrapper.GOLD));
         sender.sendMessage(component().text("Version " + plugin.getVersion() + " by").color(TextColorWrapper.GOLD));
         sender.sendMessage(component().text(String.join(", ", plugin.getAuthors())).color(TextColorWrapper.GOLD));
+        sender.sendMessage(component().text("Wiki: ").color(TextColorWrapper.GOLD)
+          .append(component().text("https://github.com/AlexProgrammerDE/PistonQueue/wiki").color(TextColorWrapper.GREEN)));
         sendLine(sender);
       }
       case "stats" -> {
@@ -198,6 +200,8 @@ public interface MainCommandShared {
       sender.sendMessage(component().text("/pq unshadowban").color(TextColorWrapper.GOLD));
     }
 
+    sender.sendMessage(component().text("Wiki: ").color(TextColorWrapper.GOLD)
+      .append(component().text("https://github.com/AlexProgrammerDE/PistonQueue/wiki").color(TextColorWrapper.GREEN)));
     sendLine(sender);
   }
 

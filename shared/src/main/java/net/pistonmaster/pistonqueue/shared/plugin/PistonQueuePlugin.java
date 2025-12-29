@@ -138,7 +138,7 @@ public interface PistonQueuePlugin {
                 queueListener.getOnlineServers().remove(server);
               }
             } else {
-              warning("Server \"%s\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up".formatted(server));
+              warning("Server \"%s\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up-error".formatted(server));
             }
           } finally {
             latch.countDown();
