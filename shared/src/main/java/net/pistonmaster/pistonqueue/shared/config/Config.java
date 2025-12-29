@@ -595,6 +595,18 @@ public final class Config {
     this.usernameRegexMessage = message;
   }
 
+  public void setServerName(String serverName) {
+    this.serverName = serverName;
+  }
+
+  public void setQueueLoadBalancing(LoadBalancingStrategy strategy) {
+    this.queueLoadBalancing = strategy;
+  }
+
+  public void setRawKickWhenDownServers(List<String> servers) {
+    this.rawKickWhenDownServers = new ArrayList<>(servers);
+  }
+
   private void rebuildKickWhenDownServers() {
     List<String> resolved = new ArrayList<>();
     for (String text : rawKickWhenDownServers) {
