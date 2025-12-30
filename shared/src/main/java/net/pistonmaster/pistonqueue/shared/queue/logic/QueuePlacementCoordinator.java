@@ -33,15 +33,18 @@ public final class QueuePlacementCoordinator {
   private final QueueEnvironment environment;
   private final QueueAvailabilityCalculator availabilityCalculator;
   private final QueueEntryFactory queueEntryFactory;
+  private final ShadowBanService shadowBanService;
 
   public QueuePlacementCoordinator(
     QueueEnvironment environment,
     QueueAvailabilityCalculator availabilityCalculator,
-    QueueEntryFactory queueEntryFactory
+    QueueEntryFactory queueEntryFactory,
+    ShadowBanService shadowBanService
   ) {
     this.environment = Objects.requireNonNull(environment, "environment");
     this.availabilityCalculator = Objects.requireNonNull(availabilityCalculator, "availabilityCalculator");
     this.queueEntryFactory = Objects.requireNonNull(queueEntryFactory, "queueEntryFactory");
+    this.shadowBanService = Objects.requireNonNull(shadowBanService, "shadowBanService");
   }
 
   public void handlePreConnect(PQServerPreConnectEvent event) {
@@ -72,12 +75,14 @@ public final class QueuePlacementCoordinator {
     QueueGroup typeGroup = environment.resolveGroupForType(type);
 
     boolean serverFull = false;
-    if (config.alwaysQueue() || (serverFull = availabilityCalculator.isServerFull(type))) {
-      if (player.hasPermission(config.queueBypassPermission())) {
-        event.setTarget(environment.defaultTarget(typeGroup));
-      } else {
-        queueEntryFactory.enqueue(player, typeGroup, type, event, serverFull, config);
-      }
+
+    if (player.hasPermission(config.queueBypassPermission())) {
+      event.setTarget(environment.defaultTarget(typeGroup));
+    }
+    else if (config.alwaysQueue()
+      || shadowBanService.isShadowBanned(player.getName())
+      || (serverFull = availabilityCalculator.isServerFull(type))) {
+      queueEntryFactory.enqueue(player, typeGroup, type, event, serverFull, config);
     }
   }
 

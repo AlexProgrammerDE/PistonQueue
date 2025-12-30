@@ -67,10 +67,10 @@ public abstract class QueueListenerShared {
 
     QueueAvailabilityCalculator availabilityCalculator = new QueueAvailabilityCalculator();
     QueueEntryFactory queueEntryFactory = new QueueEntryFactory(queueEnvironment, queueServerSelector);
-    this.queuePlacementCoordinator = new QueuePlacementCoordinator(queueEnvironment, availabilityCalculator, queueEntryFactory);
+    ShadowBanService shadowBanService = new StorageShadowBanService();
+    this.queuePlacementCoordinator = new QueuePlacementCoordinator(queueEnvironment, availabilityCalculator, queueEntryFactory,shadowBanService);
     QueueCleaner queueCleaner = new QueueCleaner(queueEnvironment);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(queueEnvironment);
-    ShadowBanService shadowBanService = new StorageShadowBanService();
     QueueConnector queueConnector = new QueueConnector(queueEnvironment, availabilityCalculator, shadowBanService);
     this.queueMoveProcessor = new QueueMoveProcessor(queueEnvironment, queueCleaner, recoveryHandler, queueConnector);
   }
