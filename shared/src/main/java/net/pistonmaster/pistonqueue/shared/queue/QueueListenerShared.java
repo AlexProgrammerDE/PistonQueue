@@ -47,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class QueueListenerShared {
   private final PistonQueuePlugin plugin;
   @Getter
-  private final Set<String> onlineServers = ConcurrentHashMap.newKeySet();
+  private final ServerStatusManager serverStatusManager;
   private final QueueEnvironment queueEnvironment;
   private final QueuePlacementCoordinator queuePlacementCoordinator;
   private final QueueMoveProcessor queueMoveProcessor;
@@ -57,8 +57,9 @@ public abstract class QueueListenerShared {
 
   protected QueueListenerShared(PistonQueuePlugin plugin) {
     this.plugin = plugin;
-    this.queueEnvironment = new QueueEnvironment(plugin, this::currentConfig, onlineServers);
     Config config = currentConfig();
+    this.serverStatusManager = new ServerStatusManager(this::currentConfig);
+    this.queueEnvironment = new QueueEnvironment(plugin, this::currentConfig, serverStatusManager::getOnlineServers);
     this.usernameValidator = new UsernameValidator(config);
     this.shadowBanKickHandler = new ShadowBanKickHandler(config);
 

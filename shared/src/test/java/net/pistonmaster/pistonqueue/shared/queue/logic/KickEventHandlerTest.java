@@ -41,7 +41,7 @@ class KickEventHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
@@ -65,7 +65,7 @@ class KickEventHandlerTest {
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
@@ -87,7 +87,7 @@ class KickEventHandlerTest {
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
@@ -109,7 +109,7 @@ class KickEventHandlerTest {
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
@@ -130,7 +130,7 @@ class KickEventHandlerTest {
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
@@ -151,7 +151,7 @@ class KickEventHandlerTest {
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
@@ -172,7 +172,7 @@ class KickEventHandlerTest {
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
@@ -194,7 +194,7 @@ class KickEventHandlerTest {
 
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     KickEventHandler handler = new KickEventHandler(config, environment, selector);
 
@@ -217,7 +217,7 @@ class KickEventHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     KickEventHandler handler = new KickEventHandler(config, environment, selector);
 

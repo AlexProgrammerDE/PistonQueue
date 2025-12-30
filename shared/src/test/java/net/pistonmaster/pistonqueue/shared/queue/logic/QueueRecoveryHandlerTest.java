@@ -46,7 +46,7 @@ class QueueRecoveryHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = serversFromGroup(group);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
@@ -65,7 +65,7 @@ class QueueRecoveryHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
@@ -84,7 +84,7 @@ class QueueRecoveryHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
@@ -103,7 +103,7 @@ class QueueRecoveryHandlerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = serversFromGroup(group);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(environment);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);

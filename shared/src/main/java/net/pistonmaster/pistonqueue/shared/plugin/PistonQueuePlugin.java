@@ -85,7 +85,7 @@ public interface PistonQueuePlugin {
     final QueueGroup defaultGroup = resolvedDefaultGroup;
     // Sends the position message and updates tab on an interval in chat
     schedule(() -> {
-      boolean targetsOnline = defaultGroup.targetServers().stream().anyMatch(queueListener.getOnlineServers()::contains);
+      boolean targetsOnline = defaultGroup.targetServers().stream().anyMatch(queueListener.getServerStatusManager().getOnlineServers()::contains);
       if (targetsOnline) {
         for (QueueType type : config.getAllQueueTypes()) {
           if (config.positionMessageChat()) {
@@ -126,16 +126,16 @@ public interface PistonQueuePlugin {
       List<String> servers = new ArrayList<>(config.kickWhenDownServers());
       CountDownLatch latch = new CountDownLatch(servers.size());
       for (String server : servers) {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+        CompletableFuture.runAsync(() -> {
           try {
             Optional<ServerInfoWrapper> serverInfoWrapper = getServer(server);
 
             if (serverInfoWrapper.isPresent()) {
               if (serverInfoWrapper.get().isOnline()) {
-                queueListener.getOnlineServers().add(server);
+                queueListener.getServerStatusManager().online(server);
               } else {
                 warning("Server %s is down!!!".formatted(server));
-                queueListener.getOnlineServers().remove(server);
+                queueListener.getServerStatusManager().offline(server);
               }
             } else {
               warning("Server \"%s\" not set up!!! Check out: https://github.com/AlexProgrammerDE/PistonQueue/wiki/FAQ#server-not-set-up-error".formatted(server));
@@ -143,8 +143,7 @@ public interface PistonQueuePlugin {
           } finally {
             latch.countDown();
           }
-        });
-        future.exceptionally(ex -> {
+        }).exceptionally(ex -> {
           error("Failed to check status of server " + server + ": " + ex.getMessage());
           return null;
         });

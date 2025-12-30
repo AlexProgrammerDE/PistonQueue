@@ -254,7 +254,7 @@ class QueueMoveProcessorTest {
     servers.addAll(group.queueServers());
     servers.addAll(group.targetServers());
     Set<String> online = QueueTestUtils.onlineServers(servers.toArray(String[]::new));
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, online);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> online);
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
     QueueCleaner cleaner = new QueueCleaner(environment);
     QueueRecoveryHandler recovery = new QueueRecoveryHandler(environment);

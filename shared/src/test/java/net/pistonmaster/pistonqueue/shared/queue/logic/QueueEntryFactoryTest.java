@@ -37,7 +37,7 @@ class QueueEntryFactoryTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
 
@@ -63,7 +63,7 @@ class QueueEntryFactoryTest {
     for (String s : group.queueServers()) servers[i++] = s;
     for (String s : group.targetServers()) servers[i++] = s;
     Set<String> onlineServers = QueueTestUtils.onlineServers(servers);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
 
@@ -82,7 +82,7 @@ class QueueEntryFactoryTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
 
@@ -105,7 +105,7 @@ class QueueEntryFactoryTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
 
@@ -127,7 +127,7 @@ class QueueEntryFactoryTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueServerSelector selector = new QueueServerSelector(environment);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);
 

@@ -40,7 +40,7 @@ class QueueServerSelectorTest {
   void throwsWhenNoQueueServersConfigured() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set.of());
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set::of);
     QueueServerSelector selector = new QueueServerSelector(environment);
 
     QueueGroup emptyGroup = new QueueGroup("empty", List.of(), List.of("main"), List.of(), List.of());
@@ -52,7 +52,7 @@ class QueueServerSelectorTest {
   void returnsSingleServerWhenOnlyOneConfigured() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set.of());
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set::of);
     QueueServerSelector selector = new QueueServerSelector(environment);
 
     QueueGroup singleServerGroup = new QueueGroup("single", List.of("queue1"), List.of("main"), List.of(), List.of());
@@ -67,7 +67,7 @@ class QueueServerSelectorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
     config.setQueueLoadBalancing(LoadBalancingStrategy.ROUND_ROBIN);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set.of());
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set::of);
     QueueServerSelector selector = new QueueServerSelector(environment);
 
     QueueGroup group = new QueueGroup("multi", List.of("queue1", "queue2", "queue3"), List.of("main"), List.of(), List.of());
@@ -89,7 +89,7 @@ class QueueServerSelectorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
     config.setQueueLoadBalancing(LoadBalancingStrategy.ROUND_ROBIN);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set.of());
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set::of);
     QueueServerSelector selector = new QueueServerSelector(environment);
 
     QueueGroup group = new QueueGroup("multi", List.of("queue1", "queue2"), List.of("main"), List.of(), List.of());
@@ -105,7 +105,7 @@ class QueueServerSelectorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
     config.setQueueLoadBalancing(LoadBalancingStrategy.LEAST_PLAYERS);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set.of());
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set::of);
     QueueServerSelector selector = new QueueServerSelector(environment);
 
     // Register servers with different player counts
@@ -131,7 +131,7 @@ class QueueServerSelectorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
     config.setQueueLoadBalancing(LoadBalancingStrategy.LEAST_PLAYERS);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set.of());
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set::of);
     QueueServerSelector selector = new QueueServerSelector(environment);
 
     // Register servers with same player count (0) - just register, we don't need the return values
@@ -152,7 +152,7 @@ class QueueServerSelectorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
     config.setQueueLoadBalancing(LoadBalancingStrategy.LEAST_PLAYERS);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set.of());
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set::of);
     QueueServerSelector selector = new QueueServerSelector(environment);
 
     // Only register queue2, so queue1 and queue3 are "offline" (not found)
@@ -172,7 +172,7 @@ class QueueServerSelectorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
     config.setQueueLoadBalancing(LoadBalancingStrategy.RANDOM);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set.of());
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set::of);
     QueueServerSelector selector = new QueueServerSelector(environment);
 
     QueueGroup group = new QueueGroup("multi", List.of("queue1", "queue2", "queue3"), List.of("main"), List.of(), List.of());
@@ -194,7 +194,7 @@ class QueueServerSelectorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
     config.setQueueLoadBalancing(LoadBalancingStrategy.ROUND_ROBIN);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set.of());
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set::of);
     QueueServerSelector selector = new QueueServerSelector(environment);
 
     QueueGroup group = new QueueGroup("multi", List.of("queue1", "queue2"), List.of("main"), List.of(), List.of());
@@ -211,7 +211,7 @@ class QueueServerSelectorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(10);
     config.setQueueLoadBalancing(LoadBalancingStrategy.ROUND_ROBIN);
     TestQueuePlugin plugin = new TestQueuePlugin(config);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set.of());
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, Set::of);
     QueueServerSelector selector = new QueueServerSelector(environment);
 
     TestServer queue1 = plugin.registerServer("queue1");
