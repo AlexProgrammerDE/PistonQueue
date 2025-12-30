@@ -240,7 +240,7 @@ class QueuePlacementCoordinatorTest {
 
   private CoordinatorContext context(Config config, Set<String> onlineServers) {
     TestQueuePlugin plugin = new TestQueuePlugin(config);
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
     QueueServerSelector selector = new QueueServerSelector(environment);
     QueueEntryFactory entryFactory = new QueueEntryFactory(environment, selector);

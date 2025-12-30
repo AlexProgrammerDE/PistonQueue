@@ -67,6 +67,9 @@ public final class Config {
   @Comment("It is not recommended to decrease this number (milliseconds)")
   private int serverOnlineCheckDelay = 500;
 
+  @Comment("How many online checks need to be successful before we consider the server online")
+  private int minOnlineChecks = 3;
+
   @Comment("Where to send the queue position message and what to send.")
   private boolean positionMessageChat = true;
   private boolean positionMessageHotBar = false;
@@ -207,6 +210,7 @@ public final class Config {
     registerTab = source.registerTab;
     serverIsFullMessage = source.serverIsFullMessage;
     serverOnlineCheckDelay = source.serverOnlineCheckDelay;
+    minOnlineChecks = source.minOnlineChecks;
     positionMessageChat = source.positionMessageChat;
     positionMessageHotBar = source.positionMessageHotBar;
     queuePosition = source.queuePosition;
@@ -276,6 +280,10 @@ public final class Config {
 
   public int serverOnlineCheckDelay() {
     return serverOnlineCheckDelay;
+  }
+
+  public int minOnlineChecks() {
+    return minOnlineChecks;
   }
 
   public boolean positionMessageChat() {
@@ -525,6 +533,10 @@ public final class Config {
 
   public void setServerIsFullMessage(String message) {
     this.serverIsFullMessage = message;
+  }
+
+  public void setMinOnlineChecks(int minOnlineChecks) {
+    this.minOnlineChecks = minOnlineChecks;
   }
 
   public void setServerDownKickMessage(String message) {

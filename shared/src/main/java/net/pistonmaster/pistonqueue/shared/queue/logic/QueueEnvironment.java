@@ -21,9 +21,9 @@ package net.pistonmaster.pistonqueue.shared.queue.logic;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.pistonmaster.pistonqueue.shared.config.Config;
+import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
 import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
-import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
 
 import java.util.List;
 import java.util.Objects;
@@ -35,12 +35,12 @@ import java.util.function.Supplier;
 public final class QueueEnvironment {
   private final PistonQueuePlugin plugin;
   private final Supplier<Config> configSupplier;
-  private final Set<String> onlineServers;
+  private final Supplier<Set<String>> onlineServersSupplier;
 
-  public QueueEnvironment(PistonQueuePlugin plugin, Supplier<Config> configSupplier, Set<String> onlineServers) {
+  public QueueEnvironment(PistonQueuePlugin plugin, Supplier<Config> configSupplier, Supplier<Set<String>> onlineServersSupplier) {
     this.plugin = Objects.requireNonNull(plugin, "plugin");
     this.configSupplier = Objects.requireNonNull(configSupplier, "configSupplier");
-    this.onlineServers = Objects.requireNonNull(onlineServers, "onlineServers");
+    this.onlineServersSupplier = Objects.requireNonNull(onlineServersSupplier, "onlineServersSupplier");
   }
 
   @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Plugin API is immutable for consumers")
@@ -52,9 +52,8 @@ public final class QueueEnvironment {
     return configSupplier.get();
   }
 
-  @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Caller needs live view for synchronization")
   public Set<String> onlineServers() {
-    return onlineServers;
+    return onlineServersSupplier.get();
   }
 
   public QueueGroup defaultGroup() {
@@ -94,7 +93,7 @@ public final class QueueEnvironment {
   }
 
   public boolean isGroupTargetOnline(QueueGroup group) {
-    return group.targetServers().stream().anyMatch(onlineServers::contains);
+    return group.targetServers().stream().anyMatch(onlineServers()::contains);
   }
 
   /// Checks if at least one queue server in the group is online.
@@ -102,6 +101,6 @@ public final class QueueEnvironment {
   /// @param group the queue group to check
   /// @return true if at least one queue server is online
   public boolean isGroupQueueServerOnline(QueueGroup group) {
-    return group.queueServers().stream().anyMatch(onlineServers::contains);
+    return group.queueServers().stream().anyMatch(onlineServers()::contains);
   }
 }

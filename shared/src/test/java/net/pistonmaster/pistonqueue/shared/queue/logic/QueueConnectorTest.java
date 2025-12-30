@@ -36,7 +36,7 @@ class QueueConnectorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, () -> onlineServers);
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
     Set<String> shadowBannedNames = ConcurrentHashMap.newKeySet();
     ShadowBanService shadowBanService = shadowBannedNames::contains;
@@ -56,7 +56,7 @@ class QueueConnectorTest {
     config.setMaxPlayersPerMove(2);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, () -> onlineServers);
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
     Set<String> shadowBannedNames = ConcurrentHashMap.newKeySet();
     ShadowBanService shadowBanService = shadowBannedNames::contains;
@@ -76,7 +76,7 @@ class QueueConnectorTest {
     config.setShadowBanType(BanType.LOOP);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, () -> onlineServers);
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
     Set<String> shadowBannedNames = ConcurrentHashMap.newKeySet();
     shadowBannedNames.add("BannedPlayer");
@@ -96,7 +96,7 @@ class QueueConnectorTest {
     config.setShadowBanType(BanType.LOOP);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, () -> onlineServers);
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
     Set<String> shadowBannedNames = ConcurrentHashMap.newKeySet();
     ShadowBanService shadowBanService = shadowBannedNames::contains;
@@ -114,7 +114,7 @@ class QueueConnectorTest {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers("queue", "target");
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, () -> onlineServers);
     QueueAvailabilityCalculator calculator = new QueueAvailabilityCalculator();
     Set<String> shadowBannedNames = ConcurrentHashMap.newKeySet();
     ShadowBanService shadowBanService = shadowBannedNames::contains;

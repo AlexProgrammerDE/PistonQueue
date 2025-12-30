@@ -37,7 +37,7 @@ class QueueCleanerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueCleaner cleaner = new QueueCleaner(environment);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
@@ -56,7 +56,7 @@ class QueueCleanerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueCleaner cleaner = new QueueCleaner(environment);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
@@ -76,7 +76,7 @@ class QueueCleanerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueCleaner cleaner = new QueueCleaner(environment);
 
     cleaner.cleanGroup(group);
@@ -90,7 +90,7 @@ class QueueCleanerTest {
     QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
     QueueGroup group = QueueTestUtils.defaultGroup(config);
     Set<String> onlineServers = QueueTestUtils.onlineServers(group.queueServers().toArray(String[]::new));
-    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration, onlineServers);
+    QueueEnvironment environment = new QueueEnvironment(plugin, plugin::getConfiguration,  () -> onlineServers);
     QueueCleaner cleaner = new QueueCleaner(environment);
 
     QueueType type = QueueTestUtils.defaultQueueType(config);
