@@ -47,7 +47,7 @@ public class QueueType {
   private final AtomicInteger playersWithTypeInTarget = new AtomicInteger();
   private final String name;
   @Setter
-  private volatile int order;
+  private volatile int priority;
   @Setter
   private String permission;
   @Setter

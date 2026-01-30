@@ -103,14 +103,20 @@ class ConfigTest {
   void kickWhenDownServersExpandsPlaceholders() {
     Config config = new Config();
     config.copyFrom(config);
+    config.setEnableSourceServer(true);
 
-    config.setTargetServer("main");
-    config.setQueueServer("queue");
-    config.setSourceServer("lobby");
+    Config.QueueGroupConfiguration groupConfig = new Config.QueueGroupConfiguration();
+    groupConfig.setDefaultGroup(true);
+    groupConfig.setQueueServers(List.of("queue"));
+    groupConfig.setTargetServers(List.of("main"));
+    groupConfig.setSourceServers(List.of("lobby"));
+    groupConfig.setQueueTypes(List.of());
+
+    Map<String, Config.QueueGroupConfiguration> groupMap = new LinkedHashMap<>();
+    groupMap.put("default", groupConfig);
+    config.setQueueGroupDefinitions(groupMap);
+
     config.setRawKickWhenDownServers(List.of("%TARGET_SERVER%", "%QUEUE_SERVERS%", "%SOURCE_SERVER%"));
-
-    // Trigger rebuild
-    config.copyFrom(config);
 
     List<String> servers = config.kickWhenDownServers();
 
@@ -158,7 +164,7 @@ class ConfigTest {
 
     List<QueueType> types = config.getAllQueueTypes();
 
-    // VETERAN (order 1) < PRIORITY (order 2) < REGULAR (order 3)
+    // VETERAN (priority 3) > PRIORITY (priority 2) > REGULAR (priority 1)
     assertEquals("VETERAN", types.get(0).getName());
     assertEquals("PRIORITY", types.get(1).getName());
     assertEquals("REGULAR", types.get(2).getName());
@@ -193,8 +199,8 @@ class ConfigTest {
     config.copyFrom(config);
 
     Config.QueueTypeConfiguration queueType = new Config.QueueTypeConfiguration();
-    queueType.setOrder(1);
-    queueType.setSlots(50);
+    queueType.setPriority(1);
+    queueType.setReservedSlots(50);
     queueType.setPermission("default");
     queueType.setHeader(List.of());
     queueType.setFooter(List.of());
@@ -249,8 +255,6 @@ class ConfigTest {
     Config source = new Config();
     source.copyFrom(source);
     source.setServerName("TestServer");
-    source.setQueueServer("testQueue");
-    source.setTargetServer("testTarget");
     source.setMaxPlayersPerMove(5);
     source.setPauseQueueIfTargetDown(false);
 
@@ -258,8 +262,6 @@ class ConfigTest {
     target.copyFrom(source);
 
     assertEquals("TestServer", target.serverName());
-    assertEquals("testQueue", target.queueServer());
-    assertEquals("testTarget", target.targetServer());
     assertEquals(5, target.maxPlayersPerMove());
     assertFalse(target.pauseQueueIfTargetDown());
   }
@@ -282,9 +284,9 @@ class ConfigTest {
     config.copyFrom(config);
 
     Map<String, Config.QueueTypeConfiguration> typeMap = new LinkedHashMap<>();
-    typeMap.put("VETERAN", createQueueType(1, 20, "queue.veteran"));
+    typeMap.put("VETERAN", createQueueType(3, 20, "queue.veteran"));
     typeMap.put("PRIORITY", createQueueType(2, 30, "queue.priority"));
-    typeMap.put("REGULAR", createQueueType(3, 50, "default"));
+    typeMap.put("REGULAR", createQueueType(1, 50, "default"));
 
     Config.QueueGroupConfiguration groupConfig = new Config.QueueGroupConfiguration();
     groupConfig.setDefaultGroup(true);
@@ -346,10 +348,10 @@ class ConfigTest {
     return config;
   }
 
-  private Config.QueueTypeConfiguration createQueueType(int order, int slots, String permission) {
+  private Config.QueueTypeConfiguration createQueueType(int priority, int reservedSlots, String permission) {
     Config.QueueTypeConfiguration type = new Config.QueueTypeConfiguration();
-    type.setOrder(order);
-    type.setSlots(slots);
+    type.setPriority(priority);
+    type.setReservedSlots(reservedSlots);
     type.setPermission(permission);
     type.setHeader(List.of());
     type.setFooter(List.of());

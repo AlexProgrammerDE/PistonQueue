@@ -83,8 +83,8 @@ final class QueueTestUtils {
     config.copyFrom(config); // Initializes defaults and queue groups
 
     Config.QueueTypeConfiguration queueTypeConfiguration = new Config.QueueTypeConfiguration();
-    queueTypeConfiguration.setOrder(1);
-    queueTypeConfiguration.setSlots(slots);
+    queueTypeConfiguration.setPriority(1);
+    queueTypeConfiguration.setReservedSlots(slots);
     queueTypeConfiguration.setPermission("default");
     queueTypeConfiguration.setHeader(List.of());
     queueTypeConfiguration.setFooter(List.of());
@@ -108,6 +108,14 @@ final class QueueTestUtils {
 
   static QueueGroup defaultGroup(Config config) {
     return config.getQueueGroups().iterator().next();
+  }
+
+  static String defaultTargetServer(Config config) {
+    return config.getDefaultGroup().targetServers().getFirst();
+  }
+
+  static String defaultQueueServer(Config config) {
+    return config.getDefaultGroup().queueServers().getFirst();
   }
 
   static QueueType defaultQueueType(Config config) {
@@ -137,9 +145,12 @@ final class QueueTestUtils {
       } catch (IOException e) {
         throw new UncheckedIOException(e);
       }
-      // Pre-register queue and target servers used by tests
-      registerServer(config.queueServer());
-      registerServer(config.targetServer());
+      // Pre-register queue and target servers from the default group
+      QueueGroup defaultGroup = config.getDefaultGroup();
+      if (defaultGroup != null) {
+        defaultGroup.queueServers().forEach(this::registerServer);
+        defaultGroup.targetServers().forEach(this::registerServer);
+      }
     }
 
     TestServer registerServer(String name) {

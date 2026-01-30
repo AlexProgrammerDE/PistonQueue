@@ -24,16 +24,30 @@ import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class KickEventHandlerTest {
 
+  private Config createConfigWithTarget(String targetName) {
+    Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
+
+    Config.QueueGroupConfiguration groupConfig = new Config.QueueGroupConfiguration();
+    groupConfig.setDefaultGroup(true);
+    groupConfig.setQueueServers(List.of("queue"));
+    groupConfig.setTargetServers(List.of(targetName));
+    groupConfig.setSourceServers(List.of());
+    groupConfig.setQueueTypes(List.of("DEFAULT"));
+    config.setQueueGroupDefinitions(Map.of("default", groupConfig));
+
+    return config;
+  }
+
   @Test
   void redirectsToQueueWhenKickedFromDownTargetServer() {
-    Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.setTargetServer("target");
+    Config config = createConfigWithTarget("target");
     config.setIfTargetDownSendToQueue(true);
     config.setDownWordList(List.of("server", "down", "offline"));
     config.setIfTargetDownSendToQueueMessage("Server is down, redirecting to queue");
@@ -58,8 +72,7 @@ class KickEventHandlerTest {
 
   @Test
   void doesNotRedirectWhenQueueRedirectionDisabled() {
-    Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.setTargetServer("target");
+    Config config = createConfigWithTarget("target");
     config.setIfTargetDownSendToQueue(false);
     config.setDownWordList(List.of("down"));
 
@@ -80,8 +93,7 @@ class KickEventHandlerTest {
 
   @Test
   void doesNotRedirectWhenKickedFromNonTargetServer() {
-    Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.setTargetServer("target");
+    Config config = createConfigWithTarget("target");
     config.setIfTargetDownSendToQueue(true);
     config.setDownWordList(List.of("down"));
 
@@ -102,8 +114,7 @@ class KickEventHandlerTest {
 
   @Test
   void doesNotRedirectWhenKickReasonDoesNotMatch() {
-    Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.setTargetServer("target");
+    Config config = createConfigWithTarget("target");
     config.setIfTargetDownSendToQueue(true);
     config.setDownWordList(List.of("down"));
 
@@ -187,8 +198,7 @@ class KickEventHandlerTest {
 
   @Test
   void handlesKickWithoutReason() {
-    Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.setTargetServer("target");
+    Config config = createConfigWithTarget("target");
     config.setIfTargetDownSendToQueue(true);
     config.setDownWordList(List.of("down"));
 
@@ -209,8 +219,7 @@ class KickEventHandlerTest {
 
   @Test
   void caseInsensitiveKickReasonMatching() {
-    Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
-    config.setTargetServer("target");
+    Config config = createConfigWithTarget("target");
     config.setIfTargetDownSendToQueue(true);
     config.setDownWordList(List.of("server", "DOWN"));
 

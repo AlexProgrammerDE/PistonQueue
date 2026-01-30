@@ -25,7 +25,6 @@ import net.pistonmaster.pistonqueue.shared.plugin.PistonQueuePlugin;
 import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -57,20 +56,7 @@ public final class QueueEnvironment {
   }
 
   public QueueGroup defaultGroup() {
-    Config config = config();
-    QueueGroup group = config.getDefaultGroup();
-    if (group != null) {
-      return group;
-    }
-
-    List<QueueType> queueTypes = config.getAllQueueTypes();
-    return new QueueGroup(
-      "default",
-      List.of(config.queueServer()),
-      List.of(config.targetServer()),
-      config.enableSourceServer() ? List.of(config.sourceServer()) : List.of(),
-      queueTypes
-    );
+    return config().getDefaultGroup();
   }
 
   public QueueGroup resolveGroupForTarget(String server) {
@@ -86,9 +72,6 @@ public final class QueueEnvironment {
   }
 
   public String defaultTarget(QueueGroup group) {
-    if (group.targetServers().isEmpty()) {
-      return config().targetServer();
-    }
     return group.targetServers().getFirst();
   }
 

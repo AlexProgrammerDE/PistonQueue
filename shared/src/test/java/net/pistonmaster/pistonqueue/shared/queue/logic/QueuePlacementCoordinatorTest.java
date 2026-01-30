@@ -44,16 +44,18 @@ class QueuePlacementCoordinatorTest {
   @Test
   void queuesPlayerWhenServerFull() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
+    String queueServer = QueueTestUtils.defaultQueueServer(config);
     QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
-    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer(), config.queueServer()));
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(targetServer, queueServer));
     TestPlayer player = context.plugin().registerPlayer("Alice");
-    QueueTestUtils.TestPreConnectEvent event = QueueTestUtils.preConnectEvent(player, config.targetServer());
+    QueueTestUtils.TestPreConnectEvent event = QueueTestUtils.preConnectEvent(player, targetServer);
 
     context.coordinator().handlePreConnect(event);
 
-    assertEquals(config.queueServer(), event.getTarget().orElseThrow());
+    assertEquals(queueServer, event.getTarget().orElseThrow());
     assertTrue(type.getQueueMap().containsKey(player.getUniqueId()));
     assertTrue(player.getMessages().stream().anyMatch(msg -> msg.contains(config.serverIsFullMessage())));
   }
@@ -61,12 +63,13 @@ class QueuePlacementCoordinatorTest {
   @Test
   void queuesPlayerWhenShadowBanned() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
     QueueType type = config.getAllQueueTypes().getFirst();
 
-    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(targetServer));
     TestPlayer player = context.plugin().registerPlayer("BannedPlayer");
 
-    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, config.targetServer()));
+    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, targetServer));
 
     assertTrue(type.getQueueMap().containsKey(player.getUniqueId()));
   }
@@ -74,30 +77,32 @@ class QueuePlacementCoordinatorTest {
   @Test
   void bypassesQueueWhenPermissionPresent() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
     QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
-    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(targetServer));
     TestPlayer player = context.plugin().registerPlayer("Bob");
     player.grantPermission(config.queueBypassPermission());
-    QueueTestUtils.TestPreConnectEvent event = QueueTestUtils.preConnectEvent(player, config.targetServer());
+    QueueTestUtils.TestPreConnectEvent event = QueueTestUtils.preConnectEvent(player, targetServer);
 
     context.coordinator().handlePreConnect(event);
 
-    assertEquals(config.targetServer(), event.getTarget().orElseThrow());
+    assertEquals(targetServer, event.getTarget().orElseThrow());
     assertTrue(type.getQueueMap().isEmpty());
   }
 
   @Test
   void queuesEvenWhenNotFullIfAlwaysQueueEnabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
     config.setAlwaysQueue(true);
     QueueType type = config.getAllQueueTypes().getFirst();
 
-    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(targetServer));
     TestPlayer player = context.plugin().registerPlayer("Cara");
 
-    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, config.targetServer()));
+    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, targetServer));
 
     assertTrue(type.getQueueMap().containsKey(player.getUniqueId()));
   }
@@ -105,11 +110,12 @@ class QueuePlacementCoordinatorTest {
   @Test
   void retainsOriginalTargetWhenNotForced() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
     config.setForceTargetServer(false);
     QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
-    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(targetServer));
     TestPlayer player = context.plugin().registerPlayer("Daisy");
     String desiredTarget = "adventure";
     context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, desiredTarget));
@@ -122,31 +128,33 @@ class QueuePlacementCoordinatorTest {
   @Test
   void forcesDefaultTargetWhenFlagEnabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
     config.setForceTargetServer(true);
     QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
-    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(targetServer));
     TestPlayer player = context.plugin().registerPlayer("Ethan");
     context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, "creative"));
 
     QueuedPlayer queuedPlayer = type.getQueueMap().get(player.getUniqueId());
     assertNotNull(queuedPlayer);
-    assertEquals(config.targetServer(), queuedPlayer.targetServer());
+    assertEquals(targetServer, queuedPlayer.targetServer());
   }
 
   @Test
   void disconnectsWhenRequiredServerDown() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
     config.setKickWhenDown(true);
-    config.setKickWhenDownServers(List.of(config.targetServer()));
+    config.setRawKickWhenDownServers(List.of("%TARGET_SERVER%"));
     QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
     CoordinatorContext context = context(config, QueueTestUtils.onlineServers());
     TestPlayer player = context.plugin().registerPlayer("Finn");
 
-    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, config.targetServer()));
+    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, targetServer));
 
     assertTrue(player.isDisconnected());
     assertEquals(config.serverDownKickMessage(), player.getDisconnectMessage());
@@ -156,16 +164,26 @@ class QueuePlacementCoordinatorTest {
   @Test
   void skipsQueueWhenSourceServerUnsupported() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
     config.setEnableSourceServer(true);
-    config.setSourceServer("lobby");
+
+    // Rebuild groups with source server
+    Config.QueueGroupConfiguration groupConfig = new Config.QueueGroupConfiguration();
+    groupConfig.setDefaultGroup(true);
+    groupConfig.setQueueServers(List.of("queue"));
+    groupConfig.setTargetServers(List.of("main"));
+    groupConfig.setSourceServers(List.of("lobby"));
+    groupConfig.setQueueTypes(List.of("DEFAULT"));
+    config.setQueueGroupDefinitions(java.util.Map.of("default", groupConfig));
+
     QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
-    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(targetServer));
     TestPlayer player = context.plugin().registerPlayer("Gina");
     player.setCurrentServer("hub");
 
-    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, config.targetServer()));
+    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, targetServer));
 
     assertTrue(type.getQueueMap().isEmpty());
   }
@@ -173,16 +191,26 @@ class QueuePlacementCoordinatorTest {
   @Test
   void queuesWhenSourceMatchesRequirement() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
     config.setEnableSourceServer(true);
-    config.setSourceServer("lobby");
+
+    // Rebuild groups with source server
+    Config.QueueGroupConfiguration groupConfig = new Config.QueueGroupConfiguration();
+    groupConfig.setDefaultGroup(true);
+    groupConfig.setQueueServers(List.of("queue"));
+    groupConfig.setTargetServers(List.of("main"));
+    groupConfig.setSourceServers(List.of("lobby"));
+    groupConfig.setQueueTypes(List.of("DEFAULT"));
+    config.setQueueGroupDefinitions(java.util.Map.of("default", groupConfig));
+
     QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
-    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(targetServer));
     TestPlayer player = context.plugin().registerPlayer("Henry");
     player.setCurrentServer("lobby");
 
-    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, config.targetServer()));
+    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, targetServer));
 
     assertTrue(type.getQueueMap().containsKey(player.getUniqueId()));
   }
@@ -190,15 +218,16 @@ class QueuePlacementCoordinatorTest {
   @Test
   void ignoresAlreadyConnectedPlayersWhenSourceDisabled() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
     config.setEnableSourceServer(false);
     QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
-    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(targetServer));
     TestPlayer player = context.plugin().registerPlayer("Ivy");
-    player.setCurrentServer(config.targetServer());
+    player.setCurrentServer(targetServer);
 
-    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, config.targetServer()));
+    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, targetServer));
 
     assertTrue(type.getQueueMap().isEmpty());
   }
@@ -206,12 +235,13 @@ class QueuePlacementCoordinatorTest {
   @Test
   void doesNotDuplicateQueueEntries() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
     QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
 
-    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(targetServer));
     TestPlayer player = context.plugin().registerPlayer("Jake");
-    QueueTestUtils.TestPreConnectEvent event = QueueTestUtils.preConnectEvent(player, config.targetServer());
+    QueueTestUtils.TestPreConnectEvent event = QueueTestUtils.preConnectEvent(player, targetServer);
 
     context.coordinator().handlePreConnect(event);
     context.coordinator().handlePreConnect(event);
@@ -224,15 +254,16 @@ class QueuePlacementCoordinatorTest {
   @Test
   void updatesPlayerListWithConfiguredHeader() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
     QueueType type = config.getAllQueueTypes().getFirst();
     type.setHeader(new ArrayList<>(List.of("header")));
     type.setFooter(new ArrayList<>(List.of("footer")));
     type.getPlayersWithTypeInTarget().set(1);
 
-    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(config.targetServer()));
+    CoordinatorContext context = context(config, QueueTestUtils.onlineServers(targetServer));
     TestPlayer player = context.plugin().registerPlayer("Liam");
 
-    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, config.targetServer()));
+    context.coordinator().handlePreConnect(QueueTestUtils.preConnectEvent(player, targetServer));
 
     assertEquals(List.of("header"), player.getPlayerListHeader());
     assertEquals(List.of("footer"), player.getPlayerListFooter());

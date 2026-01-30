@@ -25,7 +25,6 @@ import de.exlll.configlib.NameFormatters;
 import de.exlll.configlib.YamlConfigurations;
 import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.config.Config;
-import net.pistonmaster.pistonqueue.shared.config.ConfigMigrator;
 import net.pistonmaster.pistonqueue.shared.queue.QueueGroup;
 import net.pistonmaster.pistonqueue.shared.queue.QueueListenerShared;
 import net.pistonmaster.pistonqueue.shared.queue.QueueType;
@@ -71,18 +70,7 @@ public interface PistonQueuePlugin {
 
   default void scheduleTasks(QueueListenerShared queueListener) {
     Config config = getConfiguration();
-    QueueGroup resolvedDefaultGroup = config.getDefaultGroup();
-    if (resolvedDefaultGroup == null) {
-      List<QueueType> queueTypes = config.getAllQueueTypes();
-      resolvedDefaultGroup = new QueueGroup(
-        "default",
-        Collections.singletonList(config.queueServer()),
-        Collections.singletonList(config.targetServer()),
-        config.enableSourceServer() ? Collections.singletonList(config.sourceServer()) : Collections.emptyList(),
-        queueTypes
-      );
-    }
-    final QueueGroup defaultGroup = resolvedDefaultGroup;
+    final QueueGroup defaultGroup = config.getDefaultGroup();
     // Sends the position message and updates tab on an interval in chat
     schedule(() -> {
       boolean targetsOnline = defaultGroup.targetServers().stream().anyMatch(queueListener.getServerStatusManager().getOnlineServers()::contains);
@@ -305,8 +293,7 @@ public interface PistonQueuePlugin {
     }
   }
 
-  default void loadConfig(Path file) throws IOException {
-    ConfigMigrator.migrate(file);
+  default void loadConfig(Path file) {
     Config loaded = YamlConfigurations.update(
       file,
       Config.class,
