@@ -235,7 +235,7 @@ class ConfigTest {
 
     Config.QueueGroupConfiguration groupConfig = new Config.QueueGroupConfiguration();
     groupConfig.setDefaultGroup(true);
-    groupConfig.setQueueServers(List.of());
+    groupConfig.setQueueServers(List.of("queue"));
     groupConfig.setTargetServers(List.of("main"));
     groupConfig.setSourceServers(List.of());
     groupConfig.setQueueTypes(List.of("NONEXISTENT_TYPE"));
@@ -290,7 +290,7 @@ class ConfigTest {
 
     Config.QueueGroupConfiguration groupConfig = new Config.QueueGroupConfiguration();
     groupConfig.setDefaultGroup(true);
-    groupConfig.setQueueServers(List.of());
+    groupConfig.setQueueServers(List.of("queue"));
     groupConfig.setTargetServers(List.of("main"));
     groupConfig.setSourceServers(List.of());
     groupConfig.setQueueTypes(List.of("VETERAN", "PRIORITY", "REGULAR"));
@@ -313,7 +313,7 @@ class ConfigTest {
 
     Config.QueueGroupConfiguration groupConfig = new Config.QueueGroupConfiguration();
     groupConfig.setDefaultGroup(true);
-    groupConfig.setQueueServers(List.of());
+    groupConfig.setQueueServers(List.of("queue"));
     groupConfig.setTargetServers(List.of("main"));
     groupConfig.setSourceServers(List.of());
     groupConfig.setQueueTypes(List.of("VIP", "PREMIUM"));

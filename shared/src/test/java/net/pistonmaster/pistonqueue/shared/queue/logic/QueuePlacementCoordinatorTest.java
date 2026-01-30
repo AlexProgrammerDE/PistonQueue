@@ -164,8 +164,6 @@ class QueuePlacementCoordinatorTest {
   @Test
   void skipsQueueWhenSourceServerUnsupported() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
-    String targetServer = QueueTestUtils.defaultTargetServer(config);
-    config.setEnableSourceServer(true);
 
     // Rebuild groups with source server
     Config.QueueGroupConfiguration groupConfig = new Config.QueueGroupConfiguration();
@@ -175,6 +173,8 @@ class QueuePlacementCoordinatorTest {
     groupConfig.setSourceServers(List.of("lobby"));
     groupConfig.setQueueTypes(List.of("DEFAULT"));
     config.setQueueGroupDefinitions(java.util.Map.of("default", groupConfig));
+    config.setEnableSourceServer(true);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
 
     QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);
@@ -191,8 +191,6 @@ class QueuePlacementCoordinatorTest {
   @Test
   void queuesWhenSourceMatchesRequirement() {
     Config config = QueueTestUtils.createConfigWithSingleQueueType(1);
-    String targetServer = QueueTestUtils.defaultTargetServer(config);
-    config.setEnableSourceServer(true);
 
     // Rebuild groups with source server
     Config.QueueGroupConfiguration groupConfig = new Config.QueueGroupConfiguration();
@@ -202,6 +200,8 @@ class QueuePlacementCoordinatorTest {
     groupConfig.setSourceServers(List.of("lobby"));
     groupConfig.setQueueTypes(List.of("DEFAULT"));
     config.setQueueGroupDefinitions(java.util.Map.of("default", groupConfig));
+    config.setEnableSourceServer(true);
+    String targetServer = QueueTestUtils.defaultTargetServer(config);
 
     QueueType type = config.getAllQueueTypes().getFirst();
     type.getPlayersWithTypeInTarget().set(1);

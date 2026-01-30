@@ -94,8 +94,8 @@ final class QueueTestUtils {
 
     Config.QueueGroupConfiguration groupConfiguration = new Config.QueueGroupConfiguration();
     groupConfiguration.setDefaultGroup(true);
-    groupConfiguration.setQueueServers(List.of());
-    groupConfiguration.setTargetServers(List.of());
+    groupConfiguration.setQueueServers(List.of("queue"));
+    groupConfiguration.setTargetServers(List.of("target"));
     groupConfiguration.setSourceServers(List.of());
     groupConfiguration.setQueueTypes(List.of("DEFAULT"));
 

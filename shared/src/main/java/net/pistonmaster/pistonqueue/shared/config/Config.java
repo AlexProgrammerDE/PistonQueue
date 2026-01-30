@@ -119,6 +119,7 @@ public final class Config {
   @Comment("Load balancing strategy for multiple queue servers: ROUND_ROBIN, LEAST_PLAYERS, RANDOM")
   private LoadBalancingStrategy queueLoadBalancing = LoadBalancingStrategy.LEAST_PLAYERS;
 
+  @Comment("Ignore the player's intended target server and always use the queue group's default target.")
   private boolean forceTargetServer = false;
 
   @Comment({
@@ -126,13 +127,6 @@ public final class Config {
     "This option is required for those setups to work. Make your proxy sends source -> target."
   })
   private boolean enableSourceServer = false;
-
-  @Ignore
-  private String queueServer = "queue";
-  @Ignore
-  private String targetServer = "main";
-  @Ignore
-  private String sourceServer = "lobby";
 
   @Comment("Connecting to server message")
   private String joiningTargetServer = "&6Connecting to the server...";
@@ -621,12 +615,6 @@ public final class Config {
         }
       }
     }
-    // Always include all target servers
-    for (String target : allTargetServers) {
-      if (!resolved.contains(target)) {
-        resolved.add(target);
-      }
-    }
     kickWhenDownServers = resolved;
   }
 
@@ -688,17 +676,17 @@ public final class Config {
 
       List<String> resolvedQueueServers = configuration.getQueueServers();
       if (resolvedQueueServers.isEmpty()) {
-        resolvedQueueServers = List.of(queueServer);
+        throw new IllegalStateException("Queue group \"" + name + "\" must specify at least one queue server");
       }
 
       List<String> targetServers = configuration.getTargetServers();
       if (targetServers.isEmpty()) {
-        targetServers = List.of(targetServer);
+        throw new IllegalStateException("Queue group \"" + name + "\" must specify at least one target server");
       }
 
       List<String> sourceServers = enableSourceServer ? configuration.getSourceServers() : List.of();
-      if (enableSourceServer && sourceServers.isEmpty() && sourceServer != null && !sourceServer.isBlank()) {
-        sourceServers = List.of(sourceServer);
+      if (enableSourceServer && sourceServers.isEmpty()) {
+        throw new IllegalStateException("Queue group \"" + name + "\" must specify at least one source server when enableSourceServer is true");
       }
 
       List<String> typeNames = configuration.getQueueTypes();
@@ -833,9 +821,9 @@ public final class Config {
   private Map<String, QueueGroupConfiguration> defaultQueueGroups() {
     Map<String, QueueGroupConfiguration> defaults = new LinkedHashMap<>();
     QueueGroupConfiguration configuration = new QueueGroupConfiguration();
-    configuration.queueServers = new ArrayList<>(List.of(queueServer));
-    configuration.targetServers = new ArrayList<>(List.of(targetServer));
-    configuration.sourceServers = new ArrayList<>(List.of(sourceServer));
+    configuration.queueServers = new ArrayList<>(List.of("queue"));
+    configuration.targetServers = new ArrayList<>(List.of("main"));
+    configuration.sourceServers = new ArrayList<>(List.of("lobby"));
     configuration.queueTypes = new ArrayList<>(queueTypes.keySet());
     configuration.defaultGroup = true;
     defaults.put("default", configuration);
