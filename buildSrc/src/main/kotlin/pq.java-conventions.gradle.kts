@@ -21,7 +21,7 @@ java {
 }
 
 dependencies {
-  implementation("org.jetbrains:annotations:26.0.2-1")
+  implementation("org.jetbrains:annotations:26.1.0")
 
   errorprone("com.google.errorprone:error_prone_core:2.47.0")
   spotbugs("com.github.spotbugs:spotbugs:4.9.8")
