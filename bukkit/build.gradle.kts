@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
     implementation("net.pistonmaster:PistonUtils:1.4.0")
-    implementation("org.bstats:bstats-bukkit:3.1.0")
+    implementation("org.bstats:bstats-bukkit:3.2.0")
     implementation("de.exlll:configlib-yaml:4.8.1")
 
     compileOnly("net.dmulloy2:ProtocolLib:5.4.0")
