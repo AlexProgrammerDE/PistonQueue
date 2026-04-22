@@ -29,8 +29,8 @@ dependencies {
   rewrite("org.openrewrite.recipe:rewrite-migrate-java:3.33.0")
   rewrite("org.openrewrite.recipe:rewrite-rewrite:0.24.0")
 
-  compileOnly("org.projectlombok:lombok:1.18.44")
-  annotationProcessor("org.projectlombok:lombok:1.18.44")
+  compileOnly("org.projectlombok:lombok:1.18.46")
+  annotationProcessor("org.projectlombok:lombok:1.18.46")
 
   testRuntimeOnly("org.junit.platform:junit-platform-launcher")
   testImplementation("org.junit.jupiter:junit-jupiter:6.0.3")
