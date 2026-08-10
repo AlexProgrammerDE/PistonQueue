@@ -4,6 +4,8 @@ import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.queue.ServerStatusManager;
 import org.junit.jupiter.api.Test;
 
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -55,6 +57,22 @@ class ServerStatusManagerTest {
     //now call offline once, should be offline now
     serverStatusManager.offline("testServer");
     assertTrue(serverStatusManager.getOnlineServers().isEmpty());
+  }
+
+  @Test
+  void removesStatusForServersThatNoLongerNeedChecks() {
+    Config config = QueueTestUtils.createConfigWithSingleQueueType(5);
+    config.setMinOnlineChecks(1);
+
+    QueueTestUtils.TestQueuePlugin plugin = new QueueTestUtils.TestQueuePlugin(config);
+    ServerStatusManager serverStatusManager = new ServerStatusManager(plugin::getConfiguration);
+    serverStatusManager.online("kept");
+    serverStatusManager.online("removed");
+
+    serverStatusManager.retainServers(Set.of("kept"));
+
+    assertEquals(Set.of("kept"), serverStatusManager.getOnlineServers());
+    assertEquals(0, serverStatusManager.getOnlinePingCount("removed"));
   }
 
   @Test

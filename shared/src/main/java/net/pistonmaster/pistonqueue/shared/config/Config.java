@@ -327,6 +327,19 @@ public final class Config {
     return Collections.unmodifiableList(kickWhenDownServers);
   }
 
+  public Set<String> serversRequiringOnlineChecks() {
+    Set<String> servers = new LinkedHashSet<>();
+    if (pauseQueueIfTargetDown) {
+      for (QueueGroup group : queueGroupList) {
+        servers.addAll(group.targetServers());
+      }
+    }
+    if (kickWhenDown) {
+      servers.addAll(kickWhenDownServers);
+    }
+    return Collections.unmodifiableSet(servers);
+  }
+
   public boolean ifTargetDownSendToQueue() {
     return ifTargetDownSendToQueue;
   }

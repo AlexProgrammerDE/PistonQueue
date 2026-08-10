@@ -73,7 +73,8 @@ public interface PistonQueuePlugin {
     final QueueGroup defaultGroup = config.getDefaultGroup();
     // Sends the position message and updates tab on an interval in chat
     schedule(() -> {
-      boolean targetsOnline = defaultGroup.targetServers().stream().anyMatch(queueListener.getServerStatusManager().getOnlineServers()::contains);
+      boolean targetsOnline = !config.pauseQueueIfTargetDown()
+        || defaultGroup.targetServers().stream().anyMatch(queueListener.getServerStatusManager().getOnlineServers()::contains);
       if (targetsOnline) {
         for (QueueType type : config.getAllQueueTypes()) {
           if (config.positionMessageChat()) {
@@ -109,9 +110,13 @@ public interface PistonQueuePlugin {
     // Moves the queue when someone logs off the target server on an interval set in the config.yml
     schedule(queueListener::moveQueue, config.queueMoveDelay(), config.queueMoveDelay(), TimeUnit.MILLISECONDS);
 
-    // Checks the status of all the servers
+    // Checks the status of servers used by enabled availability features
     schedule(() -> {
-      List<String> servers = new ArrayList<>(config.kickWhenDownServers());
+      Set<String> servers = config.serversRequiringOnlineChecks();
+      queueListener.getServerStatusManager().retainServers(servers);
+      if (servers.isEmpty()) {
+        return;
+      }
       CountDownLatch latch = new CountDownLatch(servers.size());
       for (String server : servers) {
         CompletableFuture.runAsync(() -> {
