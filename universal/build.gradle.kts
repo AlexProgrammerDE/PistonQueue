@@ -2,6 +2,12 @@ plugins {
   id("pq.java-conventions")
 }
 
+java {
+  toolchain {
+    languageVersion.set(JavaLanguageVersion.of(25))
+  }
+}
+
 dependencies {
   implementation(project(":pistonqueue-bukkit", "shadow"))
   implementation(project(":pistonqueue-bungee", "shadow"))

@@ -3,6 +3,12 @@ plugins {
     id("xyz.jpenilla.run-velocity") version "3.0.2"
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
+}
+
 dependencies {
     implementation(projects.pistonqueueShared)
     compileOnly(projects.pistonqueueBuildData)
