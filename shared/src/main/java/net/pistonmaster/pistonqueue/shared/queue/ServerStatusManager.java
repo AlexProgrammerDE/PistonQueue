@@ -39,6 +39,10 @@ public class ServerStatusManager {
       .collect(Collectors.toSet());
   }
 
+  public void retainServers(Set<String> servers) {
+    onlinePingCounts.keySet().removeIf(server -> !servers.contains(server));
+  }
+
   // For testing purposes so we can assert there is no overflow risk
   public int getOnlinePingCount(String server) {
     return onlinePingCounts.getOrDefault(server, 0);

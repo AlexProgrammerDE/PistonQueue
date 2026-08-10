@@ -159,6 +159,37 @@ class ConfigTest {
   }
 
   @Test
+  void skipsOnlineChecksWhenNoAvailabilityFeatureNeedsThem() {
+    Config config = new Config();
+    config.copyFrom(config);
+    config.setPauseQueueIfTargetDown(false);
+    config.setKickWhenDown(false);
+
+    assertTrue(config.serversRequiringOnlineChecks().isEmpty());
+  }
+
+  @Test
+  void checksTargetServersWhenQueuePausingIsEnabled() {
+    Config config = new Config();
+    config.copyFrom(config);
+    config.setPauseQueueIfTargetDown(true);
+    config.setKickWhenDown(false);
+
+    assertEquals(Set.of("main"), config.serversRequiringOnlineChecks());
+  }
+
+  @Test
+  void checksConfiguredServersWhenDownKickingIsEnabled() {
+    Config config = new Config();
+    config.copyFrom(config);
+    config.setPauseQueueIfTargetDown(false);
+    config.setKickWhenDown(true);
+    config.setRawKickWhenDownServers(List.of("main", "queue"));
+
+    assertEquals(Set.of("main", "queue"), config.serversRequiringOnlineChecks());
+  }
+
+  @Test
   void queueTypesAreSortedByOrder() {
     Config config = createConfigWithMultipleQueueTypes();
 
