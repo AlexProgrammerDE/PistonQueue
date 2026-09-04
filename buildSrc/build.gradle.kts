@@ -7,11 +7,11 @@ repositories {
 }
 
 dependencies {
-    implementation("com.diffplug.spotless:spotless-plugin-gradle:8.6.0")
-    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.4.2")
-    implementation("com.github.spotbugs.snom:spotbugs-gradle-plugin:6.5.5")
-    implementation("net.ltgt.errorprone:net.ltgt.errorprone.gradle.plugin:5.1.0")
-    implementation("org.openrewrite:plugin:7.34.0")
+    implementation("com.diffplug.spotless:spotless-plugin-gradle:8.10.2")
+    implementation("com.gradleup.shadow:shadow-gradle-plugin:9.6.1")
+    implementation("com.github.spotbugs.snom:spotbugs-gradle-plugin:6.5.11")
+    implementation("net.ltgt.errorprone:net.ltgt.errorprone.gradle.plugin:5.1.1")
+    implementation("org.openrewrite:plugin:7.41.0")
 }
 
 java {
