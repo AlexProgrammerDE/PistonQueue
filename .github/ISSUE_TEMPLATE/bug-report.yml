@@ -1,0 +1,54 @@
+name: Bug report
+description: Report a reproducible problem.
+body:
+- type: markdown
+  attributes:
+    value: For setup questions, read [the support guide](https://github.com/AlexProgrammerDE/PistonQueue/blob/main/SUPPORT.md).
+      Remove secrets and private data from reports.
+- type: checkboxes
+  id: prior-search
+  attributes:
+    label: Before submitting
+    options:
+    - label: I searched existing issues and the relevant documentation.
+      required: true
+- type: textarea
+  id: problem
+  attributes:
+    label: What happened?
+    description: Describe the observed problem and its effect.
+  validations:
+    required: true
+- type: textarea
+  id: reproduction
+  attributes:
+    label: Steps to reproduce
+    description: Give the smallest reproducible example. Use synthetic data.
+    placeholder: '1. Prepare ...
+
+      2. Run or open ...
+
+      3. Observe ...'
+  validations:
+    required: true
+- type: textarea
+  id: expected
+  attributes:
+    label: Expected behavior
+    description: Describe the result you expected.
+  validations:
+    required: true
+- type: textarea
+  id: environment
+  attributes:
+    label: Versions and environment
+    description: PistonQueue build, proxy/backend versions, Java and Minecraft versions, queue/auth topology,
+      related plugins, and redacted configuration.
+  validations:
+    required: true
+- type: textarea
+  id: evidence
+  attributes:
+    label: Logs, screenshots, or configuration
+    description: Include only relevant excerpts. Remove tokens, keys, cookies, personal data, and private
+      host details.

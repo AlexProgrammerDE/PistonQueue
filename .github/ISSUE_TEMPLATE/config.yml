@@ -1,0 +1,6 @@
+blank_issues_enabled: true
+contact_links:
+- name: PistonQueue Discord
+  url: https://discord.gg/J9bmJNuTJm
+  about: Read setup guidance or ask a usage question before opening a development
+    issue.
