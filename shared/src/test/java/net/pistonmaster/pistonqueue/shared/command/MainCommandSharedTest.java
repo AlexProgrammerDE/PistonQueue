@@ -19,6 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.shared.command;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapper;
 import net.pistonmaster.pistonqueue.shared.chat.ComponentWrapperFactory;
 import net.pistonmaster.pistonqueue.shared.chat.MessageType;
@@ -387,7 +388,7 @@ class MainCommandSharedTest {
     }
   }
 
-  @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+  @SuppressFBWarnings(
     value = "CT_CONSTRUCTOR_THROW",
     justification = "Test class does not need protection from finalizer attacks"
   )
@@ -451,6 +452,7 @@ class MainCommandSharedTest {
     }
 
     @Override
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Tests share mutable configuration to exercise reloads.")
     public Config getConfiguration() {
       return config;
     }
