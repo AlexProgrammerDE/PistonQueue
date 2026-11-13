@@ -16,8 +16,8 @@ dependencies {
     implementation("net.pistonmaster:PistonUtils:1.4.0")
     implementation("org.bstats:bstats-velocity:3.2.1")
 
-    compileOnly("com.velocitypowered:velocity-api:4.2.0")
-    compileOnly("com.github.spotbugs:spotbugs-annotations:4.10.4")
+    compileOnly("com.velocitypowered:velocity-api:4.3.1")
+    compileOnly("com.github.spotbugs:spotbugs-annotations:4.10.5")
 }
 
 tasks {
