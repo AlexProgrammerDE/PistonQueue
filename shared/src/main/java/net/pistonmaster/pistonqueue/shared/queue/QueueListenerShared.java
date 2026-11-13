@@ -41,6 +41,7 @@ import net.pistonmaster.pistonqueue.shared.queue.logic.StorageShadowBanService;
 import net.pistonmaster.pistonqueue.shared.queue.logic.UsernameValidator;
 import net.pistonmaster.pistonqueue.shared.wrapper.PlayerWrapper;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -56,25 +57,44 @@ public abstract class QueueListenerShared {
   private final KickEventHandler kickEventHandler;
 
   protected QueueListenerShared(PistonQueuePlugin plugin) {
-    this.plugin = plugin;
-    Config config = currentConfig();
-    this.serverStatusManager = new ServerStatusManager(this::currentConfig);
-    this.queueEnvironment = new QueueEnvironment(plugin, this::currentConfig, serverStatusManager::getOnlineServers);
-    this.usernameValidator = new UsernameValidator(config);
-    this.shadowBanKickHandler = new ShadowBanKickHandler(config);
+    this(prepare(plugin));
+  }
+
+  private QueueListenerShared(PreparedListener prepared) {
+    this.plugin = prepared.plugin();
+    this.serverStatusManager = prepared.serverStatusManager();
+    this.queueEnvironment = prepared.queueEnvironment();
+    this.queuePlacementCoordinator = prepared.queuePlacementCoordinator();
+    this.queueMoveProcessor = prepared.queueMoveProcessor();
+    this.usernameValidator = prepared.usernameValidator();
+    this.shadowBanKickHandler = prepared.shadowBanKickHandler();
+    this.kickEventHandler = prepared.kickEventHandler();
+  }
+
+  private static PreparedListener prepare(PistonQueuePlugin plugin) {
+    Objects.requireNonNull(plugin, "plugin");
+    Config config = Objects.requireNonNull(plugin.getConfiguration(), "configuration");
+
+    ServerStatusManager serverStatusManager = new ServerStatusManager(plugin::getConfiguration);
+    QueueEnvironment queueEnvironment = new QueueEnvironment(plugin, plugin::getConfiguration, serverStatusManager::getOnlineServers);
+    UsernameValidator usernameValidator = new UsernameValidator(config);
+    ShadowBanKickHandler shadowBanKickHandler = new ShadowBanKickHandler(config);
 
     QueueServerSelector queueServerSelector = new QueueServerSelector(queueEnvironment);
-    this.kickEventHandler = new KickEventHandler(config, queueEnvironment, queueServerSelector);
+    KickEventHandler kickEventHandler = new KickEventHandler(config, queueEnvironment, queueServerSelector);
 
     QueueAvailabilityCalculator availabilityCalculator = new QueueAvailabilityCalculator();
     QueueEntryFactory queueEntryFactory = new QueueEntryFactory(queueEnvironment, queueServerSelector);
     ShadowBanService shadowBanService = new StorageShadowBanService();
-    this.queuePlacementCoordinator = new QueuePlacementCoordinator(queueEnvironment, availabilityCalculator, queueEntryFactory,shadowBanService);
+    QueuePlacementCoordinator queuePlacementCoordinator = new QueuePlacementCoordinator(queueEnvironment, availabilityCalculator, queueEntryFactory,shadowBanService);
     QueueCleaner queueCleaner = new QueueCleaner(queueEnvironment);
     QueueRecoveryHandler recoveryHandler = new QueueRecoveryHandler(queueEnvironment);
     QueueConnector queueConnector = new QueueConnector(queueEnvironment, availabilityCalculator, shadowBanService);
-    this.queueMoveProcessor = new QueueMoveProcessor(queueEnvironment, queueCleaner, recoveryHandler, queueConnector);
+    QueueMoveProcessor queueMoveProcessor = new QueueMoveProcessor(queueEnvironment, queueCleaner, recoveryHandler, queueConnector);
+    return new PreparedListener(plugin, serverStatusManager, queueEnvironment, queuePlacementCoordinator, queueMoveProcessor, usernameValidator, shadowBanKickHandler, kickEventHandler);
   }
+
+  private record PreparedListener(PistonQueuePlugin plugin, ServerStatusManager serverStatusManager, QueueEnvironment queueEnvironment, QueuePlacementCoordinator queuePlacementCoordinator, QueueMoveProcessor queueMoveProcessor, UsernameValidator usernameValidator, ShadowBanKickHandler shadowBanKickHandler, KickEventHandler kickEventHandler) {}
 
   protected void onPreLogin(PQPreLoginEvent event) {
     usernameValidator.validateUsername(event);
@@ -96,7 +116,4 @@ public abstract class QueueListenerShared {
     queueMoveProcessor.processQueues();
   }
 
-  private Config currentConfig() {
-    return plugin.getConfiguration();
-  }
 }

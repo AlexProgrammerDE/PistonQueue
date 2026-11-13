@@ -19,6 +19,7 @@
  */
 package net.pistonmaster.pistonqueue.shared.queue.logic;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import net.pistonmaster.pistonqueue.shared.chat.MessageType;
 import net.pistonmaster.pistonqueue.shared.config.Config;
 import net.pistonmaster.pistonqueue.shared.events.PQKickedFromServerEvent;
@@ -211,6 +212,7 @@ final class QueueTestUtils {
     }
 
     @Override
+    @SuppressFBWarnings(value = "EI_EXPOSE_REP", justification = "Tests share mutable configuration to exercise reloads.")
     public Config getConfiguration() {
       return config;
     }
@@ -328,7 +330,11 @@ final class QueueTestUtils {
 
     @Override
     public List<PlayerWrapper> getConnectedPlayers() {
-      return connectedPlayers;
+      return List.copyOf(connectedPlayers);
+    }
+
+    void addConnectedPlayer(PlayerWrapper player) {
+      connectedPlayers.add(player);
     }
 
     @Override

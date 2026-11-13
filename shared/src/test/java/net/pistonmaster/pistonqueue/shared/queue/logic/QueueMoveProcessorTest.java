@@ -149,7 +149,7 @@ class QueueMoveProcessorTest {
       TestPlayer player = context.plugin().registerPlayer("XP" + i);
       enqueue(context, player, "main");
       // Players need to be "connected" to the queue server for XP sound to be sent
-      queueServer.getConnectedPlayers().add(player);
+      queueServer.addConnectedPlayer(player);
     }
 
     context.processor().processQueues();

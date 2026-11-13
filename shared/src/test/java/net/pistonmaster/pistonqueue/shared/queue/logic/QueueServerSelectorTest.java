@@ -114,10 +114,10 @@ class QueueServerSelectorTest {
     plugin.registerServer("queue3"); // queue3 has no players
 
     // Add players to servers
-    queue1.getConnectedPlayers().add(plugin.registerPlayer("P1"));
-    queue1.getConnectedPlayers().add(plugin.registerPlayer("P2"));
-    queue1.getConnectedPlayers().add(plugin.registerPlayer("P3"));
-    queue2.getConnectedPlayers().add(plugin.registerPlayer("P4"));
+    queue1.addConnectedPlayer(plugin.registerPlayer("P1"));
+    queue1.addConnectedPlayer(plugin.registerPlayer("P2"));
+    queue1.addConnectedPlayer(plugin.registerPlayer("P3"));
+    queue2.addConnectedPlayer(plugin.registerPlayer("P4"));
 
     QueueGroup group = new QueueGroup("multi", List.of("queue1", "queue2", "queue3"), List.of("main"), List.of(), List.of());
 
@@ -157,7 +157,7 @@ class QueueServerSelectorTest {
 
     // Only register queue2, so queue1 and queue3 are "offline" (not found)
     TestServer queue2 = plugin.registerServer("queue2");
-    queue2.getConnectedPlayers().add(plugin.registerPlayer("P1"));
+    queue2.addConnectedPlayer(plugin.registerPlayer("P1"));
 
     QueueGroup group = new QueueGroup("multi", List.of("queue1", "queue2", "queue3"), List.of("main"), List.of(), List.of());
 
@@ -216,7 +216,7 @@ class QueueServerSelectorTest {
 
     TestServer queue1 = plugin.registerServer("queue1");
     plugin.registerServer("queue2"); // Register queue2 but we don't need to reference it
-    queue1.getConnectedPlayers().add(plugin.registerPlayer("P1"));
+    queue1.addConnectedPlayer(plugin.registerPlayer("P1"));
 
     QueueGroup group = new QueueGroup("multi", List.of("queue1", "queue2"), List.of("main"), List.of(), List.of());
 
