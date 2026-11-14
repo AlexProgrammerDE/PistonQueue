@@ -44,7 +44,7 @@ public final class QueueMoveProcessor {
     this.queueConnector = Objects.requireNonNull(queueConnector, "queueConnector");
   }
 
-  public void processQueues() {
+  public synchronized void processQueues() {
     Config config = environment.config();
     for (QueueGroup group : config.getQueueGroups()) {
       queueCleaner.cleanGroup(group);

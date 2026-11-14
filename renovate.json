@@ -1,8 +1,17 @@
 {
-  "extends": ["config:base", "group:allNonMajor", ":semanticCommits"],
+  "extends": [
+    "config:base",
+    "group:allNonMajor",
+    ":semanticCommits"
+  ],
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "pin",
+        "digest"
+      ],
       "automerge": true,
       "automergeType": "branch"
     },
@@ -11,6 +20,13 @@
         "**"
       ],
       "allowedVersions": "!/\\-SNAPSHOT$/"
+    },
+    {
+      "description": "OpenRewrite 7.40.0 and 7.41.0 require the unpublished rewrite-bom 8.91.0.",
+      "matchPackageNames": [
+        "org.openrewrite:plugin"
+      ],
+      "allowedVersions": "!/^7\\.(40|41)\\.0$/"
     }
   ]
 }
